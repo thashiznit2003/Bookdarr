@@ -110,6 +110,33 @@
   margin-top: 0;
 }
 
+.importExistingFiles {
+  margin-top: 20px;
+}
+
+.importExistingFilesLabel {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.importExistingFilesText {
+  margin-right: 8px;
+  font-weight: normal;
+}
+
+.importExistingFilesContainer {
+  composes: container from '~Components/Form/CheckInput.css';
+
+  flex: 0 1 0;
+}
+
+.importExistingFilesInput {
+  composes: input from '~Components/Form/CheckInput.css';
+
+  margin-top: 0;
+}
+
 .modalFooter {
   composes: modalFooter from '~Components/Modal/ModalFooter.css';
 }

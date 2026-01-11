@@ -187,6 +187,14 @@ export const actionHandlers = handleThunks({
           addError: null
         })
       ]));
+
+      if (payload.onBookAdded) {
+        payload.onBookAdded({
+          book: data,
+          importExistingFiles: payload.importExistingFiles,
+          importPath: payload.importPath
+        });
+      }
     });
 
     promise.fail((xhr) => {

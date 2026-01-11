@@ -3,12 +3,15 @@ import React, { Component } from 'react';
 import TextTruncate from 'react-text-truncate';
 import BookCover from 'Book/BookCover';
 import CheckInput from 'Components/Form/CheckInput';
+import FormGroup from 'Components/Form/FormGroup';
+import FormInputGroup from 'Components/Form/FormInputGroup';
+import FormLabel from 'Components/Form/FormLabel';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
-import { kinds } from 'Helpers/Props';
+import { inputTypes, kinds } from 'Helpers/Props';
 import stripHtml from 'Utilities/String/stripHtml';
 import translate from 'Utilities/String/translate';
 import AddAuthorOptionsForm from '../Common/AddAuthorOptionsForm.js';
@@ -23,7 +26,9 @@ class AddNewBookModalContent extends Component {
     super(props, context);
 
     this.state = {
-      searchForNewBook: false
+      searchForNewBook: false,
+      importExistingFiles: false,
+      importPath: ''
     };
   }
 
@@ -34,8 +39,22 @@ class AddNewBookModalContent extends Component {
     this.setState({ searchForNewBook: value });
   };
 
+  onImportExistingFilesChange = ({ value }) => {
+    this.setState({ importExistingFiles: value });
+  };
+
+  onImportPathChange = ({ value }) => {
+    this.setState({ importPath: value });
+  };
+
   onAddBookPress = () => {
-    this.props.onAddBookPress(this.state.searchForNewBook);
+    const {
+      searchForNewBook,
+      importExistingFiles,
+      importPath
+    } = this.state;
+
+    this.props.onAddBookPress(searchForNewBook, importExistingFiles, importPath);
   };
 
   //
@@ -55,6 +74,13 @@ class AddNewBookModalContent extends Component {
       onModalClose,
       ...otherProps
     } = this.props;
+
+    const {
+      importExistingFiles,
+      importPath
+    } = this.state;
+
+    const isImportPathMissing = importExistingFiles && !importPath;
 
     return (
       <ModalContent onModalClose={onModalClose}>
@@ -118,6 +144,40 @@ class AddNewBookModalContent extends Component {
                     {...otherProps}
                   />
               }
+
+              <div className={styles.importExistingFiles}>
+                <label className={styles.importExistingFilesLabel}>
+                  <span className={styles.importExistingFilesText}>
+                    {translate('ImportExistingFiles')}
+                  </span>
+
+                  <CheckInput
+                    containerClassName={styles.importExistingFilesContainer}
+                    className={styles.importExistingFilesInput}
+                    name="importExistingFiles"
+                    value={importExistingFiles}
+                    onChange={this.onImportExistingFilesChange}
+                  />
+                </label>
+
+                {
+                  importExistingFiles &&
+                    <FormGroup>
+                      <FormLabel>
+                        {translate('ImportExistingFilesPathLabel')}
+                      </FormLabel>
+
+                      <FormInputGroup
+                        type={inputTypes.PATH}
+                        name="importPath"
+                        value={importPath}
+                        includeFiles={true}
+                        helpText={translate('ImportExistingFilesHelpText')}
+                        onChange={this.onImportPathChange}
+                      />
+                    </FormGroup>
+                }
+              </div>
             </div>
           </div>
         </ModalBody>
@@ -141,6 +201,7 @@ class AddNewBookModalContent extends Component {
             className={styles.addButton}
             kind={kinds.SUCCESS}
             isSpinning={isAdding}
+            isDisabled={isImportPathMissing}
             onPress={this.onAddBookPress}
           >
             Add {bookTitle}

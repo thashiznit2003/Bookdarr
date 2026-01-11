@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.271
+- Summary: add a create+match+import flow for existing local book files.
+- Why: let users add a Google Books match and immediately import files already on disk.
+- Impact: Add New Book now supports importing a chosen file/folder, opening Manual Import right after the book is created.
+- Files: frontend/src/Search/Book/AddNewBookModalContent.js, frontend/src/Search/Book/AddNewBookModalContent.css, frontend/src/Search/Book/AddNewBookModalContentConnector.js, frontend/src/Search/Book/AddNewBookModal.js, frontend/src/Search/Book/AddNewBookSearchResult.js, frontend/src/InteractiveImport/InteractiveImportModal.js, frontend/src/Store/Actions/searchActions.js, src/NzbDrone.Core/Localization/Core/en.json, checklist.md, src/Directory.Build.props, CHANGELOG.md.
+- Next: try adding a book with the new import toggle and confirm the Manual Import list opens with the selected path.
+
 ## 1.2.270
 - Summary: add an ebook conversion modal with PDF scan warnings and EPUB output.
 - Why: provide a manual EPUB conversion flow using ocrmypdf/kindleunpack with roughness checks.

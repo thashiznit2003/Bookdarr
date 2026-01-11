@@ -53,7 +53,7 @@ class AddNewBookModalContentConnector extends Component {
     this.props.setBookAddDefault({ [name]: value });
   };
 
-  onAddBookPress = (searchForNewBook) => {
+  onAddBookPress = (searchForNewBook, importExistingFiles, importPath) => {
     const {
       foreignBookId,
       rootFolderPath,
@@ -61,7 +61,8 @@ class AddNewBookModalContentConnector extends Component {
       monitorNewItems,
       qualityProfileId,
       metadataProfileId,
-      tags
+      tags,
+      onBookAdded
     } = this.props;
 
     this.props.addBook({
@@ -72,7 +73,10 @@ class AddNewBookModalContentConnector extends Component {
       qualityProfileId: qualityProfileId.value,
       metadataProfileId: metadataProfileId.value,
       tags: tags.value,
-      searchForNewBook
+      searchForNewBook,
+      importExistingFiles,
+      importPath,
+      onBookAdded
     });
   };
 
@@ -100,6 +104,7 @@ AddNewBookModalContentConnector.propTypes = {
   metadataProfileId: PropTypes.object,
   tags: PropTypes.object.isRequired,
   onModalClose: PropTypes.func.isRequired,
+  onBookAdded: PropTypes.func,
   setBookAddDefault: PropTypes.func.isRequired,
   addBook: PropTypes.func.isRequired
 };

@@ -73,6 +73,8 @@ class InteractiveImportModal extends Component {
 
 InteractiveImportModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
+  authorId: PropTypes.number,
+  title: PropTypes.string,
   folder: PropTypes.string,
   downloadId: PropTypes.string,
   modalTitle: PropTypes.string.isRequired,

@@ -7,6 +7,7 @@ import HeartRating from 'Components/HeartRating';
 import Icon from 'Components/Icon';
 import Label from 'Components/Label';
 import Link from 'Components/Link/Link';
+import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
 import { icons, sizes } from 'Helpers/Props';
 import dimensions from 'Styles/Variables/dimensions';
 import fonts from 'Styles/Variables/fonts';
@@ -41,7 +42,11 @@ class AddNewBookSearchResult extends Component {
     super(props, context);
 
     this.state = {
-      isNewAddBookModalOpen: false
+      isNewAddBookModalOpen: false,
+      isInteractiveImportModalOpen: false,
+      interactiveImportFolder: null,
+      interactiveImportAuthorId: null,
+      interactiveImportTitle: null
     };
   }
 
@@ -60,6 +65,31 @@ class AddNewBookSearchResult extends Component {
 
   onAddBookModalClose = () => {
     this.setState({ isNewAddBookModalOpen: false });
+  };
+
+  onInteractiveImportModalClose = () => {
+    this.setState({
+      isInteractiveImportModalOpen: false,
+      interactiveImportFolder: null,
+      interactiveImportAuthorId: null,
+      interactiveImportTitle: null
+    });
+  };
+
+  onBookAdded = ({ book, importExistingFiles, importPath }) => {
+    if (!importExistingFiles || !importPath) {
+      return;
+    }
+
+    const authorId = book && book.author ? book.author.id : null;
+    const title = book ? book.title : null;
+
+    this.setState({
+      isInteractiveImportModalOpen: true,
+      interactiveImportFolder: importPath,
+      interactiveImportAuthorId: authorId,
+      interactiveImportTitle: title
+    });
   };
 
   onMBLinkPress = (event) => {
@@ -88,7 +118,11 @@ class AddNewBookSearchResult extends Component {
     } = this.props;
 
     const {
-      isNewAddBookModalOpen
+      isNewAddBookModalOpen,
+      isInteractiveImportModalOpen,
+      interactiveImportFolder,
+      interactiveImportAuthorId,
+      interactiveImportTitle
     } = this.state;
 
     const linkProps = isExistingBook ? { to: `/book/${titleSlug}` } : { onPress: this.onPress };
@@ -207,7 +241,16 @@ class AddNewBookSearchResult extends Component {
           overview={overview}
           folder={author.folder}
           images={images}
+          onBookAdded={this.onBookAdded}
           onModalClose={this.onAddBookModalClose}
+        />
+
+        <InteractiveImportModal
+          isOpen={isInteractiveImportModalOpen}
+          folder={interactiveImportFolder}
+          authorId={interactiveImportAuthorId}
+          title={interactiveImportTitle}
+          onModalClose={this.onInteractiveImportModalClose}
         />
       </div>
     );
