@@ -33,6 +33,7 @@ namespace Readarr.Api.V1.BookFiles
         private readonly IBookService _bookService;
         private readonly IEditionService _editionService;
         private readonly IUpgradableSpecification _upgradableSpecification;
+        private readonly IEbookConversionService _ebookConversionService;
         private readonly IDiskProvider _diskProvider;
         private readonly FileExtensionContentTypeProvider _contentTypeProvider;
 
@@ -44,6 +45,7 @@ namespace Readarr.Api.V1.BookFiles
                                IBookService bookService,
                                IEditionService editionService,
                                IUpgradableSpecification upgradableSpecification,
+                               IEbookConversionService ebookConversionService,
                                IDiskProvider diskProvider)
             : base(signalRBroadcaster)
         {
@@ -54,6 +56,7 @@ namespace Readarr.Api.V1.BookFiles
             _bookService = bookService;
             _editionService = editionService;
             _upgradableSpecification = upgradableSpecification;
+            _ebookConversionService = ebookConversionService;
             _diskProvider = diskProvider;
             _contentTypeProvider = new FileExtensionContentTypeProvider();
         }
@@ -204,6 +207,20 @@ namespace Readarr.Api.V1.BookFiles
             }
 
             return PhysicalFile(path, GetContentType(path), enableRangeProcessing: true);
+        }
+
+        [HttpPost("{id:int}/convert/scan")]
+        public ActionResult<EbookConversionScanResource> ScanEbookConversion(int id)
+        {
+            var bookFile = _mediaFileService.Get(id);
+
+            if (bookFile == null)
+            {
+                throw new NzbDroneClientException(HttpStatusCode.NotFound, "Book file not found");
+            }
+
+            var result = _ebookConversionService.Scan(bookFile);
+            return result.ToResource();
         }
 
         [HttpDelete("bulk")]

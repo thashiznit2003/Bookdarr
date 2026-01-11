@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.270
+- Summary: add an ebook conversion modal with PDF scan warnings and EPUB output.
+- Why: provide a manual EPUB conversion flow using ocrmypdf/kindleunpack with roughness checks.
+- Impact: Book Files now offer an EPUB conversion action, PDF scans report image-heavy pages, and converted files are added without deleting sources.
+- Files: src/NzbDrone.Core/MediaFiles/Commands/ConvertEbookCommand.cs, src/NzbDrone.Core/MediaFiles/EbookConversionService.cs, src/Readarr.Api.V1/BookFiles/BookFileController.cs, src/Readarr.Api.V1/BookFiles/EbookConversionScanResource.cs, frontend/src/BookFile/BookFileEbookConvertModal.js, frontend/src/BookFile/BookFileEbookConvertModal.css, frontend/src/BookFile/Editor/BookFileActionsCell.js, frontend/src/Commands/commandNames.js, src/NzbDrone.Core/Localization/Core/en.json, src/Directory.Build.props, CHANGELOG.md.
+- Next: confirm ocrmypdf/kindleunpack are installed and run test conversions for PDF and Kindle formats.
+
 ## 1.2.269
 - Summary: move the completed indexer export checklist item to the bottom.
 - Why: keep completed items grouped at the end as requested.

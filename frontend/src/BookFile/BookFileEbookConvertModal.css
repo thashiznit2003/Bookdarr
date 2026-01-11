@@ -1,0 +1,45 @@
+.description {
+  margin-bottom: 12px;
+  color: var(--lightGray);
+}
+
+.fileName {
+  margin-bottom: 16px;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.scanSection {
+  margin-top: 10px;
+}
+
+.scanTitle {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.scanRow {
+  margin-bottom: 6px;
+}
+
+.scanLabel {
+  color: var(--lightGray);
+}
+
+.scanWarning {
+  margin-top: 10px;
+}
+
+.scanNote {
+  color: var(--lightGray);
+}
+
+.scanLoading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.scanLoadingText {
+  color: var(--lightGray);
+}

@@ -1,12 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import BookFileAudioModal from 'BookFile/BookFileAudioModal';
+import BookFileEbookConvertModal from 'BookFile/BookFileEbookConvertModal';
 import BookFileReaderModal from 'BookFile/BookFileReaderModal';
 import FileDetailsModal from 'BookFile/FileDetailsModal';
 import IconButton from 'Components/Link/IconButton';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import { icons, kinds } from 'Helpers/Props';
+import * as commandNames from 'Commands/commandNames';
+import { executeCommand } from 'Store/Actions/commandActions';
 import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
 import translate from 'Utilities/String/translate';
 import styles from './BookFileActionsCell.css';
@@ -23,7 +27,8 @@ class BookFileActionsCell extends Component {
       isDetailsModalOpen: false,
       isConfirmDeleteModalOpen: false,
       isAudioModalOpen: false,
-      isReaderModalOpen: false
+      isReaderModalOpen: false,
+      isConvertModalOpen: false
     };
   }
 
@@ -67,6 +72,25 @@ class BookFileActionsCell extends Component {
     this.setState({ isReaderModalOpen: false });
   };
 
+  onConvertPress = () => {
+    this.setState({ isConvertModalOpen: true });
+  };
+
+  onConvertModalClose = () => {
+    this.setState({ isConvertModalOpen: false });
+  };
+
+  onConvertConfirm = () => {
+    const { executeCommand, id } = this.props;
+
+    executeCommand({
+      name: commandNames.CONVERT_EBOOK,
+      bookFileId: id
+    });
+
+    this.setState({ isConvertModalOpen: false });
+  };
+
   //
   // Render
 
@@ -83,7 +107,8 @@ class BookFileActionsCell extends Component {
       isDetailsModalOpen,
       isConfirmDeleteModalOpen,
       isAudioModalOpen,
-      isReaderModalOpen
+      isReaderModalOpen,
+      isConvertModalOpen
     } = this.state;
 
     const pathLower = path ? path.toLowerCase() : '';
@@ -101,11 +126,13 @@ class BookFileActionsCell extends Component {
 
     const isAudioByExtension = ['.mp3', '.m4b', '.m4a', '.aac'].some((value) => pathLower.endsWith(value));
     const isEpub = pathLower.endsWith('.epub');
+    const isKepub = pathLower.endsWith('.kepub');
     const isPdf = pathLower.endsWith('.pdf');
     const isEbookByExtension = isEpub || isPdf;
 
     const isAudio = isAudioByExtension || isAudioByMediaType || isAudioByQuality;
     const isEbook = isEbookByExtension || isEbookByMediaType || isEbookByQuality;
+    const canConvertEbook = isEbook && !isEpub && !isKepub;
     const fileType = isPdf ? 'pdf' : (isEpub ? 'epub' : 'unknown');
 
     const apiKey = window.Readarr && window.Readarr.apiKey;
@@ -140,6 +167,14 @@ class BookFileActionsCell extends Component {
             />
         }
         {
+          path && canConvertEbook &&
+            <IconButton
+              name={icons.UPDATE}
+              title={translate('ConvertEbook')}
+              onPress={this.onConvertPress}
+            />
+        }
+        {
           path &&
             <IconButton
               name={icons.DELETE}
@@ -171,6 +206,16 @@ class BookFileActionsCell extends Component {
               title={path}
             />
         }
+        {
+          path && canConvertEbook &&
+            <BookFileEbookConvertModal
+              isOpen={isConvertModalOpen}
+              bookFileId={id}
+              path={path}
+              onConvertPress={this.onConvertConfirm}
+              onModalClose={this.onConvertModalClose}
+            />
+        }
 
         <ConfirmModal
           isOpen={isConfirmDeleteModalOpen}
@@ -192,7 +237,8 @@ BookFileActionsCell.propTypes = {
   path: PropTypes.string,
   quality: PropTypes.object,
   mediaType: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  deleteBookFile: PropTypes.func.isRequired
+  deleteBookFile: PropTypes.func.isRequired,
+  executeCommand: PropTypes.func.isRequired
 };
 
-export default BookFileActionsCell;
+export default connect(null, { executeCommand })(BookFileActionsCell);
