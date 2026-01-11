@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.259
+- Summary: pin FluentValidation to 12.1.0 and refresh lock files to avoid NU1403 restore failures.
+- Why: CI restores for 12.1.1 are failing with package content hash mismatches.
+- Impact: restores use FluentValidation 12.1.0 across all projects with updated lock hashes.
+- Files: src/Directory.Packages.props, src/**/packages.lock.json, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun CI to confirm the NU1403 restore error is gone.
+
 ## 1.2.258
 - Summary: clear NuGet caches in CI before running builds.
 - Why: avoids NU1403 restore failures caused by corrupted cached packages.

@@ -10,9 +10,9 @@
       },
       "FluentValidation": {
         "type": "Direct",
-        "requested": "[12.1.1, )",
-        "resolved": "12.1.1",
-        "contentHash": "5Y2Ck1Clwnlz5gLNHtQr7FaHr+bvTDvj+J6HJ+RDyjYhgmOCMCSKm2aNY3ysMSym+Adk2yeTW/p7qKyN8e2BPQ=="
+        "requested": "[12.1.0, )",
+        "resolved": "12.1.0",
+        "contentHash": "Pwuissvcleescoh0jvnUGVqU2iTi/uBox57FUzlnlHuQoFmwHTHNZEbTNkJrpWzjeFPSjjHslmtbY1TvyRp65g=="
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
