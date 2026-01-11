@@ -47,6 +47,13 @@ class IndexerSettings extends Component {
     this.setState({ isManageIndexersOpen: false });
   };
 
+  onExportIndexersPress = () => {
+    const apiRoot = window.Readarr.apiRoot;
+    const apiKey = encodeURIComponent(window.Readarr.apiKey);
+
+    window.location.assign(`${apiRoot}/indexer/export?apikey=${apiKey}`);
+  };
+
   onSavePress = () => {
     if (this._saveCallback) {
       this._saveCallback();
@@ -88,6 +95,12 @@ class IndexerSettings extends Component {
                 label={translate('ManageIndexers')}
                 iconName={icons.MANAGE}
                 onPress={this.onManageIndexersPress}
+              />
+
+              <PageToolbarButton
+                label={translate('ExportIndexers')}
+                iconName={icons.EXPORT}
+                onPress={this.onExportIndexersPress}
               />
             </Fragment>
           }

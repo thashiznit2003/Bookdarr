@@ -1,7 +1,7 @@
 # Bookdarr Checklist
 
 - [x] Add diagnostics flow: create `bookdarr-diagnostics` repo and add a UI button to collect logs/config and push a sanitized bundle.
-- [ ] Add an export indexers flow (API/UI or script) for easy migration.
+- [x] Add an export indexers flow (API/UI or script) for easy migration.
 - [ ] Build a request UI (Overseerr-like) on top of Bookdarr search.
 - [ ] Add a mobile-compatible web app experience (mobile reader/player UX).
 - [ ] Add a mobile app store app (iOS/iPadOS) with reader/player.

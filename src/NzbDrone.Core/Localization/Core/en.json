@@ -590,6 +590,7 @@
   "ManageDownloadClients": "Manage Download Clients",
   "ManageImportLists": "Manage Import Lists",
   "ManageIndexers": "Manage Indexers",
+  "ExportIndexers": "Export Indexers",
   "ManageLists": "Manage Lists",
   "ManualDownload": "Manual Download",
   "ManualImport": "Manual Import",

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.264
+- Summary: add an indexer export download and UI button for quick migration.
+- Why: provide a single text file with all indexer fields (including API keys and options).
+- Impact: Indexer Settings now offers an Export Indexers action that downloads `bookdarr-indexers.txt`.
+- Files: src/Readarr.Api.V1/Indexers/IndexerController.cs, frontend/src/Settings/Indexers/IndexerSettings.js, src/NzbDrone.Core/Localization/Core/en.json, checklist.md, src/Directory.Build.props, CHANGELOG.md.
+- Next: confirm the export file includes all expected indexer fields in your environment.
+
 ## 1.2.263
 - Summary: mark the dev-build CI checklist item as complete (CI currently disabled).
 - Why: the CI job work is done even though the workflow is paused due to NuGet hash failures.
