@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.273
+- Summary: fix a style/build failure in the manual book service.
+- Why: update-dev failed on IDE0005 due to an unused using directive.
+- Impact: update builds no longer fail on ManualBookService.cs.
+- Files: src/NzbDrone.Core/Books/Services/ManualBookService.cs, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun the update to confirm the build passes.
+
 ## 1.2.272
 - Summary: add a manual book creation modal plus book-level file import and cover upload tools.
 - Why: let you create local-only books, import files without search, and attach covers from the UI.
