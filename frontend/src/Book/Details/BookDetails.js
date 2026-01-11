@@ -423,7 +423,7 @@ class BookDetails extends Component {
             authorId={author.id}
             bookId={id}
             title={title}
-            allowAuthorChange={false}
+            allowAuthorChange={true}
             showFilterExistingFiles={true}
             showImportMode={false}
             useBrowserUpload={true}

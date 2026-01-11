@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.287
+- Summary: allow author and book selection in manual import from book details page.
+- Why: uploaded files without metadata cannot be imported if author/book fields are locked.
+- Impact: manual import from book details now allows changing author/book even when opened from a specific book context.
+- Files: frontend/src/Book/Details/BookDetails.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: test uploading a file with no metadata and confirm author/book/release group can all be set manually.
+
 ## 1.2.286
 - Summary: auto-upload files on selection and auto-transition to interactive import view.
 - Why: manual import file upload workflow was confusing with too many steps and unclear buttons.
