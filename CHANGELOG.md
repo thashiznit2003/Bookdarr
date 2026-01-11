@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.265
+- Summary: add indexer import support from the exported text file.
+- Why: restore indexer definitions quickly without re-entering settings by hand.
+- Impact: Indexer Settings now has an Import Indexers button that posts the file to `/api/v1/indexer/import`.
+- Files: src/Readarr.Api.V1/Indexers/IndexerController.cs, frontend/src/Settings/Indexers/IndexerSettings.js, frontend/src/Settings/Indexers/IndexerSettingsConnector.js, src/NzbDrone.Core/Localization/Core/en.json, src/Directory.Build.props, CHANGELOG.md.
+- Next: verify a real export can be imported and shows the expected count and fields.
+
 ## 1.2.264
 - Summary: add an indexer export download and UI button for quick migration.
 - Why: provide a single text file with all indexer fields (including API keys and options).

@@ -20,11 +20,13 @@ class IndexerSettings extends Component {
     super(props, context);
 
     this._saveCallback = null;
+    this._importInput = null;
 
     this.state = {
       isSaving: false,
       hasPendingChanges: false,
-      isManageIndexersOpen: false
+      isManageIndexersOpen: false,
+      isImporting: false
     };
   }
 
@@ -47,11 +49,88 @@ class IndexerSettings extends Component {
     this.setState({ isManageIndexersOpen: false });
   };
 
+  onImportIndexersPress = () => {
+    if (this._importInput) {
+      this._importInput.value = null;
+      this._importInput.click();
+    }
+  };
+
+  onImportIndexersChange = (event) => {
+    const files = event.target.files;
+
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (typeof reader.result !== 'string') {
+        window.alert('Unable to read the import file contents.');
+        return;
+      }
+
+      this.importIndexers(reader.result);
+    };
+
+    reader.onerror = () => {
+      window.alert('Unable to read the import file.');
+    };
+
+    reader.readAsText(files[0]);
+  };
+
   onExportIndexersPress = () => {
     const apiRoot = window.Readarr.apiRoot;
     const apiKey = encodeURIComponent(window.Readarr.apiKey);
 
     window.location.assign(`${apiRoot}/indexer/export?apikey=${apiKey}`);
+  };
+
+  importIndexers = async (contents) => {
+    const {
+      dispatchFetchIndexers,
+      dispatchFetchIndexerOptions
+    } = this.props;
+
+    if (!contents || !contents.trim()) {
+      window.alert('The import file is empty.');
+      return;
+    }
+
+    this.setState({ isImporting: true });
+
+    try {
+      const response = await fetch(`${window.Readarr.apiRoot}/indexer/import?forceSave=true`, {
+        method: 'POST',
+        headers: {
+          'X-Api-Key': window.Readarr.apiKey,
+          'Content-Type': 'text/plain'
+        },
+        body: contents
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const message = result && result.errors ? result.errors.join('\n') : 'Indexer import failed.';
+        throw new Error(message);
+      }
+
+      if (result && result.errors && result.errors.length) {
+        window.alert(`Imported ${result.created || 0} indexer(s) with warnings:\n${result.errors.join('\n')}`);
+      } else {
+        window.alert(`Imported ${result.created || 0} indexer(s).`);
+      }
+
+      dispatchFetchIndexers();
+      dispatchFetchIndexerOptions();
+    } catch (error) {
+      window.alert(error.message || 'Indexer import failed.');
+    } finally {
+      this.setState({ isImporting: false });
+    }
   };
 
   onSavePress = () => {
@@ -72,11 +151,19 @@ class IndexerSettings extends Component {
     const {
       isSaving,
       hasPendingChanges,
-      isManageIndexersOpen
+      isManageIndexersOpen,
+      isImporting
     } = this.state;
 
     return (
       <PageContent title={translate('IndexerSettings')}>
+        <input
+          ref={(input) => { this._importInput = input; }}
+          type="file"
+          accept=".txt"
+          style={{ display: 'none' }}
+          onChange={this.onImportIndexersChange}
+        />
         <SettingsToolbarConnector
           isSaving={isSaving}
           hasPendingChanges={hasPendingChanges}
@@ -95,6 +182,13 @@ class IndexerSettings extends Component {
                 label={translate('ManageIndexers')}
                 iconName={icons.MANAGE}
                 onPress={this.onManageIndexersPress}
+              />
+
+              <PageToolbarButton
+                label={translate('ImportIndexers')}
+                iconName={icons.FILEIMPORT}
+                isSpinning={isImporting}
+                onPress={this.onImportIndexersPress}
               />
 
               <PageToolbarButton
@@ -127,6 +221,8 @@ class IndexerSettings extends Component {
 
 IndexerSettings.propTypes = {
   isTestingAll: PropTypes.bool.isRequired,
+  dispatchFetchIndexers: PropTypes.func.isRequired,
+  dispatchFetchIndexerOptions: PropTypes.func.isRequired,
   dispatchTestAllIndexers: PropTypes.func.isRequired
 };
 
