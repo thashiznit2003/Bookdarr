@@ -93,11 +93,10 @@ class RootFolderSelectInputConnector extends Component {
       values,
       onChange,
       isFetching,
-      isPopulated,
       fetchRootFolders
     } = this.props;
 
-    if (!isPopulated && !isFetching) {
+    if (!isFetching) {
       fetchRootFolders();
     }
 

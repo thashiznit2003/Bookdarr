@@ -1,11 +1,13 @@
 # Changelog
 
-## 1.2.277
-- Summary: ensure root folder selectors fetch existing root folders on mount.
-- Why: the manual add root folder dropdown was still empty in some sessions.
-- Impact: root folder selects now populate without needing to visit other pages first.
+## 1.2.278
+- Summary: always refresh root folders when a root folder selector mounts.
+- Why: stale root folder lists could persist between sessions.
+- Impact: root folder dropdowns reload and should show existing paths reliably.
 - Files: frontend/src/Components/Form/RootFolderSelectInputConnector.js, src/Directory.Build.props, CHANGELOG.md.
 - Next: open Add Book Manually and confirm existing root folders appear in the dropdown.
+
+## 1.2.277
 
 ## 1.2.276
 
