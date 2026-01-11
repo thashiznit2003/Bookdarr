@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.274
+- Summary: widen the manual book modal fields so title/author are easy to read.
+- Why: the initial grid made key fields too narrow.
+- Impact: manual add fields render in a two-column layout with wider inputs on desktop.
+- Files: frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.css, src/Directory.Build.props, CHANGELOG.md.
+- Next: confirm the modal shows longer fields for Title/Author/Release Date.
+
 ## 1.2.273
 - Summary: fix a style/build failure in the manual book service.
 - Why: update-dev failed on IDE0005 due to an unused using directive.
