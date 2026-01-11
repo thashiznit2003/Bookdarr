@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Form from 'Components/Form/Form';
@@ -83,7 +84,7 @@ class AddManualBookModalContent extends Component {
           <div className={styles.container}>
             <Form {...otherProps}>
               <div className={styles.grid}>
-                <FormGroup>
+                <FormGroup className={classNames(styles.fieldGroup, styles.fullWidth)}>
                   <FormLabel>
                     {translate('Title')}
                   </FormLabel>
@@ -97,7 +98,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup>
+                <FormGroup className={classNames(styles.fieldGroup, styles.fullWidth)}>
                   <FormLabel>
                     {translate('Author')}
                   </FormLabel>
@@ -111,7 +112,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup>
+                <FormGroup className={classNames(styles.fieldGroup, styles.fullWidth)}>
                   <FormLabel>
                     {translate('ReleaseDate')}
                   </FormLabel>
@@ -126,7 +127,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup>
+                <FormGroup className={classNames(styles.fieldGroup, styles.fullWidth)}>
                   <FormLabel>
                     {translate('Overview')}
                   </FormLabel>
@@ -139,7 +140,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup>
+                <FormGroup className={styles.fieldGroup}>
                   <FormLabel>
                     {translate('Publisher')}
                   </FormLabel>
@@ -152,7 +153,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup>
+                <FormGroup className={styles.fieldGroup}>
                   <FormLabel>
                     {translate('Language')}
                   </FormLabel>
@@ -165,7 +166,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup>
+                <FormGroup className={styles.fieldGroup}>
                   <FormLabel>
                     {translate('Format')}
                   </FormLabel>
@@ -178,7 +179,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup>
+                <FormGroup className={styles.fieldGroup}>
                   <FormLabel>
                     {translate('BookIsbn13')}
                   </FormLabel>
@@ -191,7 +192,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup>
+                <FormGroup className={styles.fieldGroup}>
                   <FormLabel>
                     {translate('ASIN')}
                   </FormLabel>
@@ -204,7 +205,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup>
+                <FormGroup className={styles.fieldGroup}>
                   <FormLabel>
                     {translate('PageCount')}
                   </FormLabel>
@@ -217,7 +218,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup>
+                <FormGroup className={styles.fieldGroup}>
                   <FormLabel>
                     {translate('IsEbook')}
                   </FormLabel>
