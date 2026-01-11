@@ -521,8 +521,8 @@
       "readarr.core": {
         "type": "Project",
         "dependencies": {
-          "Dapper": "[2.0.151, )",
-          "Diacritical.Net": "[1.0.4, )",
+          "Dapper": "[2.1.66, )",
+          "Diacritical.Net": "[1.0.5, )",
           "Equ": "[2.3.0, )",
           "FluentValidation": "[9.5.4, )",
           "LazyCache": "[2.4.0, )",
@@ -582,15 +582,15 @@
       },
       "Dapper": {
         "type": "CentralTransitive",
-        "requested": "[2.0.151, )",
-        "resolved": "2.0.151",
-        "contentHash": "mMcZgx1lim0/i1Ozu+lgnBM4GwNIHpCuxV6BV2ovsEfZAXRAq4jb6RIhxGDcVjtmXMLPpdp85jHPdDjBMMwejw=="
+        "requested": "[2.1.66, )",
+        "resolved": "2.1.66",
+        "contentHash": "/q77jUgDOS+bzkmk3Vy9SiWMaetTw+NOoPAV0xPBsGVAyljd5S6P+4RUW7R3ZUGGr9lDRyPKgAMj2UAOwvqZYw=="
       },
       "Diacritical.Net": {
         "type": "CentralTransitive",
-        "requested": "[1.0.4, )",
-        "resolved": "1.0.4",
-        "contentHash": "0VtPC6qSm8/WVDoufUvaEm6L9W+OEk+iTO/dQL7kHnE4Zds1dTr3AOjAGmEHIvgPn7BPHiOoi3Hmsgl3pe5rag=="
+        "requested": "[1.0.5, )",
+        "resolved": "1.0.5",
+        "contentHash": "OuidkgWgwMJnpXUSmZccm/Lzvt+hoiRGqXOn96RUucEHFXwoKQrPVdDNo0eP1BDdFLLQ1ZFCV1FtIoQjmN3Zig=="
       },
       "DryIoc.dll": {
         "type": "CentralTransitive",
