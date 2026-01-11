@@ -397,7 +397,7 @@ namespace Readarr.Api.V1.Indexers
                 return element;
             }
 
-            var json = STJson.Serialize(trimmed);
+            var json = STJson.ToJson(trimmed);
             using var doc = JsonDocument.Parse(json);
             return doc.RootElement.Clone();
         }

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.266
+- Summary: fix indexer import JSON serialization during build.
+- Why: STJson.Serialize requires a stream; the import parser should use a string serializer.
+- Impact: update builds compile cleanly with the indexer import flow.
+- Files: src/Readarr.Api.V1/Indexers/IndexerController.cs, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun the update to confirm the import endpoint builds and works.
+
 ## 1.2.265
 - Summary: add indexer import support from the exported text file.
 - Why: restore indexer definitions quickly without re-entering settings by hand.
