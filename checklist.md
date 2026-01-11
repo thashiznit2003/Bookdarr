@@ -14,7 +14,7 @@
 - [x] Add .NET upgrade plan: move to `net8.0` LTS now and `net10.0` when available; update Docker/base images, CI, and VM scripts accordingly.
 - [x] Add `global.json` to pin the .NET SDK version used in dev/CI.
 - [x] Refresh dependency versions for net8+ compatibility (NuGet + Node/Yarn toolchain).
-- [ ] Add dependency security automation (Dependabot/Renovate) and code scanning (CodeQL or equivalent).
+- [x] Add dependency security automation (Dependabot/Renovate) and code scanning (CodeQL or equivalent).
 - [ ] Add Linux CI job that runs the same build scripts as the VM (`scripts/dev-build.sh`) to catch update failures early.
 - [x] Add systemd unit file and install/uninstall docs for Linux-only deployments.
 - [x] Add log retention/rotation guidance for `/opt/bookdarr-dev/Logs`.
