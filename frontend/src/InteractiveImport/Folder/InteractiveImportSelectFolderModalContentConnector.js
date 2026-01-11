@@ -70,6 +70,7 @@ class InteractiveImportSelectFolderModalContentConnector extends Component {
 
 InteractiveImportSelectFolderModalContentConnector.propTypes = {
   path: PropTypes.string,
+  useBrowserUpload: PropTypes.bool,
   onFolderSelect: PropTypes.func.isRequired,
   onModalClose: PropTypes.func.isRequired,
   addRecentFolder: PropTypes.func.isRequired,

@@ -1,11 +1,13 @@
 # Changelog
 
+## 1.2.281
+- Summary: add browser file uploads for manual import on the book details page.
+- Why: manual import should use the user’s local filesystem instead of server paths.
+- Impact: the manual import modal now uploads files to the server and uses that folder for import.
+- Files: frontend/src/Book/Details/BookDetails.js, frontend/src/InteractiveImport/InteractiveImportModal.js, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.js, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContentConnector.js, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.css, src/Readarr.Api.V1/ManualImport/ManualImportController.cs, src/NzbDrone.Core/Localization/Core/en.json, src/Directory.Build.props, CHANGELOG.md.
+- Next: open Manual Import, upload a test file, and confirm it proceeds to the interactive import list.
+
 ## 1.2.280
-- Summary: map the manual add "Only This Book" monitor choice to a valid value.
-- Why: manual adds were failing with a 400 when monitor was set to specificBook.
-- Impact: manual book creation succeeds even when the UI shows "Only This Book".
-- Files: frontend/src/Book/Index/ManualAdd/AddManualBookModalContentConnector.js, src/Directory.Build.props, CHANGELOG.md.
-- Next: retry adding a manual test book with "Only This Book" selected.
 
 ## 1.2.279
 

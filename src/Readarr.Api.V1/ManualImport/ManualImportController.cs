@@ -1,10 +1,15 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
+using NzbDrone.Common.Disk;
+using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.MediaFiles.BookImport.Manual;
+using NzbDrone.Core.Organizer;
 using NzbDrone.Core.Qualities;
 using Readarr.Http;
 
@@ -17,18 +22,24 @@ namespace Readarr.Api.V1.ManualImport
         private readonly IBookService _bookService;
         private readonly IEditionService _editionService;
         private readonly IManualImportService _manualImportService;
+        private readonly IAppFolderInfo _appFolderInfo;
+        private readonly IDiskProvider _diskProvider;
         private readonly Logger _logger;
 
         public ManualImportController(IManualImportService manualImportService,
                                   IAuthorService authorService,
                                   IEditionService editionService,
                                   IBookService bookService,
+                                  IAppFolderInfo appFolderInfo,
+                                  IDiskProvider diskProvider,
                                   Logger logger)
         {
             _authorService = authorService;
             _bookService = bookService;
             _editionService = editionService;
             _manualImportService = manualImportService;
+            _appFolderInfo = appFolderInfo;
+            _diskProvider = diskProvider;
             _logger = logger;
         }
 
@@ -66,6 +77,90 @@ namespace Readarr.Api.V1.ManualImport
                 .ToResource()
                 .Select(AddQualityWeight)
                 .ToList();
+        }
+
+        [HttpPost("upload")]
+        public IActionResult UploadFiles()
+        {
+            if (!Request.HasFormContentType)
+            {
+                return BadRequest("Form data is required.");
+            }
+
+            var files = Request.Form?.Files;
+            if (files == null || files.Count == 0)
+            {
+                return BadRequest("No files uploaded.");
+            }
+
+            var uploadRoot = Path.Combine(_appFolderInfo.AppDataFolder, "manual-import");
+            _diskProvider.EnsureFolder(uploadRoot);
+
+            var uploadFolder = Path.Combine(uploadRoot, $"{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}");
+            _diskProvider.EnsureFolder(uploadFolder);
+
+            var savedFiles = new List<string>();
+
+            foreach (var file in files)
+            {
+                if (file == null || file.Length == 0)
+                {
+                    continue;
+                }
+
+                var originalName = Path.GetFileName(file.FileName);
+                var cleanName = FileNameBuilder.CleanFileName(originalName);
+
+                if (cleanName.IsNullOrWhiteSpace())
+                {
+                    cleanName = "upload" + Path.GetExtension(originalName);
+                }
+
+                var destination = GetUniquePath(uploadFolder, cleanName);
+
+                using (var stream = file.OpenReadStream())
+                {
+                    _diskProvider.SaveStream(stream, destination);
+                }
+
+                savedFiles.Add(destination);
+            }
+
+            if (!savedFiles.Any())
+            {
+                return BadRequest("No files uploaded.");
+            }
+
+            return Ok(new
+            {
+                path = uploadFolder,
+                files = savedFiles.Select(Path.GetFileName).ToList()
+            });
+        }
+
+        private string GetUniquePath(string folder, string fileName)
+        {
+            var candidate = Path.Combine(folder, fileName);
+
+            if (!_diskProvider.FileExists(candidate))
+            {
+                return candidate;
+            }
+
+            var baseName = Path.GetFileNameWithoutExtension(fileName);
+            var extension = Path.GetExtension(fileName);
+
+            for (var i = 1; i <= 100; i++)
+            {
+                candidate = Path.Combine(folder, $"{baseName}-{i}{extension}");
+
+                if (!_diskProvider.FileExists(candidate))
+                {
+                    return candidate;
+                }
+            }
+
+            throw new InvalidOperationException("Unable to create a unique upload path.");
         }
 
         private ManualImportResource AddQualityWeight(ManualImportResource item)

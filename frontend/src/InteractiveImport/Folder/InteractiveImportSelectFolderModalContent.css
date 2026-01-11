@@ -2,6 +2,32 @@
   margin-top: 15px;
 }
 
+.uploadSection {
+  margin-bottom: 20px;
+}
+
+.fileInput {
+  width: 100%;
+}
+
+.uploadActions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.uploadSummary {
+  color: var(--defaultColor);
+  font-size: 12px;
+}
+
+.uploadError {
+  color: var(--dangerColor);
+  font-size: 12px;
+}
+
 .buttonsContainer {
   margin-top: 30px;
 }

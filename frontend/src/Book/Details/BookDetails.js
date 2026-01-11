@@ -426,6 +426,7 @@ class BookDetails extends Component {
             allowAuthorChange={false}
             showFilterExistingFiles={true}
             showImportMode={false}
+            useBrowserUpload={true}
             onModalClose={this.onInteractiveImportModalClose}
           />
 
