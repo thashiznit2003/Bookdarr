@@ -311,6 +311,8 @@ class SignalRConnector extends Component {
   onStart = () => {
     console.debug('[signalR] connected');
 
+    this.props.dispatchFetchRootFolders();
+
     this.props.dispatchSetAppValue({
       isConnected: true,
       isReconnecting: false,

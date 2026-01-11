@@ -1,11 +1,13 @@
 # Changelog
 
-## 1.2.278
-- Summary: always refresh root folders when a root folder selector mounts.
-- Why: stale root folder lists could persist between sessions.
-- Impact: root folder dropdowns reload and should show existing paths reliably.
-- Files: frontend/src/Components/Form/RootFolderSelectInputConnector.js, src/Directory.Build.props, CHANGELOG.md.
+## 1.2.279
+- Summary: fetch root folders on app connect so selectors always have options.
+- Why: the manual add modal was still opening before root folders were loaded.
+- Impact: root folder dropdowns should list existing paths immediately.
+- Files: frontend/src/Components/SignalRConnector.js, src/Directory.Build.props, CHANGELOG.md.
 - Next: open Add Book Manually and confirm existing root folders appear in the dropdown.
+
+## 1.2.278
 
 ## 1.2.277
 
