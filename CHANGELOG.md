@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.257
+- Summary: add a Linux CI job that runs the VM dev build script.
+- Why: catch update-dev build failures early using the same `scripts/dev-build.sh` flow.
+- Impact: CI now runs the dev build pipeline on Ubuntu alongside the main build job.
+- Files: .github/workflows/build.yml, src/Directory.Build.props, CHANGELOG.md.
+- Next: verify the new CI job runs on the next develop push/PR.
+
 ## 1.2.256
 - Summary: update PostCSS color function plugin and refresh rimraf to remove vulnerable postcss/glob versions.
 - Why: Dependabot flagged postcss (via postcss-color-function) and glob vulnerabilities.
