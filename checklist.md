@@ -1,13 +1,13 @@
 # Bookdarr Checklist
 
-- [x] Add diagnostics flow: create `bookdarr-diagnostics` repo and add a UI button to collect logs/config and push a sanitized bundle.
+- [ ] Add ebook conversion tools.
+- [ ] Publish Docker images to Docker Hub (`thashiznit2003/bookdarr`) with release tagging and compose instructions.
 - [ ] Build a request UI (Overseerr-like) on top of Bookdarr search.
 - [ ] Add a mobile-compatible web app experience (mobile reader/player UX).
 - [ ] Add a mobile app store app (iOS/iPadOS) with reader/player.
 - [ ] Add multiple user support to Bookdarr (auth, permissions, per-user views).
 - [ ] Remember audiobook/ebook playback position per user.
 - [ ] Harden authentication for public internet use, plus offline downloads for mobile.
-- [ ] Add ebook conversion tools.
 - [ ] Add send-to-device flows.
 - [x] Document metadata provider pros/cons in README and settings UI help.
 - [x] Add .NET upgrade plan: move to `net8.0` LTS now and `net10.0` when available; update Docker/base images, CI, and VM scripts accordingly.
@@ -17,5 +17,5 @@
 - [x] Add Linux CI job that runs the same build scripts as the VM (`scripts/dev-build.sh`) to catch update failures early. (Disabled for now due to persistent NuGet hash failures.)
 - [x] Add systemd unit file and install/uninstall docs for Linux-only deployments.
 - [x] Add log retention/rotation guidance for `/opt/bookdarr-dev/Logs`.
-- [ ] Publish Docker images to Docker Hub (`thashiznit2003/bookdarr`) with release tagging and compose instructions.
 - [x] Add an export indexers flow (API/UI or script) for easy migration.
+- [x] Add diagnostics flow: create `bookdarr-diagnostics` repo and add a UI button to collect logs/config and push a sanitized bundle.
