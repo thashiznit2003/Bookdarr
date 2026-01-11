@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.258
+- Summary: clear NuGet caches in CI before running builds.
+- Why: avoids NU1403 restore failures caused by corrupted cached packages.
+- Impact: CI runs are more reliable for both the main build and dev-build jobs.
+- Files: .github/workflows/build.yml, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun CI to confirm the restore error no longer appears.
+
 ## 1.2.257
 - Summary: add a Linux CI job that runs the VM dev build script.
 - Why: catch update-dev build failures early using the same `scripts/dev-build.sh` flow.

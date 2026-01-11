@@ -77,6 +77,10 @@ jobs:
             webpack-${{ runner.os }}-${{ hashFiles('frontend/src/**/*', 'yarn.lock') }}
             webpack-${{ runner.os }}-
 
+      - name: Clear NuGet caches
+        shell: bash
+        run: dotnet nuget locals all --clear
+
       - name: Build
         shell: bash
         run: ./build.sh --backend --frontend
@@ -203,6 +207,10 @@ jobs:
           restore-keys: |
             webpack-${{ runner.os }}-${{ hashFiles('frontend/src/**/*', 'yarn.lock') }}
             webpack-${{ runner.os }}-
+
+      - name: Clear NuGet caches
+        shell: bash
+        run: dotnet nuget locals all --clear
 
       - name: Run dev build script
         shell: bash
