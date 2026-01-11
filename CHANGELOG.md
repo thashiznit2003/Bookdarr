@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.286
+- Summary: auto-upload files on selection and auto-transition to interactive import view.
+- Why: manual import file upload workflow was confusing with too many steps and unclear buttons.
+- Impact: selecting files from the file picker immediately uploads them and opens the interactive import list for final import; upload button and Move Automatically/Interactive Import buttons removed from upload mode.
+- Files: frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.js, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.css, src/NzbDrone.Core/Localization/Core/en.json, src/Directory.Build.props, CHANGELOG.md.
+- Next: test the file upload flow and confirm files appear in the interactive import list immediately after selection.
+
 ## 1.2.285
 - Summary: restore missing changelog entries for recent manual add/import work.
 - Why: the previous changelog update left blank sections for several versions.

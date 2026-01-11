@@ -18,18 +18,15 @@
   margin-top: 10px;
 }
 
-.uploadSummary {
-  color: var(--defaultColor);
-  font-size: 12px;
-}
-
-.uploadList {
-  margin: 6px 0 0;
-  padding-left: 16px;
-}
-
-.uploadListItem {
-  line-height: 1.4;
+.uploadProgress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background-color: var(--infoColor);
+  border-radius: 4px;
+  color: var(--white);
+  font-weight: 500;
 }
 
 .uploadError {

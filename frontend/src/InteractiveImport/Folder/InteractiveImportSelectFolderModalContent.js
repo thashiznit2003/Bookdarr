@@ -63,16 +63,14 @@ class InteractiveImportSelectFolderModalContent extends Component {
   onUploadFilesChange = ({ files }) => {
     const selectedFiles = files ? Array.from(files) : [];
     this.setState({ selectedFiles, uploadError: null });
+
+    // Auto-upload when files are selected
+    if (selectedFiles.length > 0) {
+      this.uploadFiles(selectedFiles);
+    }
   };
 
-  onUploadPress = () => {
-    const { selectedFiles } = this.state;
-
-    if (!selectedFiles.length) {
-      this.setState({ uploadError: { message: translate('ManualImportUploadSelectFiles') } });
-      return;
-    }
-
+  uploadFiles = (selectedFiles) => {
     const formData = new FormData();
     selectedFiles.forEach((file) => {
       formData.append('files', file);
@@ -90,11 +88,17 @@ class InteractiveImportSelectFolderModalContent extends Component {
     }).request;
 
     request.done((data) => {
+      const uploadPath = data?.path || '';
       this.setState({
-        folder: data?.path || '',
+        folder: uploadPath,
         uploadedFiles: data?.files || [],
         selectedFiles: []
       });
+
+      // Auto-transition to Interactive Import view
+      if (uploadPath) {
+        this.props.onInteractiveImportPress(uploadPath);
+      }
     });
 
     request.fail((xhr) => {
@@ -162,48 +166,20 @@ class InteractiveImportSelectFolderModalContent extends Component {
                     type="file"
                     multiple={true}
                     onChange={this.onUploadFilesChange}
+                    disabled={isUploading}
                   />
 
                   <FormInputHelpText
-                    text={translate('ManualImportUploadHelpText')}
+                    text={translate('ManualImportUploadAutoHelpText')}
                   />
                 </FormGroup>
 
                 <div className={styles.uploadActions}>
-                  <SpinnerButton
-                    kind={kinds.PRIMARY}
-                    isSpinning={isUploading}
-                    isDisabled={!selectedFiles.length}
-                    onPress={this.onUploadPress}
-                  >
-                    {translate('ManualImportUploadButton')}
-                  </SpinnerButton>
-
                   {
-                    selectedNames.length ?
-                      <div className={styles.uploadSummary}>
-                        {translate('ManualImportUploadSelectedFiles', { count: selectedNames.length })}
-                        <ul className={styles.uploadList}>
-                          {selectedNames.map((name) => (
-                            <li key={name} className={styles.uploadListItem}>{name}</li>
-                          ))}
-                        </ul>
-                      </div> :
-                      null
-                  }
-
-                  {
-                    uploadedFiles.length ?
-                      <div className={styles.uploadSummary}>
-                        {translate('ManualImportUploadComplete', {
-                          count: uploadedFiles.length,
-                          path: folder
-                        })}
-                        <ul className={styles.uploadList}>
-                          {uploadedFiles.map((name) => (
-                            <li key={name} className={styles.uploadListItem}>{name}</li>
-                          ))}
-                        </ul>
+                    isUploading ?
+                      <div className={styles.uploadProgress}>
+                        <Icon name={icons.SPINNER} isSpinning={true} />
+                        {translate('ManualImportUploading')}
                       </div> :
                       null
                   }
@@ -249,41 +225,44 @@ class InteractiveImportSelectFolderModalContent extends Component {
               </div>
           }
 
-          <div className={styles.buttonsContainer}>
-            <div className={styles.buttonContainer}>
-              <Button
-                className={styles.button}
-                kind={kinds.PRIMARY}
-                size={sizes.LARGE}
-                isDisabled={!folder}
-                onPress={this.onQuickImportPress}
-              >
-                <Icon
-                  className={styles.buttonIcon}
-                  name={icons.QUICK}
-                />
+          {
+            !useBrowserUpload &&
+              <div className={styles.buttonsContainer}>
+                <div className={styles.buttonContainer}>
+                  <Button
+                    className={styles.button}
+                    kind={kinds.PRIMARY}
+                    size={sizes.LARGE}
+                    isDisabled={!folder}
+                    onPress={this.onQuickImportPress}
+                  >
+                    <Icon
+                      className={styles.buttonIcon}
+                      name={icons.QUICK}
+                    />
 
-                Move Automatically
-              </Button>
-            </div>
+                    Move Automatically
+                  </Button>
+                </div>
 
-            <div className={styles.buttonContainer}>
-              <Button
-                className={styles.button}
-                kind={kinds.PRIMARY}
-                size={sizes.LARGE}
-                isDisabled={!folder}
-                onPress={this.onInteractiveImportPress}
-              >
-                <Icon
-                  className={styles.buttonIcon}
-                  name={icons.INTERACTIVE}
-                />
+                <div className={styles.buttonContainer}>
+                  <Button
+                    className={styles.button}
+                    kind={kinds.PRIMARY}
+                    size={sizes.LARGE}
+                    isDisabled={!folder}
+                    onPress={this.onInteractiveImportPress}
+                  >
+                    <Icon
+                      className={styles.buttonIcon}
+                      name={icons.INTERACTIVE}
+                    />
 
-                Interactive Import
-              </Button>
-            </div>
-          </div>
+                    Interactive Import
+                  </Button>
+                </div>
+              </div>
+          }
         </ModalBody>
 
         <ModalFooter>
