@@ -14,6 +14,7 @@ Use this file to onboard a new Codex chat.
 ## User Preferences
 - Keep changes small and methodical; avoid assumptions.
 - Responses should be concise.
+- When responding with commands or copy/paste steps, always use fenced code blocks (no inline commands).
 - Create an annotated git tag snapshot before pushing to GitHub; no local tar backups.
 - Push updates to GitHub after every change.
 - Automatically run the tag and push steps after each change (do not ask the user to do it).
@@ -56,6 +57,12 @@ Use this file to onboard a new Codex chat.
 - Overseerr-like request page.
 
 ## Recent Changes (since last handoff)
+- Added a manual book creation flow with optional fields, a cover upload action, and book-level manual import tools.
+- Manual add modal fields are full-width for title/author/date; “Only This Book” monitor now maps to a valid manual add value.
+- Root folder selectors now fetch root folders on app connect and on selector mount so existing paths appear immediately.
+- Manual import now supports browser file uploads with server-side staging under the app data folder.
+- Manual import upload UI lists selected file names before upload and uploaded file names after completion.
+- Fixed manual import upload build issues (string.IsNullOrWhiteSpace usage in the new upload handler).
 - Fixed Files tab ebook icon export so Read buttons render.
 - Added Play/Read actions in the Files tab with audio and ebook modals plus a stream endpoint.
 - Multi-part MP3 audiobook imports now preserve original filenames instead of renaming on import.

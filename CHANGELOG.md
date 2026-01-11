@@ -1,11 +1,13 @@
 # Changelog
 
+## 1.2.284
+- Summary: update the handoff with the latest manual add/import changes and response preferences.
+- Why: keep onboarding notes aligned with recent work and required response style.
+- Impact: handoff now reflects the new manual add/import flow details and command formatting rules.
+- Files: docs/HANDOFF.md, src/Directory.Build.props, CHANGELOG.md.
+- Next: continue manual import upload testing and capture diagnostics if issues persist.
+
 ## 1.2.283
-- Summary: show selected and uploaded file names in the manual import upload UI.
-- Why: the upload input didn’t show which files were chosen.
-- Impact: Manual Import now lists selected files before upload and uploaded files afterward.
-- Files: frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.js, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.css, src/NzbDrone.Core/Localization/Core/en.json, src/Directory.Build.props, CHANGELOG.md.
-- Next: select a file in Manual Import and confirm it appears in the list before uploading.
 
 ## 1.2.282
 
