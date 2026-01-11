@@ -1,11 +1,13 @@
 # Changelog
 
+## 1.2.282
+- Summary: fix a manual import upload build failure.
+- Why: update-dev failed on a missing `string.IsNullOrWhiteSpace` argument.
+- Impact: manual import upload builds cleanly again.
+- Files: src/Readarr.Api.V1/ManualImport/ManualImportController.cs, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun the update and retry the manual import upload.
+
 ## 1.2.281
-- Summary: add browser file uploads for manual import on the book details page.
-- Why: manual import should use the user’s local filesystem instead of server paths.
-- Impact: the manual import modal now uploads files to the server and uses that folder for import.
-- Files: frontend/src/Book/Details/BookDetails.js, frontend/src/InteractiveImport/InteractiveImportModal.js, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.js, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContentConnector.js, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.css, src/Readarr.Api.V1/ManualImport/ManualImportController.cs, src/NzbDrone.Core/Localization/Core/en.json, src/Directory.Build.props, CHANGELOG.md.
-- Next: open Manual Import, upload a test file, and confirm it proceeds to the interactive import list.
 
 ## 1.2.280
 

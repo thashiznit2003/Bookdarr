@@ -111,7 +111,7 @@ namespace Readarr.Api.V1.ManualImport
                 var originalName = Path.GetFileName(file.FileName);
                 var cleanName = FileNameBuilder.CleanFileName(originalName);
 
-                if (cleanName.IsNullOrWhiteSpace())
+                if (string.IsNullOrWhiteSpace(cleanName))
                 {
                     cleanName = "upload" + Path.GetExtension(originalName);
                 }
