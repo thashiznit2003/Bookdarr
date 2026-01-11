@@ -72,6 +72,8 @@ class AddManualBookModalContentConnector extends Component {
       updateAuthorItem
     } = this.props;
 
+    const monitorValue = monitor.value === 'specificBook' ? 'none' : monitor.value;
+
     const payload = {
       title: bookFields.title,
       authorName: bookFields.authorName,
@@ -85,7 +87,7 @@ class AddManualBookModalContentConnector extends Component {
       pageCount: bookFields.pageCount ? parseInt(bookFields.pageCount, 10) : 0,
       isEbook: bookFields.isEbook,
       rootFolderPath: rootFolderPath.value,
-      monitor: monitor.value,
+      monitor: monitorValue,
       monitorNewItems: monitorNewItems.value,
       qualityProfileId: qualityProfileId.value,
       metadataProfileId: metadataProfileId.value,

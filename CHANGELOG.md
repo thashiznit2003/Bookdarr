@@ -1,11 +1,13 @@
 # Changelog
 
+## 1.2.280
+- Summary: map the manual add "Only This Book" monitor choice to a valid value.
+- Why: manual adds were failing with a 400 when monitor was set to specificBook.
+- Impact: manual book creation succeeds even when the UI shows "Only This Book".
+- Files: frontend/src/Book/Index/ManualAdd/AddManualBookModalContentConnector.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: retry adding a manual test book with "Only This Book" selected.
+
 ## 1.2.279
-- Summary: fetch root folders on app connect so selectors always have options.
-- Why: the manual add modal was still opening before root folders were loaded.
-- Impact: root folder dropdowns should list existing paths immediately.
-- Files: frontend/src/Components/SignalRConnector.js, src/Directory.Build.props, CHANGELOG.md.
-- Next: open Add Book Manually and confirm existing root folders appear in the dropdown.
 
 ## 1.2.278
 
