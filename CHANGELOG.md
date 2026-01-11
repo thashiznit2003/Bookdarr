@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.268
+- Summary: fix indexer import request accessibility to allow JSON binding.
+- Why: the API method exposed a less-accessible nested request type, breaking the build.
+- Impact: update builds compile and the import endpoint accepts JSON payloads.
+- Files: src/Readarr.Api.V1/Indexers/IndexerController.cs, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun the update and retry the export/import flow.
+
 ## 1.2.267
 - Summary: switch indexer import to JSON payloads to avoid text/plain formatter errors.
 - Why: ASP.NET Core rejected text/plain uploads with 415 Unsupported Media Type in import attempts.

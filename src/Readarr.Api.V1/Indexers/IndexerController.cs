@@ -485,7 +485,7 @@ namespace Readarr.Api.V1.Indexers
             public Dictionary<string, string> FieldValues { get; } = new (StringComparer.OrdinalIgnoreCase);
         }
 
-        private sealed class IndexerImportRequest
+        public sealed class IndexerImportRequest
         {
             public string Payload { get; set; }
         }
