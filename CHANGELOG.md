@@ -1,11 +1,13 @@
 # Changelog
 
+## 1.2.283
+- Summary: show selected and uploaded file names in the manual import upload UI.
+- Why: the upload input didn’t show which files were chosen.
+- Impact: Manual Import now lists selected files before upload and uploaded files afterward.
+- Files: frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.js, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.css, src/NzbDrone.Core/Localization/Core/en.json, src/Directory.Build.props, CHANGELOG.md.
+- Next: select a file in Manual Import and confirm it appears in the list before uploading.
+
 ## 1.2.282
-- Summary: fix a manual import upload build failure.
-- Why: update-dev failed on a missing `string.IsNullOrWhiteSpace` argument.
-- Impact: manual import upload builds cleanly again.
-- Files: src/Readarr.Api.V1/ManualImport/ManualImportController.cs, src/Directory.Build.props, CHANGELOG.md.
-- Next: rerun the update and retry the manual import upload.
 
 ## 1.2.281
 

@@ -137,6 +137,8 @@ class InteractiveImportSelectFolderModalContent extends Component {
       uploadError
     } = this.state;
 
+    const selectedNames = selectedFiles.map((file) => file.name);
+
     const uploadErrorMessage = getErrorMessage(uploadError, translate('ManualImportUploadFailed'));
 
     return (
@@ -178,12 +180,30 @@ class InteractiveImportSelectFolderModalContent extends Component {
                   </SpinnerButton>
 
                   {
+                    selectedNames.length ?
+                      <div className={styles.uploadSummary}>
+                        {translate('ManualImportUploadSelectedFiles', { count: selectedNames.length })}
+                        <ul className={styles.uploadList}>
+                          {selectedNames.map((name) => (
+                            <li key={name} className={styles.uploadListItem}>{name}</li>
+                          ))}
+                        </ul>
+                      </div> :
+                      null
+                  }
+
+                  {
                     uploadedFiles.length ?
                       <div className={styles.uploadSummary}>
                         {translate('ManualImportUploadComplete', {
                           count: uploadedFiles.length,
                           path: folder
                         })}
+                        <ul className={styles.uploadList}>
+                          {uploadedFiles.map((name) => (
+                            <li key={name} className={styles.uploadListItem}>{name}</li>
+                          ))}
+                        </ul>
                       </div> :
                       null
                   }

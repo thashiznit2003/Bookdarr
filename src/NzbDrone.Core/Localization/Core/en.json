@@ -614,6 +614,7 @@
   "ManualImportUploadLabel": "Upload Book Files",
   "ManualImportUploadHelpText": "Select ebook or audiobook files from your computer and upload them for manual import.",
   "ManualImportUploadButton": "Upload Files",
+  "ManualImportUploadSelectedFiles": "Selected {count} file(s):",
   "ManualImportUploadComplete": "Uploaded {count} file(s) to {path}.",
   "ManualImportUploadFailed": "Unable to upload files.",
   "ManualImportUploadSelectFiles": "Select one or more files to upload.",
