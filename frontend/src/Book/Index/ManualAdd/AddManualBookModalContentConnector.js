@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { updateItem } from 'Store/Actions/baseActions';
 import { setBookAddDefault } from 'Store/Actions/searchActions';
+import { fetchRootFolders } from 'Store/Actions/settingsActions';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import selectSettings from 'Store/Selectors/selectSettings';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
@@ -39,6 +40,7 @@ function createMapStateToProps() {
 
 const mapDispatchToProps = {
   setBookAddDefault,
+  fetchRootFolders,
   updateBookItem: (item) => updateItem({ section: 'books', ...item }),
   updateAuthorItem: (item) => updateItem({ section: 'authors', ...item })
 };
@@ -48,6 +50,10 @@ class AddManualBookModalContentConnector extends Component {
     isAdding: false,
     addError: null
   };
+
+  componentDidMount() {
+    this.props.fetchRootFolders();
+  }
 
   onAuthorOptionsChange = ({ name, value }) => {
     this.props.setBookAddDefault({ [name]: value });
@@ -137,6 +143,7 @@ AddManualBookModalContentConnector.propTypes = {
   tags: PropTypes.object.isRequired,
   onModalClose: PropTypes.func.isRequired,
   setBookAddDefault: PropTypes.func.isRequired,
+  fetchRootFolders: PropTypes.func.isRequired,
   updateBookItem: PropTypes.func.isRequired,
   updateAuthorItem: PropTypes.func.isRequired
 };

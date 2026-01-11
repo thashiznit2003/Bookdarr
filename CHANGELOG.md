@@ -1,11 +1,13 @@
 # Changelog
 
+## 1.2.276
+- Summary: load root folders when the manual add modal opens.
+- Why: the root folder selector had no existing options without fetching root folders.
+- Impact: manual add now shows existing root folders instead of forcing a new path.
+- Files: frontend/src/Book/Index/ManualAdd/AddManualBookModalContentConnector.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: open Add Book Manually and confirm you can pick an existing root folder.
+
 ## 1.2.275
-- Summary: make the manual add title/author/date/overview fields full width.
-- Why: the inputs were still too narrow for real book data.
-- Impact: the top fields now span the modal width and remain readable.
-- Files: frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.js, frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.css, src/Directory.Build.props, CHANGELOG.md.
-- Next: confirm the top fields are full width and easy to type in.
 
 ## 1.2.274
 
