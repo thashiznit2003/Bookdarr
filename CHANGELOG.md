@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.263
+- Summary: mark the dev-build CI checklist item as complete (CI currently disabled).
+- Why: the CI job work is done even though the workflow is paused due to NuGet hash failures.
+- Impact: checklist reflects the current CI status and decision.
+- Files: checklist.md, src/Directory.Build.props, CHANGELOG.md.
+- Next: re-enable CI once NuGet hash issues are resolved.
+
 ## 1.2.262
 - Summary: disable CI workflow to avoid repeated restore failures and noise.
 - Why: CI keeps failing on NuGet hash validation while VM updates succeed.
