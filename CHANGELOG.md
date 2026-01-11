@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.261
+- Summary: set isolated NuGet cache paths via CI env initialization to fix workflow parsing.
+- Why: GitHub Actions cannot resolve `runner.temp` expressions in job-level env blocks.
+- Impact: CI now applies isolated NuGet paths and no-cache restore flags via `$GITHUB_ENV`.
+- Files: .github/workflows/build.yml, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun CI to confirm the workflow dispatch succeeds and restore errors are reduced.
+
 ## 1.2.260
 - Summary: isolate NuGet caches per CI job and force no-cache restores in build scripts.
 - Why: avoid NU1403 hash mismatches caused by shared or stale caches on CI runners.
