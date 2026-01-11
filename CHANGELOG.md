@@ -1,11 +1,13 @@
 # Changelog
 
+## 1.2.277
+- Summary: ensure root folder selectors fetch existing root folders on mount.
+- Why: the manual add root folder dropdown was still empty in some sessions.
+- Impact: root folder selects now populate without needing to visit other pages first.
+- Files: frontend/src/Components/Form/RootFolderSelectInputConnector.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: open Add Book Manually and confirm existing root folders appear in the dropdown.
+
 ## 1.2.276
-- Summary: load root folders when the manual add modal opens.
-- Why: the root folder selector had no existing options without fetching root folders.
-- Impact: manual add now shows existing root folders instead of forcing a new path.
-- Files: frontend/src/Book/Index/ManualAdd/AddManualBookModalContentConnector.js, src/Directory.Build.props, CHANGELOG.md.
-- Next: open Add Book Manually and confirm you can pick an existing root folder.
 
 ## 1.2.275
 

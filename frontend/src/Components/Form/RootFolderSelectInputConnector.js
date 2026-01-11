@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import translate from 'Utilities/String/translate';
+import { fetchRootFolders } from 'Store/Actions/settingsActions';
 import RootFolderSelectInput from './RootFolderSelectInput';
 
 const ADD_NEW_KEY = 'addNew';
@@ -60,7 +61,9 @@ function createMapStateToProps() {
       return {
         values,
         isSaving: rootFolders.isSaving,
-        saveError: rootFolders.saveError
+        saveError: rootFolders.saveError,
+        isFetching: rootFolders.isFetching,
+        isPopulated: rootFolders.isPopulated
       };
     }
   );
@@ -88,8 +91,15 @@ class RootFolderSelectInputConnector extends Component {
       name,
       value,
       values,
-      onChange
+      onChange,
+      isFetching,
+      isPopulated,
+      fetchRootFolders
     } = this.props;
+
+    if (!isPopulated && !isFetching) {
+      fetchRootFolders();
+    }
 
     if (!value || !values.some((v) => v.key === value) || value === ADD_NEW_KEY) {
       const defaultValue = values[0];
@@ -145,11 +155,14 @@ RootFolderSelectInputConnector.propTypes = {
   value: PropTypes.string,
   values: PropTypes.arrayOf(PropTypes.object).isRequired,
   includeNoChange: PropTypes.bool.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  fetchRootFolders: PropTypes.func.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  isPopulated: PropTypes.bool.isRequired
 };
 
 RootFolderSelectInputConnector.defaultProps = {
   includeNoChange: false
 };
 
-export default connect(createMapStateToProps)(RootFolderSelectInputConnector);
+export default connect(createMapStateToProps, { fetchRootFolders })(RootFolderSelectInputConnector);
