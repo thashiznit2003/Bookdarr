@@ -106,9 +106,9 @@ class IndexerSettings extends Component {
         method: 'POST',
         headers: {
           'X-Api-Key': window.Readarr.apiKey,
-          'Content-Type': 'text/plain'
+          'Content-Type': 'application/json'
         },
-        body: contents
+        body: JSON.stringify({ payload: contents })
       });
 
       const result = await response.json().catch(() => ({}));

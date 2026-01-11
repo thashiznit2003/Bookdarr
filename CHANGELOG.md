@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.267
+- Summary: switch indexer import to JSON payloads to avoid text/plain formatter errors.
+- Why: ASP.NET Core rejected text/plain uploads with 415 Unsupported Media Type in import attempts.
+- Impact: Import Indexers now posts JSON to `/api/v1/indexer/import` and should succeed with exported files.
+- Files: src/Readarr.Api.V1/Indexers/IndexerController.cs, frontend/src/Settings/Indexers/IndexerSettings.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: retry the export/import flow and confirm duplicates import as separate entries.
+
 ## 1.2.266
 - Summary: fix indexer import JSON serialization during build.
 - Why: STJson.Serialize requires a stream; the import parser should use a string serializer.

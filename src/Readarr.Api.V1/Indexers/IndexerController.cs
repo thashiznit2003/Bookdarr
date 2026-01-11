@@ -42,11 +42,11 @@ namespace Readarr.Api.V1.Indexers
         }
 
         [HttpPost("import")]
-        [Consumes("text/plain")]
+        [Consumes("application/json")]
         [Produces("application/json")]
-        public IActionResult Import([FromBody] string payload, [FromQuery] bool forceSave = false)
+        public IActionResult Import([FromBody] IndexerImportRequest request, [FromQuery] bool forceSave = false)
         {
-            if (payload.IsNullOrWhiteSpace())
+            if (request == null || request.Payload.IsNullOrWhiteSpace())
             {
                 return BadRequest(new IndexerImportResult
                 {
@@ -54,7 +54,7 @@ namespace Readarr.Api.V1.Indexers
                 });
             }
 
-            var result = ImportIndexers(payload, forceSave);
+            var result = ImportIndexers(request.Payload, forceSave);
 
             if (result.Created == 0 && result.Errors.Count > 0)
             {
@@ -483,6 +483,11 @@ namespace Readarr.Api.V1.Indexers
         {
             public Dictionary<string, string> HeaderValues { get; } = new (StringComparer.OrdinalIgnoreCase);
             public Dictionary<string, string> FieldValues { get; } = new (StringComparer.OrdinalIgnoreCase);
+        }
+
+        private sealed class IndexerImportRequest
+        {
+            public string Payload { get; set; }
         }
 
         private sealed class IndexerImportResult
