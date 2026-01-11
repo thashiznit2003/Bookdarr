@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.256
+- Summary: update PostCSS color function plugin and refresh rimraf to remove vulnerable postcss/glob versions.
+- Why: Dependabot flagged postcss (via postcss-color-function) and glob vulnerabilities.
+- Impact: CSS build uses the maintained @csstools plugin on PostCSS 8; rimraf now pulls glob 13.x.
+- Files: package.json, yarn.lock, frontend/postcss.config.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun code scanning and Dependabot checks to confirm the alerts close.
+
 ## 1.2.255
 - Summary: add required blank line before CodeQL suppression comment in StaticResourceController.
 - Why: StyleCop SA1515 requires a blank line before single-line comments after code.
