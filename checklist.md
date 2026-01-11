@@ -1,7 +1,6 @@
 # Bookdarr Checklist
 
 - [x] Add diagnostics flow: create `bookdarr-diagnostics` repo and add a UI button to collect logs/config and push a sanitized bundle.
-- [x] Add an export indexers flow (API/UI or script) for easy migration.
 - [ ] Build a request UI (Overseerr-like) on top of Bookdarr search.
 - [ ] Add a mobile-compatible web app experience (mobile reader/player UX).
 - [ ] Add a mobile app store app (iOS/iPadOS) with reader/player.
@@ -19,3 +18,4 @@
 - [x] Add systemd unit file and install/uninstall docs for Linux-only deployments.
 - [x] Add log retention/rotation guidance for `/opt/bookdarr-dev/Logs`.
 - [ ] Publish Docker images to Docker Hub (`thashiznit2003/bookdarr`) with release tagging and compose instructions.
+- [x] Add an export indexers flow (API/UI or script) for easy migration.

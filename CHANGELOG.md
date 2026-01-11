@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.269
+- Summary: move the completed indexer export checklist item to the bottom.
+- Why: keep completed items grouped at the end as requested.
+- Impact: checklist ordering is updated without changing task content.
+- Files: checklist.md, src/Directory.Build.props, CHANGELOG.md.
+- Next: continue with remaining checklist items in order.
+
 ## 1.2.268
 - Summary: fix indexer import request accessibility to allow JSON binding.
 - Why: the API method exposed a less-accessible nested request type, breaking the build.
