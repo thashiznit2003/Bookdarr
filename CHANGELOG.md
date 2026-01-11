@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.260
+- Summary: isolate NuGet caches per CI job and force no-cache restores in build scripts.
+- Why: avoid NU1403 hash mismatches caused by shared or stale caches on CI runners.
+- Impact: CI restores use fresh NuGet paths and disable parallel/cached restores when `RESTORE_NO_CACHE` is enabled.
+- Files: .github/workflows/build.yml, build.sh, scripts/dev-build.sh, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun CI to confirm the NU1403 restore failures are resolved.
+
 ## 1.2.259
 - Summary: pin FluentValidation to 12.1.0 and refresh lock files to avoid NU1403 restore failures.
 - Why: CI restores for 12.1.1 are failing with package content hash mismatches.

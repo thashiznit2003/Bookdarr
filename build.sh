@@ -66,12 +66,18 @@ Build()
     slnFile=src/Readarr.sln
 
     platform=Posix
+    restoreArgs=()
+
+    if [ "${RESTORE_NO_CACHE:-}" = "true" ];
+    then
+        restoreArgs+=("-p:RestoreNoCache=true" "-p:RestoreDisableParallel=true")
+    fi
 
     if [[ -z "$RID" || -z "$FRAMEWORK" ]];
     then
-        dotnet msbuild -restore $slnFile -p:Configuration=Release -p:Platform=$platform -t:PublishAllRids
+        dotnet msbuild -restore $slnFile -p:Configuration=Release -p:Platform=$platform -t:PublishAllRids "${restoreArgs[@]}"
     else
-        dotnet msbuild -restore $slnFile -p:Configuration=Release -p:Platform=$platform -p:RuntimeIdentifiers=$RID -t:PublishAllRids
+        dotnet msbuild -restore $slnFile -p:Configuration=Release -p:Platform=$platform -p:RuntimeIdentifiers=$RID -t:PublishAllRids "${restoreArgs[@]}"
     fi
 
     ProgressEnd 'Build'

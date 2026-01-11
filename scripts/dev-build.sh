@@ -21,7 +21,13 @@ export BROWSERSLIST_IGNORE_OLD_DATA=1
 yarn install --frozen-lockfile --network-timeout 120000
 yarn build
 
-dotnet msbuild -restore src/Readarr.sln -p:Configuration=Release -p:Platform=Posix -p:RuntimeIdentifiers=${RID} -t:PublishAllRids
+restoreArgs=()
+
+if [ "${RESTORE_NO_CACHE:-}" = "true" ]; then
+  restoreArgs+=("-p:RestoreNoCache=true" "-p:RestoreDisableParallel=true")
+fi
+
+dotnet msbuild -restore src/Readarr.sln -p:Configuration=Release -p:Platform=Posix -p:RuntimeIdentifiers=${RID} -t:PublishAllRids "${restoreArgs[@]}"
 
 ui_src="${REPO_DIR}/_output/UI"
 ui_dest="${REPO_DIR}/_output/net10.0/${RID}/UI"

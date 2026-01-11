@@ -27,6 +27,12 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      NUGET_PACKAGES: ${{ runner.temp }}/nuget/build/packages
+      NUGET_HTTP_CACHE_PATH: ${{ runner.temp }}/nuget/build/http-cache
+      NUGET_PLUGINS_CACHE_PATH: ${{ runner.temp }}/nuget/build/plugin-cache
+      NUGET_SCRATCH: ${{ runner.temp }}/nuget/build/scratch
+      RESTORE_NO_CACHE: "true"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -165,6 +171,12 @@ jobs:
 
   dev-build:
     runs-on: ubuntu-latest
+    env:
+      NUGET_PACKAGES: ${{ runner.temp }}/nuget/dev-build/packages
+      NUGET_HTTP_CACHE_PATH: ${{ runner.temp }}/nuget/dev-build/http-cache
+      NUGET_PLUGINS_CACHE_PATH: ${{ runner.temp }}/nuget/dev-build/plugin-cache
+      NUGET_SCRATCH: ${{ runner.temp }}/nuget/dev-build/scratch
+      RESTORE_NO_CACHE: "true"
     steps:
       - uses: actions/checkout@v4
         with:
