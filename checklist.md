@@ -1,6 +1,7 @@
 # Bookdarr Checklist
 
 - [ ] Add ebook conversion tools.
+- [x] Add a manual book creation flow (Books page modal, optional metadata match later, manual file import tools).
 - [x] Add a create+match+import flow for existing local book files (create the book from Google Books and import files from a chosen path).
 - [ ] Publish Docker images to Docker Hub (`thashiznit2003/bookdarr`) with release tagging and compose instructions.
 - [ ] Build a request UI (Overseerr-like) on top of Bookdarr search.

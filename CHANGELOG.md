@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.272
+- Summary: add a manual book creation modal plus book-level file import and cover upload tools.
+- Why: let you create local-only books, import files without search, and attach covers from the UI.
+- Impact: Books now include an "Add Book Manually" modal, Book Details adds Manual Import + Upload Cover actions, and manual import can preselect the current book.
+- Files: frontend/src/Book/Index/BookIndex.js, frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.js, frontend/src/Book/Index/ManualAdd/AddManualBookModalContentConnector.js, frontend/src/Book/Index/ManualAdd/AddManualBookModal.js, frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.css, frontend/src/Book/Details/BookDetails.js, frontend/src/Book/Details/BookCoverUploadModal.js, frontend/src/Book/Details/BookCoverUploadModal.css, frontend/src/InteractiveImport/Interactive/InteractiveImportModalContentConnector.js, frontend/src/InteractiveImport/InteractiveImportModal.js, src/NzbDrone.Core/Books/Services/ManualBookService.cs, src/NzbDrone.Core/Books/Model/ManualBookDefinition.cs, src/Readarr.Api.V1/Books/ManualBookResource.cs, src/Readarr.Api.V1/Books/BookController.cs, src/Readarr.Api.V1/ManualImport/ManualImportController.cs, src/NzbDrone.Core/MediaFiles/BookImport/Manual/ManualImportService.cs, src/NzbDrone.Core/Localization/Core/en.json, checklist.md, src/Directory.Build.props, CHANGELOG.md.
+- Next: add a manual book, upload a cover, and run Manual Import from the book page to confirm the flow.
+
 ## 1.2.271
 - Summary: add a create+match+import flow for existing local book files.
 - Why: let users add a Google Books match and immediately import files already on disk.

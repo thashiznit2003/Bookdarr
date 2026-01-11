@@ -30,6 +30,7 @@ import BookIndexPostersConnector from './Posters/BookIndexPostersConnector';
 import BookIndexPosterOptionsModal from './Posters/Options/BookIndexPosterOptionsModal';
 import BookIndexTableConnector from './Table/BookIndexTableConnector';
 import BookIndexTableOptionsConnector from './Table/BookIndexTableOptionsConnector';
+import AddManualBookModal from './ManualAdd/AddManualBookModal';
 import styles from './BookIndex.css';
 
 function getViewComponent(view) {
@@ -59,6 +60,7 @@ class BookIndex extends Component {
       isPosterOptionsModalOpen: false,
       isOverviewOptionsModalOpen: false,
       isConfirmSearchModalOpen: false,
+      isManualBookModalOpen: false,
       isEditorActive: false,
       allSelected: false,
       allUnselected: false,
@@ -205,6 +207,14 @@ class BookIndex extends Component {
     this.setState({ isOverviewOptionsModalOpen: false });
   };
 
+  onManualBookModalOpen = () => {
+    this.setState({ isManualBookModalOpen: true });
+  };
+
+  onManualBookModalClose = () => {
+    this.setState({ isManualBookModalOpen: false });
+  };
+
   onEditorTogglePress = () => {
     if (this.state.isEditorActive) {
       this.setState({ isEditorActive: false });
@@ -302,6 +312,7 @@ class BookIndex extends Component {
       isPosterOptionsModalOpen,
       isOverviewOptionsModalOpen,
       isConfirmSearchModalOpen,
+      isManualBookModalOpen,
       isEditorActive,
       selectedState,
       allSelected,
@@ -337,6 +348,14 @@ class BookIndex extends Component {
               isSpinning={isRssSyncExecuting}
               isDisabled={hasNoAuthor}
               onPress={onRssSyncPress}
+            />
+
+            <PageToolbarSeparator />
+
+            <PageToolbarButton
+              label={translate('AddBookManually')}
+              iconName={icons.ADD}
+              onPress={this.onManualBookModalOpen}
             />
 
             <PageToolbarSeparator />
@@ -527,6 +546,11 @@ class BookIndex extends Component {
           isOpen={isOverviewOptionsModalOpen}
           onModalClose={this.onOverviewOptionsModalClose}
 
+        />
+
+        <AddManualBookModal
+          isOpen={isManualBookModalOpen}
+          onModalClose={this.onManualBookModalClose}
         />
 
         <ConfirmModal

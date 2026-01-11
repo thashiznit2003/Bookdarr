@@ -26,7 +26,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Manual
 {
     public interface IManualImportService
     {
-        List<ManualImportItem> GetMediaFiles(string path, string downloadId, Author author, FilterFilesType filter, bool replaceExistingFiles);
+        List<ManualImportItem> GetMediaFiles(string path, string downloadId, Author author, Book book, Edition edition, FilterFilesType filter, bool replaceExistingFiles);
         List<ManualImportItem> UpdateItems(List<ManualImportItem> item);
     }
 
@@ -87,8 +87,19 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Manual
             _logger = logger;
         }
 
-        public List<ManualImportItem> GetMediaFiles(string path, string downloadId, Author author, FilterFilesType filter, bool replaceExistingFiles)
+        public List<ManualImportItem> GetMediaFiles(string path, string downloadId, Author author, Book book, Edition edition, FilterFilesType filter, bool replaceExistingFiles)
         {
+            if (book != null)
+            {
+                book.Author.LazyLoad();
+                author = book.Author.Value;
+                if (book.Editions != null)
+                {
+                    book.Editions.LazyLoad();
+                    edition ??= book.Editions.Value.SingleOrDefault(x => x.Monitored);
+                }
+            }
+
             if (downloadId.IsNotNullOrWhiteSpace())
             {
                 var trackedDownload = _trackedDownloadService.Find(downloadId);
@@ -125,16 +136,17 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Manual
                     KeepAllEditions = true
                 };
 
-                var decision = _importDecisionMaker.GetImportDecisions(files, null, null, config);
+                var idOverrides = BuildOverrides(author, book, edition);
+                var decision = _importDecisionMaker.GetImportDecisions(files, idOverrides, null, config);
                 var result = MapItem(decision.First(), downloadId, replaceExistingFiles, false);
 
                 return new List<ManualImportItem> { result };
             }
 
-            return ProcessFolder(path, downloadId, author, filter, replaceExistingFiles);
+            return ProcessFolder(path, downloadId, author, book, edition, filter, replaceExistingFiles);
         }
 
-        private List<ManualImportItem> ProcessFolder(string folder, string downloadId, Author author, FilterFilesType filter, bool replaceExistingFiles)
+        private List<ManualImportItem> ProcessFolder(string folder, string downloadId, Author author, Book book, Edition edition, FilterFilesType filter, bool replaceExistingFiles)
         {
             DownloadClientItem downloadClientItem = null;
             var directoryInfo = new DirectoryInfo(folder);
@@ -152,10 +164,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Manual
             }
 
             var authorFiles = _diskScanService.GetBookFiles(folder).ToList();
-            var idOverrides = new IdentificationOverrides
-            {
-                Author = author
-            };
+            var idOverrides = BuildOverrides(author, book, edition);
             var itemInfo = new ImportDecisionMakerInfo
             {
                 DownloadClientItem = downloadClientItem,
@@ -185,6 +194,16 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Manual
             var existingItems = existingDecisions.Select(x => MapItem(x, null, replaceExistingFiles, false));
 
             return newItems.Concat(existingItems).ToList();
+        }
+
+        private static IdentificationOverrides BuildOverrides(Author author, Book book, Edition edition)
+        {
+            return new IdentificationOverrides
+            {
+                Author = author,
+                Book = book,
+                Edition = edition
+            };
         }
 
         public List<ManualImportItem> UpdateItems(List<ManualImportItem> items)

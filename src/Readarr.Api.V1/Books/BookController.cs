@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using NzbDrone.Common.Disk;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Core.AuthorStats;
 using NzbDrone.Core.Books;
@@ -39,14 +41,17 @@ namespace Readarr.Api.V1.Books
         protected readonly IAuthorService _authorService;
         protected readonly IEditionService _editionService;
         protected readonly IAddBookService _addBookService;
+        private readonly IManualBookService _manualBookService;
         private readonly IRefreshBookService _refreshBookService;
         private readonly IMediaFileService _mediaFileService;
         private readonly IConfigService _configService;
         private readonly ISearchForNewBook _bookSearchProxy;
+        private readonly IDiskProvider _diskProvider;
 
         public BookController(IAuthorService authorService,
                           IBookService bookService,
                           IAddBookService addBookService,
+                          IManualBookService manualBookService,
                           IEditionService editionService,
                           ISeriesBookLinkService seriesBookLinkService,
                           IAuthorStatisticsService authorStatisticsService,
@@ -56,6 +61,7 @@ namespace Readarr.Api.V1.Books
                           ISearchForNewBook bookSearchProxy,
                           IMapCoversToLocal coverMapper,
                           IUpgradableSpecification upgradableSpecification,
+                          IDiskProvider diskProvider,
                           IBroadcastSignalRMessage signalRBroadcaster,
                           QualityProfileExistsValidator<BookResource> qualityProfileExistsValidator,
                           MetadataProfileExistsValidator<BookResource> metadataProfileExistsValidator)
@@ -65,10 +71,12 @@ namespace Readarr.Api.V1.Books
             _authorService = authorService;
             _editionService = editionService;
             _addBookService = addBookService;
+            _manualBookService = manualBookService;
             _refreshBookService = refreshBookService;
             _mediaFileService = mediaFileService;
             _configService = configService;
             _bookSearchProxy = bookSearchProxy;
+            _diskProvider = diskProvider;
 
             PostValidator.RuleFor(s => s.ForeignBookId).NotEmpty();
             PostValidator.RuleFor(s => s.Author.QualityProfileId).SetValidator(qualityProfileExistsValidator);
@@ -337,6 +345,58 @@ namespace Readarr.Api.V1.Books
             var book = _addBookService.AddBook(bookResource.ToModel());
 
             return Created(book.Id);
+        }
+
+        [HttpPost("manual")]
+        public ActionResult<BookResource> AddManualBook([FromBody] ManualBookResource resource)
+        {
+            if (resource == null)
+            {
+                return BadRequest();
+            }
+
+            var book = _manualBookService.AddManualBook(resource.ToDefinition());
+
+            return Created(book.Id);
+        }
+
+        [HttpPost("{id:int}/cover")]
+        public ActionResult<BookResource> UploadCover(int id)
+        {
+            var book = _bookService.GetBook(id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            var file = Request.Form?.Files?.FirstOrDefault();
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest();
+            }
+
+            var extension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
+            if (extension.IsNullOrWhiteSpace() || (extension != ".jpg" && extension != ".jpeg" && extension != ".png"))
+            {
+                return BadRequest();
+            }
+
+            var coverPath = _coverMapper.GetCoverPath(id, MediaCoverEntity.Book, MediaCoverTypes.Cover, extension);
+            var coverFolder = Path.GetDirectoryName(coverPath);
+            if (coverFolder.IsNotNullOrWhiteSpace())
+            {
+                _diskProvider.EnsureFolder(coverFolder);
+            }
+
+            _coverMapper.DeleteBookCovers(id);
+
+            using (var stream = file.OpenReadStream())
+            {
+                _diskProvider.SaveStream(stream, coverPath);
+            }
+
+            var refreshed = _bookService.GetBook(id);
+            return Accepted(MapToResource(refreshed, true));
         }
 
         [RestPutById]

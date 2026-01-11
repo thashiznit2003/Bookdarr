@@ -20,8 +20,10 @@ import OrganizePreviewModalConnector from 'Organize/OrganizePreviewModalConnecto
 import RetagPreviewModalConnector from 'Retag/RetagPreviewModalConnector';
 import translate from 'Utilities/String/translate';
 import CombineAudiobookModal from 'Book/Combine/CombineAudiobookModal';
+import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
 import CombineAudiobookProgress from './CombineAudiobookProgress';
 import BookDetailsHeaderConnector from './BookDetailsHeaderConnector';
+import BookCoverUploadModal from './BookCoverUploadModal';
 import styles from './BookDetails.css';
 
 function isAudiobookMp3(file) {
@@ -46,6 +48,8 @@ class BookDetails extends Component {
       isEditBookModalOpen: false,
       isDeleteBookModalOpen: false,
       isCombineModalOpen: false,
+      isInteractiveImportModalOpen: false,
+      isUploadCoverModalOpen: false,
       selectedTabIndex: 0
     };
   }
@@ -94,6 +98,22 @@ class BookDetails extends Component {
 
   onCombineModalClose = () => {
     this.setState({ isCombineModalOpen: false });
+  };
+
+  onInteractiveImportPress = () => {
+    this.setState({ isInteractiveImportModalOpen: true });
+  };
+
+  onInteractiveImportModalClose = () => {
+    this.setState({ isInteractiveImportModalOpen: false });
+  };
+
+  onUploadCoverPress = () => {
+    this.setState({ isUploadCoverModalOpen: true });
+  };
+
+  onUploadCoverModalClose = () => {
+    this.setState({ isUploadCoverModalOpen: false });
   };
 
   onCombineConfirm = (bookFileIds, renameParts) => {
@@ -145,6 +165,8 @@ class BookDetails extends Component {
       isEditBookModalOpen,
       isDeleteBookModalOpen,
       isCombineModalOpen,
+      isInteractiveImportModalOpen,
+      isUploadCoverModalOpen,
       selectedTabIndex
     } = this.state;
 
@@ -213,6 +235,20 @@ class BookDetails extends Component {
               iconClassName={styles.combineIcon}
               isDisabled={!canCombine || isCombining}
               onPress={this.onCombineModalOpen}
+            />
+
+            <PageToolbarSeparator />
+
+            <PageToolbarButton
+              label={translate('ManualImport')}
+              iconName={icons.INTERACTIVE}
+              onPress={this.onInteractiveImportPress}
+            />
+
+            <PageToolbarButton
+              label={translate('UploadCover')}
+              iconName={icons.FILEIMPORT}
+              onPress={this.onUploadCoverPress}
             />
 
             <PageToolbarSeparator />
@@ -380,6 +416,23 @@ class BookDetails extends Component {
             isCombining={isCombining}
             onCombinePress={this.onCombineConfirm}
             onModalClose={this.onCombineModalClose}
+          />
+
+          <InteractiveImportModal
+            isOpen={isInteractiveImportModalOpen}
+            authorId={author.id}
+            bookId={id}
+            title={title}
+            allowAuthorChange={false}
+            showFilterExistingFiles={true}
+            showImportMode={false}
+            onModalClose={this.onInteractiveImportModalClose}
+          />
+
+          <BookCoverUploadModal
+            isOpen={isUploadCoverModalOpen}
+            bookId={id}
+            onModalClose={this.onUploadCoverModalClose}
           />
 
         </PageContentBody>

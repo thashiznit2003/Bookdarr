@@ -1,0 +1,12 @@
+.fileInput {
+  width: 100%;
+}
+
+.fileName {
+  margin-top: 8px;
+}
+
+.error {
+  color: var(--dangerColor);
+  margin-top: 8px;
+}

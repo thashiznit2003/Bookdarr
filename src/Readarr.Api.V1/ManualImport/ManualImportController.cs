@@ -39,18 +39,33 @@ namespace Readarr.Api.V1.ManualImport
         }
 
         [HttpGet]
-        public List<ManualImportResource> GetMediaFiles(string folder, string downloadId, int? authorId, bool filterExistingFiles = true, bool replaceExistingFiles = true)
+        public List<ManualImportResource> GetMediaFiles(string folder, string downloadId, int? authorId, int? bookId, bool filterExistingFiles = true, bool replaceExistingFiles = true)
         {
             NzbDrone.Core.Books.Author author = null;
+            Book book = null;
+            Edition edition = null;
 
             if (authorId > 0)
             {
                 author = _authorService.GetAuthor(authorId.Value);
             }
 
+            if (bookId > 0)
+            {
+                book = _bookService.GetBook(bookId.Value);
+                if (book != null)
+                {
+                    edition = _editionService.GetEditionsByBook(book.Id).SingleOrDefault(x => x.Monitored);
+                    author = book.Author.Value;
+                }
+            }
+
             var filter = filterExistingFiles ? FilterFilesType.Matched : FilterFilesType.None;
 
-            return _manualImportService.GetMediaFiles(folder, downloadId, author, filter, replaceExistingFiles).ToResource().Select(AddQualityWeight).ToList();
+            return _manualImportService.GetMediaFiles(folder, downloadId, author, book, edition, filter, replaceExistingFiles)
+                .ToResource()
+                .Select(AddQualityWeight)
+                .ToList();
         }
 
         private ManualImportResource AddQualityWeight(ManualImportResource item)
