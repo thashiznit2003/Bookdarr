@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.285
+- Summary: restore missing changelog entries for recent manual add/import work.
+- Why: the previous changelog update left blank sections for several versions.
+- Impact: versions 1.2.283 through 1.2.274 now include full Summary/Why/Impact/Files/Next details.
+- Files: CHANGELOG.md, src/Directory.Build.props.
+- Next: continue the manual import validation flow if any issues remain.
+
 ## 1.2.284
 - Summary: update the handoff with the latest manual add/import changes and response preferences.
 - Why: keep onboarding notes aligned with recent work and required response style.
@@ -8,24 +15,74 @@
 - Next: continue manual import upload testing and capture diagnostics if issues persist.
 
 ## 1.2.283
+- Summary: show selected and uploaded file names in the manual import upload modal.
+- Why: make it clear which files were chosen and which were uploaded successfully.
+- Impact: the manual import upload dialog lists selected files before upload and uploaded files after completion.
+- Files: frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.js, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.css, src/NzbDrone.Core/Localization/Core/en.json, src/Directory.Build.props, CHANGELOG.md.
+- Next: confirm the upload modal shows selected and uploaded file names for a test file.
 
 ## 1.2.282
+- Summary: fix a build error in the manual import upload handler.
+- Why: `string.IsNullOrWhiteSpace` was referenced without qualification in the new upload code.
+- Impact: update builds compile cleanly with the manual import upload endpoint.
+- Files: src/Readarr.Api.V1/ManualImport/ManualImportController.cs, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun the update build to confirm the manual import upload flow compiles.
 
 ## 1.2.281
+- Summary: add browser-based file upload support to manual import.
+- Why: allow users to upload local ebook/audiobook files from the browser instead of selecting server paths.
+- Impact: Book Details manual import supports uploads, and the server stages files under the manual-import folder.
+- Files: frontend/src/Book/Details/BookDetails.js, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.js, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.css, frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContentConnector.js, frontend/src/InteractiveImport/InteractiveImportModal.js, src/Readarr.Api.V1/ManualImport/ManualImportController.cs, src/NzbDrone.Core/Localization/Core/en.json, src/Directory.Build.props, CHANGELOG.md.
+- Next: upload a file from the browser and verify it appears for manual import.
 
 ## 1.2.280
+- Summary: fix manual add monitoring value mapping.
+- Why: the "Only This Book" option sent an unsupported value in the manual add payload.
+- Impact: manual add requests no longer fail when selecting "Only This Book."
+- Files: frontend/src/Book/Index/ManualAdd/AddManualBookModalContentConnector.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: add a manual book using "Only This Book" to confirm save succeeds.
 
 ## 1.2.279
+- Summary: fetch root folders when the app connects.
+- Why: root folder selectors were empty until a manual refresh in some flows.
+- Impact: root folder options are available immediately after the app connects.
+- Files: frontend/src/Components/SignalRConnector.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: open manual add and confirm root folders appear without a refresh.
 
 ## 1.2.278
+- Summary: refresh root folders when the selector mounts.
+- Why: root folder lists could be stale or empty if they loaded before the selector rendered.
+- Impact: root folder selectors request fresh data on mount.
+- Files: frontend/src/Components/Form/RootFolderSelectInputConnector.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: reload the page and verify root folders appear in the selector.
 
 ## 1.2.277
+- Summary: load root folders for selector components.
+- Why: the selector did not always trigger a root folder fetch before rendering.
+- Impact: root folder selectors initiate data fetches so existing folders appear.
+- Files: frontend/src/Components/Form/RootFolderSelectInputConnector.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: open a modal with a root folder selector and confirm options are populated.
 
 ## 1.2.276
+- Summary: load root folders when the manual add modal opens.
+- Why: manual add could not list existing root folders without an explicit fetch.
+- Impact: manual add now requests root folders as it opens.
+- Files: frontend/src/Book/Index/ManualAdd/AddManualBookModalContentConnector.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: open the manual add modal and confirm root folders are listed.
 
 ## 1.2.275
+- Summary: widen manual add header fields for better readability.
+- Why: the Title/Author/Release Date/Overview inputs were too cramped.
+- Impact: the top manual add inputs use a wider layout to show full text.
+- Files: frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.js, frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.css, src/Directory.Build.props, CHANGELOG.md.
+- Next: open manual add and confirm the top fields have full-width inputs.
 
 ## 1.2.274
+- Summary: widen manual add fields.
+- Why: manual add inputs were too narrow to comfortably enter book metadata.
+- Impact: manual add form fields provide more horizontal space for input.
+- Files: frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.css, src/Directory.Build.props, CHANGELOG.md.
+- Next: open manual add and confirm the inputs are wider.
 
 ## 1.2.273
 - Summary: fix a style/build failure in the manual book service.
