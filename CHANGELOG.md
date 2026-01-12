@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.301
+- Summary: detect and handle EPUB files disguised as AZW3 Kindle format.
+- Why: many AZW3 files are actually EPUB files with .azw3 extension, causing kindleunpack to fail with "first parameter must be a Kindle/Mobipocket ebook" error.
+- Impact: added IsEpubInDisguise method that checks file magic bytes (PK ZIP header) to detect EPUB files; if AZW3 file is actually EPUB, skip kindleunpack and copy file directly; reduces conversion failures for EPUB-in-disguise files and provides faster conversion since no unpacking is needed.
+- Files: src/NzbDrone.Core/MediaFiles/EbookConversionService.cs, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
+- Next: pull changes on Ubuntu VM, run update script, retry AZW3 conversion and verify file is detected as EPUB-in-disguise and copied directly without kindleunpack error.
+
 ## 1.2.300
 - Summary: display conversion errors directly on book file details page.
 - Why: users had to check logs to diagnose conversion failures, making it difficult to copy/paste error messages for troubleshooting.
