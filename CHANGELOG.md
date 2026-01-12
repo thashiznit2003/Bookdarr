@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.300
+- Summary: display conversion errors directly on book file details page.
+- Why: users had to check logs to diagnose conversion failures, making it difficult to copy/paste error messages for troubleshooting.
+- Impact: added ConversionError field to BookFile model and database; conversion errors are now captured and stored when conversion fails; book file details page displays a prominent red error box with the full error message and timestamp when conversion has failed; error message is formatted in monospace font for easy copy/paste; successful conversions clear any previous errors.
+- Files: src/NzbDrone.Core/MediaFiles/BookFile.cs, src/NzbDrone.Core/Datastore/Migration/044_add_conversion_error_to_bookfiles.cs, src/NzbDrone.Core/MediaFiles/EbookConversionService.cs, src/Readarr.Api.V1/BookFiles/BookFileResource.cs, frontend/src/BookFile/FileDetailsConnector.js, frontend/src/BookFile/FileDetails.js, frontend/src/BookFile/FileDetails.css, src/NzbDrone.Core/Localization/Core/en.json, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
+- Next: pull changes on Ubuntu VM, run update script, test conversion failures and verify error messages display correctly on book file details page with copy/paste-friendly formatting.
+
 ## 1.2.299
 - Summary: add detailed error logging for Kindle format conversion failures.
 - Why: KindleUnpack conversion errors showed generic messages without capturing actual output from the tool, making it impossible to diagnose why .azw3 or other Kindle format conversions failed.
