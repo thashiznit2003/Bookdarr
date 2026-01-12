@@ -118,7 +118,12 @@ function DownloadClientOptions(props) {
                 {translate('RemoveDownloadsAlert')}
               </Alert>
             </FieldSet>
+          </div>
+      }
 
+      {
+        hasSettings && !isFetching && !error &&
+          <div>
             <FieldSet
               legend={translate('AutomaticSearch')}
             >
