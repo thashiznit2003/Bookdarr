@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.296
+- Summary: fix PDF to EPUB conversion skipping OCR and producing empty content.
+- Why: BuildOcrArguments used --skip-text flag for both scan and conversion operations, causing ocrmypdf to skip OCR during actual conversion and produce EPUBs with "[OCR skipped on page(s) X]" messages instead of extracted text.
+- Impact: split BuildOcrArguments into BuildOcrScanArguments (uses --skip-text for quick analysis) and BuildOcrConversionArguments (uses --force-ocr to ensure OCR happens on all pages); PDF to EPUB conversions now extract actual text content.
+- Files: src/NzbDrone.Core/MediaFiles/EbookConversionService.cs, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
+- Next: pull changes on Ubuntu VM, run update script, test PDF conversion and verify EPUB contains actual extracted text.
+
 ## 1.2.295
 - Summary: fix manual import modal skipping upload screen and jumping to folder view.
 - Why: InteractiveImportModal component persisted folder state from previous modal opens, causing it to skip the upload screen and jump directly to the folder/file list view.
