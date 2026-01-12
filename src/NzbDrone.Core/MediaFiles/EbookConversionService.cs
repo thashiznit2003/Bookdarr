@@ -11,6 +11,7 @@ using NLog;
 using NzbDrone.Common.Disk;
 using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Extensions;
+using NzbDrone.Common.Instrumentation.Extensions;
 using NzbDrone.Common.Processes;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.MediaFiles.Commands;
@@ -221,7 +222,9 @@ namespace NzbDrone.Core.MediaFiles
             try
             {
                 _logger.Info("Converting PDF ebook to EPUB: {0}", sourcePath);
+                _logger.ProgressInfo("Starting PDF to EPUB conversion...");
 
+                _logger.ProgressInfo("Performing OCR text extraction...");
                 var output = RunProcess("ocrmypdf", BuildOcrConversionArguments(sourcePath, ocrOutputPath, sidecarPath));
                 if (output.ExitCode != 0)
                 {
@@ -230,10 +233,14 @@ namespace NzbDrone.Core.MediaFiles
 
                 var textContent = _diskProvider.FileExists(sidecarPath) ? _diskProvider.ReadAllText(sidecarPath) : string.Empty;
 
+                _logger.ProgressInfo("Extracting images from PDF...");
                 _diskProvider.EnsureFolder(imagesFolder);
                 var imageFiles = ExtractPdfImages(sourcePath, imagesFolder);
 
+                _logger.ProgressInfo("Creating EPUB file...");
                 CreateEpubFromTextAndImages(textContent, imageFiles, outputPath, author, edition);
+
+                _logger.ProgressInfo("PDF to EPUB conversion completed successfully");
             }
             finally
             {
@@ -248,7 +255,9 @@ namespace NzbDrone.Core.MediaFiles
             try
             {
                 _logger.Info("Converting Kindle ebook to EPUB: {0}", sourcePath);
+                _logger.ProgressInfo("Starting Kindle to EPUB conversion...");
 
+                _logger.ProgressInfo("Unpacking Kindle format...");
                 var output = RunProcess("kindleunpack", $"\"{sourcePath}\" \"{tempFolder}\"");
 
                 if (output.Lines.Any(line => KindleDrmRegex.IsMatch(line.Content)))
@@ -261,6 +270,7 @@ namespace NzbDrone.Core.MediaFiles
                     throw new InvalidOperationException("KindleUnpack conversion failed. Ensure kindleunpack is installed.");
                 }
 
+                _logger.ProgressInfo("Extracting EPUB file...");
                 var epubFile = _diskProvider.GetFiles(tempFolder, true)
                     .FirstOrDefault(file => file.EndsWith(".epub", StringComparison.OrdinalIgnoreCase));
 
@@ -270,6 +280,8 @@ namespace NzbDrone.Core.MediaFiles
                 }
 
                 _diskProvider.CopyFile(epubFile, outputPath, true);
+
+                _logger.ProgressInfo("Kindle to EPUB conversion completed successfully");
             }
             finally
             {
@@ -715,8 +727,8 @@ namespace NzbDrone.Core.MediaFiles
 
             foreach (var file in files)
             {
-                var relativePath = Path.Combine(relativeFolder, Path.GetFileName(file));
-                AddZipEntry(archive, relativePath.Replace('\\', '/'), file, CompressionLevel.Optimal);
+                var fileRelativePath = file.Substring(rootFolder.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                AddZipEntry(archive, fileRelativePath.Replace('\\', '/'), file, CompressionLevel.Optimal);
             }
         }
 
