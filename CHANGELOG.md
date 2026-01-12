@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.290
+- Summary: add project instructions file for Claude Code sessions.
+- Why: need persistent project context and guidelines for any Claude session working on Bookdarr.
+- Impact: created .claude.json with comprehensive project instructions including development workflow, architecture overview, common tasks, code style guidelines, and troubleshooting tips; future Claude sessions will automatically load this context.
+- Files: .claude.json, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
+- Next: verify Claude sessions automatically load project instructions.
+
 ## 1.2.289
 - Summary: shorten toolbar button labels to prevent overlap.
 - Why: toolbar button labels like "Refresh book cover/description" (29 chars) were too long and overlapping adjacent buttons.
