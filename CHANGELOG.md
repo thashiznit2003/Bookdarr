@@ -1,11 +1,11 @@
 # Changelog
 
 ## 1.2.289
-- Summary: make toolbar buttons auto-size to fit full label text without overlap.
-- Why: toolbar button labels like "Refresh cover/description", "Refresh book files", and "Rescan Book" were overlapping each other.
-- Impact: toolbar buttons now use min-width (85px) and grow to fit their full label text; 16px spacing between buttons prevents overlap; labels always show in full without truncation.
-- Files: frontend/src/Styles/Variables/dimensions.js, frontend/src/Components/Page/Toolbar/PageToolbarButton.css, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
-- Next: verify toolbar labels display in full without overlap in book details page.
+- Summary: shorten toolbar button labels to prevent overlap.
+- Why: toolbar button labels like "Refresh book cover/description" (29 chars) were too long and overlapping adjacent buttons.
+- Impact: shortened labels to be more concise ("Refresh Metadata" instead of "Refresh book cover/description", "Rescan Files" instead of "Rescan book files"); added spacing (16px between buttons) and min-width (85px) for better layout; hover tooltips still show full descriptions.
+- Files: src/NzbDrone.Core/Localization/Core/en.json, frontend/src/Styles/Variables/dimensions.js, frontend/src/Components/Page/Toolbar/PageToolbarButton.css, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
+- Next: verify toolbar labels no longer overlap in book details page.
 
 ## 1.2.288
 - Summary: add setting to disable automatic book upgrades for books with existing files.
