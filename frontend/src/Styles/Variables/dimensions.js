@@ -11,7 +11,7 @@ module.exports = {
 
   // Toolbar
   toolbarHeight: '60px',
-  toolbarButtonWidth: '60px',
+  toolbarButtonWidth: '85px',
   toolbarSeparatorMargin: '20px',
 
   // Break Points

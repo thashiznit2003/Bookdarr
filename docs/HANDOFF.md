@@ -54,6 +54,7 @@ Use this file to onboard a new Codex chat.
 - Overseerr-like request page.
 
 ## Recent Changes (since last handoff)
+- Increased toolbar button width to prevent text label overlap on book details page.
 - Added "Allow Automatic Book Upgrades" setting to prevent automatic downloads of better quality versions for books with existing files.
 - Added a manual book creation flow with optional fields, a cover upload action, and book-level manual import tools.
 - Manual add modal fields are full-width for title/author/date; “Only This Book” monitor now maps to a valid manual add value.

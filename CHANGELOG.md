@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.289
+- Summary: increase toolbar button width to prevent text label overlap.
+- Why: toolbar button labels like "Refresh cover/description", "Refresh book files", and "Rescan Book" were overlapping.
+- Impact: toolbar buttons are now 85px wide (increased from 60px), providing more space for text labels and preventing overlap.
+- Files: frontend/src/Styles/Variables/dimensions.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: verify toolbar labels no longer overlap in book details page.
+
 ## 1.2.288
 - Summary: add setting to disable automatic book upgrades for books with existing files.
 - Why: RSS sync was automatically downloading better quality versions of books that already have files, which users may not want.
