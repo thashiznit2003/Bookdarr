@@ -4,6 +4,7 @@
   padding-top: 4px;
   width: $toolbarButtonWidth;
   text-align: center;
+  margin: 0 5px;
 
   &:hover {
     color: var(--toobarButtonHoverColor);
@@ -30,4 +31,8 @@
   color: var(--toolbarLabelColor);
   font-size: $extraSmallFontSize;
   line-height: calc($extraSmallFontSize + 1px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }

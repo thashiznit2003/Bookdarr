@@ -1,10 +1,10 @@
 # Changelog
 
 ## 1.2.289
-- Summary: increase toolbar button width to prevent text label overlap.
-- Why: toolbar button labels like "Refresh cover/description", "Refresh book files", and "Rescan Book" were overlapping.
-- Impact: toolbar buttons are now 85px wide (increased from 60px), providing more space for text labels and preventing overlap.
-- Files: frontend/src/Styles/Variables/dimensions.js, src/Directory.Build.props, CHANGELOG.md.
+- Summary: fix toolbar button text label overlap with proper overflow handling and spacing.
+- Why: toolbar button labels like "Refresh cover/description", "Refresh book files", and "Rescan Book" were overlapping each other.
+- Impact: toolbar buttons now have proper text overflow handling (ellipsis for long text), 10px spacing between buttons, and are 85px wide; labels that are too long will be truncated with ellipsis.
+- Files: frontend/src/Styles/Variables/dimensions.js, frontend/src/Components/Page/Toolbar/PageToolbarButton.css, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
 - Next: verify toolbar labels no longer overlap in book details page.
 
 ## 1.2.288
