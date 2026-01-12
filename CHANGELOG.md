@@ -1,11 +1,11 @@
 # Changelog
 
 ## 1.2.289
-- Summary: fix toolbar button text label overlap with proper overflow handling and spacing.
+- Summary: make toolbar buttons auto-size to fit full label text without overlap.
 - Why: toolbar button labels like "Refresh cover/description", "Refresh book files", and "Rescan Book" were overlapping each other.
-- Impact: toolbar buttons now have proper text overflow handling (ellipsis for long text), 10px spacing between buttons, and are 85px wide; labels that are too long will be truncated with ellipsis.
+- Impact: toolbar buttons now use min-width (85px) and grow to fit their full label text; 16px spacing between buttons prevents overlap; labels always show in full without truncation.
 - Files: frontend/src/Styles/Variables/dimensions.js, frontend/src/Components/Page/Toolbar/PageToolbarButton.css, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
-- Next: verify toolbar labels no longer overlap in book details page.
+- Next: verify toolbar labels display in full without overlap in book details page.
 
 ## 1.2.288
 - Summary: add setting to disable automatic book upgrades for books with existing files.
