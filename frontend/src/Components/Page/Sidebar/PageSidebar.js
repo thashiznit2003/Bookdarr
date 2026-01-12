@@ -93,6 +93,10 @@ const links = [
     to: '/settings',
     children: [
       {
+        title: () => translate('General'),
+        to: '/settings/general'
+      },
+      {
         title: () => translate('MediaManagement'),
         to: '/settings/mediamanagement'
       },
@@ -131,10 +135,6 @@ const links = [
       {
         title: () => translate('Tags'),
         to: '/settings/tags'
-      },
-      {
-        title: () => translate('General'),
-        to: '/settings/general'
       },
       {
         title: () => translate('Ui'),

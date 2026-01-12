@@ -3,9 +3,9 @@
 ## 1.2.293
 - Summary: move General to the top of the Settings menu.
 - Why: General settings should logically be first in the list for better UX.
-- Impact: General is now the first item in Settings menu instead of appearing near the bottom.
-- Files: frontend/src/Settings/Settings.js, src/Directory.Build.props, CHANGELOG.md.
-- Next: verify General appears first in Settings menu.
+- Impact: General is now the first item in Settings menu (both in sidebar and main settings page) instead of appearing near the bottom.
+- Files: frontend/src/Components/Page/Sidebar/PageSidebar.js, frontend/src/Settings/Settings.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: verify General appears first in Settings menu after rebuild.
 
 ## 1.2.292
 - Summary: fix bash syntax error in sync-from-remote.sh script.
