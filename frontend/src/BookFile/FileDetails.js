@@ -36,6 +36,7 @@ function FileDetails(props) {
   const {
     filename,
     audioTags,
+    conversionError,
     rejections,
     historyItems,
     isHistoryFetching,
@@ -71,6 +72,17 @@ function FileDetails(props) {
 
   return (
     <Fragment>
+      {
+        conversionError &&
+          <div className={styles.conversionError}>
+            <div className={styles.conversionErrorTitle}>
+              {translate('ConversionError')}
+            </div>
+            <pre className={styles.conversionErrorMessage}>
+              {conversionError}
+            </pre>
+          </div>
+      }
       <div className={styles.audioTags}>
         <DescriptionList>
           {
@@ -314,6 +326,7 @@ function FileDetails(props) {
 FileDetails.propTypes = {
   filename: PropTypes.string,
   audioTags: PropTypes.object.isRequired,
+  conversionError: PropTypes.string,
   rejections: PropTypes.arrayOf(PropTypes.object),
   historyItems: PropTypes.arrayOf(PropTypes.object),
   isHistoryFetching: PropTypes.bool,

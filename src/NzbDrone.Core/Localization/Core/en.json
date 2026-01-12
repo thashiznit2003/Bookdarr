@@ -843,6 +843,7 @@
   "ConvertEbookScanTextReadable": "Text readable by OCR: {0}",
   "ConvertEbookScanNotPdf": "PDF scan applies only to PDF files.",
   "ConvertEbookScanError": "Unable to scan the PDF. Ensure ocrmypdf is installed.",
+  "ConversionError": "Conversion Error",
   "LikelyAudiobook": "Likely audiobook",
   "LikelyEbook": "Likely ebook",
   "PlayAudio": "Play audio",
