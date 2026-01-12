@@ -53,7 +53,7 @@ class InteractiveImportSelectFolderModalContentConnector extends Component {
   // Render
 
   render() {
-    if (this.path) {
+    if (this.props.path) {
       return null;
     }
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.294
+- Summary: fix manual import modal not appearing on book details page.
+- Why: InteractiveImportSelectFolderModalContentConnector had a bug checking `this.path` instead of `this.props.path`, causing it to return null and not render the upload modal.
+- Impact: manual import file upload modal now appears correctly when clicking the Manual Import button on book details pages.
+- Files: frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContentConnector.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: test manual import workflow to ensure file upload modal appears.
+
 ## 1.2.293
 - Summary: move General to the top of the Settings menu.
 - Why: General settings should logically be first in the list for better UX.
