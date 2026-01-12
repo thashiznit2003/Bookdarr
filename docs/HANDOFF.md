@@ -54,7 +54,8 @@ Use this file to onboard a new Codex chat.
 - Overseerr-like request page.
 
 ## Recent Changes (since last handoff)
-- Added .claude.json with project instructions for Claude Code sessions.
+- Added multi-machine workflow scripts (switch-to-laptop.sh, switch-to-desktop.sh, sync-from-remote.sh) for seamless switching between desktop and laptop.
+- Added .claude.json with project instructions for Claude Code sessions, including multi-machine workflow documentation.
 - Shortened toolbar button labels to prevent overlap ("Refresh Metadata", "Rescan Files").
 - Added "Allow Automatic Book Upgrades" setting to prevent automatic downloads of better quality versions for books with existing files.
 - Added a manual book creation flow with optional fields, a cover upload action, and book-level manual import tools.

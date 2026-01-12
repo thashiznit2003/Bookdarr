@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.291
+- Summary: add multi-machine workflow scripts and documentation.
+- Why: user works on both desktop and laptop, needs easy way to switch between machines and sync work.
+- Impact: created three helper scripts (switch-to-laptop.sh, switch-to-desktop.sh, sync-from-remote.sh) for seamless machine switching; updated .claude.json with multi-machine workflow instructions; added claude-settings-backup.json for easy setup on new machines; future Claude sessions will understand which machine user is on and provide appropriate commands.
+- Files: scripts/switch-to-laptop.sh, scripts/switch-to-desktop.sh, scripts/sync-from-remote.sh, .claude.json, claude-settings-backup.json, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
+- Next: test multi-machine workflow by switching between desktop and laptop.
+
 ## 1.2.290
 - Summary: add project instructions file for Claude Code sessions.
 - Why: need persistent project context and guidelines for any Claude session working on Bookdarr.
