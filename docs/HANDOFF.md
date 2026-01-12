@@ -54,6 +54,7 @@ Use this file to onboard a new Codex chat.
 - Overseerr-like request page.
 
 ## Recent Changes (since last handoff)
+- Fixed manual import modal skipping upload screen by clearing folder state when modal opens with useBrowserUpload mode.
 - Added multi-machine workflow scripts (switch-to-laptop.sh, switch-to-desktop.sh, sync-from-remote.sh) for seamless switching between desktop and laptop.
 - Added .claude.json with project instructions for Claude Code sessions, including multi-machine workflow documentation.
 - Shortened toolbar button labels to prevent overlap ("Refresh Metadata", "Rescan Files").

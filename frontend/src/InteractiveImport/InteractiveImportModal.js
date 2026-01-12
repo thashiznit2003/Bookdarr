@@ -19,7 +19,14 @@ class InteractiveImportModal extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    // Clear folder when modal closes
     if (prevProps.isOpen && !this.props.isOpen) {
+      this.setState({ folder: null });
+    }
+
+    // Clear folder when modal opens if useBrowserUpload is true
+    // This ensures upload mode is shown instead of folder view
+    if (!prevProps.isOpen && this.props.isOpen && this.props.useBrowserUpload) {
       this.setState({ folder: null });
     }
   }

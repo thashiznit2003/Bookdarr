@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.295
+- Summary: fix manual import modal skipping upload screen and jumping to folder view.
+- Why: InteractiveImportModal component persisted folder state from previous modal opens, causing it to skip the upload screen and jump directly to the folder/file list view.
+- Impact: added componentDidUpdate logic to clear folder state when modal opens with useBrowserUpload=true; ensures upload screen is always shown when clicking Manual Import from book details page.
+- Files: frontend/src/InteractiveImport/InteractiveImportModal.js, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
+- Next: test clicking Manual Import from book details and verify upload screen appears.
+
 ## 1.2.294
 - Summary: fix manual import modal not appearing on book details page.
 - Why: InteractiveImportSelectFolderModalContentConnector had a bug checking `this.path` instead of `this.props.path`, causing it to return null and not render the upload modal.
