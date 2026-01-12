@@ -24,6 +24,7 @@ namespace NzbDrone.Core.MediaFiles
         public int CalibreId { get; set; }
         public int Part { get; set; }
         public BookFileMediaType MediaType { get; set; }
+        public string ConversionError { get; set; }
 
         // These are queried from the database
         public LazyLoaded<Author> Author { get; set; }
