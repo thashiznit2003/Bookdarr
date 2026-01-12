@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.297
+- Summary: add image extraction and embedding to PDF to EPUB conversion.
+- Why: PDF to EPUB conversion was only extracting text via OCR, losing all images from the source PDF files.
+- Impact: ConvertPdfToEpub now uses pdfimages to extract all images from PDFs and embeds them in the EPUB at page boundaries; images are stored in OEBPS/images folder with proper manifest entries and styled to be centered and responsive; EPUBs created from PDFs now include both text and images for a complete reading experience.
+- Files: src/NzbDrone.Core/MediaFiles/EbookConversionService.cs, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
+- Next: pull changes on Ubuntu VM, run update script, test PDF conversion with images and verify EPUB contains both text and images properly formatted.
+
 ## 1.2.296
 - Summary: fix PDF to EPUB conversion skipping OCR and producing empty content.
 - Why: BuildOcrArguments used --skip-text flag for both scan and conversion operations, causing ocrmypdf to skip OCR during actual conversion and produce EPUBs with "[OCR skipped on page(s) X]" messages instead of extracted text.
