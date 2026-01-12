@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.302
+- Summary: add comprehensive Kindle file format detection and helpful error messages.
+- Why: basic EPUB detection wasn't enough; needed to detect KFX format and other variants to provide clear error messages; unknown file formats caused generic kindleunpack errors without guidance.
+- Impact: replaced IsEpubInDisguise with DetectFileFormat that detects EPUB, MOBI, KFX, and Unknown formats; added GetFileMagicBytes for detailed diagnostics; KFX files now show specific error: "This file appears to be KFX format, which is not supported by kindleunpack"; unknown formats show magic bytes in error for troubleshooting; logs now show detected format before attempting conversion.
+- Files: src/NzbDrone.Core/MediaFiles/EbookConversionService.cs, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
+- Next: pull changes on Ubuntu VM, run update script, retry AZW3 conversion and check logs for detected format and detailed error message with magic bytes.
+
 ## 1.2.301
 - Summary: detect and handle EPUB files disguised as AZW3 Kindle format.
 - Why: many AZW3 files are actually EPUB files with .azw3 extension, causing kindleunpack to fail with "first parameter must be a Kindle/Mobipocket ebook" error.
