@@ -16,6 +16,17 @@ function Settings() {
       <PageContentBody>
         <Link
           className={styles.link}
+          to="/settings/general"
+        >
+          {translate('General')}
+        </Link>
+
+        <div className={styles.summary}>
+          {translate('GeneralSettingsSummary')}
+        </div>
+
+        <Link
+          className={styles.link}
           to="/settings/mediamanagement"
         >
           {translate('MediaManagement')}
@@ -122,17 +133,6 @@ function Settings() {
 
         <div className={styles.summary}>
           {translate('TagsSettingsSummary')}
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/general"
-        >
-          {translate('General')}
-        </Link>
-
-        <div className={styles.summary}>
-          {translate('GeneralSettingsSummary')}
         </div>
 
         <Link
