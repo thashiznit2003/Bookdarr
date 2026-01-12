@@ -267,13 +267,24 @@ namespace NzbDrone.Core.MediaFiles
             _logger.Info("Converting Kindle ebook to EPUB: {0}", sourcePath);
             _logger.ProgressInfo("Starting Kindle to EPUB conversion...");
 
-            if (IsEpubInDisguise(sourcePath))
+            var fileFormat = DetectFileFormat(sourcePath);
+            _logger.Info("Detected file format: {0}", fileFormat);
+
+            if (fileFormat == "EPUB")
             {
                 _logger.Info("File is actually an EPUB with .azw3 extension. Copying directly.");
                 _logger.ProgressInfo("File is EPUB format, copying...");
                 _diskProvider.CopyFile(sourcePath, outputPath, true);
                 _logger.ProgressInfo("Kindle to EPUB conversion completed successfully");
                 return;
+            }
+
+            if (fileFormat == "KFX" || fileFormat == "Unknown")
+            {
+                var errorMsg = fileFormat == "KFX"
+                    ? "This file appears to be KFX format, which is not supported by kindleunpack. Try using a different version of the book or convert with Calibre's DeDRM plugin first."
+                    : $"Unable to detect file format. File may be corrupted, DRM-protected, or an unsupported Kindle format variant. Magic bytes: {GetFileMagicBytes(sourcePath)}";
+                throw new InvalidOperationException(errorMsg);
             }
 
             var tempFolder = CreateTempFolder("bookdarr-kindle-unpack");
@@ -314,25 +325,71 @@ namespace NzbDrone.Core.MediaFiles
             }
         }
 
-        private bool IsEpubInDisguise(string filePath)
+        private string DetectFileFormat(string filePath)
         {
             try
             {
                 using var stream = _diskProvider.OpenReadStream(filePath);
-                var header = new byte[4];
-                var bytesRead = stream.Read(header, 0, 4);
+                var header = new byte[16];
+                var bytesRead = stream.Read(header, 0, 16);
 
                 if (bytesRead < 4)
                 {
-                    return false;
+                    return "Unknown";
                 }
 
-                return header[0] == 0x50 && header[1] == 0x4B && header[2] == 0x03 && header[3] == 0x04;
+                if (header[0] == 0x50 && header[1] == 0x4B && header[2] == 0x03 && header[3] == 0x04)
+                {
+                    return "EPUB";
+                }
+
+                if (bytesRead >= 8)
+                {
+                    var headerStr = Encoding.ASCII.GetString(header, 0, Math.Min(8, bytesRead));
+                    if (headerStr.Contains("BOOKMOBI") || headerStr.Contains("TPZ"))
+                    {
+                        return "MOBI";
+                    }
+
+                    if (header[0] == 0xEA && header[1] == 0x01)
+                    {
+                        return "KFX";
+                    }
+
+                    if (header[0] == 0x00 && header[1] == 0x00 && header[2] == 0x00 && header[3] == 0x20 &&
+                        bytesRead >= 16)
+                    {
+                        var ftyp = Encoding.ASCII.GetString(header, 4, 4);
+                        if (ftyp == "ftyp")
+                        {
+                            return "KFX";
+                        }
+                    }
+                }
+
+                return "Unknown";
             }
             catch (Exception ex)
             {
-                _logger.Debug(ex, "Failed to check if file is EPUB in disguise: {0}", filePath);
-                return false;
+                _logger.Debug(ex, "Failed to detect file format: {0}", filePath);
+                return "Unknown";
+            }
+        }
+
+        private string GetFileMagicBytes(string filePath)
+        {
+            try
+            {
+                using var stream = _diskProvider.OpenReadStream(filePath);
+                var header = new byte[16];
+                var bytesRead = stream.Read(header, 0, 16);
+
+                return string.Join(" ", header.Take(bytesRead).Select(b => b.ToString("X2")));
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug(ex, "Failed to read file magic bytes: {0}", filePath);
+                return "Unable to read";
             }
         }
 
