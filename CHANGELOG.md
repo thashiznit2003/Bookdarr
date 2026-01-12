@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.298
+- Summary: fix images not appearing in converted EPUBs and add progress indicator for conversion.
+- Why: AddFolderToZip was using Path.GetFileName which stripped subdirectory paths, causing images to be placed in wrong location in ZIP; users had no visibility into conversion progress for long-running operations.
+- Impact: fixed AddFolderToZip to preserve full relative paths so images are correctly placed in OEBPS/images/ folder; added ProgressInfo logging at key conversion steps (OCR, image extraction, EPUB creation) so users see real-time status updates in UI during PDF and Kindle conversions.
+- Files: src/NzbDrone.Core/MediaFiles/EbookConversionService.cs, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
+- Next: pull changes on Ubuntu VM, run update script, test PDF conversion with images and verify both images appear correctly in EPUB and progress messages display in UI.
+
 ## 1.2.297
 - Summary: add image extraction and embedding to PDF to EPUB conversion.
 - Why: PDF to EPUB conversion was only extracting text via OCR, losing all images from the source PDF files.
