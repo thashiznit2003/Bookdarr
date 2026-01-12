@@ -267,7 +267,9 @@ namespace NzbDrone.Core.MediaFiles
 
                 if (output.ExitCode != 0)
                 {
-                    throw new InvalidOperationException("KindleUnpack conversion failed. Ensure kindleunpack is installed.");
+                    var errorOutput = string.Join("\n", output.Lines.Select(l => l.Content));
+                    _logger.Error("KindleUnpack failed with exit code {0}. Output: {1}", output.ExitCode, errorOutput);
+                    throw new InvalidOperationException($"KindleUnpack conversion failed with exit code {output.ExitCode}. Check logs for details.");
                 }
 
                 _logger.ProgressInfo("Extracting EPUB file...");
