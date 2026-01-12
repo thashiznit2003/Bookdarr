@@ -264,13 +264,22 @@ namespace NzbDrone.Core.MediaFiles
 
         private void ConvertKindleToEpub(string sourcePath, string outputPath)
         {
+            _logger.Info("Converting Kindle ebook to EPUB: {0}", sourcePath);
+            _logger.ProgressInfo("Starting Kindle to EPUB conversion...");
+
+            if (IsEpubInDisguise(sourcePath))
+            {
+                _logger.Info("File is actually an EPUB with .azw3 extension. Copying directly.");
+                _logger.ProgressInfo("File is EPUB format, copying...");
+                _diskProvider.CopyFile(sourcePath, outputPath, true);
+                _logger.ProgressInfo("Kindle to EPUB conversion completed successfully");
+                return;
+            }
+
             var tempFolder = CreateTempFolder("bookdarr-kindle-unpack");
 
             try
             {
-                _logger.Info("Converting Kindle ebook to EPUB: {0}", sourcePath);
-                _logger.ProgressInfo("Starting Kindle to EPUB conversion...");
-
                 _logger.ProgressInfo("Unpacking Kindle format...");
                 var output = RunProcess("kindleunpack", $"\"{sourcePath}\" \"{tempFolder}\"");
 
@@ -302,6 +311,28 @@ namespace NzbDrone.Core.MediaFiles
             finally
             {
                 SafeDeleteFolder(tempFolder);
+            }
+        }
+
+        private bool IsEpubInDisguise(string filePath)
+        {
+            try
+            {
+                using var stream = _diskProvider.OpenReadStream(filePath);
+                var header = new byte[4];
+                var bytesRead = stream.Read(header, 0, 4);
+
+                if (bytesRead < 4)
+                {
+                    return false;
+                }
+
+                return header[0] == 0x50 && header[1] == 0x4B && header[2] == 0x03 && header[3] == 0x04;
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug(ex, "Failed to check if file is EPUB in disguise: {0}", filePath);
+                return false;
             }
         }
 
