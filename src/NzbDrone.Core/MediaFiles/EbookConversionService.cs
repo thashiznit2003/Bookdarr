@@ -179,7 +179,7 @@ namespace NzbDrone.Core.MediaFiles
 
             try
             {
-                var output = RunProcess("ocrmypdf", BuildOcrArguments(sourcePath, outputPath, sidecarPath));
+                var output = RunProcess("ocrmypdf", BuildOcrScanArguments(sourcePath, outputPath, sidecarPath));
                 if (output.ExitCode != 0)
                 {
                     throw new InvalidOperationException("OCR scan failed. Ensure ocrmypdf is installed.");
@@ -221,7 +221,7 @@ namespace NzbDrone.Core.MediaFiles
             {
                 _logger.Info("Converting PDF ebook to EPUB: {0}", sourcePath);
 
-                var output = RunProcess("ocrmypdf", BuildOcrArguments(sourcePath, ocrOutputPath, sidecarPath));
+                var output = RunProcess("ocrmypdf", BuildOcrConversionArguments(sourcePath, ocrOutputPath, sidecarPath));
                 if (output.ExitCode != 0)
                 {
                     throw new InvalidOperationException("OCR conversion failed. Ensure ocrmypdf is installed.");
@@ -376,10 +376,20 @@ namespace NzbDrone.Core.MediaFiles
             }
         }
 
-        private string BuildOcrArguments(string sourcePath, string outputPath, string sidecarPath)
+        private string BuildOcrScanArguments(string sourcePath, string outputPath, string sidecarPath)
         {
             var builder = new StringBuilder();
             builder.Append("--skip-text ");
+            builder.Append($"--sidecar \"{sidecarPath}\" ");
+            builder.Append($"\"{sourcePath}\" ");
+            builder.Append($"\"{outputPath}\"");
+            return builder.ToString();
+        }
+
+        private string BuildOcrConversionArguments(string sourcePath, string outputPath, string sidecarPath)
+        {
+            var builder = new StringBuilder();
+            builder.Append("--force-ocr ");
             builder.Append($"--sidecar \"{sidecarPath}\" ");
             builder.Append($"\"{sourcePath}\" ");
             builder.Append($"\"{outputPath}\"");
