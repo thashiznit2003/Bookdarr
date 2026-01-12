@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.299
+- Summary: add detailed error logging for Kindle format conversion failures.
+- Why: KindleUnpack conversion errors showed generic messages without capturing actual output from the tool, making it impossible to diagnose why .azw3 or other Kindle format conversions failed.
+- Impact: ConvertKindleToEpub now logs the full stdout/stderr output from kindleunpack when conversion fails, including exit code; error messages now include "Check logs for details" to guide users to detailed diagnostic information.
+- Files: src/NzbDrone.Core/MediaFiles/EbookConversionService.cs, src/Directory.Build.props, CHANGELOG.md, docs/HANDOFF.md.
+- Next: pull changes on Ubuntu VM, run update script, retry .azw3 conversion and check logs for detailed kindleunpack error output to diagnose the actual failure.
+
 ## 1.2.298
 - Summary: fix images not appearing in converted EPUBs and add progress indicator for conversion.
 - Why: AddFolderToZip was using Path.GetFileName which stripped subdirectory paths, causing images to be placed in wrong location in ZIP; users had no visibility into conversion progress for long-running operations.
