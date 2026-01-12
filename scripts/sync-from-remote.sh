@@ -40,7 +40,8 @@ git fetch origin
 git pull origin develop
 
 echo ""
-echo "✅ ${MACHINE^} is now up to date!"
+MACHINE_DISPLAY="$(echo ${MACHINE} | sed 's/./\U&/')"
+echo "✅ ${MACHINE_DISPLAY} is now up to date!"
 echo ""
 
 # Check if there are stashed changes

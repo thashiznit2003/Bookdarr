@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.292
+- Summary: fix bash syntax error in sync-from-remote.sh script.
+- Why: script used `${MACHINE^}` capitalization syntax that's not compatible with all bash versions, causing errors on execution.
+- Impact: replaced incompatible syntax with `sed` command for cross-platform compatibility; script now runs without errors on both macOS and Linux.
+- Files: scripts/sync-from-remote.sh, src/Directory.Build.props, CHANGELOG.md.
+- Next: test sync script runs cleanly on both laptop and desktop.
+
 ## 1.2.291
 - Summary: add multi-machine workflow scripts and documentation.
 - Why: user works on both desktop and laptop, needs easy way to switch between machines and sync work.
