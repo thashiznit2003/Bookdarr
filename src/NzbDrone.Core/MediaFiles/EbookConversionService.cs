@@ -150,26 +150,40 @@ namespace NzbDrone.Core.MediaFiles
             var book = _bookService.GetBook(edition.BookId);
             var author = book.Author.Value;
 
-            var outputPath = BuildEpubOutputPath(author, edition);
-            _diskProvider.EnsureFolder(_diskProvider.GetParentFolder(outputPath));
-
-            if (string.Equals(extension, ".pdf", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                ConvertPdfToEpub(bookFile.Path, outputPath, author, edition);
-            }
-            else if (KindleExtensions.Contains(extension))
-            {
-                ConvertKindleToEpub(bookFile.Path, outputPath);
-            }
-            else
-            {
-                throw new InvalidOperationException($"Unsupported ebook format for conversion: {extension}");
-            }
+                var outputPath = BuildEpubOutputPath(author, edition);
+                _diskProvider.EnsureFolder(_diskProvider.GetParentFolder(outputPath));
 
-            EnsureOutputValid(outputPath);
+                if (string.Equals(extension, ".pdf", StringComparison.OrdinalIgnoreCase))
+                {
+                    ConvertPdfToEpub(bookFile.Path, outputPath, author, edition);
+                }
+                else if (KindleExtensions.Contains(extension))
+                {
+                    ConvertKindleToEpub(bookFile.Path, outputPath);
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Unsupported ebook format for conversion: {extension}");
+                }
 
-            var outputFile = CreateOutputBookFile(author, edition, outputPath);
-            _mediaFileService.Add(outputFile);
+                EnsureOutputValid(outputPath);
+
+                var outputFile = CreateOutputBookFile(author, edition, outputPath);
+                _mediaFileService.Add(outputFile);
+
+                bookFile.ConversionError = null;
+                _mediaFileService.Update(bookFile);
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"{ex.Message}\n\nTimestamp: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC";
+                bookFile.ConversionError = errorMessage;
+                _mediaFileService.Update(bookFile);
+
+                throw;
+            }
         }
 
         private EbookConversionScanResult ScanPdf(string sourcePath)
