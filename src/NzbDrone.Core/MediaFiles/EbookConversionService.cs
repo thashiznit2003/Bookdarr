@@ -216,6 +216,7 @@ namespace NzbDrone.Core.MediaFiles
             var tempFolder = CreateTempFolder("bookdarr-ebook-convert");
             var sidecarPath = Path.Combine(tempFolder, "ocr.txt");
             var ocrOutputPath = Path.Combine(tempFolder, "ocr.pdf");
+            var imagesFolder = Path.Combine(tempFolder, "images");
 
             try
             {
@@ -228,7 +229,11 @@ namespace NzbDrone.Core.MediaFiles
                 }
 
                 var textContent = _diskProvider.FileExists(sidecarPath) ? _diskProvider.ReadAllText(sidecarPath) : string.Empty;
-                CreateEpubFromText(textContent, outputPath, author, edition);
+
+                _diskProvider.EnsureFolder(imagesFolder);
+                var imageFiles = ExtractPdfImages(sourcePath, imagesFolder);
+
+                CreateEpubFromTextAndImages(textContent, imageFiles, outputPath, author, edition);
             }
             finally
             {
@@ -471,13 +476,53 @@ namespace NzbDrone.Core.MediaFiles
             return null;
         }
 
-        private void CreateEpubFromText(string textContent, string outputPath, Author author, Edition edition)
+        private List<string> ExtractPdfImages(string sourcePath, string outputFolder)
+        {
+            var imagePrefix = Path.Combine(outputFolder, "page");
+
+            try
+            {
+                var output = RunProcess("pdfimages", $"-all \"{sourcePath}\" \"{imagePrefix}\"");
+                if (output.ExitCode != 0)
+                {
+                    _logger.Warn("pdfimages extraction failed or returned non-zero exit code. Continuing without images.");
+                    return new List<string>();
+                }
+
+                var imageFiles = _diskProvider.GetFiles(outputFolder, false)
+                    .Where(f => IsValidImageExtension(Path.GetExtension(f)))
+                    .OrderBy(f => f)
+                    .ToList();
+
+                _logger.Info("Extracted {0} images from PDF", imageFiles.Count);
+                return imageFiles;
+            }
+            catch (Exception ex)
+            {
+                _logger.Warn(ex, "Failed to extract images from PDF. Continuing without images.");
+                return new List<string>();
+            }
+        }
+
+        private bool IsValidImageExtension(string extension)
+        {
+            var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ppm", ".pbm", ".pgm" };
+            return validExtensions.Contains(extension.ToLowerInvariant());
+        }
+
+        private void CreateEpubFromTextAndImages(string textContent, List<string> imageFiles, string outputPath, Author author, Edition edition)
         {
             var tempFolder = CreateTempFolder("bookdarr-epub");
             var oebpsFolder = Path.Combine(tempFolder, "OEBPS");
+            var oebpsImagesFolder = Path.Combine(oebpsFolder, "images");
             var metaInfFolder = Path.Combine(tempFolder, "META-INF");
             _diskProvider.EnsureFolder(oebpsFolder);
             _diskProvider.EnsureFolder(metaInfFolder);
+
+            if (imageFiles != null && imageFiles.Any())
+            {
+                _diskProvider.EnsureFolder(oebpsImagesFolder);
+            }
 
             var title = edition?.Title ?? "Bookdarr Conversion";
             var creator = author?.Name ?? "Bookdarr";
@@ -490,6 +535,26 @@ namespace NzbDrone.Core.MediaFiles
                                "  </rootfiles>\n" +
                                "</container>\n";
 
+            var imageManifestItems = new StringBuilder();
+            var copiedImagePaths = new List<string>();
+
+            if (imageFiles != null)
+            {
+                for (var i = 0; i < imageFiles.Count; i++)
+                {
+                    var sourceImagePath = imageFiles[i];
+                    var extension = Path.GetExtension(sourceImagePath).ToLowerInvariant();
+                    var imageFileName = $"image-{i:D4}{extension}";
+                    var destImagePath = Path.Combine(oebpsImagesFolder, imageFileName);
+
+                    _diskProvider.CopyFile(sourceImagePath, destImagePath, false);
+                    copiedImagePaths.Add($"images/{imageFileName}");
+
+                    var mediaType = GetImageMediaType(extension);
+                    imageManifestItems.AppendLine($"    <item id=\"img{i}\" href=\"images/{imageFileName}\" media-type=\"{mediaType}\" />");
+                }
+            }
+
             var contentOpf = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                              "<package xmlns=\"http://www.idpf.org/2007/opf\" version=\"3.0\" unique-identifier=\"bookid\">\n" +
                              "  <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n" +
@@ -501,6 +566,7 @@ namespace NzbDrone.Core.MediaFiles
                              "  <manifest>\n" +
                              "    <item id=\"nav\" properties=\"nav\" href=\"nav.xhtml\" media-type=\"application/xhtml+xml\" />\n" +
                              "    <item id=\"content\" href=\"content.xhtml\" media-type=\"application/xhtml+xml\" />\n" +
+                             imageManifestItems +
                              "  </manifest>\n" +
                              "  <spine>\n" +
                              "    <itemref idref=\"content\" />\n" +
@@ -521,7 +587,7 @@ namespace NzbDrone.Core.MediaFiles
                            "</body>\n" +
                            "</html>\n";
 
-            var contentXhtml = BuildContentXhtml(textContent, title);
+            var contentXhtml = BuildContentXhtmlWithImages(textContent, copiedImagePaths, title);
 
             _diskProvider.WriteAllText(Path.Combine(tempFolder, "mimetype"), "application/epub+zip");
             _diskProvider.WriteAllText(Path.Combine(metaInfFolder, "container.xml"), containerXml);
@@ -539,33 +605,64 @@ namespace NzbDrone.Core.MediaFiles
             }
         }
 
-        private string BuildContentXhtml(string textContent, string title)
+        private string GetImageMediaType(string extension)
+        {
+            return extension switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".bmp" => "image/bmp",
+                ".ppm" or ".pbm" or ".pgm" => "image/x-portable-pixmap",
+                _ => "image/jpeg"
+            };
+        }
+
+        private string BuildContentXhtmlWithImages(string textContent, List<string> imagePaths, string title)
         {
             var normalized = textContent ?? string.Empty;
             normalized = normalized.Replace("\r\n", "\n");
             var pages = normalized.Split('\f');
             var builder = new StringBuilder();
 
+            var imageIndex = 0;
+            var totalImages = imagePaths?.Count ?? 0;
+
             for (var i = 0; i < pages.Length; i++)
             {
                 var pageText = pages[i].Trim();
-                if (pageText.IsNullOrWhiteSpace())
+
+                if (imageIndex < totalImages)
                 {
-                    continue;
+                    builder.AppendLine($"    <div class=\"page-image\">");
+                    builder.AppendLine($"      <img src=\"{imagePaths[imageIndex]}\" alt=\"Page {i + 1}\" />");
+                    builder.AppendLine($"    </div>");
+                    imageIndex++;
                 }
 
-                var paragraphs = pageText.Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var paragraph in paragraphs)
+                if (!pageText.IsNullOrWhiteSpace())
                 {
-                    var escaped = WebUtility.HtmlEncode(paragraph.Trim());
-                    escaped = escaped.Replace("\n", "<br />\n");
-                    builder.AppendLine($"    <p>{escaped}</p>");
+                    var paragraphs = pageText.Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var paragraph in paragraphs)
+                    {
+                        var escaped = WebUtility.HtmlEncode(paragraph.Trim());
+                        escaped = escaped.Replace("\n", "<br />\n");
+                        builder.AppendLine($"    <p>{escaped}</p>");
+                    }
                 }
 
                 if (i < pages.Length - 1)
                 {
                     builder.AppendLine("    <hr class=\"page-break\" />");
                 }
+            }
+
+            while (imageIndex < totalImages)
+            {
+                builder.AppendLine($"    <div class=\"page-image\">");
+                builder.AppendLine($"      <img src=\"{imagePaths[imageIndex]}\" alt=\"Image {imageIndex + 1}\" />");
+                builder.AppendLine($"    </div>");
+                imageIndex++;
             }
 
             if (builder.Length == 0)
@@ -578,12 +675,21 @@ namespace NzbDrone.Core.MediaFiles
                    "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
                    "<head>\n" +
                    $"  <title>{WebUtility.HtmlEncode(title)}</title>\n" +
-                   "  <style>.page-break{margin:1.5em 0;border:none;border-top:1px solid #ccc;}</style>\n" +
+                   "  <style>\n" +
+                   "    .page-break{margin:1.5em 0;border:none;border-top:1px solid #ccc;}\n" +
+                   "    .page-image{text-align:center;margin:1em 0;}\n" +
+                   "    .page-image img{max-width:100%;height:auto;}\n" +
+                   "  </style>\n" +
                    "</head>\n" +
                    "<body>\n" +
                    builder +
                    "</body>\n" +
                    "</html>\n";
+        }
+
+        private string BuildContentXhtml(string textContent, string title)
+        {
+            return BuildContentXhtmlWithImages(textContent, null, title);
         }
 
         private void WriteEpubArchive(string outputPath, string sourceFolder)
