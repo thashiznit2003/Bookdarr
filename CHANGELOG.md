@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.288
+- Summary: add setting to disable automatic book upgrades for books with existing files.
+- Why: RSS sync was automatically downloading better quality versions of books that already have files, which users may not want.
+- Impact: new "Allow Automatic Book Upgrades" setting in Download Client options (enabled by default); when disabled, Bookdarr will not automatically download better quality versions during RSS sync for books that already have files.
+- Files: src/NzbDrone.Core/Configuration/IConfigService.cs, src/NzbDrone.Core/Configuration/ConfigService.cs, src/NzbDrone.Core/DecisionEngine/Specifications/UpgradeDiskSpecification.cs, src/Readarr.Api.V1/Config/DownloadClientConfigResource.cs, frontend/src/Settings/DownloadClients/Options/DownloadClientOptions.js, src/NzbDrone.Core/Localization/Core/en.json, src/Directory.Build.props, CHANGELOG.md.
+- Next: test disabling the setting and confirm RSS sync no longer downloads upgrades for books with existing files.
+
 ## 1.2.287
 - Summary: allow author and book selection in manual import from book details page.
 - Why: uploaded files without metadata cannot be imported if author/book fields are locked.

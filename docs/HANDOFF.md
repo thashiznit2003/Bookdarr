@@ -51,12 +51,10 @@ Use this file to onboard a new Codex chat.
 
 ## Open Work / Next Steps
 - Docker Hub publish pipeline (GitHub Action + secrets).
-- Hardcover fallback provider (research and implementation).
-- Validate ebook + audiobook coexistence on real imports and check stats/progress display.
-- Diagnostics repo + UI upload flow for logs/config.
 - Overseerr-like request page.
 
 ## Recent Changes (since last handoff)
+- Added "Allow Automatic Book Upgrades" setting to prevent automatic downloads of better quality versions for books with existing files.
 - Added a manual book creation flow with optional fields, a cover upload action, and book-level manual import tools.
 - Manual add modal fields are full-width for title/author/date; “Only This Book” monitor now maps to a valid manual add value.
 - Root folder selectors now fetch root folders on app connect and on selector mount so existing paths appear immediately.

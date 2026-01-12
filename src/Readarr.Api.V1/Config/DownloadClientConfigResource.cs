@@ -11,6 +11,7 @@ namespace Readarr.Api.V1.Config
         public bool EnableCompletedDownloadHandling { get; set; }
         public bool AutoRedownloadFailed { get; set; }
         public bool AutoRedownloadFailedFromInteractiveSearch { get; set; }
+        public bool AllowAutomaticBookUpgrades { get; set; }
     }
 
     public static class DownloadClientConfigResourceMapper
@@ -24,7 +25,8 @@ namespace Readarr.Api.V1.Config
 
                 EnableCompletedDownloadHandling = model.EnableCompletedDownloadHandling,
                 AutoRedownloadFailed = model.AutoRedownloadFailed,
-                AutoRedownloadFailedFromInteractiveSearch = model.AutoRedownloadFailedFromInteractiveSearch
+                AutoRedownloadFailedFromInteractiveSearch = model.AutoRedownloadFailedFromInteractiveSearch,
+                AllowAutomaticBookUpgrades = model.AllowAutomaticBookUpgrades
             };
         }
     }

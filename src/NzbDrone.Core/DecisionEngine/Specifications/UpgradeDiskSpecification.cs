@@ -1,6 +1,7 @@
 using System.Linq;
 using NLog;
 using NzbDrone.Common.Cache;
+using NzbDrone.Core.Configuration;
 using NzbDrone.Core.CustomFormats;
 using NzbDrone.Core.IndexerSearch.Definitions;
 using NzbDrone.Core.MediaFiles;
@@ -12,15 +13,18 @@ namespace NzbDrone.Core.DecisionEngine.Specifications
     {
         private readonly UpgradableSpecification _upgradableSpecification;
         private readonly ICustomFormatCalculationService _formatService;
+        private readonly IConfigService _configService;
         private readonly Logger _logger;
 
         public UpgradeDiskSpecification(UpgradableSpecification qualityUpgradableSpecification,
                                         ICacheManager cacheManager,
                                         ICustomFormatCalculationService formatService,
+                                        IConfigService configService,
                                         Logger logger)
         {
             _upgradableSpecification = qualityUpgradableSpecification;
             _formatService = formatService;
+            _configService = configService;
             _logger = logger;
         }
 
@@ -36,7 +40,16 @@ namespace NzbDrone.Core.DecisionEngine.Specifications
                 files = files.Where(f => GetMediaType(f) == targetMediaType);
             }
 
-            foreach (var file in files)
+            var filesList = files.ToList();
+
+            // If automatic upgrades are disabled and files already exist, reject the upgrade
+            if (!_configService.AllowAutomaticBookUpgrades && filesList.Any(f => f != null))
+            {
+                _logger.Debug("Automatic book upgrades are disabled and files already exist");
+                return Decision.Reject("Automatic upgrades are disabled for books with existing files");
+            }
+
+            foreach (var file in filesList)
             {
                 if (file == null)
                 {

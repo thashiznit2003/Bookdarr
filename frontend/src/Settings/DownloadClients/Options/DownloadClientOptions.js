@@ -118,6 +118,28 @@ function DownloadClientOptions(props) {
                 {translate('RemoveDownloadsAlert')}
               </Alert>
             </FieldSet>
+
+            <FieldSet
+              legend={translate('AutomaticSearch')}
+            >
+              <Form>
+                <FormGroup
+                  advancedSettings={advancedSettings}
+                  isAdvanced={false}
+                  size={sizes.MEDIUM}
+                >
+                  <FormLabel>{translate('AllowAutomaticBookUpgrades')}</FormLabel>
+
+                  <FormInputGroup
+                    type={inputTypes.CHECK}
+                    name="allowAutomaticBookUpgrades"
+                    helpText={translate('AllowAutomaticBookUpgradesHelpText')}
+                    onChange={onInputChange}
+                    {...settings.allowAutomaticBookUpgrades}
+                  />
+                </FormGroup>
+              </Form>
+            </FieldSet>
           </div>
       }
     </div>
