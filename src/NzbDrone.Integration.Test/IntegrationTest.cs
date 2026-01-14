@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using NLog;
 using NUnit.Framework;
-using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Datastore;
 using NzbDrone.Core.Datastore.Migration.Framework;
 using NzbDrone.Core.Indexers.Newznab;

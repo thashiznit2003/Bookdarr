@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.306
+- Summary: drop the unused extension using in `IntegrationTest`.
+- Why: IDE0005 surfaced during updates after the previous refactor removed `SelectList`.
+- Impact: the integration build no longer fails on the unused `NzbDrone.Common.Extensions` directive.
+- Files: src/NzbDrone.Integration.Test/IntegrationTest.cs, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun the update-dev script once the .NET SDK is available to confirm the IDE0005 warning is gone.
+
 ## 1.2.305
 - Summary: keep integration/host tests aligned with the RSS-free indexer surface.
 - Why: the RSS cleanup removed `EnableRss`, `SupportsRss`, and `RssSyncCommand`, which left these tests referencing nonexistent members.
@@ -7,6 +14,7 @@
 - Files: src/NzbDrone.Integration.Test/ApiTests/IndexerFixture.cs, src/NzbDrone.Integration.Test/IntegrationTest.cs, src/NzbDrone.Host.Test/ContainerFixture.cs, src/Directory.Build.props, CHANGELOG.md.
 - Next: rerun the update-dev script once the environment has .NET installed to verify the tests build.
 
+## 1.2.304
 - Summary: remove the unused validator using from `IndexerConfigController`.
 - Why: update-dev was failing with IDE0005 because `Readarr.Http.Validation` wasn’t referenced in the controller.
 - Impact: IDE0005 no longer surfaces during build once the CLI has `dotnet` installed.
