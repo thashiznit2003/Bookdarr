@@ -290,7 +290,6 @@ class AuthorIndex extends Component {
       sortDirection,
       view,
       isRefreshingAuthor,
-      isRssSyncExecuting,
       isOrganizingAuthor,
       isRetaggingAuthor,
       isSaving,
@@ -303,7 +302,6 @@ class AuthorIndex extends Component {
       onSortSelect,
       onFilterSelect,
       onViewSelect,
-      onRssSyncPress,
       onMergeAuthors,
       ...otherProps
     } = this.props;
@@ -339,14 +337,6 @@ class AuthorIndex extends Component {
               spinningName={icons.REFRESH}
               isSpinning={isRefreshingAuthor}
               onPress={this.onRefreshAuthorPress}
-            />
-
-            <PageToolbarButton
-              label={translate('RSSSync')}
-              iconName={icons.RSS}
-              isSpinning={isRssSyncExecuting}
-              isDisabled={hasNoAuthor}
-              onPress={onRssSyncPress}
             />
 
             <PageToolbarSeparator />
@@ -568,7 +558,6 @@ AuthorIndex.propTypes = {
   isRefreshingAuthor: PropTypes.bool.isRequired,
   isOrganizingAuthor: PropTypes.bool.isRequired,
   isRetaggingAuthor: PropTypes.bool.isRequired,
-  isRssSyncExecuting: PropTypes.bool.isRequired,
   isSmallScreen: PropTypes.bool.isRequired,
   isSaving: PropTypes.bool.isRequired,
   saveError: PropTypes.object,
@@ -580,7 +569,6 @@ AuthorIndex.propTypes = {
   onFilterSelect: PropTypes.func.isRequired,
   onViewSelect: PropTypes.func.isRequired,
   onRefreshAuthorPress: PropTypes.func.isRequired,
-  onRssSyncPress: PropTypes.func.isRequired,
   onScroll: PropTypes.func.isRequired,
   onSaveSelected: PropTypes.func.isRequired,
   onMergeAuthors: PropTypes.func.isRequired

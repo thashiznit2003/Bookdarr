@@ -89,22 +89,6 @@ function EditIndexerModalContent(props) {
 
               <FormGroup>
                 <FormLabel>
-                  {translate('EnableRSS')}
-                </FormLabel>
-
-                <FormInputGroup
-                  type={inputTypes.CHECK}
-                  name="enableRss"
-                  helpText={supportsRss.value ? translate('EnableRssHelpText') : undefined}
-                  helpTextWarning={supportsRss.value ? undefined : translate('SupportsRssvalueRSSIsNotSupportedWithThisIndexer')}
-                  isDisabled={!supportsRss.value}
-                  {...enableRss}
-                  onChange={onInputChange}
-                />
-              </FormGroup>
-
-              <FormGroup>
-                <FormLabel>
                   {translate('EnableAutomaticSearch')}
                 </FormLabel>
 

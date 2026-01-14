@@ -4,10 +4,8 @@ namespace Readarr.Api.V1.Indexers
 {
     public class IndexerResource : ProviderResource<IndexerResource>
     {
-        public bool EnableRss { get; set; }
         public bool EnableAutomaticSearch { get; set; }
         public bool EnableInteractiveSearch { get; set; }
-        public bool SupportsRss { get; set; }
         public bool SupportsSearch { get; set; }
         public DownloadProtocol Protocol { get; set; }
         public int Priority { get; set; }
@@ -25,10 +23,8 @@ namespace Readarr.Api.V1.Indexers
 
             var resource = base.ToResource(definition);
 
-            resource.EnableRss = definition.EnableRss;
             resource.EnableAutomaticSearch = definition.EnableAutomaticSearch;
             resource.EnableInteractiveSearch = definition.EnableInteractiveSearch;
-            resource.SupportsRss = definition.SupportsRss;
             resource.SupportsSearch = definition.SupportsSearch;
             resource.Protocol = definition.Protocol;
             resource.Priority = definition.Priority;
@@ -46,7 +42,6 @@ namespace Readarr.Api.V1.Indexers
 
             var definition = base.ToModel(resource);
 
-            definition.EnableRss = resource.EnableRss;
             definition.EnableAutomaticSearch = resource.EnableAutomaticSearch;
             definition.EnableInteractiveSearch = resource.EnableInteractiveSearch;
             definition.Priority = resource.Priority;

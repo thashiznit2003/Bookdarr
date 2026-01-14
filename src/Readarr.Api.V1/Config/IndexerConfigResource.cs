@@ -8,7 +8,6 @@ namespace Readarr.Api.V1.Config
         public int MinimumAge { get; set; }
         public int MaximumSize { get; set; }
         public int Retention { get; set; }
-        public int RssSyncInterval { get; set; }
     }
 
     public static class IndexerConfigResourceMapper
@@ -20,7 +19,6 @@ namespace Readarr.Api.V1.Config
                 MinimumAge = model.MinimumAge,
                 MaximumSize = model.MaximumSize,
                 Retention = model.Retention,
-                RssSyncInterval = model.RssSyncInterval,
             };
         }
     }

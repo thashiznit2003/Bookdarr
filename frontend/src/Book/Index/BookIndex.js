@@ -291,7 +291,6 @@ class BookIndex extends Component {
       sortDirection,
       view,
       isRefreshingBook,
-      isRssSyncExecuting,
       isSearching,
       isSaving,
       saveError,
@@ -301,7 +300,6 @@ class BookIndex extends Component {
       onSortSelect,
       onFilterSelect,
       onViewSelect,
-      onRssSyncPress,
       ...otherProps
     } = this.props;
 
@@ -340,14 +338,6 @@ class BookIndex extends Component {
               spinningName={icons.REFRESH}
               isSpinning={isRefreshingBook}
               onPress={this.onRefreshBookPress}
-            />
-
-            <PageToolbarButton
-              label={translate('RSSSync')}
-              iconName={icons.RSS}
-              isSpinning={isRssSyncExecuting}
-              isDisabled={hasNoAuthor}
-              onPress={onRssSyncPress}
             />
 
             <PageToolbarSeparator />
@@ -591,7 +581,6 @@ BookIndex.propTypes = {
   view: PropTypes.string.isRequired,
   isRefreshingBook: PropTypes.bool.isRequired,
   isSearching: PropTypes.bool.isRequired,
-  isRssSyncExecuting: PropTypes.bool.isRequired,
   isSmallScreen: PropTypes.bool.isRequired,
   isSaving: PropTypes.bool.isRequired,
   saveError: PropTypes.object,
@@ -601,7 +590,6 @@ BookIndex.propTypes = {
   onFilterSelect: PropTypes.func.isRequired,
   onViewSelect: PropTypes.func.isRequired,
   onRefreshBookPress: PropTypes.func.isRequired,
-  onRssSyncPress: PropTypes.func.isRequired,
   onSearchPress: PropTypes.func.isRequired,
   onScroll: PropTypes.func.isRequired,
   onSaveSelected: PropTypes.func.isRequired

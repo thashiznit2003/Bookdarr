@@ -10,7 +10,6 @@ namespace NzbDrone.Core.Indexers
 {
     public interface IIndexerFactory : IProviderFactory<IIndexer, IndexerDefinition>
     {
-        List<IIndexer> RssEnabled(bool filterBlockedIndexers = true);
         List<IIndexer> AutomaticSearchEnabled(bool filterBlockedIndexers = true);
         List<IIndexer> InteractiveSearchEnabled(bool filterBlockedIndexers = true);
     }
@@ -42,20 +41,7 @@ namespace NzbDrone.Core.Indexers
             base.SetProviderCharacteristics(provider, definition);
 
             definition.Protocol = provider.Protocol;
-            definition.SupportsRss = provider.SupportsRss;
             definition.SupportsSearch = provider.SupportsSearch;
-        }
-
-        public List<IIndexer> RssEnabled(bool filterBlockedIndexers = true)
-        {
-            var enabledIndexers = GetAvailableProviders().Where(n => ((IndexerDefinition)n.Definition).EnableRss);
-
-            if (filterBlockedIndexers)
-            {
-                return FilterBlockedIndexers(enabledIndexers).ToList();
-            }
-
-            return enabledIndexers.ToList();
         }
 
         public List<IIndexer> AutomaticSearchEnabled(bool filterBlockedIndexers = true)

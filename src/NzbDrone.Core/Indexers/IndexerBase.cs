@@ -25,7 +25,6 @@ namespace NzbDrone.Core.Indexers
         public abstract DownloadProtocol Protocol { get; }
         public int Priority { get; set; }
 
-        public abstract bool SupportsRss { get; }
         public abstract bool SupportsSearch { get; }
 
         public IndexerBase(IIndexerStatusService indexerStatusService, IConfigService configService, IParsingService parsingService, Logger logger)
@@ -49,7 +48,6 @@ namespace NzbDrone.Core.Indexers
                 yield return new IndexerDefinition
                 {
                     Name = GetType().Name,
-                    EnableRss = config.Validate().IsValid && SupportsRss,
                     EnableAutomaticSearch = config.Validate().IsValid && SupportsSearch,
                     EnableInteractiveSearch = config.Validate().IsValid && SupportsSearch,
                     Implementation = GetType().Name,
@@ -67,7 +65,6 @@ namespace NzbDrone.Core.Indexers
 
         protected TSettings Settings => (TSettings)Definition.Settings;
 
-        public abstract Task<IList<ReleaseInfo>> FetchRecent();
         public abstract Task<IList<ReleaseInfo>> Fetch(BookSearchCriteria searchCriteria);
         public abstract Task<IList<ReleaseInfo>> Fetch(AuthorSearchCriteria searchCriteria);
         public abstract HttpRequest GetDownloadRequest(string link);

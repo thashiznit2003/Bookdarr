@@ -13,7 +13,6 @@ namespace NzbDrone.Core.Indexers.Gazelle
     {
         public override string Name => "Gazelle API";
         public override DownloadProtocol Protocol => DownloadProtocol.Torrent;
-        public override bool SupportsRss => true;
         public override bool SupportsSearch => true;
         public override int PageSize => 50;
 
@@ -50,14 +49,12 @@ namespace NzbDrone.Core.Indexers.Gazelle
         {
             return new IndexerDefinition
             {
-                EnableRss = false,
                 EnableAutomaticSearch = false,
                 EnableInteractiveSearch = false,
                 Name = name,
                 Implementation = GetType().Name,
                 Settings = settings,
                 Protocol = DownloadProtocol.Torrent,
-                SupportsRss = SupportsRss,
                 SupportsSearch = SupportsSearch
             };
         }

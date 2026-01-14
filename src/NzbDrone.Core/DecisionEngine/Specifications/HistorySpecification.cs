@@ -9,7 +9,7 @@ using NzbDrone.Core.IndexerSearch.Definitions;
 using NzbDrone.Core.Parser.Model;
 using NzbDrone.Core.Qualities;
 
-namespace NzbDrone.Core.DecisionEngine.Specifications.RssSync
+namespace NzbDrone.Core.DecisionEngine.Specifications
 {
     public class HistorySpecification : IDecisionEngineSpecification
     {

@@ -9,11 +9,9 @@ namespace NzbDrone.Core.Indexers
 {
     public interface IIndexer : IProvider
     {
-        bool SupportsRss { get; }
         bool SupportsSearch { get; }
         DownloadProtocol Protocol { get; }
 
-        Task<IList<ReleaseInfo>> FetchRecent();
         Task<IList<ReleaseInfo>> Fetch(BookSearchCriteria searchCriteria);
         Task<IList<ReleaseInfo>> Fetch(AuthorSearchCriteria searchCriteria);
         HttpRequest GetDownloadRequest(string link);

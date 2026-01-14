@@ -13,7 +13,6 @@ import styles from './ManageIndexersModalRow.css';
 interface ManageIndexersModalRowProps {
   id: number;
   name: string;
-  enableRss: boolean;
   enableAutomaticSearch: boolean;
   enableInteractiveSearch: boolean;
   priority: number;
@@ -29,7 +28,6 @@ function ManageIndexersModalRow(props: ManageIndexersModalRowProps) {
     id,
     isSelected,
     name,
-    enableRss,
     enableAutomaticSearch,
     enableInteractiveSearch,
     priority,
@@ -59,15 +57,6 @@ function ManageIndexersModalRow(props: ManageIndexersModalRowProps) {
 
       <TableRowCell className={styles.implementation}>
         {implementation}
-      </TableRowCell>
-
-      <TableRowCell className={styles.enableRss}>
-        <Label
-          kind={enableRss ? kinds.SUCCESS : kinds.DISABLED}
-          outline={!enableRss}
-        >
-          {enableRss ? translate('Yes') : translate('No')}
-        </Label>
       </TableRowCell>
 
       <TableRowCell className={styles.enableAutomaticSearch}>

@@ -6,7 +6,7 @@ using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.Parser.Model;
 using NzbDrone.Core.Qualities;
 
-namespace NzbDrone.Core.DecisionEngine.Specifications.RssSync
+namespace NzbDrone.Core.DecisionEngine.Specifications
 {
     public class ProperSpecification : IDecisionEngineSpecification
     {

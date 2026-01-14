@@ -7,7 +7,7 @@ using NzbDrone.Core.Parser.Model;
 using NzbDrone.Core.Profiles.Delay;
 using NzbDrone.Core.Qualities;
 
-namespace NzbDrone.Core.DecisionEngine.Specifications.RssSync
+namespace NzbDrone.Core.DecisionEngine.Specifications
 {
     public class DelaySpecification : IDecisionEngineSpecification
     {

@@ -24,7 +24,6 @@ namespace NzbDrone.Core.Indexers
 
         protected readonly IHttpClient _httpClient;
 
-        public override bool SupportsRss => true;
         public override bool SupportsSearch => true;
         public bool SupportsPaging => PageSize > 0;
 
@@ -38,16 +37,6 @@ namespace NzbDrone.Core.Indexers
             : base(indexerStatusService, configService, parsingService, logger)
         {
             _httpClient = httpClient;
-        }
-
-        public override Task<IList<ReleaseInfo>> FetchRecent()
-        {
-            if (!SupportsRss)
-            {
-                return Task.FromResult<IList<ReleaseInfo>>(Array.Empty<ReleaseInfo>());
-            }
-
-            return FetchReleases(g => g.GetRecentRequests(), true);
         }
 
         public override Task<IList<ReleaseInfo>> Fetch(BookSearchCriteria searchCriteria)
@@ -75,7 +64,7 @@ namespace NzbDrone.Core.Indexers
             return new HttpRequest(link);
         }
 
-        protected virtual async Task<IList<ReleaseInfo>> FetchReleases(Func<IIndexerRequestGenerator, IndexerPageableRequestChain> pageableRequestChainSelector, bool isRecent = false)
+        protected virtual async Task<IList<ReleaseInfo>> FetchReleases(Func<IIndexerRequestGenerator, IndexerPageableRequestChain> pageableRequestChainSelector)
         {
             var releases = new List<ReleaseInfo>();
             var url = string.Empty;
@@ -87,13 +76,6 @@ namespace NzbDrone.Core.Indexers
                 var parser = GetParser();
 
                 var pageableRequestChain = pageableRequestChainSelector(generator);
-
-                var fullyUpdated = false;
-                ReleaseInfo lastReleaseInfo = null;
-                if (isRecent)
-                {
-                    lastReleaseInfo = _indexerStatusService.GetLastRssSyncReleaseInfo(Definition.Id);
-                }
 
                 for (var i = 0; i < pageableRequestChain.Tiers; i++)
                 {
@@ -111,29 +93,7 @@ namespace NzbDrone.Core.Indexers
 
                             pagedReleases.AddRange(page);
 
-                            if (isRecent && page.Any())
-                            {
-                                if (lastReleaseInfo == null)
-                                {
-                                    fullyUpdated = true;
-                                    break;
-                                }
-
-                                var oldestReleaseDate = page.Select(v => v.PublishDate).Min();
-                                if (oldestReleaseDate < lastReleaseInfo.PublishDate || page.Any(v => v.DownloadUrl == lastReleaseInfo.DownloadUrl))
-                                {
-                                    fullyUpdated = true;
-                                    break;
-                                }
-
-                                if (pagedReleases.Count >= MaxNumResultsPerQuery &&
-                                    oldestReleaseDate < DateTime.UtcNow - TimeSpan.FromHours(24))
-                                {
-                                    fullyUpdated = false;
-                                    break;
-                                }
-                            }
-                            else if (pagedReleases.Count >= MaxNumResultsPerQuery)
+                            if (pagedReleases.Count >= MaxNumResultsPerQuery)
                             {
                                 break;
                             }
@@ -151,21 +111,6 @@ namespace NzbDrone.Core.Indexers
                     {
                         break;
                     }
-                }
-
-                if (isRecent && !releases.Empty())
-                {
-                    var ordered = releases.OrderByDescending(v => v.PublishDate).ToList();
-
-                    if (!fullyUpdated && lastReleaseInfo != null)
-                    {
-                        var gapStart = lastReleaseInfo.PublishDate;
-                        var gapEnd = ordered.Last().PublishDate;
-                        _logger.Warn("Indexer {0} rss sync didn't cover the period between {1} and {2} UTC. Search may be required.", Definition.Name, gapStart, gapEnd);
-                    }
-
-                    lastReleaseInfo = ordered.First();
-                    _indexerStatusService.UpdateRssSyncStatus(Definition.Id, lastReleaseInfo);
                 }
 
                 _indexerStatusService.RecordSuccess(Definition.Id);
@@ -326,7 +271,7 @@ namespace NzbDrone.Core.Indexers
 
                 if (firstRequest == null)
                 {
-                    return new ValidationFailure(string.Empty, "No rss feed query available. This may be an issue with the indexer or your indexer category settings.");
+                    return new ValidationFailure(string.Empty, "No query available. This may be an issue with the indexer or your indexer category settings.");
                 }
 
                 var releases = await FetchPage(firstRequest, parser);
@@ -338,7 +283,7 @@ namespace NzbDrone.Core.Indexers
             }
             catch (ApiKeyException ex)
             {
-                _logger.Warn("Indexer returned result for RSS URL, API Key appears to be invalid: " + ex.Message);
+                _logger.Warn("Indexer returned result, API Key appears to be invalid: " + ex.Message);
 
                 return new ValidationFailure("ApiKey", "Invalid API Key");
             }

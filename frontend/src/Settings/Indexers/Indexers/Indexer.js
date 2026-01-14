@@ -66,12 +66,10 @@ class Indexer extends Component {
     const {
       id,
       name,
-      enableRss,
       enableAutomaticSearch,
       enableInteractiveSearch,
       tags,
       tagList,
-      supportsRss,
       supportsSearch,
       priority,
       showPriority
@@ -99,13 +97,6 @@ class Indexer extends Component {
         <div className={styles.enabled}>
 
           {
-            supportsRss && enableRss &&
-              <Label kind={kinds.SUCCESS}>
-                RSS
-              </Label>
-          }
-
-          {
             supportsSearch && enableAutomaticSearch &&
               <Label kind={kinds.SUCCESS}>
                 Automatic Search
@@ -126,7 +117,7 @@ class Indexer extends Component {
               </Label>
           }
           {
-            !enableRss && !enableAutomaticSearch && !enableInteractiveSearch &&
+            !enableAutomaticSearch && !enableInteractiveSearch &&
               <Label
                 kind={kinds.DISABLED}
                 outline={true}
@@ -166,12 +157,10 @@ Indexer.propTypes = {
   id: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   priority: PropTypes.number.isRequired,
-  enableRss: PropTypes.bool.isRequired,
   enableAutomaticSearch: PropTypes.bool.isRequired,
   enableInteractiveSearch: PropTypes.bool.isRequired,
   tags: PropTypes.arrayOf(PropTypes.number).isRequired,
   tagList: PropTypes.arrayOf(PropTypes.object).isRequired,
-  supportsRss: PropTypes.bool.isRequired,
   supportsSearch: PropTypes.bool.isRequired,
   showPriority: PropTypes.bool.isRequired,
   onCloneIndexerPress: PropTypes.func.isRequired,

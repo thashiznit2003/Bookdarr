@@ -104,13 +104,6 @@ namespace NzbDrone.Core.Configuration
             set { SetValue("RecycleBinCleanupDays", value); }
         }
 
-        public int RssSyncInterval
-        {
-            get { return GetValueInt("RssSyncInterval", 15); }
-
-            set { SetValue("RssSyncInterval", value); }
-        }
-
         public int MaximumSize
         {
             get { return GetValueInt("MaximumSize", 0); }

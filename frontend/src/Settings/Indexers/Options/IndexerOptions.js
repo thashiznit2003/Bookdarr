@@ -84,27 +84,6 @@ function IndexerOptions(props) {
                 {...settings.retention}
               />
             </FormGroup>
-
-            <FormGroup
-              advancedSettings={advancedSettings}
-              isAdvanced={true}
-            >
-              <FormLabel>
-                {translate('RSSSyncInterval')}
-              </FormLabel>
-
-              <FormInputGroup
-                type={inputTypes.NUMBER}
-                name="rssSyncInterval"
-                min={0}
-                unit="minutes"
-                helpText={translate('RssSyncIntervalHelpText')}
-                helpTextWarning={translate('ThisWillApplyToAllIndexersPleaseFollowTheRulesSetForthByThem')}
-                helpLink="https://wiki.servarr.com/readarr/faq#how-does-readarr-work"
-                onChange={onInputChange}
-                {...settings.rssSyncInterval}
-              />
-            </FormGroup>
           </Form>
       }
     </FieldSet>

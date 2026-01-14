@@ -24,6 +24,5 @@ export const RETAG_FILES = 'RetagFiles';
 export const RETAG_AUTHOR = 'RetagAuthor';
 export const RESET_API_KEY = 'ResetApiKey';
 export const RESET_QUALITY_DEFINITIONS = 'ResetQualityDefinitions';
-export const RSS_SYNC = 'RssSync';
 export const SEASON_SEARCH = 'BookSearch';
 export const AUTHOR_SEARCH = 'AuthorSearch';

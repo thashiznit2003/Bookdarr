@@ -34,8 +34,7 @@ namespace NzbDrone.Core.Download.Pending
 
     public class PendingReleaseService : IPendingReleaseService,
                                          IHandle<AuthorDeletedEvent>,
-                                         IHandle<BookGrabbedEvent>,
-                                         IHandle<RssSyncCompleteEvent>
+                                         IHandle<BookGrabbedEvent>
     {
         private readonly IIndexerStatusService _indexerStatusService;
         private readonly IPendingReleaseRepository _repository;
@@ -178,23 +177,13 @@ namespace NzbDrone.Core.Download.Pending
         {
             var queued = new List<Queue.Queue>();
 
-            var nextRssSync = new Lazy<DateTime>(() => _taskManager.GetNextExecution(typeof(RssSyncCommand)));
-
             var pendingReleases = IncludeRemoteBooks(_repository.WithoutFallback());
             foreach (var pendingRelease in pendingReleases)
             {
                 foreach (var book in pendingRelease.RemoteBook.Books)
                 {
+                    // Calculate estimated completion time based on publish date + delay profile
                     var ect = pendingRelease.Release.PublishDate.AddMinutes(GetDelay(pendingRelease.RemoteBook));
-
-                    if (ect < nextRssSync.Value)
-                    {
-                        ect = nextRssSync.Value;
-                    }
-                    else
-                    {
-                        ect = ect.AddMinutes(_configService.RssSyncInterval);
-                    }
 
                     var timeleft = ect.Subtract(DateTime.UtcNow);
 
@@ -471,11 +460,6 @@ namespace NzbDrone.Core.Download.Pending
         public void Handle(BookGrabbedEvent message)
         {
             RemoveGrabbed(message.Book);
-        }
-
-        public void Handle(RssSyncCompleteEvent message)
-        {
-            RemoveRejected(message.ProcessedDecisions.Rejected);
         }
 
         private static Func<PendingRelease, bool> MatchingReleasePredicate(ReleaseInfo release)

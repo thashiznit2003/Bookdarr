@@ -12,7 +12,6 @@ import translate from 'Utilities/String/translate';
 import styles from './ManageIndexersEditModalContent.css';
 
 interface SavePayload {
-  enableRss?: boolean;
   enableAutomaticSearch?: boolean;
   enableInteractiveSearch?: boolean;
   priority?: number;
@@ -53,7 +52,6 @@ function ManageIndexersEditModalContent(
 ) {
   const { indexerIds, onSavePress, onModalClose } = props;
 
-  const [enableRss, setEnableRss] = useState(NO_CHANGE);
   const [enableAutomaticSearch, setEnableAutomaticSearch] = useState(NO_CHANGE);
   const [enableInteractiveSearch, setEnableInteractiveSearch] =
     useState(NO_CHANGE);
@@ -62,11 +60,6 @@ function ManageIndexersEditModalContent(
   const save = useCallback(() => {
     let hasChanges = false;
     const payload: SavePayload = {};
-
-    if (enableRss !== NO_CHANGE) {
-      hasChanges = true;
-      payload.enableRss = enableRss === 'enabled';
-    }
 
     if (enableAutomaticSearch !== NO_CHANGE) {
       hasChanges = true;
@@ -100,9 +93,6 @@ function ManageIndexersEditModalContent(
   const onInputChange = useCallback(
     ({ name, value }: { name: string; value: string }) => {
       switch (name) {
-        case 'enableRss':
-          setEnableRss(value);
-          break;
         case 'enableAutomaticSearch':
           setEnableAutomaticSearch(value);
           break;
@@ -126,18 +116,6 @@ function ManageIndexersEditModalContent(
       <ModalHeader>{translate('EditSelectedIndexers')}</ModalHeader>
 
       <ModalBody>
-        <FormGroup>
-          <FormLabel>{translate('EnableRSS')}</FormLabel>
-
-          <FormInputGroup
-            type={inputTypes.SELECT}
-            name="enableRss"
-            value={enableRss}
-            values={enableOptions}
-            onChange={onInputChange}
-          />
-        </FormGroup>
-
         <FormGroup>
           <FormLabel>{translate('EnableAutomaticSearch')}</FormLabel>
 

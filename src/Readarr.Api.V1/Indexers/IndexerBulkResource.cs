@@ -5,7 +5,6 @@ namespace Readarr.Api.V1.Indexers
 {
     public class IndexerBulkResource : ProviderBulkResource<IndexerBulkResource>
     {
-        public bool? EnableRss { get; set; }
         public bool? EnableAutomaticSearch { get; set; }
         public bool? EnableInteractiveSearch { get; set; }
         public int? Priority { get; set; }
@@ -22,7 +21,6 @@ namespace Readarr.Api.V1.Indexers
 
             existingDefinitions.ForEach(existing =>
             {
-                existing.EnableRss = resource.EnableRss ?? existing.EnableRss;
                 existing.EnableAutomaticSearch = resource.EnableAutomaticSearch ?? existing.EnableAutomaticSearch;
                 existing.EnableInteractiveSearch = resource.EnableInteractiveSearch ?? existing.EnableInteractiveSearch;
                 existing.Priority = resource.Priority ?? existing.Priority;
