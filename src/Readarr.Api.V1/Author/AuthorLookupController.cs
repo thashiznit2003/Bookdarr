@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using NzbDrone.Common.Extensions;
+using NzbDrone.Core.Books;
 using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MetadataSource;
 using NzbDrone.Core.Organizer;
@@ -26,6 +28,20 @@ namespace Readarr.Api.V1.Author
         public object Search([FromQuery] string term)
         {
             var searchResults = _searchProxy.SearchForNewAuthor(term);
+
+            if (!searchResults.Any())
+            {
+                var fallbackResults = _searchProxy.SearchForNewEntity(term)
+                    .OfType<Author>()
+                    .DistinctBy(a => a.ForeignAuthorId)
+                    .ToList();
+
+                if (fallbackResults.Any())
+                {
+                    searchResults = fallbackResults;
+                }
+            }
+
             return MapToResource(searchResults).ToList();
         }
 

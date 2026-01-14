@@ -1,6 +1,13 @@
 # Changelog
 
--## 1.2.307
+## 1.2.308
+- Summary: keep author lookups working by falling back to the general search proxy.
+- Why: the Google Books/Goodreads author search can return empty results after the first lookup, leaving `author/lookup` unusable for subsequent queries.
+- Impact: `AuthorLookupController` now falls back to `_searchProxy.SearchForNewEntity(term)` (filtered to authors) whenever the direct author search returns nothing, so every author search continues returning results even if one query fails.
+- Files: src/Readarr.Api.V1/Author/AuthorLookupController.cs, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun the author search flow for several distinct authors and confirm each term returns data instead of empty arrays.
+
+## 1.2.307
 - Summary: renumber the RSS removal migration to avoid version conflicts.
 - Why: both the conversion error migration and the RSS cleanup shared version 044, which caused startup to throw `DuplicateMigrationException`.
 - Impact: the RSS migration file now lives at `src/NzbDrone.Core/Datastore/Migration/045_remove_rss_functionality.cs` with `[Migration(045)]`, so the database upgrades run once and finish cleanly.
