@@ -3,7 +3,7 @@ using NzbDrone.Core.Datastore.Migration.Framework;
 
 namespace NzbDrone.Core.Datastore.Migration
 {
-    [Migration(044)]
+    [Migration(045)]
     public class remove_rss_functionality : NzbDroneMigrationBase
     {
         protected override void MainDbUpgrade()
