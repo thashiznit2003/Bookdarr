@@ -18,7 +18,6 @@ function createMapStateToProps() {
     createBookClientSideCollectionItemsSelector('bookIndex'),
     createCommandExecutingSelector(commandNames.BULK_REFRESH_AUTHOR),
     createCommandExecutingSelector(commandNames.BULK_REFRESH_BOOK),
-    createCommandExecutingSelector(commandNames.RSS_SYNC),
     createCommandExecutingSelector(commandNames.CUTOFF_UNMET_BOOK_SEARCH),
     createCommandExecutingSelector(commandNames.MISSING_BOOK_SEARCH),
     createDimensionsSelector(),
@@ -26,7 +25,6 @@ function createMapStateToProps() {
       book,
       isRefreshingAuthorCommand,
       isRefreshingBookCommand,
-      isRssSyncExecuting,
       isCutoffBooksSearch,
       isMissingBooksSearch,
       dimensionsState
@@ -35,7 +33,6 @@ function createMapStateToProps() {
       return {
         ...book,
         isRefreshingBook,
-        isRssSyncExecuting,
         isSearching: isCutoffBooksSearch || isMissingBooksSearch,
         isSmallScreen: dimensionsState.isSmallScreen
       };
@@ -69,12 +66,6 @@ function createMapDispatchToProps(dispatch, props) {
       dispatch(executeCommand({
         name: commandNames.BULK_REFRESH_BOOK,
         bookIds: items
-      }));
-    },
-
-    onRssSyncPress() {
-      dispatch(executeCommand({
-        name: commandNames.RSS_SYNC
       }));
     },
 

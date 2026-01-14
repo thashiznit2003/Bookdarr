@@ -82,7 +82,6 @@ function ManageIndexersEditModalContent(
 
     onModalClose();
   }, [
-    enableRss,
     enableAutomaticSearch,
     enableInteractiveSearch,
     priority,
