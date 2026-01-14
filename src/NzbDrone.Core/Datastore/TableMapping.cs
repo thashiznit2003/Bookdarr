@@ -70,7 +70,6 @@ namespace NzbDrone.Core.Datastore
                   .Ignore(x => x.ImplementationName)
                   .Ignore(i => i.Enable)
                   .Ignore(i => i.Protocol)
-                  .Ignore(i => i.SupportsRss)
                   .Ignore(i => i.SupportsSearch);
 
             Mapper.Entity<ImportListDefinition>("ImportLists").RegisterModel()
