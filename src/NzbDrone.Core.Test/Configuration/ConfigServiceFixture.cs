@@ -18,36 +18,11 @@ namespace NzbDrone.Core.Test.Configuration
         }
 
         [Test]
-        public void Add_new_value_to_database()
-        {
-            const string key = "RssSyncInterval";
-            const int value = 12;
-
-            Subject.RssSyncInterval = value;
-
-            AssertUpsert(key, value);
-        }
-
-        [Test]
-        public void Get_value_should_return_default_when_no_value()
-        {
-            Subject.RssSyncInterval.Should().Be(15);
-        }
-
-        [Test]
         public void get_value_with_persist_should_store_default_value()
         {
             var salt = Subject.HmacSalt;
             salt.Should().NotBeNullOrWhiteSpace();
             AssertUpsert("HmacSalt", salt);
-        }
-
-        [Test]
-        public void get_value_with_out_persist_should_not_store_default_value()
-        {
-            var interval = Subject.RssSyncInterval;
-            interval.Should().Be(15);
-            Mocker.GetMock<IConfigRepository>().Verify(c => c.Insert(It.IsAny<Config>()), Times.Never());
         }
 
         private void AssertUpsert(string key, object value)

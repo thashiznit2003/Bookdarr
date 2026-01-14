@@ -6,7 +6,6 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using NzbDrone.Common.Extensions;
-using NzbDrone.Core.Indexers;
 using NzbDrone.Core.IndexerSearch;
 using NzbDrone.Core.MediaFiles.BookImport.Manual;
 using NzbDrone.Core.MediaFiles.Commands;
@@ -72,7 +71,7 @@ namespace NzbDrone.Core.Test.Messaging.Commands
         [Test]
         public void should_return_false_when_commands_are_diffrent_types()
         {
-            CommandEqualityComparer.Instance.Equals(new RssSyncCommand(), new ApplicationUpdateCommand()).Should().BeFalse();
+            CommandEqualityComparer.Instance.Equals(new BookSearchCommand(), new ApplicationUpdateCommand()).Should().BeFalse();
         }
 
         [Test]

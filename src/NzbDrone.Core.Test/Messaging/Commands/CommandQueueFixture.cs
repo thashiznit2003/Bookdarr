@@ -4,7 +4,6 @@ using NUnit.Framework;
 using NzbDrone.Core.Books.Commands;
 using NzbDrone.Core.Download;
 using NzbDrone.Core.ImportLists;
-using NzbDrone.Core.Indexers;
 using NzbDrone.Core.Messaging.Commands;
 using NzbDrone.Core.Test.Framework;
 using NzbDrone.Core.Update.Commands;
@@ -30,8 +29,8 @@ namespace NzbDrone.Core.Test.Messaging.Commands
         {
             var commandModel = Builder<CommandModel>
                 .CreateNew()
-                .With(c => c.Name = "RssSync")
-                .With(c => c.Body = new RssSyncCommand())
+                .With(c => c.Name = "RefreshBook")
+                .With(c => c.Body = new RefreshBookCommand())
                 .With(c => c.Status = CommandStatus.Started)
                 .Build();
 

@@ -82,7 +82,6 @@ namespace Readarr.Api.V1.Indexers
                 AppendLine(builder, "Implementation Id", resource.Implementation);
                 AppendLine(builder, "Protocol", resource.Protocol.ToString());
                 AppendLine(builder, "Priority", resource.Priority.ToString(CultureInfo.InvariantCulture));
-                AppendLine(builder, "Enable RSS", resource.EnableRss.ToString());
                 AppendLine(builder, "Enable Automatic Search", resource.EnableAutomaticSearch.ToString());
                 AppendLine(builder, "Enable Interactive Search", resource.EnableInteractiveSearch.ToString());
                 AppendLine(builder, "Download Client Id", resource.DownloadClientId.ToString(CultureInfo.InvariantCulture));
@@ -289,11 +288,6 @@ namespace Readarr.Api.V1.Indexers
 
         private static void ApplyHeaderValues(IndexerResource resource, IReadOnlyDictionary<string, string> headerValues)
         {
-            if (TryGetBool(headerValues, "Enable RSS", out var enableRss))
-            {
-                resource.EnableRss = enableRss;
-            }
-
             if (TryGetBool(headerValues, "Enable Automatic Search", out var enableAutomaticSearch))
             {
                 resource.EnableAutomaticSearch = enableAutomaticSearch;

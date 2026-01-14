@@ -19,9 +19,6 @@ namespace Readarr.Api.V1.Config
 
             SharedValidator.RuleFor(c => c.Retention)
                            .GreaterThanOrEqualTo(0);
-
-            SharedValidator.RuleFor(c => c.RssSyncInterval)
-                           .IsValidRssSyncInterval();
         }
 
         protected override IndexerConfigResource ToResource(IConfigService model)

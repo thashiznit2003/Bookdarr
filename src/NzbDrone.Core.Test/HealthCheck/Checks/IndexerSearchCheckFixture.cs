@@ -33,10 +33,9 @@ namespace NzbDrone.Core.Test.HealthCheck.Checks
                   .Returns("Some Warning Message");
         }
 
-        private void GivenIndexer(bool supportsRss, bool supportsSearch)
+        private void GivenIndexer(bool supportsSearch)
         {
             _indexerMock = Mocker.GetMock<IIndexer>();
-            _indexerMock.SetupGet(s => s.SupportsRss).Returns(supportsRss);
             _indexerMock.SetupGet(s => s.SupportsSearch).Returns(supportsSearch);
 
             Mocker.GetMock<IIndexerFactory>()
@@ -82,7 +81,7 @@ namespace NzbDrone.Core.Test.HealthCheck.Checks
         [Test]
         public void should_return_warning_when_no_search_supported_indexer_present()
         {
-            GivenIndexer(true, false);
+            GivenIndexer(false);
 
             Subject.Check().ShouldBeWarning();
         }
@@ -90,7 +89,7 @@ namespace NzbDrone.Core.Test.HealthCheck.Checks
         [Test]
         public void should_return_ok_when_automatic_and__search_is_enabled()
         {
-            GivenIndexer(false, true);
+            GivenIndexer(true);
             GivenAutomaticSearchEnabled();
             GivenInteractiveSearchEnabled();
 
@@ -100,7 +99,7 @@ namespace NzbDrone.Core.Test.HealthCheck.Checks
         [Test]
         public void should_return_warning_when_only_automatic_search_is_enabled()
         {
-            GivenIndexer(false, true);
+            GivenIndexer(true);
             GivenAutomaticSearchEnabled();
 
             Subject.Check().ShouldBeWarning();
@@ -109,7 +108,7 @@ namespace NzbDrone.Core.Test.HealthCheck.Checks
         [Test]
         public void should_return_warning_when_only_interactive_search_is_enabled()
         {
-            GivenIndexer(false, true);
+            GivenIndexer(true);
             GivenInteractiveSearchEnabled();
 
             Subject.Check().ShouldBeWarning();
@@ -118,7 +117,7 @@ namespace NzbDrone.Core.Test.HealthCheck.Checks
         [Test]
         public void should_return_warning_if_search_is_supported_but_disabled()
         {
-            GivenIndexer(false, true);
+            GivenIndexer(true);
 
             Subject.Check().ShouldBeWarning();
         }
@@ -126,7 +125,7 @@ namespace NzbDrone.Core.Test.HealthCheck.Checks
         [Test]
         public void should_return_filter_warning_if_search_is_enabled_but_filtered()
         {
-            GivenIndexer(false, true);
+            GivenIndexer(true);
             GivenSearchFiltered();
 
             Subject.Check().ShouldBeWarning("recent indexer errors");
