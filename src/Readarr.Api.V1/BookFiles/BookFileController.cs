@@ -206,7 +206,79 @@ namespace Readarr.Api.V1.BookFiles
                 throw new NzbDroneClientException(HttpStatusCode.NotFound, "Book file not found");
             }
 
-            return PhysicalFile(path, GetContentType(path), enableRangeProcessing: true);
+            var result = PhysicalFile(path, GetContentType(path), enableRangeProcessing: true);
+            var downloadFileName = BuildDownloadFileName(bookFile);
+
+            if (!string.IsNullOrWhiteSpace(downloadFileName))
+            {
+                result.FileDownloadName = downloadFileName;
+            }
+
+            return result;
+        }
+
+        private string BuildDownloadFileName(BookFile bookFile)
+        {
+            var title = GetPreferredTitle(bookFile) ?? string.Empty;
+            var cleanedTitle = SanitizeFileName(title);
+            if (string.IsNullOrWhiteSpace(cleanedTitle))
+            {
+                cleanedTitle = Path.GetFileNameWithoutExtension(bookFile.Path);
+            }
+
+            var extension = Path.GetExtension(bookFile.Path);
+            return string.IsNullOrWhiteSpace(extension) ? cleanedTitle : $"{cleanedTitle}{extension}";
+        }
+
+        private string GetPreferredTitle(BookFile bookFile)
+        {
+            if (bookFile == null)
+            {
+                return null;
+            }
+
+            var edition = bookFile.Edition?.Value ?? _editionService.GetEdition(bookFile.EditionId);
+            if (edition == null)
+            {
+                return bookFile.GetSceneOrFileName();
+            }
+
+            if (edition.Book?.Value != null)
+            {
+                return edition.Book.Value.Title;
+            }
+
+            if (edition.BookId > 0)
+            {
+                var book = _bookService.GetBook(edition.BookId);
+                if (book != null)
+                {
+                    return book.Title;
+                }
+            }
+
+            if (!edition.Title.IsNullOrWhiteSpace())
+            {
+                return edition.Title;
+            }
+
+            return bookFile.GetSceneOrFileName();
+        }
+
+        private static string SanitizeFileName(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return string.Empty;
+            }
+
+            var sanitized = value.Trim();
+            foreach (var invalidChar in Path.GetInvalidFileNameChars())
+            {
+                sanitized = sanitized.Replace(invalidChar, '_');
+            }
+
+            return sanitized;
         }
 
         [HttpPost("{id:int}/convert/scan")]

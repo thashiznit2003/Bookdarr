@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.312
+- Summary: make audiobook downloads keep the book name and file extension when streamed from the player.
+- Why: the download button returned a `stream` file without an extension or descriptive name, forcing manual renaming.
+- Impact: `BookFileController.StreamBookFile` now sanitizes the book title, reuses the actual extension, and sets the `FileDownloadName`, so browsers download `Title.ext` instead of `stream`.
+- Files: src/Readarr.Api.V1/BookFiles/BookFileController.cs, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun `scripts/update-dev.sh` to confirm the diagnostics build still succeeds and the download prompts for the new filename.
+
 ## 1.2.311
 - Summary: satisfy the analyzers so `AuthorLookupController` builds under the `net10.0` SDK.
 - Why: a misplaced alias and an unused `NzbDrone.Common.Extensions` directive made SA1209/IDE0005 fail during the update script, booting diagnostics before the build could finish.
