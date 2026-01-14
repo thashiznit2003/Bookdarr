@@ -14,6 +14,13 @@
 - Files: src/Readarr.Api.V1/BookFiles/BookFileController.cs, src/Directory.Build.props, CHANGELOG.md.
 - Next: run `scripts/update-dev.sh` again (with the diagnostics repo in place) and confirm the build succeeds with the new logging.
 
+## 1.2.315
+- Summary: silence the diagnostics branch lookup so `update-dev.sh` survives a repo whose `origin/HEAD` isn’t a symbolic ref.
+- Why: the symbolic-ref command still wrote an error to stdout/err despite our earlier patch, and `set -e` caused the script to exit with 128 once the error bubbled up.
+- Impact: the diagnostics helper now runs the command inside `bash -lc ... 2>/dev/null` while `set -e` is temporarily disabled, keeping the lookup from bubbling up any exit code or messages and letting the update finish cleanly.
+- Files: scripts/update-dev.sh, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun `scripts/update-dev.sh` (with diagnostics) and confirm the upgrade completes without triggering the symbolic-ref error.
+
 ## 1.2.312
 - Summary: make audiobook downloads keep the book name and file extension when streamed from the player.
 - Why: the download button returned a `stream` file without an extension or descriptive name, forcing manual renaming.

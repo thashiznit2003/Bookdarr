@@ -328,7 +328,7 @@ PY
   local branch=""
   set +e
   local branch_ref
-  branch_ref="$(run_as_user git -C "${repo_path}" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)"
+  branch_ref="$(run_as_user bash -lc "cd \"${repo_path}\" && git symbolic-ref --short refs/remotes/origin/HEAD" 2>/dev/null)"
   set -e
   branch="${branch_ref##*/}"
   if [ -z "${branch}" ] || [ "${branch}" = "(unknown)" ]; then
