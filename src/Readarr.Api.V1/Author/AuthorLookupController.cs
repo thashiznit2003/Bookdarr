@@ -14,12 +14,18 @@ namespace Readarr.Api.V1.Author
     public class AuthorLookupController : Controller
     {
         private readonly ISearchForNewAuthor _searchProxy;
+        private readonly ISearchForNewEntity _entitySearchProxy;
         private readonly IBuildFileNames _fileNameBuilder;
         private readonly IMapCoversToLocal _coverMapper;
 
-        public AuthorLookupController(ISearchForNewAuthor searchProxy, IBuildFileNames fileNameBuilder, IMapCoversToLocal coverMapper)
+        public AuthorLookupController(
+            ISearchForNewAuthor searchProxy,
+            ISearchForNewEntity entitySearchProxy,
+            IBuildFileNames fileNameBuilder,
+            IMapCoversToLocal coverMapper)
         {
             _searchProxy = searchProxy;
+            _entitySearchProxy = entitySearchProxy;
             _fileNameBuilder = fileNameBuilder;
             _coverMapper = coverMapper;
         }
@@ -31,7 +37,7 @@ namespace Readarr.Api.V1.Author
 
             if (!searchResults.Any())
             {
-                var fallbackResults = _searchProxy.SearchForNewEntity(term)
+                var fallbackResults = _entitySearchProxy.SearchForNewEntity(term)
                     .OfType<Author>()
                     .DistinctBy(a => a.ForeignAuthorId)
                     .ToList();

@@ -7,6 +7,13 @@
 - Files: src/Readarr.Api.V1/Author/AuthorLookupController.cs, src/Directory.Build.props, CHANGELOG.md.
 - Next: rerun the author search flow for several distinct authors and confirm each term returns data instead of empty arrays.
 
+## 1.2.309
+- Summary: inject the general search proxy into `AuthorLookupController`.
+- Why: the fallback branch previously tried to call `ISearchForNewAuthor.SearchForNewEntity`, which doesn’t exist, so the build failed.
+- Impact: the controller now depends on `ISearchForNewEntity` to execute the fallback search, keeping author lookups functional after the first term.
+- Files: src/Readarr.Api.V1/Author/AuthorLookupController.cs, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun the update script and verify the controller compiles without the CS1061 error.
+
 ## 1.2.307
 - Summary: renumber the RSS removal migration to avoid version conflicts.
 - Why: both the conversion error migration and the RSS cleanup shared version 044, which caused startup to throw `DuplicateMigrationException`.
