@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.313
+- Summary: prevent diagnostics pushes from aborting the update when the repo’s `origin/HEAD` isn’t a symbolic ref.
+- Why: the diagnostics repo occasionally resolves `origin/HEAD` to a raw commit, which made `symbolic-ref` fail under `set -e` and returned exit code 1 before the update finished.
+- Impact: `scripts/update-dev.sh` now temporarily disables `errexit` while probing `origin/HEAD`, so the diagnostics branch lookup falls back to the existing logic instead of aborting the update.
+- Files: scripts/update-dev.sh, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun `scripts/update-dev.sh` on the Ubuntu VM to confirm diagnostics push no longer stops the update and it exits with code 0.
+
 ## 1.2.312
 - Summary: make audiobook downloads keep the book name and file extension when streamed from the player.
 - Why: the download button returned a `stream` file without an extension or descriptive name, forcing manual renaming.
