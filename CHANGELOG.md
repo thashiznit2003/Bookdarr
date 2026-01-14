@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.311
+- Summary: satisfy the analyzers so `AuthorLookupController` builds under the `net10.0` SDK.
+- Why: a misplaced alias and an unused `NzbDrone.Common.Extensions` directive made SA1209/IDE0005 fail during the update script, booting diagnostics before the build could finish.
+- Impact: the controller now keeps the `AuthorModel` alias after the namespace imports and drops the unused extension import, so the analyzer errors disappear.
+- Files: src/Readarr.Api.V1/Author/AuthorLookupController.cs, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun `scripts/update-dev.sh` to confirm the StyleCop/IDE analyzers no longer block the build and the UI reports `v1.2.311`.
+
 ## 1.2.308
 - Summary: keep author lookups working by falling back to the general search proxy.
 - Why: the Google Books/Goodreads author search can return empty results after the first lookup, leaving `author/lookup` unusable for subsequent queries.

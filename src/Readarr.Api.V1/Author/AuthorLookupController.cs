@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using NzbDrone.Common.Extensions;
-using AuthorModel = NzbDrone.Core.Books.Author;
 using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MetadataSource;
 using NzbDrone.Core.Organizer;
 using Readarr.Http;
+using AuthorModel = NzbDrone.Core.Books.Author;
 
 namespace Readarr.Api.V1.Author
 {
