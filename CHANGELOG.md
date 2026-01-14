@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.304
+- Summary: remove the unused validator using from `IndexerConfigController`.
+- Why: update-dev was failing with IDE0005 because `Readarr.Http.Validation` wasn’t referenced in the controller.
+- Impact: IDE0005 no longer surfaces during build once the CLI has `dotnet` installed.
+- Files: src/Readarr.Api.V1/Config/IndexerConfigController.cs, src/Directory.Build.props, CHANGELOG.md.
+- Next: install the dotnet SDK on the build host and rerun the update script to confirm the controller compiles cleanly.
+
 ## 1.2.303
 - Summary: add pending release notification badges to book covers and remove RSS functionality.
 - Why: RSS sync was causing unwanted automatic downloads; users needed visual indicators for delayed releases without automatic retry; moving to overseerr-like manual search workflow where users control when downloads happen.

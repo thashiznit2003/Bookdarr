@@ -1,7 +1,6 @@
 using FluentValidation;
 using NzbDrone.Core.Configuration;
 using Readarr.Http;
-using Readarr.Http.Validation;
 
 namespace Readarr.Api.V1.Config
 {
