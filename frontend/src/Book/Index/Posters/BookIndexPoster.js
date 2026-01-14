@@ -5,6 +5,7 @@ import DeleteAuthorModal from 'Author/Delete/DeleteAuthorModal';
 import EditAuthorModalConnector from 'Author/Edit/EditAuthorModalConnector';
 import EditBookModalConnector from 'Book/Edit/EditBookModalConnector';
 import BookIndexProgressBar from 'Book/Index/ProgressBar/BookIndexProgressBar';
+import PendingReleaseBadge from 'Book/PendingReleaseBadge';
 import CheckInput from 'Components/Form/CheckInput';
 import Label from 'Components/Label';
 import IconButton from 'Components/Link/IconButton';
@@ -116,6 +117,7 @@ class BookIndexPoster extends Component {
       isEditorActive,
       isSelected,
       onSelectedChange,
+      pendingReleaseInfo,
       ...otherProps
     } = this.props;
 
@@ -155,6 +157,15 @@ class BookIndexPoster extends Component {
                     onChange={this.onChange}
                   />
                 </div>
+            }
+
+            {
+              pendingReleaseInfo &&
+                <PendingReleaseBadge
+                  count={pendingReleaseInfo.count}
+                  earliestRelease={pendingReleaseInfo.earliestRelease}
+                  reason={pendingReleaseInfo.reason}
+                />
             }
 
             <Label className={styles.controls}>
@@ -337,7 +348,8 @@ BookIndexPoster.propTypes = {
   onSearchPress: PropTypes.func.isRequired,
   isEditorActive: PropTypes.bool.isRequired,
   isSelected: PropTypes.bool,
-  onSelectedChange: PropTypes.func.isRequired
+  onSelectedChange: PropTypes.func.isRequired,
+  pendingReleaseInfo: PropTypes.object
 };
 
 BookIndexPoster.defaultProps = {

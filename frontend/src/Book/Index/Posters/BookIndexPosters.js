@@ -4,6 +4,7 @@ import { Grid, WindowScroller } from 'react-virtualized';
 import BookIndexItemConnector from 'Book/Index/BookIndexItemConnector';
 import Measure from 'Components/Measure';
 import dimensions from 'Styles/Variables/dimensions';
+import createAjaxRequest from 'Utilities/createAjaxRequest';
 import getIndexOfFirstCharacter from 'Utilities/Array/getIndexOfFirstCharacter';
 import hasDifferentItemsOrOrder from 'Utilities/Object/hasDifferentItemsOrOrder';
 import BookIndexPoster from './BookIndexPoster';
@@ -106,12 +107,17 @@ class BookIndexPosters extends Component {
       posterWidth: 162,
       posterHeight: 253,
       rowHeight: calculateRowHeight(253, null, props.isSmallScreen, {}),
-      scrollRestored: false
+      scrollRestored: false,
+      pendingReleases: {}
     };
 
     this._isInitialized = false;
     this._grid = null;
     this._padding = props.isSmallScreen ? columnPaddingSmallScreen : columnPadding;
+  }
+
+  componentDidMount() {
+    this.fetchPendingReleases();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -177,6 +183,16 @@ class BookIndexPosters extends Component {
     this._grid = ref;
   };
 
+  fetchPendingReleases = () => {
+    const promise = createAjaxRequest({
+      url: '/book/pending'
+    }).request;
+
+    promise.done((data) => {
+      this.setState({ pendingReleases: data });
+    });
+  };
+
   calculateGrid = (width = this.state.width, isSmallScreen) => {
     const {
       sortKey,
@@ -215,7 +231,8 @@ class BookIndexPosters extends Component {
     const {
       posterWidth,
       posterHeight,
-      columnCount
+      columnCount,
+      pendingReleases
     } = this.state;
 
     const {
@@ -232,6 +249,8 @@ class BookIndexPosters extends Component {
     if (!book) {
       return null;
     }
+
+    const pendingReleaseInfo = pendingReleases[book.id] || null;
 
     return (
       <div
@@ -261,6 +280,7 @@ class BookIndexPosters extends Component {
           isSelected={selectedState[book.id]}
           onSelectedChange={onSelectedChange}
           isEditorActive={isEditorActive}
+          pendingReleaseInfo={pendingReleaseInfo}
         />
       </div>
     );

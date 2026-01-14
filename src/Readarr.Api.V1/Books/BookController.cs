@@ -13,6 +13,7 @@ using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Datastore.Events;
 using NzbDrone.Core.DecisionEngine.Specifications;
 using NzbDrone.Core.Download;
+using NzbDrone.Core.Download.Pending;
 using NzbDrone.Core.Languages;
 using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MediaFiles;
@@ -47,6 +48,7 @@ namespace Readarr.Api.V1.Books
         private readonly IConfigService _configService;
         private readonly ISearchForNewBook _bookSearchProxy;
         private readonly IDiskProvider _diskProvider;
+        private readonly IPendingReleaseService _pendingReleaseService;
 
         public BookController(IAuthorService authorService,
                           IBookService bookService,
@@ -62,6 +64,7 @@ namespace Readarr.Api.V1.Books
                           IMapCoversToLocal coverMapper,
                           IUpgradableSpecification upgradableSpecification,
                           IDiskProvider diskProvider,
+                          IPendingReleaseService pendingReleaseService,
                           IBroadcastSignalRMessage signalRBroadcaster,
                           QualityProfileExistsValidator<BookResource> qualityProfileExistsValidator,
                           MetadataProfileExistsValidator<BookResource> metadataProfileExistsValidator)
@@ -77,6 +80,7 @@ namespace Readarr.Api.V1.Books
             _configService = configService;
             _bookSearchProxy = bookSearchProxy;
             _diskProvider = diskProvider;
+            _pendingReleaseService = pendingReleaseService;
 
             PostValidator.RuleFor(s => s.ForeignBookId).NotEmpty();
             PostValidator.RuleFor(s => s.Author.QualityProfileId).SetValidator(qualityProfileExistsValidator);
@@ -173,6 +177,26 @@ namespace Readarr.Api.V1.Books
                 id,
                 overview
             };
+        }
+
+        [HttpGet("pending")]
+        public object GetPendingReleases()
+        {
+            var pendingQueue = _pendingReleaseService.GetPendingQueue();
+
+            var bookPendingInfo = pendingQueue
+                .Where(q => q.Book != null)
+                .GroupBy(q => q.Book.Id)
+                .Select(g => new
+                {
+                    bookId = g.Key,
+                    count = g.Count(),
+                    earliestRelease = g.Min(q => q.EstimatedCompletionTime),
+                    reason = g.First().Status
+                })
+                .ToDictionary(x => x.bookId, x => new { x.count, x.earliestRelease, x.reason });
+
+            return bookPendingInfo;
         }
 
         [HttpPost("{id:int}/refresh-metadata")]
