@@ -24,7 +24,6 @@ namespace Readarr.Api.V1.Indexers
     [V1ApiController]
     public class ReleaseController : ReleaseControllerBase
     {
-        private readonly IFetchAndParseRss _rssFetcherAndParser;
         private readonly ISearchForReleases _releaseSearchService;
         private readonly IMakeDownloadDecision _downloadDecisionMaker;
         private readonly IPrioritizeDownloadDecision _prioritizeDownloadDecision;
@@ -36,8 +35,7 @@ namespace Readarr.Api.V1.Indexers
 
         private readonly ICached<RemoteBook> _remoteBookCache;
 
-        public ReleaseController(IFetchAndParseRss rssFetcherAndParser,
-                             ISearchForReleases releaseSearchService,
+        public ReleaseController(ISearchForReleases releaseSearchService,
                              IMakeDownloadDecision downloadDecisionMaker,
                              IPrioritizeDownloadDecision prioritizeDownloadDecision,
                              IDownloadService downloadService,
@@ -47,7 +45,6 @@ namespace Readarr.Api.V1.Indexers
                              ICacheManager cacheManager,
                              Logger logger)
         {
-            _rssFetcherAndParser = rssFetcherAndParser;
             _releaseSearchService = releaseSearchService;
             _downloadDecisionMaker = downloadDecisionMaker;
             _prioritizeDownloadDecision = prioritizeDownloadDecision;
@@ -149,7 +146,7 @@ namespace Readarr.Api.V1.Indexers
                 return await GetAuthorReleases(int.Parse(Request.Query["authorId"]));
             }
 
-            return await GetRss();
+            return new List<ReleaseResource>();
         }
 
         private async Task<List<ReleaseResource>> GetBookReleases(int bookId)
@@ -184,15 +181,6 @@ namespace Readarr.Api.V1.Indexers
                 _logger.Error(ex, "Author search failed");
                 throw new NzbDroneClientException(HttpStatusCode.InternalServerError, ex.Message);
             }
-        }
-
-        private async Task<List<ReleaseResource>> GetRss()
-        {
-            var reports = await _rssFetcherAndParser.Fetch();
-            var decisions = _downloadDecisionMaker.GetRssDecision(reports);
-            var prioritizedDecisions = _prioritizeDownloadDecision.PrioritizeDecisions(decisions);
-
-            return MapDecisions(prioritizedDecisions);
         }
 
         protected override ReleaseResource MapDecision(DownloadDecision decision, int initialWeight)
