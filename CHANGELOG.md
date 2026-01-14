@@ -7,6 +7,13 @@
 - Files: scripts/update-dev.sh, src/Directory.Build.props, CHANGELOG.md.
 - Next: rerun `scripts/update-dev.sh` on the Ubuntu VM to confirm diagnostics push no longer stops the update and it exits with code 0.
 
+## 1.2.314
+- Summary: replace the stranded `IsNullOrWhiteSpace` call in `BookFileController` with the static `string.IsNullOrWhiteSpace`.
+- Why: removing `NzbDrone.Common.Extensions` earlier meant the controller no longer saw the extension method, so the compiler treated `edition.Title.IsNullOrWhiteSpace()` as a static call with no argument and crashed the build.
+- Impact: the download filename builder now checks `edition.Title` with `string.IsNullOrWhiteSpace`, so the update script can compile under .NET 10 without analyzer errors.
+- Files: src/Readarr.Api.V1/BookFiles/BookFileController.cs, src/Directory.Build.props, CHANGELOG.md.
+- Next: run `scripts/update-dev.sh` again (with the diagnostics repo in place) and confirm the build succeeds with the new logging.
+
 ## 1.2.312
 - Summary: make audiobook downloads keep the book name and file extension when streamed from the player.
 - Why: the download button returned a `stream` file without an extension or descriptive name, forcing manual renaming.

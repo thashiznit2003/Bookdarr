@@ -257,7 +257,7 @@ namespace Readarr.Api.V1.BookFiles
                 }
             }
 
-            if (!edition.Title.IsNullOrWhiteSpace())
+            if (!string.IsNullOrWhiteSpace(edition.Title))
             {
                 return edition.Title;
             }
