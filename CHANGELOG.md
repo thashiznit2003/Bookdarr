@@ -14,6 +14,13 @@
 - Files: src/Readarr.Api.V1/Author/AuthorLookupController.cs, src/Directory.Build.props, CHANGELOG.md.
 - Next: rerun the update script and verify the controller compiles without the CS1061 error.
 
+## 1.2.310
+- Summary: alias the `Author` model inside `AuthorLookupController`.
+- Why: `Author` appears as both a namespace and a type, which caused CS0118 when calling `OfType<Author>()`.
+- Impact: the controller now aliases `NzbDrone.Core.Books.Author` as `AuthorModel` and consistently uses that type for mapping, so the compiler no longer errors out.
+- Files: src/Readarr.Api.V1/Author/AuthorLookupController.cs, CHANGELOG.md.
+- Next: run the update script to confirm the controller builds cleanly with the alias fix.
+
 ## 1.2.307
 - Summary: renumber the RSS removal migration to avoid version conflicts.
 - Why: both the conversion error migration and the RSS cleanup shared version 044, which caused startup to throw `DuplicateMigrationException`.

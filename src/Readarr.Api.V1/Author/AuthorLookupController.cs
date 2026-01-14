@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Common.Extensions;
-using NzbDrone.Core.Books;
+using AuthorModel = NzbDrone.Core.Books.Author;
 using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MetadataSource;
 using NzbDrone.Core.Organizer;
@@ -38,7 +38,7 @@ namespace Readarr.Api.V1.Author
             if (!searchResults.Any())
             {
                 var fallbackResults = _entitySearchProxy.SearchForNewEntity(term)
-                    .OfType<Author>()
+                    .OfType<AuthorModel>()
                     .DistinctBy(a => a.ForeignAuthorId)
                     .ToList();
 
@@ -51,7 +51,7 @@ namespace Readarr.Api.V1.Author
             return MapToResource(searchResults).ToList();
         }
 
-        private IEnumerable<AuthorResource> MapToResource(IEnumerable<NzbDrone.Core.Books.Author> author)
+        private IEnumerable<AuthorResource> MapToResource(IEnumerable<AuthorModel> author)
         {
             foreach (var currentAuthor in author)
             {
