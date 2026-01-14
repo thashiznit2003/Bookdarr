@@ -19,7 +19,7 @@ namespace NzbDrone.Integration.Test.ApiTests
 
             indexers.Should().NotBeEmpty();
             indexers.Should().NotContain(c => string.IsNullOrWhiteSpace(c.Name));
-            indexers.Where(c => c.ConfigContract == typeof(NullConfig).Name).Should().OnlyContain(c => c.EnableRss);
+            indexers.Where(c => c.ConfigContract == typeof(NullConfig).Name).Should().OnlyContain(c => !string.IsNullOrWhiteSpace(c.Name));
         }
 
         private IndexerResource GetNewznabSchemav1(string name = null)
@@ -27,7 +27,6 @@ namespace NzbDrone.Integration.Test.ApiTests
             var schema = Indexers.Schema().First(v => v.Implementation == "Newznab");
 
             schema.Name = name;
-            schema.EnableRss = false;
             schema.EnableAutomaticSearch = false;
             schema.EnableInteractiveSearch = false;
 
@@ -46,7 +45,7 @@ namespace NzbDrone.Integration.Test.ApiTests
         {
             var schema = GetNewznabSchemav1();
 
-            schema.Presets.Any(x => x.SupportsRss).Should().BeTrue();
+            schema.Presets.Any(x => x.SupportsSearch).Should().BeTrue();
         }
 
         [Test]

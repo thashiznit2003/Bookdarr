@@ -79,12 +79,12 @@ namespace NzbDrone.App.Test
         [Test]
         public void should_resolve_command_executor_by_name()
         {
-            var genericExecutor = typeof(IExecute<>).MakeGenericType(typeof(RssSyncCommand));
+            var genericExecutor = typeof(IExecute<>).MakeGenericType(typeof(RefreshMonitoredDownloadsCommand));
 
             var executor = _container.GetRequiredService(genericExecutor);
 
             executor.Should().NotBeNull();
-            executor.Should().BeAssignableTo<IExecute<RssSyncCommand>>();
+            executor.Should().BeAssignableTo<IExecute<RefreshMonitoredDownloadsCommand>>();
         }
 
         [Test]

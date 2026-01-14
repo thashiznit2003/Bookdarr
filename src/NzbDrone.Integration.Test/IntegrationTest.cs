@@ -48,9 +48,6 @@ namespace NzbDrone.Integration.Test
 
         protected override void InitializeTestTarget()
         {
-            // Make sure tasks have been initialized so the config put below doesn't cause errors
-            WaitForCompletion(() => Tasks.All().SelectList(x => x.TaskName).Contains("RssSync"), 30000);
-
             var indexer = Indexers.Schema().FirstOrDefault(i => i.Implementation == nameof(Newznab));
 
             if (indexer == null)
@@ -58,7 +55,6 @@ namespace NzbDrone.Integration.Test
                 throw new NullReferenceException("Expected valid indexer schema, found null");
             }
 
-            indexer.EnableRss = false;
             indexer.EnableInteractiveSearch = false;
             indexer.EnableAutomaticSearch = false;
             indexer.ConfigContract = nameof(NewznabSettings);
