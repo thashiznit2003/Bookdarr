@@ -21,6 +21,13 @@
 - Files: scripts/update-dev.sh, src/Directory.Build.props, CHANGELOG.md.
 - Next: rerun `scripts/update-dev.sh` (with diagnostics) and confirm the upgrade completes without triggering the symbolic-ref error.
 
+## 1.2.316
+- Summary: hide the diagnostic symbolic-ref error once and for all by redirecting the Git call inside the Bash subshell while `errexit` is disabled.
+- Why: the previous change still left a `git: fatal: ref ...` message in the update log because the redirect was applied outside the `bash -lc` invocation, so the parser still saw stdout output and triggered `set -e`.
+- Impact: the command now runs `git symbolic-ref ... 2>/dev/null` inside the subshell, so nothing leaks out and the update completes even when `origin/HEAD` points at a commit instead of a symbolic ref.
+- Files: scripts/update-dev.sh, src/Directory.Build.props, CHANGELOG.md.
+- Next: rerun `scripts/update-dev.sh` (with diagnostics) to confirm the symbolic-ref warning is completely silenced and the update exits cleanly.
+
 ## 1.2.312
 - Summary: make audiobook downloads keep the book name and file extension when streamed from the player.
 - Why: the download button returned a `stream` file without an extension or descriptive name, forcing manual renaming.
