@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using NzbDrone.Common.Disk;
 using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Extensions;
@@ -7,12 +10,16 @@ namespace NzbDrone.Core.Authentication
 {
     public interface IUserService
     {
-        User Add(string username, string password);
+        User Add(string username, string password, bool isAdmin = false);
         User Update(User user);
         User Upsert(string username, string password);
         User FindUser();
         User FindUser(string username, string password);
+        User FindUserByUsername(string username);
+        User FindUserById(int id);
+        User FindUser(ClaimsPrincipal principal);
         User FindUser(Guid identifier);
+        List<User> GetUsers();
     }
 
     public class UserService : IUserService
@@ -28,13 +35,16 @@ namespace NzbDrone.Core.Authentication
             _diskProvider = diskProvider;
         }
 
-        public User Add(string username, string password)
+        public User Add(string username, string password, bool isAdmin = false)
         {
+            var hasUsers = _repo.HasItems();
+
             return _repo.Insert(new User
             {
                 Identifier = Guid.NewGuid(),
                 Username = username.ToLowerInvariant(),
-                Password = password.SHA256Hash()
+                Password = password.SHA256Hash(),
+                IsAdmin = !hasUsers || isAdmin
             });
         }
 
@@ -64,7 +74,14 @@ namespace NzbDrone.Core.Authentication
 
         public User FindUser()
         {
-            return _repo.SingleOrDefault();
+            var users = _repo.All().ToList();
+            var admin = users.FirstOrDefault(u => u.IsAdmin);
+            if (admin != null)
+            {
+                return admin;
+            }
+
+            return users.FirstOrDefault();
         }
 
         public User FindUser(string username, string password)
@@ -89,9 +106,66 @@ namespace NzbDrone.Core.Authentication
             return null;
         }
 
+        public User FindUserByUsername(string username)
+        {
+            if (username.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            return _repo.FindUser(username.ToLowerInvariant());
+        }
+
+        public User FindUserById(int id)
+        {
+            if (id <= 0)
+            {
+                return null;
+            }
+
+            return _repo.Find(id);
+        }
+
+        public User FindUser(ClaimsPrincipal principal)
+        {
+            if (principal?.Identity?.IsAuthenticated == true)
+            {
+                var identifierValue = principal.FindFirst("identifier")?.Value;
+
+                if (Guid.TryParse(identifierValue, out var identifier))
+                {
+                    var userByIdentifier = FindUser(identifier);
+
+                    if (userByIdentifier != null)
+                    {
+                        return userByIdentifier;
+                    }
+                }
+
+                var username = principal.FindFirst("user")?.Value ?? principal.Identity.Name;
+
+                if (username.IsNotNullOrWhiteSpace())
+                {
+                    var userByUsername = FindUserByUsername(username);
+
+                    if (userByUsername != null)
+                    {
+                        return userByUsername;
+                    }
+                }
+            }
+
+            return FindUser();
+        }
+
         public User FindUser(Guid identifier)
         {
             return _repo.FindUser(identifier);
+        }
+
+        public List<User> GetUsers()
+        {
+            return _repo.All().ToList();
         }
     }
 }

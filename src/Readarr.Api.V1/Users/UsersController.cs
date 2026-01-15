@@ -2,10 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Core.Authentication;
-using NzbDrone.Core.Exceptions;
-using NzbDrone.Http.REST.Attributes;
 using Readarr.Http;
-using Readarr.Http.REST;
+using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
+using RestBadRequestException = Readarr.Http.REST.BadRequestException;
 
 namespace Readarr.Api.V1.Users
 {
@@ -58,12 +57,12 @@ namespace Readarr.Api.V1.Users
         {
             if (resource == null)
             {
-                throw new BadRequestException("Request body can't be empty");
+                throw new RestBadRequestException("Request body can't be empty");
             }
 
             if (string.IsNullOrWhiteSpace(resource.Username) || string.IsNullOrWhiteSpace(resource.Password))
             {
-                throw new BadRequestException("Username and password are required");
+                throw new RestBadRequestException("Username and password are required");
             }
 
             var currentUser = GetCurrentUser();

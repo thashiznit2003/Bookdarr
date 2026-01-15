@@ -12,7 +12,12 @@ namespace NzbDrone.Core.Books
         UserBook AddOrGetUserBook(int userId, int bookId, bool wantsEbook = true, bool wantsAudiobook = true);
         UserBook GetUserBook(int userId, int bookId);
         IEnumerable<UserBook> GetUserLibrary(int userId);
+        UserBook GetUserBookById(int id, int userId);
         bool IsBookAvailableInPool(int bookId);
+        List<Book> GetBooksInPool();
+        LibraryStatus GetPoolStatus(int bookId, bool wantsEbook, bool wantsAudiobook);
+        bool PoolHasMedia(int bookId, BookFileMediaType mediaType);
+        bool UserBookHasMedia(UserBook userBook, BookFileMediaType mediaType);
     }
 
     public class UserLibraryService : IUserLibraryService

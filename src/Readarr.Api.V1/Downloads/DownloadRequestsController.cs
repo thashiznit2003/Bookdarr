@@ -5,11 +5,10 @@ using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Datastore;
 using NzbDrone.Core.Download;
-using NzbDrone.Core.Exceptions;
-using NzbDrone.Http.REST.Attributes;
 using Readarr.Api.V1.Books;
 using Readarr.Http;
 using Readarr.Http.REST;
+using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 
 namespace Readarr.Api.V1.Downloads
 {
