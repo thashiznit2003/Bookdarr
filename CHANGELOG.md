@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.8
+- Summary: align every outstanding dependency bump (React DnD 16.x series, reselect 5.1.1, terser-webpack-plugin 5.3.16, System.IO.Abstractions 22.1.0, and the related .NET packages) so the codebase matches the ten requested dependabot PRs.
+- Why: these security/maintenance updates were left open and the lockfiles needed refreshing after the switch to .NET 10, so bringing them into a single commit prevents conflicts, keeps the npm tree consistent, and removes the NU1403 package hash warnings from CI.
+- Impact: `package.json`/`yarn.lock` now cite the newer npm versions, `src/Directory.Packages.props` and `src/Directory.Build.props` document the updated versions, and every `packages.lock.json` file got regenerated via `dotnet restore` so the .NET runtime resolves the correct hashes; the diagnostics-guide now references this build so the update script can snapshot `v1.3.8`.
+- Files: package.json, yarn.lock, src/Directory.Packages.props, src/Directory.Build.props, src/**/packages.lock.json, CHANGELOG.md.
+- Next: tag/push the new snapshot and run the SSH update command with the next log file so diagnostics reflect `v1.3.8`.
+
 ## 1.3.7
 - Summary: Add filter chips above the Book Pool grid so the **All** view shows every shared book (even those without ebook/audiobook files) and illuminating status filters let you focus on ready copies or titles that still need assets; also restore the sidebar width to the original 320px so the navigation feels spacious again.
 - Why: the shared pool should mirror every book any user has claimed, and the compressed sidebar width made the UI feel cramped after the previous reduction; the new filters plus the wider sidebar keep the experience familiar while giving you direct control over what to inspect.
