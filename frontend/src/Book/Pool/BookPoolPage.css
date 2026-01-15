@@ -4,6 +4,35 @@
   margin-left: 16px;
 }
 
+.filterGroup {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: 16px;
+}
+
+.filterButton {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--textColor);
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.filterButton:hover {
+  border-color: var(--primaryColor);
+}
+
+.filterButtonActive {
+  background: var(--primaryColor);
+  border-color: var(--primaryColor);
+  color: var(--white);
+}
+
 .error {
   background: var(--dangerBackgroundColor);
   border: 1px solid var(--dangerColor);

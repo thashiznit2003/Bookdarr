@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.7
+- Summary: Add filter chips above the Book Pool grid so the **All** view shows every shared book (even those without ebook/audiobook files) and illuminating status filters let you focus on ready copies or titles that still need assets; also restore the sidebar width to the original 320px so the navigation feels spacious again.
+- Why: the shared pool should mirror every book any user has claimed, and the compressed sidebar width made the UI feel cramped after the previous reduction; the new filters plus the wider sidebar keep the experience familiar while giving you direct control over what to inspect.
+- Impact: README now calls out the Book Pool filters, `frontend/src/Book/Pool/BookPoolPage.js` and its CSS render the filter chips and apply the selected scene, localization adds the filter labels and the empty-state copy, `frontend/src/Styles/Variables/dimensions.js` restores the sidebar width, and `src/Directory.Build.props` bumps the assembly to `1.3.7.*` so the UI shows the new release.
+- Files: README.md, frontend/src/Book/Pool/BookPoolPage.js, frontend/src/Book/Pool/BookPoolPage.css, src/NzbDrone.Core/Localization/Core/en.json, frontend/src/Styles/Variables/dimensions.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: tag/push the new snapshot, then run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` via SSH so the Ubuntu VM and diagnostics repo can capture `v1.3.7`.
+
 ## 1.3.6
 - Summary: Book Pool now renders every shared book, even when no ebook/audiobook files exist, and the posters use every cached image so the grid never looks empty.
 - Why: the shared pool should mirror the library’s catalog, and the UI needs to expose clear cover art plus accurate status chips so users can decide whether to pull files.

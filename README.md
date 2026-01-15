@@ -51,7 +51,10 @@ new **Book Pool** entry in the sidebar (or visit `/bookpool`) to see all shared
 books, their ebook/audiobook availability, and whether they require manual attention.
 Each row shows an **Add to my library** button that creates a personal claim on the
 book and immediately links your library to the shared files—no new downloads are
-triggered unless a preferred file is still missing.
+triggered unless a preferred file is still missing. Use the filters above the grid
+to switch between **All** (every shared book, even those without ebook/audiobook
+files), **Ready** (titles that already have shared media), and **Needs files** so
+you can focus on the books that still require attention.
 
 ## Install Script (Source Build)
 

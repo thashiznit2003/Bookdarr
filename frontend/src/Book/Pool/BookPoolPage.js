@@ -22,6 +22,12 @@ const STATUS_LABELS = {
   needsManual: () => translate('BookPoolStatusNeedsManual')
 };
 
+const FILTERS = [
+  { key: 'all', label: () => translate('BookPoolFilterAll') },
+  { key: 'available', label: () => translate('BookPoolFilterAvailable') },
+  { key: 'needsManual', label: () => translate('BookPoolFilterNeedsManual') }
+];
+
 export default class BookPoolPage extends Component {
 
   constructor(props) {
@@ -31,7 +37,8 @@ export default class BookPoolPage extends Component {
       books: [],
       isFetching: false,
       error: null,
-      adding: {}
+      adding: {},
+      filterKey: 'all'
     };
   }
 
@@ -54,6 +61,25 @@ export default class BookPoolPage extends Component {
     request.request.fail((xhr) => {
       this.setState({ error: xhr, isFetching: false });
     });
+  };
+
+  getFilteredBooks = () => {
+    const { books, filterKey } = this.state;
+
+    if (filterKey === 'all') {
+      return books;
+    }
+
+    const normalizedFilter = (filterKey || '').toLowerCase();
+
+    return books.filter((book) => {
+      const status = (book.status || '').toLowerCase();
+      return status === normalizedFilter;
+    });
+  };
+
+  setFilterKey = (filterKey) => {
+    this.setState({ filterKey });
   };
 
   onAddToLibrary = (book) => {
@@ -114,8 +140,14 @@ export default class BookPoolPage extends Component {
       books,
       isFetching,
       error,
-      adding
+      adding,
+      filterKey
     } = this.state;
+
+    const filteredBooks = this.getFilteredBooks();
+    const emptyMessage = books.length === 0
+      ? translate('BookPoolEmpty')
+      : translate('BookPoolEmptyFilter');
 
     return (
       <PageContent>
@@ -130,6 +162,20 @@ export default class BookPoolPage extends Component {
           <PageToolbarSection>
             <span className={styles.description}>{translate('BookPoolDescription')}</span>
           </PageToolbarSection>
+          <PageToolbarSection>
+            <div className={styles.filterGroup}>
+              {FILTERS.map((filter) => (
+                <button
+                  key={filter.key}
+                  type="button"
+                  className={classNames(styles.filterButton, filterKey === filter.key && styles.filterButtonActive)}
+                  onClick={() => this.setFilterKey(filter.key)}
+                >
+                  {filter.label()}
+                </button>
+              ))}
+            </div>
+          </PageToolbarSection>
         </PageToolbar>
         <PageContentBody noPadding={true}>
           {isFetching && <LoadingIndicator />}
@@ -140,9 +186,9 @@ export default class BookPoolPage extends Component {
           )}
           {!isFetching && !error && (
             <>
-              {books.length > 0 ? (
+              {filteredBooks.length > 0 ? (
                 <div className={styles.grid}>
-                  {books.map((item) => (
+                  {filteredBooks.map((item) => (
                     <BookPoolPoster
                       key={item.bookId}
                       resource={item}
@@ -153,7 +199,7 @@ export default class BookPoolPage extends Component {
                   ))}
                 </div>
               ) : (
-                <div className={styles.emptyState}>{translate('BookPoolEmpty')}</div>
+                <div className={styles.emptyState}>{emptyMessage}</div>
               )}
             </>
           )}
