@@ -1,4 +1,5 @@
 using System;
+using NzbDrone.Core.Datastore;
 
 namespace NzbDrone.Core.Books
 {

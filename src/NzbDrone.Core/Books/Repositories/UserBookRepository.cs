@@ -3,6 +3,7 @@ using System.Linq;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Datastore;
+using NzbDrone.Core.Messaging.Events;
 
 namespace NzbDrone.Core.Books.Repositories
 {
