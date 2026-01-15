@@ -1,5 +1,19 @@
 # Changelog
 
+-## 1.3.5
+- Summary: surface every book that any user has added (even when no ebook/audiobook file exists) in the Book Pool and make the status chip explain whether files are ready instead of always showing “Pending”.
+ - Why: the shared pool should match the full library of each user, and the UI should clearly communicate whether there are assets to download instead of showing the same “Pending” badge for every title.
+ - Impact: `UserLibraryService.GetBooksInPool()` now aggregates all user library entries plus shared files, `UserLibraryService.GetPoolStatus()` returns `Available` whenever files exist and `NeedsManual` otherwise, the status translations under `src/NzbDrone.Core/Localization/Core/en.json` describe the state more clearly, and `frontend/src/Book/Pool/BookPoolPage.js` uses those labels so users know when files are ready; `src/Directory.Build.props` bumps the assembly version to keep the app display and diagnostics logs aligned with the new release.
+ - Files: src/NzbDrone.Core/Books/Services/UserLibraryService.cs, src/NzbDrone.Core/Localization/Core/en.json, frontend/src/Book/Pool/BookPoolPage.js, src/Directory.Build.props, CHANGELOG.md.
+ - Next: run `scripts/update-dev.sh` via SSH so `/opt/bookdarr-dev/Logs/update-0XX.log` and the diagnostics bundle reflect `v1.3.5`.
+
+## 1.3.4
+- Summary: make the Book Pool page render the same poster grid as the Library’s “Posters” view while keeping a floating `+` button at the top-right corner so the only UI difference is the “Add to my library” action.
+ - Why: the shared pool should feel identical to the books you already know and love, so any new design stands out only because it was intentionally different for adding copies instead of editing them.
+ - Impact: `frontend/src/Book/Pool/BookPoolPage.js` now mirrors the poster layout, the CSS values in `frontend/src/Book/Pool/BookPoolPage.css` match the Library cards (cover, title, author, metadata, status chips), and `src/Directory.Build.props` increments the visible version so Bookdarr reports `v1.3.4` after each push; the workflow note remains in `CHANGELOG.md` so future automation keeps bumping the patch number.
+ - Files: frontend/src/Book/Pool/BookPoolPage.js, frontend/src/Book/Pool/BookPoolPage.css, src/Directory.Build.props, CHANGELOG.md.
+ - Next: tag/push `develop`, run the SSH update script with the next `update-0XX.log` (now `update-051.log`) so the new UI and version numbers land on the Ubuntu VM and diagnostics show `v1.3.4`.
+
 ## 1.3.2
 - Summary: wire the shared Book Pool page into the UI and persist `DownloadRequest` records so the new red-dot review state survives restarts.
 - Why: the multi-user plan needs a visible place to claim shared files, and the decision engine must now keep historical download confidence records before we build the notifications and review dashboard.

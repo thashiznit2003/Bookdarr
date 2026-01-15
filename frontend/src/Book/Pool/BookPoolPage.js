@@ -17,9 +17,9 @@ import translate from 'Utilities/String/translate';
 import styles from './BookPoolPage.css';
 
 const STATUS_LABELS = {
-  0: () => translate('Pending'),
-  1: () => translate('Available'),
-  2: () => translate('NeedsManual')
+  0: () => translate('BookPoolStatusPending'),
+  1: () => translate('BookPoolStatusAvailable'),
+  2: () => translate('BookPoolStatusNeedsManual')
 };
 
 export default class BookPoolPage extends Component {

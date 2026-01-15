@@ -109,9 +109,18 @@ namespace NzbDrone.Core.Books
         public List<Book> GetBooksInPool()
         {
             var sharedFiles = _mediaFileRepository.All().Where(f => f.SharedWithAll).ToList();
-            var bookIds = sharedFiles
+            var sharedBookIds = sharedFiles
                 .Select(f => f.Edition?.Value?.BookId ?? 0)
                 .Where(id => id > 0)
+                .Distinct();
+
+            var userBookIds = _userBookRepository.All()
+                .Select(u => u.BookId)
+                .Where(id => id > 0)
+                .Distinct();
+
+            var bookIds = sharedBookIds
+                .Union(userBookIds)
                 .Distinct()
                 .ToList();
 
@@ -130,7 +139,15 @@ namespace NzbDrone.Core.Books
 
         public LibraryStatus GetPoolStatus(int bookId, bool wantsEbook, bool wantsAudiobook)
         {
-            return ResolveStatus(bookId, wantsEbook, wantsAudiobook);
+            var hasEbook = wantsEbook && PoolHasMedia(bookId, BookFileMediaType.Ebook);
+            var hasAudiobook = wantsAudiobook && PoolHasMedia(bookId, BookFileMediaType.Audiobook);
+
+            if (hasEbook || hasAudiobook)
+            {
+                return LibraryStatus.Available;
+            }
+
+            return LibraryStatus.NeedsManual;
         }
 
         public bool PoolHasMedia(int bookId, BookFileMediaType mediaType)
