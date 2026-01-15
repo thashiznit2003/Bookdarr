@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Books.Repositories;
 using NzbDrone.Core.Datastore;
 using NzbDrone.Core.MediaFiles;

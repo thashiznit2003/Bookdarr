@@ -1,5 +1,7 @@
 #nullable enable
 using System;
+using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Parser.Model;
@@ -56,10 +58,31 @@ namespace NzbDrone.Core.DecisionEngine
 
             var normalized = value.ToLowerInvariant();
             normalized = NormalizeRegex.Replace(normalized, " ");
-            normalized = normalized.RemoveDiacritics();
+            normalized = RemoveDiacritics(normalized);
             normalized = normalized.Trim();
 
             return normalized;
+        }
+
+        private static string RemoveDiacritics(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+
+            var normalized = value.Normalize(NormalizationForm.FormD);
+            var builder = new StringBuilder();
+
+            foreach (var ch in normalized)
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark)
+                {
+                    builder.Append(ch);
+                }
+            }
+
+            return builder.ToString().Normalize(NormalizationForm.FormC);
         }
 
         private static int ComputeLevenshteinDistance(string source, string target)

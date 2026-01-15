@@ -1,5 +1,4 @@
 using System;
-using NzbDrone.Core.Books;
 using NzbDrone.Core.Datastore;
 using NzbDrone.Core.MediaFiles;
 

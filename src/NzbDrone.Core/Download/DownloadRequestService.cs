@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using NzbDrone.Core.Books;
 using NzbDrone.Core.Datastore;
-using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.Download.Repositories;
+using NzbDrone.Core.MediaFiles;
 
 namespace NzbDrone.Core.Download
 {

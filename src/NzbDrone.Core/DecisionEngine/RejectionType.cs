@@ -3,6 +3,7 @@
     public enum RejectionType
     {
         Permanent = 0,
-        Temporary = 1
+        Temporary = 1,
+        Temp = 1
     }
 }

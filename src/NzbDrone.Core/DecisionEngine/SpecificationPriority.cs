@@ -4,6 +4,7 @@ namespace NzbDrone.Core.DecisionEngine
     {
         Default = 0,
         Parsing = 0,
+        Parser = 0,
         Database = 0,
         Disk = 1
     }

@@ -25,6 +25,8 @@ namespace NzbDrone.Core.MediaFiles
         public int Part { get; set; }
         public BookFileMediaType MediaType { get; set; }
         public string ConversionError { get; set; }
+        public bool ConversionErrorIsDrm { get; set; }
+        public bool SharedWithAll { get; set; }
 
         // These are queried from the database
         public LazyLoaded<Author> Author { get; set; }
