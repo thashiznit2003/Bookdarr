@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import classNames from 'classnames';
 import IconButton from 'Components/Link/IconButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
@@ -8,6 +9,7 @@ import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import { icons } from 'Helpers/Props';
+import BookCover from 'Book/BookCover';
 import BookTitleLink from 'Book/BookTitleLink';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
@@ -139,41 +141,15 @@ export default class BookPoolPage extends Component {
           {!isFetching && !error && (
             <>
               {books.length > 0 ? (
-                <div className={styles.tableWrapper}>
-                  <div className={styles.headerRow}>
-                    <div className={styles.cell}>{translate('Title')}</div>
-                    <div className={styles.cell}>{translate('Author')}</div>
-                    <div className={styles.cell}>{translate('Status')}</div>
-                    <div className={styles.cell}>{translate('HasEbook')}</div>
-                    <div className={styles.cell}>{translate('HasAudiobook')}</div>
-                    <div className={styles.cell}>{translate('Action')}</div>
-                  </div>
+                <div className={styles.grid}>
                   {books.map((item) => (
-                    <div
+                    <BookPoolCard
                       key={item.bookId}
-                      className={item.needsAttention ? styles.rowNeedsAttention : styles.row}
-                    >
-                      <div className={styles.cell}>
-                        <BookTitleLink
-                          title={item.book.title}
-                          titleSlug={item.book.titleSlug}
-                          disambiguation={item.book.disambiguation}
-                        />
-                      </div>
-                      <div className={styles.cell}>{item.book.authorTitle}</div>
-                      <div className={styles.cell}>{this.renderStatus(item)}</div>
-                      <div className={styles.cell}>{item.hasEbook ? translate('Yes') : translate('No')}</div>
-                      <div className={styles.cell}>{item.hasAudiobook ? translate('Yes') : translate('No')}</div>
-                      <div className={styles.cell}>
-                        <IconButton
-                          name={icons.ADD}
-                          title={translate(item.inMyLibrary ? 'InMyLibrary' : 'AddToMyLibrary')}
-                          onPress={() => this.onAddToLibrary(item)}
-                          isDisabled={item.inMyLibrary}
-                          isSpinning={adding[item.bookId]}
-                        />
-                      </div>
-                    </div>
+                      resource={item}
+                      onAdd={() => this.onAddToLibrary(item)}
+                      isAdding={adding[item.bookId]}
+                      renderStatus={() => this.renderStatus(item)}
+                    />
                   ))}
                 </div>
               ) : (
@@ -185,4 +161,66 @@ export default class BookPoolPage extends Component {
       </PageContent>
     );
   }
+}
+
+function BookPoolCard({
+  resource,
+  onAdd,
+  isAdding,
+  renderStatus
+}) {
+  const {
+    book,
+    hasEbook,
+    hasAudiobook,
+    inMyLibrary,
+    needsAttention
+  } = resource;
+
+  return (
+    <div className={classNames(styles.card, needsAttention && styles.cardAttention)}>
+      <div className={styles.coverWrapper}>
+        <BookCover
+          size={320}
+          images={book.images || []}
+          className={styles.coverImage}
+        />
+      </div>
+      <div className={styles.cardBody}>
+        <div className={styles.title}>
+          <BookTitleLink
+            title={book.title}
+            titleSlug={book.titleSlug}
+            disambiguation={book.disambiguation}
+          />
+        </div>
+        <div className={styles.author}>{book.authorTitle}</div>
+        <div className={styles.statusRow}>
+          {renderStatus()}
+          {inMyLibrary && (
+            <span className={styles.libraryBadge}>{translate('InMyLibrary')}</span>
+          )}
+        </div>
+        <div className={styles.metaRow}>
+          <div className={styles.metaItem}>
+            <span className={styles.metaLabel}>eBook</span>
+            <span className={styles.metaValue}>{hasEbook ? translate('Yes') : translate('No')}</span>
+          </div>
+          <div className={styles.metaItem}>
+            <span className={styles.metaLabel}>Audiobook</span>
+            <span className={styles.metaValue}>{hasAudiobook ? translate('Yes') : translate('No')}</span>
+          </div>
+        </div>
+        <div className={styles.actions}>
+          <IconButton
+            name={icons.ADD}
+            title={translate(inMyLibrary ? 'InMyLibrary' : 'AddToMyLibrary')}
+            onPress={onAdd}
+            isDisabled={inMyLibrary}
+            isSpinning={isAdding}
+          />
+        </div>
+      </div>
+    </div>
+  );
 }
