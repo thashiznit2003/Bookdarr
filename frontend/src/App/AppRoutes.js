@@ -27,6 +27,7 @@ import Settings from 'Settings/Settings';
 import TagSettings from 'Settings/Tags/TagSettings';
 import UISettingsConnector from 'Settings/UI/UISettingsConnector';
 import BackupsConnector from 'System/Backup/BackupsConnector';
+import BookPoolPage from 'Book/Pool/BookPoolPage';
 import Diagnostics from 'System/Diagnostics/Diagnostics';
 import LogsTableConnector from 'System/Events/LogsTableConnector';
 import Logs from 'System/Logs/Logs';
@@ -42,6 +43,8 @@ function AppRoutes(props) {
   const {
     app
   } = props;
+
+  const bookPoolPath = getPathWithUrlBase('/bookpool');
 
   return (
     <Switch>
@@ -86,6 +89,12 @@ function AppRoutes(props) {
         exact={true}
         path="/books"
         component={BookIndexConnector}
+      />
+
+      <Route
+        addUrlBase={false}
+        path={bookPoolPath}
+        component={BookPoolPage}
       />
 
       <Route
