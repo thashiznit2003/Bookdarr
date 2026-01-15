@@ -10,7 +10,7 @@ namespace NzbDrone.Core.Authentication
 {
     public interface IUserService
     {
-        User Add(string username, string password, bool isAdmin = false);
+        User Add(string username, string password, bool isAdmin = false, string email = null, UserRole role = UserRole.Standard, bool isActive = true, string preferredQualityMedia = "both");
         User Update(User user);
         User Upsert(string username, string password);
         User FindUser();
@@ -35,21 +35,30 @@ namespace NzbDrone.Core.Authentication
             _diskProvider = diskProvider;
         }
 
-        public User Add(string username, string password, bool isAdmin = false)
+        public User Add(string username, string password, bool isAdmin = false, string email = null, UserRole role = UserRole.Standard, bool isActive = true, string preferredQualityMedia = "both")
         {
             var hasUsers = _repo.HasItems();
+            var finalRole = ResolveRole(hasUsers, isAdmin, role);
 
-            return _repo.Insert(new User
+            var user = new User
             {
                 Identifier = Guid.NewGuid(),
                 Username = username.ToLowerInvariant(),
                 Password = password.SHA256Hash(),
-                IsAdmin = !hasUsers || isAdmin
-            });
+                Email = email,
+                Role = finalRole,
+                IsAdmin = finalRole == UserRole.Admin,
+                IsActive = isActive,
+                CreatedAt = DateTime.UtcNow,
+                PreferredQualityMedia = string.IsNullOrWhiteSpace(preferredQualityMedia) ? "both" : preferredQualityMedia
+            };
+
+            return _repo.Insert(user);
         }
 
         public User Update(User user)
         {
+            user.IsAdmin = user.Role == UserRole.Admin;
             return _repo.Update(user);
         }
 
@@ -74,14 +83,17 @@ namespace NzbDrone.Core.Authentication
 
         public User FindUser()
         {
-            var users = _repo.All().ToList();
-            var admin = users.FirstOrDefault(u => u.IsAdmin);
+            var allUsers = _repo.All().ToList();
+            var activeUsers = allUsers.Where(u => u.IsActive).ToList();
+            var lookup = activeUsers.Any() ? activeUsers : allUsers;
+
+            var admin = lookup.FirstOrDefault(u => u.Role == UserRole.Admin);
             if (admin != null)
             {
                 return admin;
             }
 
-            return users.FirstOrDefault();
+            return lookup.FirstOrDefault();
         }
 
         public User FindUser(string username, string password)
@@ -91,7 +103,7 @@ namespace NzbDrone.Core.Authentication
                 return null;
             }
 
-            var user = _repo.FindUser(username.ToLowerInvariant());
+            var user = FindUserByUsername(username);
 
             if (user == null)
             {
@@ -113,7 +125,8 @@ namespace NzbDrone.Core.Authentication
                 return null;
             }
 
-            return _repo.FindUser(username.ToLowerInvariant());
+            var user = _repo.FindUser(username.ToLowerInvariant());
+            return user != null && user.IsActive ? user : null;
         }
 
         public User FindUserById(int id)
@@ -160,12 +173,28 @@ namespace NzbDrone.Core.Authentication
 
         public User FindUser(Guid identifier)
         {
-            return _repo.FindUser(identifier);
+            var user = _repo.FindUser(identifier);
+            return user != null && user.IsActive ? user : null;
         }
 
         public List<User> GetUsers()
         {
             return _repo.All().ToList();
+        }
+
+        private static UserRole ResolveRole(bool hasUsers, bool isAdminRequested, UserRole requestedRole)
+        {
+            if (!hasUsers)
+            {
+                return UserRole.Admin;
+            }
+
+            if (isAdminRequested)
+            {
+                return UserRole.Admin;
+            }
+
+            return requestedRole;
         }
     }
 }

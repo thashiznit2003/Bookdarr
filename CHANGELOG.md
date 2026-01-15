@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.3.10
+- Summary: Expanded the user model with email, role, active state, preferred media, and timing metadata so the multi-user foundation keeps track of each account’s permissions and preferences before the shared pool/UI work lands.
+- Why: Upcoming multi-user APIs need richer information about every account (role, whether the user is active, contact metadata, and their preferred media type) while letting admins pick the correct role when creating new users without accidentally elevating or disabling them.
+- Impact: Added a migration to store the extra columns, taught `IUserService`/`User` to handle the new fields (including role-aware `IsAdmin` and preferred-media defaults), exposed the metadata through the REST `UserResource`/`UserCreateResource`, updated `UsersController` to parse role values while keeping `IsAdmin` compatibility, and bumped the assembly version so the UI reports v1.3.10; authentication now skips deactivated accounts so only active roles can sign in.
+- Files: src/NzbDrone.Core/Authentication/User.cs, src/NzbDrone.Core/Authentication/UserService.cs, src/NzbDrone.Core/Datastore/Migration/049_add_user_metadata.cs, src/Readarr.Api.V1/Users/UserResource.cs, src/Readarr.Api.V1/Users/UserCreateResource.cs, src/Readarr.Api.V1/Users/UsersController.cs, src/Directory.Build.props, CHANGELOG.md
+- Next: push a new snapshot and rerun the SSH update script so diagnostics capture v1.3.10 before continuing with the shared pool/user-management UI work from `docs/MULTI_USER.md`.
+## 1.3.9
+- Summary: Replace the Table Options, Delay Profiles, and Quality Profiles drag-and-drop experiences with `@dnd-kit` so the React DnD stack is no longer required for sorting columns or managing profile order, and drop the redundant DnD provider from Custom Formats.
+- Why: The old `react-dnd` drag sources were blocking future frontend tidy-ups and triggered extra files/CSS; migrating these sortable lists to the lighter `@dnd-kit` stack paves the way toward removing the legacy dependency entirely.
+- Impact: `TableOptionsModal`, Delay Profiles, and Quality Profiles now leverage `@dnd-kit/core` and `@dnd-kit/sortable`, the new `SortableQualityRow` wrapper powers the Quality Profile order logic, the `CustomFormatSettingsConnector` no longer renders a `react-dnd` provider, and `package.json`/`yarn.lock` now list only `@dnd-kit/*` so sorting works without `react-dnd`.
+- Files: `frontend/src/Components/Table/TableOptions/TableOptionsColumn.js`, `frontend/src/Components/Table/TableOptions/TableOptionsModal.js`, `frontend/src/Components/Table/TableOptions/TableOptionsModal.css`, `frontend/src/Helpers/dragTypes.js`, `frontend/src/Settings/Profiles/Delay/DelayProfile.js`, `frontend/src/Settings/Profiles/Delay/DelayProfiles.js`, `frontend/src/Settings/Profiles/Quality/QualityProfileItem.js`, `frontend/src/Settings/Profiles/Quality/QualityProfileItemGroup.js`, `frontend/src/Settings/Profiles/Quality/QualityProfileItems.js`, `frontend/src/Settings/CustomFormats/CustomFormatSettingsConnector.js`, `package.json`, `yarn.lock`.
+- Next: Complete the backend multi-user schema and API work, then align the Book Pool UI with the new shared-pool APIs.
+
 ## 1.3.8
 - Summary: align every outstanding dependency bump (React DnD 16.x series, reselect 5.1.1, terser-webpack-plugin 5.3.16, System.IO.Abstractions 22.1.0, and the related .NET packages) so the codebase matches the ten requested dependabot PRs.
 - Why: these security/maintenance updates were left open and the lockfiles needed refreshing after the switch to .NET 10, so bringing them into a single commit prevents conflicts, keeps the npm tree consistent, and removes the NU1403 package hash warnings from CI.

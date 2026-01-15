@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
@@ -72,7 +73,10 @@ namespace Readarr.Api.V1.Users
                 return Forbid();
             }
 
-            var created = _userService.Add(resource.Username, resource.Password, resource.IsAdmin);
+            var preferredMedia = string.IsNullOrWhiteSpace(resource.PreferredQualityMedia) ? "both" : resource.PreferredQualityMedia;
+            var role = ParseRole(resource.Role, resource.IsAdmin);
+
+            var created = _userService.Add(resource.Username, resource.Password, resource.IsAdmin, resource.Email, role, resource.IsActive, preferredMedia);
 
             return CreatedAtAction(nameof(Get), new { id = created.Id }, Map(created));
         }
@@ -84,8 +88,29 @@ namespace Readarr.Api.V1.Users
                 Id = user.Id,
                 Username = user.Username,
                 Identifier = user.Identifier,
-                IsAdmin = user.IsAdmin
+                IsAdmin = user.IsAdmin,
+                Email = user.Email,
+                Role = user.Role.ToString(),
+                IsActive = user.IsActive,
+                CreatedAt = user.CreatedAt,
+                LastLogin = user.LastLogin,
+                PreferredQualityMedia = user.PreferredQualityMedia
             };
+        }
+
+        private static UserRole ParseRole(string roleValue, bool fallbackToAdmin)
+        {
+            if (fallbackToAdmin)
+            {
+                return UserRole.Admin;
+            }
+
+            if (!string.IsNullOrWhiteSpace(roleValue) && Enum.TryParse<UserRole>(roleValue, true, out var parsed))
+            {
+                return parsed;
+            }
+
+            return UserRole.Standard;
         }
 
         private User GetCurrentUser()
