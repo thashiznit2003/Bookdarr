@@ -54,6 +54,11 @@ namespace Readarr.Api.V1.Books
             }
 
             var editions = model.Editions?.Value ?? new List<Edition>();
+            var images = editions
+                .Where(x => x.Images?.Any() == true)
+                .SelectMany(x => x.Images)
+                .ToList();
+
             var selectedEdition = editions.FirstOrDefault(x => x.Monitored && x.Images?.Any() == true) ??
                 editions.FirstOrDefault(x => x.Monitored) ??
                 editions.FirstOrDefault(x => x.Images?.Any() == true) ??
@@ -81,7 +86,7 @@ namespace Readarr.Api.V1.Books
                 AuthorTitle = authorTitle,
                 SeriesTitle = seriesTitle,
                 Disambiguation = selectedEdition?.Disambiguation,
-                Images = selectedEdition?.Images ?? new List<MediaCover>(),
+                Images = images.Any() ? images : selectedEdition?.Images ?? new List<MediaCover>(),
                 Links = (model.Links ?? new List<Links>()).Concat(selectedEdition?.Links ?? new List<Links>()).ToList(),
                 Ratings = selectedEdition?.Ratings ?? new Ratings(),
                 Added = model.Added,

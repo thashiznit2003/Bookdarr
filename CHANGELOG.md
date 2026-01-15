@@ -1,11 +1,18 @@
 # Changelog
 
--## 1.3.5
+## 1.3.6
+- Summary: Book Pool now renders every shared book, even when no ebook/audiobook files exist, and the posters use every cached image so the grid never looks empty.
+- Why: the shared pool should mirror the library’s catalog, and the UI needs to expose clear cover art plus accurate status chips so users can decide whether to pull files.
+- Impact: `UserLibraryService.GetBooksInPool()` aggregates user library entries plus shared files, `GetPoolStatus()` returns `Available` only when shared media exists, `BookResourceMapper.ToResource()` now collates images from all editions, and `frontend/src/Book/Pool/BookPoolPage.js` maps string-based statuses (`pending`/`available`/`needsManual`) to their translations so the badge matches the API; `src/Directory.Build.props` now publishes version `1.3.6.*`.
+- Files: src/NzbDrone.Core/Books/Services/UserLibraryService.cs, src/Readarr.Api.V1/Books/BookResource.cs, frontend/src/Book/Pool/BookPoolPage.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: run `scripts/update-dev.sh` via SSH so `/opt/bookdarr-dev/Logs/update-0XX.log` and the diagnostics bundle reflect `v1.3.6`.
+
+## 1.3.5
 - Summary: surface every book that any user has added (even when no ebook/audiobook file exists) in the Book Pool and make the status chip explain whether files are ready instead of always showing “Pending”.
- - Why: the shared pool should match the full library of each user, and the UI should clearly communicate whether there are assets to download instead of showing the same “Pending” badge for every title.
- - Impact: `UserLibraryService.GetBooksInPool()` now aggregates all user library entries plus shared files, `UserLibraryService.GetPoolStatus()` returns `Available` whenever files exist and `NeedsManual` otherwise, the status translations under `src/NzbDrone.Core/Localization/Core/en.json` describe the state more clearly, and `frontend/src/Book/Pool/BookPoolPage.js` uses those labels so users know when files are ready; `src/Directory.Build.props` bumps the assembly version to keep the app display and diagnostics logs aligned with the new release.
- - Files: src/NzbDrone.Core/Books/Services/UserLibraryService.cs, src/NzbDrone.Core/Localization/Core/en.json, frontend/src/Book/Pool/BookPoolPage.js, src/Directory.Build.props, CHANGELOG.md.
- - Next: run `scripts/update-dev.sh` via SSH so `/opt/bookdarr-dev/Logs/update-0XX.log` and the diagnostics bundle reflect `v1.3.5`.
+- Why: the shared pool should match the full library of each user, and the UI should clearly communicate whether there are assets to download instead of showing the same “Pending” badge for every title.
+- Impact: `UserLibraryService.GetBooksInPool()` now aggregates all user library entries plus shared files, `UserLibraryService.GetPoolStatus()` returns `Available` whenever files exist and `NeedsManual` otherwise, the status translations under `src/NzbDrone.Core/Localization/Core/en.json` describe the state more clearly, and `frontend/src/Book/Pool/BookPoolPage.js` uses those labels so users know when files are ready; `src/Directory.Build.props` bumps the assembly version to keep the app display and diagnostics logs aligned with the new release.
+- Files: src/NzbDrone.Core/Books/Services/UserLibraryService.cs, src/NzbDrone.Core/Localization/Core/en.json, frontend/src/Book/Pool/BookPoolPage.js, src/Directory.Build.props, CHANGELOG.md.
+- Next: run `scripts/update-dev.sh` via SSH so `/opt/bookdarr-dev/Logs/update-0XX.log` and the diagnostics bundle reflect `v1.3.5`.
 
 ## 1.3.4
 - Summary: make the Book Pool page render the same poster grid as the Library’s “Posters” view while keeping a floating `+` button at the top-right corner so the only UI difference is the “Add to my library” action.
