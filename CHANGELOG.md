@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.3.2
+- Summary: wire the shared Book Pool page into the UI and persist `DownloadRequest` records so the new red-dot review state survives restarts.
+- Why: the multi-user plan needs a visible place to claim shared files, and the decision engine must now keep historical download confidence records before we build the notifications and review dashboard.
+- Impact: `TableMapping` knows how to materialize `DownloadRequests`, the top-level sidebar gains a “Book Pool” entry, and the new React page (with dedicated CSS) lets you browse shared books and claim them without extra downloads; the README now links to the Book Pool workflow so contributors understand how to add shared copies.
+- Files: src/NzbDrone.Core/Datastore/TableMapping.cs, frontend/src/Book/Pool/BookPoolPage.js, frontend/src/Book/Pool/BookPoolPage.css, README.md, src/Directory.Build.props, CHANGELOG.md.
+- Next: tag and push the updated `develop` branch, run the SSH update command so the UI shows `v1.3.2`, and confirm the Book Pool page loads and the new entries appear in the diagnostics log.
+
+## 1.3.1
+- Summary: documented the multi-user/shared book pool architecture, the diagnostics/update workflow, and the enhanced metadata guidance so contributors know how to move forward with the new features and automation requirements.
+- Why: these changes capture the preferences in recent handoffs (SSH/diagnostics/Unity), solidify the tagging/logging workflow, and provide the ER plan needed before backend work can start on multi-user support.
+- Impact: README now lists metadata tuning, update script usage, and tag/version expectations; `docs/HANDOFF.md` now records the exact SSH/diagnostics/tag steps; `docs/ROADMAP.md` includes the multi-user milestone; `docs/MULTI_USER.md` outlines the proposed schema; `src/Directory.Build.props` bumped to version `1.3.1.*` to match the intended release.
+- Files: README.md, docs/HANDOFF.md, docs/ROADMAP.md, docs/MULTI_USER.md, src/Directory.Build.props, CHANGELOG.md.
+- Next: implement the database migrations, API changes, and frontend wiring described in `docs/MULTI_USER.md`, then run `scripts/update-dev.sh` via SSH so diagnostics reflect the new version.
+
 ## 1.2.313
 - Summary: prevent diagnostics pushes from aborting the update when the repo’s `origin/HEAD` isn’t a symbolic ref.
 - Why: the diagnostics repo occasionally resolves `origin/HEAD` to a raw commit, which made `symbolic-ref` fail under `set -e` and returned exit code 1 before the update finished.

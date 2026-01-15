@@ -172,6 +172,11 @@ namespace NzbDrone.Core.Datastore
                                                             .Where<Edition>(a => a.Id == f.EditionId)).SingleOrDefault(),
                           t => t.Id > 0);
 
+            Mapper.Entity<DownloadRequest>("DownloadRequests").RegisterModel();
+
+            Mapper.Entity<UserBook>("UserBooks").RegisterModel();
+            Mapper.Entity<UserBookFile>("UserBookFiles").RegisterModel();
+
             Mapper.Entity<QualityDefinition>("QualityDefinitions").RegisterModel()
                   .Ignore(d => d.GroupName)
                   .Ignore(d => d.GroupWeight)
