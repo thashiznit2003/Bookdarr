@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Core.Authentication;
+using NzbDrone.Core.Exceptions;
 using NzbDrone.Http.REST.Attributes;
+using Readarr.Http;
 using Readarr.Http.REST;
 
 namespace Readarr.Api.V1.Users

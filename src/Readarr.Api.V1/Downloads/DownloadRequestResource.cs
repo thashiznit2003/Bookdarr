@@ -1,5 +1,6 @@
 using System;
 using NzbDrone.Core.Download;
+using NzbDrone.Core.MediaFiles;
 using Readarr.Api.V1.Books;
 using Readarr.Http.REST;
 
