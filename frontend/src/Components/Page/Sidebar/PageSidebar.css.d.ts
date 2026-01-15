@@ -3,6 +3,12 @@
 interface CssExports {
   'sidebar': string;
   'sidebarContainer': string;
+  'sidebarFooter': string;
+  'sidebarFooterTitle': string;
+  'sidebarFooterNote': string;
+  'sidebarFooterStatus': string;
+  'sidebarFooterMessage': string;
+  'sidebarFooterError': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

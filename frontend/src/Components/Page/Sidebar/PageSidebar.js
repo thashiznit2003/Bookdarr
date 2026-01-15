@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 import QueueStatusConnector from 'Activity/Queue/Status/QueueStatusConnector';
 import OverlayScroller from 'Components/Scroller/OverlayScroller';
 import Scroller from 'Components/Scroller/Scroller';
-import { icons } from 'Helpers/Props';
+import { icons, kinds, sizes } from 'Helpers/Props';
 import locationShape from 'Helpers/Props/Shapes/locationShape';
 import dimensions from 'Styles/Variables/dimensions';
 import HealthStatusConnector from 'System/Status/Health/HealthStatusConnector';
@@ -14,6 +14,8 @@ import translate from 'Utilities/String/translate';
 import MessagesConnector from './Messages/MessagesConnector';
 import PageSidebarItem from './PageSidebarItem';
 import styles from './PageSidebar.css';
+import createAjaxRequest from 'Utilities/createAjaxRequest';
+import SpinnerButton from 'Components/Link/SpinnerButton';
 
 const HEADER_HEIGHT = parseInt(dimensions.headerHeight);
 const SIDEBAR_WIDTH = parseInt(dimensions.sidebarWidth);
@@ -42,6 +44,12 @@ const links = [
         to: '/unmapped'
       }
     ]
+  },
+
+  {
+    iconName: icons.BOOK_READER,
+    title: () => translate('BookPool'),
+    to: '/bookpool'
   },
 
   {
@@ -243,6 +251,137 @@ function getPositioning() {
     top: `${top}px`,
     height: `${height}px`
   };
+}
+
+class SidebarDiagnosticsStatus extends Component {
+  state = {
+    isLoading: true,
+    status: null,
+    isPushing: false,
+    message: null,
+    error: null
+  };
+
+  componentDidMount() {
+    this.fetchStatus();
+  }
+
+  fetchStatus = () => {
+    const { request } = createAjaxRequest({
+      url: '/diagnostics/status',
+      method: 'GET',
+      dataType: 'json',
+      skipDiagnostics: true
+    });
+
+    request.done((data) => {
+      this.setState({
+        status: data,
+        isLoading: false
+      });
+    });
+
+    request.fail(() => {
+      this.setState({
+        isLoading: false,
+        error: translate('DiagnosticsStatusLoadFailed')
+      });
+    });
+  };
+
+  onPushPress = () => {
+    this.setState({
+      isPushing: true,
+      message: null,
+      error: null
+    });
+
+    const { request } = createAjaxRequest({
+      url: '/diagnostics/push',
+      method: 'POST',
+      dataType: 'json',
+      data: JSON.stringify({}),
+      skipDiagnostics: true
+    });
+
+    request.done((data) => {
+      this.setState({
+        isPushing: false,
+        message: data.success ? data.message || translate('SidebarDiagnosticsPushSuccess') : null,
+        error: data.success ? null : data.message || translate('DiagnosticsPushFailed')
+      }, () => {
+        if (data.success) {
+          this.fetchStatus();
+        }
+      });
+    });
+
+    request.fail(() => {
+      this.setState({
+        isPushing: false,
+        error: translate('DiagnosticsPushFailed')
+      });
+    });
+  };
+
+  render() {
+    if (window.Readarr.branch !== 'develop') {
+      return null;
+    }
+
+    const {
+      status,
+      isPushing,
+      message,
+      error
+    } = this.state;
+
+    const isConfigured = !!(status?.repo && status?.hasToken);
+
+    return (
+      <div className={styles.sidebarFooter}>
+        <div className={styles.sidebarFooterTitle}>
+          {translate('Diagnostics')}
+        </div>
+        <div className={styles.sidebarFooterNote}>
+          {translate('SidebarDiagnosticsHelpText')}
+        </div>
+        <SpinnerButton
+          kind={kinds.INFO}
+          size={sizes.SMALL}
+          isSpinning={isPushing}
+          isDisabled={!isConfigured || isPushing}
+          onPress={this.onPushPress}
+        >
+          {translate('PushDiagnostics')}
+        </SpinnerButton>
+        {
+          status?.repo &&
+            <div className={styles.sidebarFooterStatus}>
+              {status.repo}
+            </div>
+        }
+        {
+          status &&
+            <div className={styles.sidebarFooterStatus}>
+              {status.hasToken ? translate('DiagnosticsTokenConfigured') : translate('DiagnosticsTokenMissing')}
+            </div>
+        }
+        {
+          message &&
+            <div className={styles.sidebarFooterMessage}>
+              {message}
+            </div>
+        }
+        {
+          error &&
+            <div className={styles.sidebarFooterError}>
+              {error}
+            </div>
+        }
+      </div>
+    );
+  }
 }
 
 class PageSidebar extends Component {
@@ -532,6 +671,7 @@ class PageSidebar extends Component {
           </div>
 
           <MessagesConnector />
+          <SidebarDiagnosticsStatus />
         </ScrollerComponent>
       </div>
     );

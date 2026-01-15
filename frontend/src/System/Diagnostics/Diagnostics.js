@@ -13,6 +13,7 @@ import FieldSet from 'Components/FieldSet';
 import { icons, kinds } from 'Helpers/Props';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import translate from 'Utilities/String/translate';
+import styles from './Diagnostics.css';
 
 class Diagnostics extends Component {
 
@@ -156,29 +157,34 @@ class Diagnostics extends Component {
 
           {
             !isLoading && status &&
-              <FieldSet legend={translate('Diagnostics')}>
-                <DescriptionList>
-                  <DescriptionListItemTitle>{translate('Branch')}</DescriptionListItemTitle>
-                  <DescriptionListItemDescription>
-                    {window.Readarr.branch}
-                  </DescriptionListItemDescription>
+            <FieldSet legend={translate('Diagnostics')}>
+              <DescriptionList>
+                <DescriptionListItemTitle>{translate('Branch')}</DescriptionListItemTitle>
+                <DescriptionListItemDescription>
+                  {window.Readarr.branch}
+                </DescriptionListItemDescription>
 
-                  <DescriptionListItemTitle>{translate('DiagnosticsRepo')}</DescriptionListItemTitle>
-                  <DescriptionListItemDescription>
-                    {status.repo || translate('DiagnosticsRepoMissing')}
-                  </DescriptionListItemDescription>
+                <DescriptionListItemTitle>{translate('DiagnosticsRepo')}</DescriptionListItemTitle>
+                <DescriptionListItemDescription>
+                  {status.repo || translate('DiagnosticsRepoMissing')}
+                </DescriptionListItemDescription>
 
-                  <DescriptionListItemTitle>{translate('DiagnosticsToken')}</DescriptionListItemTitle>
-                  <DescriptionListItemDescription>
-                    {status.hasToken ? translate('DiagnosticsTokenConfigured') : translate('DiagnosticsTokenMissing')}
-                  </DescriptionListItemDescription>
+                <DescriptionListItemTitle>{translate('DiagnosticsToken')}</DescriptionListItemTitle>
+                <DescriptionListItemDescription>
+                  {status.hasToken ? translate('DiagnosticsTokenConfigured') : translate('DiagnosticsTokenMissing')}
+                </DescriptionListItemDescription>
 
-                  <DescriptionListItemTitle>{translate('DiagnosticsLastFolder')}</DescriptionListItemTitle>
-                  <DescriptionListItemDescription>
-                    {result?.folder || translate('DiagnosticsNoPushYet')}
-                  </DescriptionListItemDescription>
-                </DescriptionList>
-              </FieldSet>
+                <DescriptionListItemTitle>{translate('DiagnosticsLastCommit')}</DescriptionListItemTitle>
+                <DescriptionListItemDescription className={styles.commitDescription}>
+                  {result?.commit || translate('DiagnosticsLastCommitMissing')}
+                </DescriptionListItemDescription>
+
+                <DescriptionListItemTitle>{translate('DiagnosticsLastFolder')}</DescriptionListItemTitle>
+                <DescriptionListItemDescription>
+                  {result?.folder || translate('DiagnosticsNoPushYet')}
+                </DescriptionListItemDescription>
+              </DescriptionList>
+            </FieldSet>
           }
         </PageContentBody>
       </PageContent>

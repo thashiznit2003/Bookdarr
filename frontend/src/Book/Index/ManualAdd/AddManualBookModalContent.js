@@ -84,7 +84,7 @@ class AddManualBookModalContent extends Component {
           <div className={styles.container}>
             <Form {...otherProps}>
               <div className={styles.grid}>
-                <FormGroup className={classNames(styles.fieldGroup, styles.fullWidth)}>
+                <FormGroup className={classNames(styles.fieldGroup, styles.wideField)}>
                   <FormLabel>
                     {translate('Title')}
                   </FormLabel>
@@ -98,7 +98,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup className={classNames(styles.fieldGroup, styles.fullWidth)}>
+                <FormGroup className={classNames(styles.fieldGroup, styles.wideField)}>
                   <FormLabel>
                     {translate('Author')}
                   </FormLabel>
@@ -112,7 +112,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup className={classNames(styles.fieldGroup, styles.fullWidth)}>
+                <FormGroup className={classNames(styles.fieldGroup, styles.wideField)}>
                   <FormLabel>
                     {translate('ReleaseDate')}
                   </FormLabel>
@@ -127,7 +127,7 @@ class AddManualBookModalContent extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup className={classNames(styles.fieldGroup, styles.fullWidth)}>
+                <FormGroup className={classNames(styles.fieldGroup, styles.wideField)}>
                   <FormLabel>
                     {translate('Overview')}
                   </FormLabel>

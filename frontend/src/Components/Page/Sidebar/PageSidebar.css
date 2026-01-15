@@ -31,3 +31,38 @@
     height: 100%;
   }
 }
+
+.sidebarFooter {
+  margin-top: 32px;
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebarFooterTitle {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebarFooterNote {
+  font-size: 12px;
+  color: var(--disabledColor);
+}
+
+.sidebarFooterStatus {
+  font-size: 12px;
+  color: var(--disabledColor);
+}
+
+.sidebarFooterMessage {
+  font-size: 12px;
+  color: var(--successColor);
+}
+
+.sidebarFooterError {
+  font-size: 12px;
+  color: var(--dangerColor);
+}
