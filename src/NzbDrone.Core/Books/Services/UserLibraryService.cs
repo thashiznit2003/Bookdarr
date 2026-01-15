@@ -105,7 +105,7 @@ namespace NzbDrone.Core.Books
         {
             var sharedFiles = _mediaFileRepository.All().Where(f => f.SharedWithAll).ToList();
             var bookIds = sharedFiles
-                .Select(f => f.Edition?.BookId ?? 0)
+                .Select(f => f.Edition?.Value?.BookId ?? 0)
                 .Where(id => id > 0)
                 .Distinct()
                 .ToList();
