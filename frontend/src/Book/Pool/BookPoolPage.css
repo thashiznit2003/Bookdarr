@@ -20,28 +20,33 @@
   margin: 0 16px 24px;
 }
 
-.card {
+.posterCard {
   background: var(--cardBackgroundColor);
   border: 1px solid var(--borderColor);
   border-radius: 8px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 360px;
+  min-height: 340px;
+  transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
-.cardAttention {
+.posterCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.posterAttention {
   border-color: var(--dangerColor);
 }
 
-.coverWrapper {
+.posterWrapper {
   position: relative;
-  width: 100%;
-  padding-top: 138%;
   background: var(--borderColor);
+  padding-top: 150%;
 }
 
-.coverImage {
+.posterImage {
   position: absolute;
   top: 0;
   left: 0;
@@ -50,29 +55,40 @@
   object-fit: cover;
 }
 
-.cardBody {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 16px;
-  flex: 1;
+.addButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  justify-content: center;
+  align-items: center;
 }
 
-.title {
+.posterMeta {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.posterTitle {
   font-size: 1rem;
   font-weight: 600;
 }
 
-.author {
+.posterAuthor {
   color: var(--dimColor);
   font-size: 0.9rem;
 }
 
-.statusRow {
-  align-items: center;
+.posterStatusRow {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  align-items: center;
 }
 
 .libraryBadge {
@@ -82,33 +98,27 @@
   font-size: 0.8rem;
 }
 
-.metaRow {
+.posterMetaRow {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
 }
 
-.metaItem {
+.posterMetaItem {
   display: flex;
   flex-direction: column;
 }
 
-.metaLabel {
+.posterMetaLabel {
   color: var(--dimColor);
   font-size: 0.75rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
-.metaValue {
+.posterMetaValue {
   font-size: 0.9rem;
   font-weight: 600;
-}
-
-.actions {
-  margin-top: auto;
-  display: flex;
-  justify-content: flex-end;
 }
 
 .status,

@@ -143,7 +143,7 @@ export default class BookPoolPage extends Component {
               {books.length > 0 ? (
                 <div className={styles.grid}>
                   {books.map((item) => (
-                    <BookPoolCard
+                    <BookPoolPoster
                       key={item.bookId}
                       resource={item}
                       onAdd={() => this.onAddToLibrary(item)}
@@ -163,7 +163,7 @@ export default class BookPoolPage extends Component {
   }
 }
 
-function BookPoolCard({
+function BookPoolPoster({
   resource,
   onAdd,
   isAdding,
@@ -178,47 +178,46 @@ function BookPoolCard({
   } = resource;
 
   return (
-    <div className={classNames(styles.card, needsAttention && styles.cardAttention)}>
-      <div className={styles.coverWrapper}>
+    <div className={classNames(styles.posterCard, needsAttention && styles.posterAttention)}>
+      <div className={styles.posterWrapper}>
         <BookCover
-          size={320}
+          size={300}
           images={book.images || []}
-          className={styles.coverImage}
+          className={styles.posterImage}
+        />
+        <IconButton
+          className={styles.addButton}
+          name={icons.ADD}
+          title={translate(inMyLibrary ? 'InMyLibrary' : 'AddToMyLibrary')}
+          onPress={onAdd}
+          isDisabled={inMyLibrary}
+          isSpinning={isAdding}
         />
       </div>
-      <div className={styles.cardBody}>
-        <div className={styles.title}>
+      <div className={styles.posterMeta}>
+        <div className={styles.posterTitle}>
           <BookTitleLink
             title={book.title}
             titleSlug={book.titleSlug}
             disambiguation={book.disambiguation}
           />
         </div>
-        <div className={styles.author}>{book.authorTitle}</div>
-        <div className={styles.statusRow}>
+        <div className={styles.posterAuthor}>{book.authorTitle}</div>
+        <div className={styles.posterStatusRow}>
           {renderStatus()}
           {inMyLibrary && (
             <span className={styles.libraryBadge}>{translate('InMyLibrary')}</span>
           )}
         </div>
-        <div className={styles.metaRow}>
-          <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>eBook</span>
-            <span className={styles.metaValue}>{hasEbook ? translate('Yes') : translate('No')}</span>
+        <div className={styles.posterMetaRow}>
+          <div className={styles.posterMetaItem}>
+            <span className={styles.posterMetaLabel}>eBook</span>
+            <span className={styles.posterMetaValue}>{hasEbook ? translate('Yes') : translate('No')}</span>
           </div>
-          <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>Audiobook</span>
-            <span className={styles.metaValue}>{hasAudiobook ? translate('Yes') : translate('No')}</span>
+          <div className={styles.posterMetaItem}>
+            <span className={styles.posterMetaLabel}>Audiobook</span>
+            <span className={styles.posterMetaValue}>{hasAudiobook ? translate('Yes') : translate('No')}</span>
           </div>
-        </div>
-        <div className={styles.actions}>
-          <IconButton
-            name={icons.ADD}
-            title={translate(inMyLibrary ? 'InMyLibrary' : 'AddToMyLibrary')}
-            onPress={onAdd}
-            isDisabled={inMyLibrary}
-            isSpinning={isAdding}
-          />
         </div>
       </div>
     </div>
