@@ -1,5 +1,4 @@
 using System.Linq;
-using NzbDrone.Core.DecisionEngine;
 using NzbDrone.Core.Download;
 using NzbDrone.Core.IndexerSearch.Definitions;
 using NzbDrone.Core.MediaFiles;
@@ -19,8 +18,8 @@ namespace NzbDrone.Core.DecisionEngine.Specifications
             _downloadRequestService = downloadRequestService;
         }
 
-        public SpecificationPriority Priority => SpecificationPriority.Parser;
-        public RejectionType Type => RejectionType.Temp;
+        public NzbDrone.Core.DecisionEngine.SpecificationPriority Priority => NzbDrone.Core.DecisionEngine.SpecificationPriority.Parser;
+        public NzbDrone.Core.DecisionEngine.RejectionType Type => NzbDrone.Core.DecisionEngine.RejectionType.Temp;
 
         public Decision IsSatisfiedBy(RemoteBook subject, SearchCriteriaBase searchCriteria)
         {
@@ -44,8 +43,8 @@ namespace NzbDrone.Core.DecisionEngine.Specifications
             LogDownloadRequest(subject, searchCriteria, confidence);
 
             return confidence >= MinimumConfidence
-                ? Decision.Accept()
-                : Decision.Reject("Match confidence {0}% is below the {1}% threshold.", confidence.ToString("0.0"), MinimumConfidence);
+                ? NzbDrone.Core.DecisionEngine.Decision.Accept()
+                : NzbDrone.Core.DecisionEngine.Decision.Reject("Match confidence {0}% is below the {1}% threshold.", confidence.ToString("0.0"), MinimumConfidence);
         }
 
         private void LogDownloadRequest(RemoteBook subject, SearchCriteriaBase searchCriteria, decimal confidence)

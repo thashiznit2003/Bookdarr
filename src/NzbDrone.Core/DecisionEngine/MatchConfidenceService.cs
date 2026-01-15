@@ -51,7 +51,7 @@ namespace NzbDrone.Core.DecisionEngine
 
         private static string Normalize(string? value)
         {
-            if (value.IsNullOrWhiteSpace())
+            if (string.IsNullOrWhiteSpace(value))
             {
                 return string.Empty;
             }
