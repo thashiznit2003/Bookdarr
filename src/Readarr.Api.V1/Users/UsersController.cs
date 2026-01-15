@@ -1,0 +1,102 @@
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using NzbDrone.Core.Authentication;
+using NzbDrone.Http.REST.Attributes;
+using Readarr.Http.REST;
+
+namespace Readarr.Api.V1.Users
+{
+    [V1ApiController("users")]
+    public class UsersController : ControllerBase
+    {
+        private readonly IUserService _userService;
+
+        public UsersController(IUserService userService)
+        {
+            _userService = userService;
+        }
+
+        [HttpGet]
+        public ActionResult<List<UserResource>> GetUsers()
+        {
+            var currentUser = GetCurrentUser();
+
+            if (!currentUser.IsAdmin)
+            {
+                return Forbid();
+            }
+
+            var resources = _userService.GetUsers().Select(Map).ToList();
+            return resources;
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<UserResource> Get(int id)
+        {
+            var currentUser = GetCurrentUser();
+
+            if (!currentUser.IsAdmin)
+            {
+                return Forbid();
+            }
+
+            var user = _userService.FindUserById(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Map(user);
+        }
+
+        [HttpPost]
+        public ActionResult<UserResource> Create(UserCreateResource resource)
+        {
+            if (resource == null)
+            {
+                throw new BadRequestException("Request body can't be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(resource.Username) || string.IsNullOrWhiteSpace(resource.Password))
+            {
+                throw new BadRequestException("Username and password are required");
+            }
+
+            var currentUser = GetCurrentUser();
+
+            if (!currentUser.IsAdmin)
+            {
+                return Forbid();
+            }
+
+            var created = _userService.Add(resource.Username, resource.Password, resource.IsAdmin);
+
+            return CreatedAtAction(nameof(Get), new { id = created.Id }, Map(created));
+        }
+
+        private UserResource Map(User user)
+        {
+            return new UserResource
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Identifier = user.Identifier,
+                IsAdmin = user.IsAdmin
+            };
+        }
+
+        private User GetCurrentUser()
+        {
+            var user = _userService.FindUser(HttpContext?.User);
+
+            if (user == null)
+            {
+                throw new ModelNotFoundException(typeof(User), 0);
+            }
+
+            return user;
+        }
+    }
+}
