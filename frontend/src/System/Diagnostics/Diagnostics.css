@@ -1,0 +1,10 @@
+.statusList {
+  margin-top: 16px;
+}
+
+.commitDescription {
+  font-family: var(--monospaceFont, 'Roboto Mono', Courier, monospace);
+  word-break: break-all;
+  font-size: 12px;
+  color: var(--disabledColor);
+}

@@ -7,6 +7,13 @@
 - Files: src/NzbDrone.Core/Datastore/TableMapping.cs, frontend/src/Book/Pool/BookPoolPage.js, frontend/src/Book/Pool/BookPoolPage.css, README.md, src/Directory.Build.props, CHANGELOG.md.
 - Next: tag and push the updated `develop` branch, run the SSH update command so the UI shows `v1.3.2`, and confirm the Book Pool page loads and the new entries appear in the diagnostics log.
 
+## 1.3.3
+- Summary: add a sidebar diagnostics push button, surface the last diagnostics commit, and make the manual “Add Book Manually” modal fields stretch across the modal so the top-row inputs mirror the rest of the form.
+- Why: the diagnostics push should be one click away and provide more context for the workflow, while the manual add modal needed wider title/author/date inputs after the request for easier typing.
+- Impact: the sidebar now exposes a development-only push button with inline status and repo/token hints, the diagnostics page lists the last commit alongside the bundle location, and the modal layout uses a responsive grid so the front-row fields span the same width as the lower rows; translations and CSS were updated to support the new copy and styles.
+- Files: frontend/src/Components/Page/Sidebar/PageSidebar.js, frontend/src/Components/Page/Sidebar/PageSidebar.css, frontend/src/System/Diagnostics/Diagnostics.js, frontend/src/System/Diagnostics/Diagnostics.css, frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.js, frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.css, src/NzbDrone.Core/Localization/Core/en.json, src/Directory.Build.props, CHANGELOG.md.
+- Next: run `scripts/update-dev.sh` via SSH (with the next `update-0XX.log`) so the sidebar/diagnostics changes reach the Ubuntu VM and the new version shows up in the UI.
+
 ## 1.3.1
 - Summary: documented the multi-user/shared book pool architecture, the diagnostics/update workflow, and the enhanced metadata guidance so contributors know how to move forward with the new features and automation requirements.
 - Why: these changes capture the preferences in recent handoffs (SSH/diagnostics/Unity), solidify the tagging/logging workflow, and provide the ER plan needed before backend work can start on multi-user support.
