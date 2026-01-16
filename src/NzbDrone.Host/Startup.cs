@@ -25,6 +25,7 @@ using NzbDrone.Core.Lifecycle;
 using NzbDrone.Core.Messaging.Events;
 using NzbDrone.Http.Authentication;
 using NzbDrone.SignalR;
+using Readarr.Api.V1.Books;
 using Readarr.Api.V1.System;
 using Readarr.Http;
 using Readarr.Http.Authentication;
@@ -169,6 +170,8 @@ namespace NzbDrone.Host
 
             services.AddSingleton<IAuthorizationPolicyProvider, UiAuthorizationPolicyProvider>();
             services.AddSingleton<IAuthorizationHandler, UiAuthorizationHandler>();
+
+            services.AddSingleton<IBookPoolMapper, BookPoolMapper>();
 
             services.AddAuthorization(options =>
             {

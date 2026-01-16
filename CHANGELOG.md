@@ -1,4 +1,11 @@
-# Changelog
+﻿# Changelog
+
+## 1.3.23
+- Summary: Built a shared BookPool metadata mapper so every card now references the same cached `BookResource` (including the local cover URLs and availability badges), and the user library no longer remaps the pool on every call.
+- Why: The previous pool loop filtered out books without shared media and reconverted image URLs per request, leaving most covers blank and preventing the “All” view from ever showing titles that still need files.
+- Impact: Added `BookPoolMapper` to centralize each book’s `BookResource`, status, and local-cover conversion, `UserLibraryController` now defers to that mapper, `UserLibraryService` shed the unused `GetBooksInPool()` endpoint, and `Startup` registers the shared mapper; the assembly version bumps to `1.3.23.*` so the UI clearly reports the new release.
+- Files: `src/Readarr.Api.V1/Books/BookPoolMapper.cs`, `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `src/NzbDrone.Core/Books/Services/UserLibraryService.cs`, `src/NzbDrone.Host/Startup.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag a new `snapshot-YYYYMMDD-HHMM`, push it, and run `LOG_FILE="/opt/bookdarr-dev/Logs/update-097.log" /opt/bookdarr-dev/scripts/update-dev.sh` via SSH so the diagnostics repo captures the fresh BookPool metadata release.
 
 ## 1.3.22
 - Summary: Book Pool now reads every poster from the cached `/MediaCover/Books/...` assets, and cached covers without extensions are detected so the shared pool finally renders the full grid while the sidebar still warns about throttling.

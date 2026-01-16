@@ -14,7 +14,6 @@ namespace NzbDrone.Core.Books
         IEnumerable<UserBook> GetUserLibrary(int userId);
         UserBook GetUserBookById(int id, int userId);
         bool IsBookAvailableInPool(int bookId);
-        List<Book> GetBooksInPool();
         LibraryStatus GetPoolStatus(int bookId, bool wantsEbook, bool wantsAudiobook);
         bool PoolHasMedia(int bookId, BookFileMediaType mediaType);
         bool UserBookHasMedia(UserBook userBook, BookFileMediaType mediaType);
@@ -104,11 +103,6 @@ namespace NzbDrone.Core.Books
         {
             return _mediaFileRepository.GetFilesByBook(bookId)
                 .Any(file => file.SharedWithAll && (file.MediaType == BookFileMediaType.Ebook || file.MediaType == BookFileMediaType.Audiobook));
-        }
-
-        public List<Book> GetBooksInPool()
-        {
-            return _bookRepository.All().ToList();
         }
 
         public LibraryStatus GetPoolStatus(int bookId, bool wantsEbook, bool wantsAudiobook)

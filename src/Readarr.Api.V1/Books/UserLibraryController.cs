@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Books;
-using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MediaFiles;
 using Readarr.Http;
 using Readarr.Http.REST;
@@ -17,17 +16,17 @@ namespace Readarr.Api.V1.Books
         private readonly IUserService _userService;
         private readonly IUserLibraryService _libraryService;
         private readonly IBookService _bookService;
-        private readonly IMapCoversToLocal _coverMapper;
+        private readonly IBookPoolMapper _bookPoolMapper;
 
         public UserLibraryController(IUserService userService,
                                      IUserLibraryService libraryService,
                                      IBookService bookService,
-                                     IMapCoversToLocal coverMapper)
+                                     IBookPoolMapper bookPoolMapper)
         {
             _userService = userService;
             _libraryService = libraryService;
             _bookService = bookService;
-            _coverMapper = coverMapper;
+            _bookPoolMapper = bookPoolMapper;
         }
 
         [HttpGet]
@@ -55,21 +54,7 @@ namespace Readarr.Api.V1.Books
         public ActionResult<List<BookPoolResource>> GetBookPool()
         {
             var user = GetCurrentUser();
-            var books = _libraryService.GetBooksInPool();
-
-            var resources = books.Select(book =>
-            {
-                var resource = MapPool(book, user.Id);
-
-                if (resource.Book?.Images != null)
-                {
-                    _coverMapper.ConvertToLocalUrls(book.Id, MediaCoverEntity.Book, resource.Book.Images);
-                }
-
-                return resource;
-            }).ToList();
-
-            return resources;
+            return _bookPoolMapper.GetPool(user.Id);
         }
 
         protected override UserLibraryResource GetResourceById(int id)
@@ -95,21 +80,6 @@ namespace Readarr.Api.V1.Books
                 HasEbook = _libraryService.UserBookHasMedia(userBook, BookFileMediaType.Ebook),
                 HasAudiobook = _libraryService.UserBookHasMedia(userBook, BookFileMediaType.Audiobook),
                 PoolHasBook = _libraryService.IsBookAvailableInPool(book.Id)
-            };
-        }
-
-        private BookPoolResource MapPool(Book book, int userId)
-        {
-            var userBook = _libraryService.GetUserBook(userId, book.Id);
-
-            return new BookPoolResource
-            {
-                Id = book.Id,
-                Book = book.ToResource(),
-                Status = _libraryService.GetPoolStatus(book.Id, true, true),
-                HasEbook = _libraryService.PoolHasMedia(book.Id, BookFileMediaType.Ebook),
-                HasAudiobook = _libraryService.PoolHasMedia(book.Id, BookFileMediaType.Audiobook),
-                InMyLibrary = userBook != null
             };
         }
 
