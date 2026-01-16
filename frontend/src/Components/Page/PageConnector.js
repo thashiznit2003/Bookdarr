@@ -23,7 +23,7 @@ import ErrorPage from './ErrorPage';
 import LoadingPage from './LoadingPage';
 import Page from './Page';
 
-const VERSION_POLL_INTERVAL = 60 * 1000;
+const VERSION_POLL_INTERVAL = 15 * 1000;
 function testLocalStorage() {
   const key = 'readarrTest';
 

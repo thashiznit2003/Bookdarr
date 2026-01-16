@@ -14,6 +14,13 @@
 - Files: `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
 
+## 1.3.33
+- Summary: Browser refreshes now happen within about 15 seconds after the backend reports a new version, boosting the chance you see the latest build without manual reloads.
+- Why: The auto-reload poll ran every 60 seconds, so short-lived updates often required waiting a full minute (or refreshing manually) before the UI noticed the version bump.
+- Impact: `frontend/src/Components/Page/PageConnector.js` now polls `system/status` every 15 seconds, still reloads on version changes, and `src/Directory.Build.props` publishes `1.3.33.*` to keep diagnostics in lockstep; the changelog records the tighter polling interval.
+- Files: `frontend/src/Components/Page/PageConnector.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.30
 - Summary: Book Pool posters now keep a fixed 162px width so they match the Library poster density instead of stretching on wide screens.
 - Why: Using `minmax(160px, 1fr)` allowed each column to inflate past the Library size, leaving the shared pool noticeably larger than the rest of the UI.
