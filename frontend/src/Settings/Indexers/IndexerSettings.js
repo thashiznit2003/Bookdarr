@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
+import Alert from 'Components/Alert';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
-import { icons } from 'Helpers/Props';
+import { icons, kinds } from 'Helpers/Props';
 import SettingsToolbarConnector from 'Settings/SettingsToolbarConnector';
 import translate from 'Utilities/String/translate';
 import IndexersConnector from './Indexers/IndexersConnector';
@@ -26,9 +27,19 @@ class IndexerSettings extends Component {
       isSaving: false,
       hasPendingChanges: false,
       isManageIndexersOpen: false,
-      isImporting: false
+      isImporting: false,
+      alertMessage: null,
+      alertKind: kinds.INFO
     };
   }
+
+  showAlert = (message, kind = kinds.INFO) => {
+    this.setState({ alertMessage: message, alertKind: kind });
+  };
+
+  clearAlert = () => {
+    this.setState({ alertMessage: null });
+  };
 
   //
   // Listeners
@@ -63,11 +74,13 @@ class IndexerSettings extends Component {
       return;
     }
 
+    this.clearAlert();
+
     const reader = new FileReader();
 
     reader.onload = () => {
       if (typeof reader.result !== 'string') {
-        window.alert('Unable to read the import file contents.');
+        this.showAlert('Unable to read the import file contents.', kinds.DANGER);
         return;
       }
 
@@ -75,7 +88,7 @@ class IndexerSettings extends Component {
     };
 
     reader.onerror = () => {
-      window.alert('Unable to read the import file.');
+      this.showAlert('Unable to read the import file.', kinds.DANGER);
     };
 
     reader.readAsText(files[0]);
@@ -95,11 +108,12 @@ class IndexerSettings extends Component {
     } = this.props;
 
     if (!contents || !contents.trim()) {
-      window.alert('The import file is empty.');
+      this.showAlert('The import file is empty.', kinds.DANGER);
       return;
     }
 
     this.setState({ isImporting: true });
+    this.clearAlert();
 
     try {
       const response = await fetch(`${window.Readarr.apiRoot}/indexer/import?forceSave=true`, {
@@ -119,15 +133,15 @@ class IndexerSettings extends Component {
       }
 
       if (result && result.errors && result.errors.length) {
-        window.alert(`Imported ${result.created || 0} indexer(s) with warnings:\n${result.errors.join('\n')}`);
+        this.showAlert(`Imported ${result.created || 0} indexer(s) with warnings:\n${result.errors.join('\n')}`, kinds.WARNING);
       } else {
-        window.alert(`Imported ${result.created || 0} indexer(s).`);
+        this.showAlert(`Imported ${result.created || 0} indexer(s).`, kinds.SUCCESS);
       }
 
       dispatchFetchIndexers();
       dispatchFetchIndexerOptions();
     } catch (error) {
-      window.alert(error.message || 'Indexer import failed.');
+      this.showAlert(error.message || 'Indexer import failed.', kinds.DANGER);
     } finally {
       this.setState({ isImporting: false });
     }
@@ -152,7 +166,9 @@ class IndexerSettings extends Component {
       isSaving,
       hasPendingChanges,
       isManageIndexersOpen,
-      isImporting
+      isImporting,
+      alertMessage,
+      alertKind
     } = this.state;
 
     return (
@@ -164,6 +180,17 @@ class IndexerSettings extends Component {
           style={{ display: 'none' }}
           onChange={this.onImportIndexersChange}
         />
+        {
+          alertMessage &&
+            <Alert kind={alertKind}>
+              {alertMessage.split('\n').map((line, idx, arr) => (
+                <Fragment key={idx}>
+                  {line}
+                  {idx < arr.length - 1 && <br />}
+                </Fragment>
+              ))}
+            </Alert>
+        }
         <SettingsToolbarConnector
           isSaving={isSaving}
           hasPendingChanges={hasPendingChanges}

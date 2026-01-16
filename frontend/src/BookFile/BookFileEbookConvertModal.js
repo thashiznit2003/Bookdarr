@@ -46,42 +46,43 @@ class BookFileEbookConvertModal extends Component {
     const pathLower = path ? path.toLowerCase() : '';
     const isPdf = pathLower.endsWith('.pdf');
 
-    if (!isPdf) {
+    if (isPdf) {
       this.setState({
-        isScanning: false,
-        scanResult: {
-          isPdf: false
-        },
+        isScanning: true,
+        scanResult: null,
         scanError: null
       });
+
+      const { request } = createAjaxRequest({
+        url: `/bookfile/${bookFileId}/convert/scan`,
+        method: 'POST',
+        dataType: 'json'
+      });
+
+      request.done((data) => {
+        this.setState({
+          isScanning: false,
+          scanResult: data,
+          scanError: null
+        });
+      });
+
+      request.fail((xhr) => {
+        this.setState({
+          isScanning: false,
+          scanError: getErrorMessage(xhr, translate('ConvertEbookScanError'))
+        });
+      });
+
       return;
     }
 
     this.setState({
-      isScanning: true,
-      scanResult: null,
+      isScanning: false,
+      scanResult: {
+        isPdf: false
+      },
       scanError: null
-    });
-
-    const { request } = createAjaxRequest({
-      url: `/bookfile/${bookFileId}/convert/scan`,
-      method: 'POST',
-      dataType: 'json'
-    });
-
-    request.done((data) => {
-      this.setState({
-        isScanning: false,
-        scanResult: data,
-        scanError: null
-      });
-    });
-
-    request.fail((xhr) => {
-      this.setState({
-        isScanning: false,
-        scanError: getErrorMessage(xhr, translate('ConvertEbookScanError'))
-      });
     });
   };
 
@@ -112,41 +113,46 @@ class BookFileEbookConvertModal extends Component {
       );
     }
 
-    if (!scanResult || !scanResult.isPdf) {
+    const hasPdfResult = scanResult && scanResult.isPdf;
+
+    if (hasPdfResult) {
+      const hasImageOnlyPercent =
+        scanResult.imageOnlyPercent !== null &&
+        scanResult.imageOnlyPercent !== undefined;
+      const imagePercent = hasImageOnlyPercent ?
+        scanResult.imageOnlyPercent.toFixed(1) :
+        '0.0';
+      const textReadable = scanResult.textReadable ? translate('Yes') : translate('No');
+
       return (
-        <div className={styles.scanNote}>
-          {translate('ConvertEbookScanNotPdf')}
+        <div>
+          <div className={styles.scanRow}>
+            <span className={styles.scanLabel}>
+              {translate('ConvertEbookScanImagePercent', [
+                imagePercent,
+                scanResult.imageOnlyPages,
+                scanResult.totalPages
+              ])}
+            </span>
+          </div>
+          <div className={styles.scanRow}>
+            <span className={styles.scanLabel}>
+              {translate('ConvertEbookScanTextReadable', [textReadable])}
+            </span>
+          </div>
+          {
+            scanResult.warning &&
+              <Alert kind={kinds.WARNING} className={styles.scanWarning}>
+                {scanResult.warning}
+              </Alert>
+          }
         </div>
       );
     }
 
-    const imagePercent = scanResult.imageOnlyPercent != null ?
-      scanResult.imageOnlyPercent.toFixed(1) :
-      '0.0';
-    const textReadable = scanResult.textReadable ? translate('Yes') : translate('No');
-
     return (
-      <div>
-        <div className={styles.scanRow}>
-          <span className={styles.scanLabel}>
-            {translate('ConvertEbookScanImagePercent', [
-              imagePercent,
-              scanResult.imageOnlyPages,
-              scanResult.totalPages
-            ])}
-          </span>
-        </div>
-        <div className={styles.scanRow}>
-          <span className={styles.scanLabel}>
-            {translate('ConvertEbookScanTextReadable', [textReadable])}
-          </span>
-        </div>
-        {
-          scanResult.warning &&
-            <Alert kind={kinds.WARNING} className={styles.scanWarning}>
-              {scanResult.warning}
-            </Alert>
-        }
+      <div className={styles.scanNote}>
+        {translate('ConvertEbookScanNotPdf')}
       </div>
     );
   }

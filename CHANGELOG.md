@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.39
+- Summary: ESLint now finishes with zero problems after the ebook-convert scanning UI and indexer-import dialogs follow the required control-flow and notification rules.
+- Why: The last lint run still reported `no-negated-condition` plus `no-alert` warnings, so reorganizing `BookFileEbookConvertModal`’s PDF scan branch and replacing every `window.alert` in `IndexerSettings` with an inline `Alert` clears those violations.
+- Impact: `frontend/src/BookFile/BookFileEbookConvertModal.js` now only uses positive guards when rendering scan details, `frontend/src/Settings/Indexers/IndexerSettings.js` exposes the same import/export messages through the app’s `Alert` component, `src/Directory.Build.props` reports `1.3.39.*`, and `CHANGELOG.md` documents the lint-cleanup follow-up.
+- Files: `frontend/src/BookFile/BookFileEbookConvertModal.js`, `frontend/src/Settings/Indexers/IndexerSettings.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.38
 - Summary: Front-end lint storms no longer fail `yarn lint`; the App, Author, BookFile, Form, Diagnostics, Search, Store, Sidebar, and bootstrap helpers now follow the `simple-import-sort`, handler/boolean, and prop-type rules.
 - Why: ESLint errors from across the active folders blocked incremental cleanup, so sorting imports, renaming handlers, fixing boolean props, and reorganizing helper components lets the incremental lint passes focus on their own rule categories.
