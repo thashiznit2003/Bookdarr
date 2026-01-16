@@ -3,3 +3,7 @@
   width: 100%;
   user-select: none;
 }
+
+.columnWrapper {
+  padding: 4px 0;
+}

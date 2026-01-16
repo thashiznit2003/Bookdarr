@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { DndProvider } from 'react-dnd-multi-backend';
-import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import SettingsToolbarConnector from 'Settings/SettingsToolbarConnector';
@@ -9,9 +7,6 @@ import DelayProfilesConnector from './Delay/DelayProfilesConnector';
 import MetadataProfilesConnector from './Metadata/MetadataProfilesConnector';
 import QualityProfilesConnector from './Quality/QualityProfilesConnector';
 import ReleaseProfilesConnector from './Release/ReleaseProfilesConnector';
-
-// Only a single DragDrop Context can exist so it's done here to allow editing
-// quality profiles and reordering delay profiles to work.
 
 class Profiles extends Component {
 
@@ -24,12 +19,10 @@ class Profiles extends Component {
         <SettingsToolbarConnector showSave={false} />
 
         <PageContentBody>
-          <DndProvider options={HTML5toTouch}>
-            <QualityProfilesConnector />
-            <MetadataProfilesConnector />
-            <DelayProfilesConnector />
-            <ReleaseProfilesConnector />
-          </DndProvider>
+          <QualityProfilesConnector />
+          <MetadataProfilesConnector />
+          <DelayProfilesConnector />
+          <ReleaseProfilesConnector />
         </PageContentBody>
       </PageContent>
     );

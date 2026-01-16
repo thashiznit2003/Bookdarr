@@ -13,7 +13,7 @@ function TableOptionsColumn(props) {
     isVisible,
     isModifiable,
     isDragging,
-    connectDragSource,
+    dragHandleProps,
     onVisibleChange
   } = props;
 
@@ -39,15 +39,16 @@ function TableOptionsColumn(props) {
         </label>
 
         {
-          !!connectDragSource &&
-            connectDragSource(
-              <div className={styles.dragHandle}>
-                <Icon
-                  className={styles.dragIcon}
-                  name={icons.REORDER}
-                />
-              </div>
-            )
+          isModifiable !== false &&
+            <div
+              className={styles.dragHandle}
+              {...dragHandleProps}
+            >
+              <Icon
+                className={styles.dragIcon}
+                name={icons.REORDER}
+              />
+            </div>
         }
       </div>
     </div>
@@ -59,10 +60,13 @@ TableOptionsColumn.propTypes = {
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
   isVisible: PropTypes.bool.isRequired,
   isModifiable: PropTypes.bool.isRequired,
-  index: PropTypes.number.isRequired,
   isDragging: PropTypes.bool,
-  connectDragSource: PropTypes.func,
+  dragHandleProps: PropTypes.object,
   onVisibleChange: PropTypes.func.isRequired
+};
+
+TableOptionsColumn.defaultProps = {
+  dragHandleProps: {}
 };
 
 export default TableOptionsColumn;

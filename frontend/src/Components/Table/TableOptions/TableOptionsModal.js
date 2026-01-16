@@ -1,8 +1,22 @@
-import _ from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { DndProvider } from 'react-dnd-multi-backend';
-import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  sortableKeyboardCoordinates
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import _ from 'lodash';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -17,235 +31,239 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import TableOptionsColumn from './TableOptionsColumn';
-import TableOptionsColumnDragPreview from './TableOptionsColumnDragPreview';
-import TableOptionsColumnDragSource from './TableOptionsColumnDragSource';
 import styles from './TableOptionsModal.css';
 
-class TableOptionsModal extends Component {
+function SortableTableColumn({ column, onVisibleChange }) {
+  const {
+    attributes,
+    listeners,
+    isDragging,
+    setNodeRef,
+    transform,
+    transition
+  } = useSortable({ id: column.name });
 
-  //
-  // Lifecycle
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition
+  };
 
-  constructor(props, context) {
-    super(props, context);
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={styles.columnWrapper}
+    >
+      <TableOptionsColumn
+        name={column.name}
+        label={typeof column.columnLabel === 'function' ? column.columnLabel() : column.columnLabel || column.label}
+        isVisible={column.isVisible}
+        isModifiable={column.isModifiable !== false}
+        isDragging={isDragging}
+        onVisibleChange={onVisibleChange}
+        dragHandleProps={{
+          ...attributes,
+          ...listeners
+        }}
+      />
+    </div>
+  );
+}
 
-    this.state = {
-      hasPageSize: !!props.pageSize,
-      pageSize: props.pageSize,
-      pageSizeError: null,
-      dragIndex: null,
-      dropIndex: null
-    };
-  }
+SortableTableColumn.propTypes = {
+  column: PropTypes.object.isRequired,
+  onVisibleChange: PropTypes.func.isRequired
+};
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.pageSize !== this.state.pageSize) {
-      this.setState({ pageSize: this.props.pageSize });
-    }
-  }
+function TableOptionsModal(props) {
+  const {
+    isOpen,
+    columns,
+    canModifyColumns,
+    optionsComponent: OptionsComponent,
+    onTableOptionChange,
+    onModalClose
+  } = props;
 
-  //
-  // Listeners
+  const [hasPageSize] = useState(!!props.pageSize);
+  const [pageSize, setPageSize] = useState(props.pageSize);
+  const [pageSizeError, setPageSizeError] = useState(null);
 
-  onPageSizeChange = ({ value }) => {
-    let pageSizeError = null;
+  useEffect(() => {
+    setPageSize(props.pageSize);
+  }, [props.pageSize]);
+
+  const modifiableColumns = useMemo(() => columns.filter(column => column.isModifiable !== false), [columns]);
+  const columnOrder = useMemo(() => modifiableColumns.map(column => column.name), [modifiableColumns]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  );
+
+  const onPageSizeChange = ({ value }) => {
+    let error = null;
 
     if (value < 5) {
-      pageSizeError = 'Page size must be at least 5';
+      error = 'Page size must be at least 5';
     } else if (value > 250) {
-      pageSizeError = 'Page size must not exceed 250';
+      error = 'Page size must not exceed 250';
     } else {
-      this.props.onTableOptionChange({ pageSize: value });
+      onTableOptionChange({ pageSize: value });
     }
 
-    this.setState({
-      pageSize: value,
-      pageSizeError
+    setPageSize(value);
+    setPageSizeError(error);
+  };
+
+  const onVisibleChange = ({ name, value }) => {
+    const updatedColumns = _.cloneDeep(columns);
+    const column = _.find(updatedColumns, { name });
+
+    if (column) {
+      column.isVisible = value;
+      onTableOptionChange({ columns: updatedColumns });
+    }
+  };
+
+  const handleDragEnd = ({ active, over }) => {
+    if (!active || !over || active.id === over.id) {
+      return;
+    }
+
+    const activeIndex = modifiableColumns.findIndex(column => column.name === active.id);
+    const overIndex = modifiableColumns.findIndex(column => column.name === over.id);
+
+    if (activeIndex === -1 || overIndex === -1) {
+      return;
+    }
+
+    const reordered = arrayMove(modifiableColumns, activeIndex, overIndex);
+
+    const updatedColumns = _.cloneDeep(columns);
+    let reorderIndex = 0;
+
+    updatedColumns.forEach((column, idx) => {
+      if (column.isModifiable === false) {
+        return;
+      }
+
+      updatedColumns[idx] = reordered[reorderIndex];
+      reorderIndex += 1;
     });
+
+    onTableOptionChange({ columns: updatedColumns });
   };
 
-  onVisibleChange = ({ name, value }) => {
-    const columns = _.cloneDeep(this.props.columns);
+  return (
+    <Modal
+      isOpen={isOpen}
+      onModalClose={onModalClose}
+    >
+      {
+        isOpen ?
+          <ModalContent onModalClose={onModalClose}>
+            <ModalHeader>
+              Table Options
+            </ModalHeader>
 
-    const column = _.find(columns, { name });
-    column.isVisible = value;
+            <ModalBody>
+              <Form>
+                {
+                  hasPageSize ?
+                    <FormGroup>
+                      <FormLabel>
+                        {translate('PageSize')}
+                      </FormLabel>
 
-    this.props.onTableOptionChange({ columns });
-  };
+                      <FormInputGroup
+                        type={inputTypes.NUMBER}
+                        name="pageSize"
+                        value={pageSize || 0}
+                        helpText={translate('PageSizeHelpText')}
+                        errors={pageSizeError ? [{ message: pageSizeError }] : undefined}
+                        onChange={onPageSizeChange}
+                      />
+                    </FormGroup> :
+                    null
+                }
 
-  onColumnDragMove = (dragIndex, dropIndex) => {
-    if (this.state.dragIndex !== dragIndex || this.state.dropIndex !== dropIndex) {
-      this.setState({
-        dragIndex,
-        dropIndex
-      });
-    }
-  };
+                {
+                  OptionsComponent ?
+                    <OptionsComponent
+                      onTableOptionChange={onTableOptionChange}
+                    /> : null
+                }
 
-  onColumnDragEnd = ({ id }, didDrop) => {
-    const {
-      dragIndex,
-      dropIndex
-    } = this.state;
+                {
+                  canModifyColumns ?
+                    <FormGroup>
+                      <FormLabel>
+                        {translate('Columns')}
+                      </FormLabel>
 
-    if (didDrop && dropIndex !== null) {
-      const columns = _.cloneDeep(this.props.columns);
-      const items = columns.splice(dragIndex, 1);
-      columns.splice(dropIndex, 0, items[0]);
+                      <div>
+                        <FormInputHelpText
+                          text="Choose which columns are visible and which order they appear in"
+                        />
 
-      this.props.onTableOptionChange({ columns });
-    }
-
-    this.setState({
-      dragIndex: null,
-      dropIndex: null
-    });
-  };
-
-  //
-  // Render
-
-  render() {
-    const {
-      isOpen,
-      columns,
-      canModifyColumns,
-      optionsComponent: OptionsComponent,
-      onTableOptionChange,
-      onModalClose
-    } = this.props;
-
-    const {
-      hasPageSize,
-      pageSize,
-      pageSizeError,
-      dragIndex,
-      dropIndex
-    } = this.state;
-
-    const isDragging = dropIndex !== null;
-    const isDraggingUp = isDragging && dropIndex < dragIndex;
-    const isDraggingDown = isDragging && dropIndex > dragIndex;
-
-    return (
-      <DndProvider options={HTML5toTouch}>
-        <Modal
-          isOpen={isOpen}
-          onModalClose={onModalClose}
-        >
-          {
-            isOpen ?
-              <ModalContent onModalClose={onModalClose}>
-                <ModalHeader>
-                  Table Options
-                </ModalHeader>
-
-                <ModalBody>
-                  <Form>
-                    {
-                      hasPageSize ?
-                        <FormGroup>
-                          <FormLabel>
-                            {translate('PageSize')}
-                          </FormLabel>
-
-                          <FormInputGroup
-                            type={inputTypes.NUMBER}
-                            name="pageSize"
-                            value={pageSize || 0}
-                            helpText={translate('PageSizeHelpText')}
-                            errors={pageSizeError ? [{ message: pageSizeError }] : undefined}
-                            onChange={this.onPageSizeChange}
-                          />
-                        </FormGroup> :
-                        null
-                    }
-
-                    {
-                      OptionsComponent ?
-                        <OptionsComponent
-                          onTableOptionChange={onTableOptionChange}
-                        /> : null
-                    }
-
-                    {
-                      canModifyColumns ?
-                        <FormGroup>
-                          <FormLabel>
-                            {translate('Columns')}
-                          </FormLabel>
-
-                          <div>
-                            <FormInputHelpText
-                              text="Choose which columns are visible and which order they appear in"
-                            />
-
+                        <DndContext
+                          sensors={sensors}
+                          collisionDetection={closestCenter}
+                          onDragEnd={handleDragEnd}
+                        >
+                          <SortableContext
+                            items={columnOrder}
+                            strategy={verticalListSortingStrategy}
+                          >
                             <div className={styles.columns}>
                               {
                                 columns.map((column, index) => {
-                                  const {
-                                    name,
-                                    label,
-                                    columnLabel,
-                                    isVisible,
-                                    isModifiable
-                                  } = column;
-
-                                  if (isModifiable !== false) {
+                                  if (column.isModifiable !== false) {
                                     return (
-                                      <TableOptionsColumnDragSource
-                                        key={name}
-                                        name={name}
-                                        label={columnLabel || label}
-                                        isVisible={isVisible}
-                                        isModifiable={true}
-                                        index={index}
-                                        isDragging={isDragging}
-                                        isDraggingUp={isDraggingUp}
-                                        isDraggingDown={isDraggingDown}
-                                        onVisibleChange={this.onVisibleChange}
-                                        onColumnDragMove={this.onColumnDragMove}
-                                        onColumnDragEnd={this.onColumnDragEnd}
+                                      <SortableTableColumn
+                                        key={column.name}
+                                        column={column}
+                                        onVisibleChange={onVisibleChange}
                                       />
                                     );
                                   }
 
                                   return (
                                     <TableOptionsColumn
-                                      key={name}
-                                      name={name}
-                                      label={columnLabel || label}
-                                      isVisible={isVisible}
-                                      index={index}
+                                      key={column.name}
+                                      name={column.name}
+                                      label={typeof column.columnLabel === 'function' ? column.columnLabel() : column.columnLabel || column.label}
+                                      isVisible={column.isVisible}
                                       isModifiable={false}
-                                      onVisibleChange={this.onVisibleChange}
+                                      onVisibleChange={onVisibleChange}
                                     />
                                   );
                                 })
                               }
-
-                              <TableOptionsColumnDragPreview />
                             </div>
-                          </div>
-                        </FormGroup> :
-                        null
-                    }
-                  </Form>
-                </ModalBody>
-                <ModalFooter>
-                  <Button
-                    onPress={onModalClose}
-                  >
-                    Close
-                  </Button>
-                </ModalFooter>
-              </ModalContent> :
-              null
-          }
-        </Modal>
-      </DndProvider>
-    );
-  }
+                          </SortableContext>
+                        </DndContext>
+                      </div>
+                    </FormGroup> :
+                    null
+                }
+              </Form>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                onPress={onModalClose}
+              >
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent> :
+          null
+      }
+    </Modal>
+  );
 }
 
 TableOptionsModal.propTypes = {

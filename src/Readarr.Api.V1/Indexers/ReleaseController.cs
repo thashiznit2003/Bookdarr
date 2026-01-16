@@ -12,6 +12,7 @@ using NzbDrone.Core.DecisionEngine;
 using NzbDrone.Core.Download;
 using NzbDrone.Core.Exceptions;
 using NzbDrone.Core.Indexers;
+using NzbDrone.Core.Authentication;
 using NzbDrone.Core.IndexerSearch;
 using NzbDrone.Core.Parser;
 using NzbDrone.Core.Parser.Model;
@@ -32,6 +33,7 @@ namespace Readarr.Api.V1.Indexers
         private readonly IBookService _bookService;
         private readonly IParsingService _parsingService;
         private readonly Logger _logger;
+        private readonly IUserService _userService;
 
         private readonly ICached<RemoteBook> _remoteBookCache;
 
@@ -43,6 +45,7 @@ namespace Readarr.Api.V1.Indexers
                              IBookService bookService,
                              IParsingService parsingService,
                              ICacheManager cacheManager,
+                             IUserService userService,
                              Logger logger)
         {
             _releaseSearchService = releaseSearchService;
@@ -53,6 +56,7 @@ namespace Readarr.Api.V1.Indexers
             _bookService = bookService;
             _parsingService = parsingService;
             _logger = logger;
+            _userService = userService;
 
             PostValidator.RuleFor(s => s.IndexerId).ValidId();
             PostValidator.RuleFor(s => s.Guid).NotEmpty();
@@ -153,7 +157,7 @@ namespace Readarr.Api.V1.Indexers
         {
             try
             {
-                var decisions = await _releaseSearchService.BookSearch(bookId, true, true, true);
+                var decisions = await _releaseSearchService.BookSearch(bookId, true, true, true, GetRequestedUserId());
                 decisions = FilterZeroSeederTorrents(decisions);
                 var prioritizedDecisions = _prioritizeDownloadDecision.PrioritizeDecisions(decisions);
 
@@ -170,7 +174,7 @@ namespace Readarr.Api.V1.Indexers
         {
             try
             {
-                var decisions = await _releaseSearchService.AuthorSearch(authorId, false, true, true);
+                var decisions = await _releaseSearchService.AuthorSearch(authorId, false, true, true, GetRequestedUserId());
                 decisions = FilterZeroSeederTorrents(decisions);
                 var prioritizedDecisions = _prioritizeDownloadDecision.PrioritizeDecisions(decisions);
 
@@ -211,6 +215,12 @@ namespace Readarr.Api.V1.Indexers
 
             var seeders = TorrentInfo.GetSeeders(release);
             return seeders.HasValue && seeders.Value <= 0;
+        }
+
+        private int? GetRequestedUserId()
+        {
+            var user = _userService.FindUser(HttpContext?.User);
+            return user?.Id;
         }
     }
 }

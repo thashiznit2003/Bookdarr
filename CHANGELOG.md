@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.11
+- Summary: Completed the drag-and-drop refactor by deleting the remaining `react-dnd`/`react-dnd-multi-backend` helpers and reimplementing Table Options, Delay Profiles, Quality Profiles, and the custom format provider entirely with `@dnd-kit`.
+- Why: the lingering `react-dnd` imports were blocking the build from resolving modules and required installing outdated packages; migrating everything to `@dnd-kit` keeps the sortable lists working, ensures keyboard-friendly dragging, and lets the frontend compile without `react-dnd`.
+- Impact: Table Options now uses `DndContext`/`SortableContext`, delay/quality lists rely on the same DnD kit stack (including `CSS.Transform` for animation), the deleted drag preview/source files are gone, `package.json`/`yarn.lock` only contain `@dnd-kit` packages, and `src/Directory.Build.props` reports `1.3.11.*` so the UI reflects the new release.
+- Files: `frontend/src/Components/Table/TableOptions/TableOptionsModal.js`, `frontend/src/Settings/Profiles/Delay/DelayProfiles.js`, `frontend/src/Settings/Profiles/Quality/QualityProfileItems.js`, `frontend/src/Settings/CustomFormats/CustomFormatSettingsConnector.js`, `package.json`, `yarn.lock`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: rerun `scripts/update-dev.sh` so `/opt/bookdarr-dev/Logs/update-074.log` captures `v1.3.11`, then continue the shared pool/multi-user UI work from `docs/MULTI_USER.md`.
+
 ## 1.3.10
 - Summary: Expanded the user model with email, role, active state, preferred media, and timing metadata so the multi-user foundation keeps track of each account’s permissions and preferences before the shared pool/UI work lands.
 - Why: Upcoming multi-user APIs need richer information about every account (role, whether the user is active, contact metadata, and their preferred media type) while letting admins pick the correct role when creating new users without accidentally elevating or disabling them.

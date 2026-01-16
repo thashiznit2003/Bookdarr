@@ -174,13 +174,28 @@ namespace NzbDrone.Core.MediaFiles
                 _mediaFileService.Add(outputFile);
 
                 bookFile.ConversionError = null;
+                bookFile.ConversionErrorIsDrm = false;
                 _mediaFileService.Update(bookFile);
             }
             catch (Exception ex)
             {
-                var errorMessage = $"{ex.Message}\n\nTimestamp: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC";
+                var isDrmFailure = ex is DrmConversionException;
+                var errorMessage = ex.Message;
+
+                if (ex is DrmConversionException drmEx && !string.IsNullOrWhiteSpace(drmEx.Details))
+                {
+                    errorMessage += $"\n\nDetails: {drmEx.Details}";
+                }
+
+                errorMessage = $"{errorMessage}\n\nTimestamp: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC";
                 bookFile.ConversionError = errorMessage;
+                bookFile.ConversionErrorIsDrm = isDrmFailure;
                 _mediaFileService.Update(bookFile);
+
+                if (isDrmFailure)
+                {
+                    _logger.Warn("DRM conversion blocked for {0}: {1}", bookFile.Path, errorMessage);
+                }
 
                 throw;
             }
@@ -293,10 +308,12 @@ namespace NzbDrone.Core.MediaFiles
             {
                 _logger.ProgressInfo("Unpacking Kindle format...");
                 var output = RunProcess("kindleunpack", $"\"{sourcePath}\" \"{tempFolder}\"");
-
-                if (output.Lines.Any(line => KindleDrmRegex.IsMatch(line.Content)))
+                var drmLines = output.Lines.Where(line => KindleDrmRegex.IsMatch(line.Content ?? string.Empty)).ToList();
+                if (drmLines.Any())
                 {
-                    throw new InvalidOperationException("KindleUnpack reported DRM/encryption. Unable to convert.");
+                    var drmDetails = string.Join("\n", drmLines.Select(line => line.Content).Where(content => !string.IsNullOrWhiteSpace(content)));
+                    _logger.Warn("KindleUnpack reported DRM for {0}. Output:\n{1}", sourcePath, drmDetails);
+                    throw new DrmConversionException("KindleUnpack reported DRM/encryption. Unable to convert.", drmDetails);
                 }
 
                 if (output.ExitCode != 0)
@@ -624,6 +641,17 @@ namespace NzbDrone.Core.MediaFiles
         {
             var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ppm", ".pbm", ".pgm" };
             return validExtensions.Contains(extension.ToLowerInvariant());
+        }
+
+        private class DrmConversionException : InvalidOperationException
+        {
+            public string Details { get; }
+
+            public DrmConversionException(string message, string details = null)
+                : base(message)
+            {
+                Details = details;
+            }
         }
 
         private void CreateEpubFromTextAndImages(string textContent, List<string> imageFiles, string outputPath, Author author, Edition edition)

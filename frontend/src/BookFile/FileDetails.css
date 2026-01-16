@@ -13,6 +13,17 @@
   margin-bottom: 10px;
 }
 
+.conversionErrorBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--textColor);
+  margin-bottom: 10px;
+}
+
 .conversionErrorMessage {
   font-family: $monoSpaceFontFamily;
   font-size: 12px;

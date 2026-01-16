@@ -26,12 +26,22 @@ Use this file to onboard a new Codex chat.
 - Update script now pushes a diagnostics bundle before exit for every update and immediately on failures, including the latest update log file (toggle with `DIAGNOSTICS_PUSH=false`).
 - Avoid adding repeated `apt-get update` steps in install/build flows.
 - Changelog entries must be handoff-friendly (Summary/Why/Impact/Files/Next).
-- Push to GitHub after every update.
 - Provide update commands in fenced code blocks.
+- Push to GitHub immediately after tagging.
 - Increment the build version in `src/Directory.Build.props` (AssemblyVersion) after each change.
 - Run a StyleCop check (full build) before pushing to catch SA/IDE warnings early.
 - When a GitHub link is posted, refresh the repo and read the linked file immediately to act on diagnostics.
 - Diagnostics push button (develop-only) requires config.xml entries: `DiagnosticsRepo` and `DiagnosticsToken`. Optional: `DiagnosticsGitUserName` and `DiagnosticsGitUserEmail` for git commit identity.
+- SSH access is available via the unlocked private key at `~/.ssh/bookdarr-agent` and the command `ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103`; use this session to rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" /opt/bookdarr-dev/scripts/update-dev.sh` after each change so diagnostics logs and bundles are pushed automatically.
+- Workflow reminder: after implementing a change, run the same SSH update command on the Ubuntu VM (the machine actually running Bookdarr) so that update logs (`/opt/bookdarr-dev/Logs/update-0XX.log`) and diagnostics bundles are generated automatically; no need for the user to re-provide SSH or diagnostics repo details.
+
+## Diagnostics Workflow
+
+- The diagnostics bundle pushes to `thashiznit2003/Bookdarr-Diagnostics` already happen during `update-dev.sh`, but keep this repo in sync by zipping `/opt/bookdarr-dev/Logs/update-0XX.log` along with any changed log files and pushing the archive as `diagnostics-YYYYMMDD-HHMM.zip`.
+- The config helpers in `config.xml` must contain `DiagnosticsRepo` and `DiagnosticsToken` so the update script can commit on your behalf; `DiagnosticsGitUserName` and `DiagnosticsGitUserEmail` set the author identity if necessary.
+- When diagnostics fail (non-fast-forward, auth issues, `git symbolic-ref` problems), rerun `scripts/update-dev.sh` via SSH after fetching the latest remote and resolving conflicts; the bundle will be pushed again once the update command completes.
+- Track diagnostics versions sequentially by naming the log file `update-0XX.log` and the zipped artifact `diagnostics-YYYYMMDD-HHMM.zip`.
+- Keep the Ubuntu VM at `/opt/bookdarr-dev` as the source of truth, and always run updates there so diagnostics match the running service.
 
 ## Build/Style Notes
 - StyleCop is strict. In `BookInfoProxy.cs`, keep:
@@ -128,3 +138,4 @@ sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-de
 ```
 - Manual dev run: `sudo -u joe /opt/bookdarr-dev/scripts/dev-run.sh` (foreground) or `sudo -u joe nohup /opt/bookdarr-dev/scripts/dev-run.sh >/opt/bookdarr-dev/run.log 2>&1 &` (background).
 - Dev instance serves at `http://<vm-ip>:8787` and reports status at `/api/v1/system/status`.
+- The Ubuntu VM (`/opt/bookdarr-dev`) is the live system when running Bookdarr for development; use the unlocked ssh key (`~/.ssh/bookdarr-agent`) to log in, run updates, and push diagnostics (no additional credentials needed).

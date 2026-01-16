@@ -21,6 +21,7 @@ namespace Readarr.Api.V1.BookFiles
         public MediaInfoResource MediaInfo { get; set; }
         public BookFileMediaType MediaType { get; set; }
         public string ConversionError { get; set; }
+        public bool ConversionErrorIsDrm { get; set; }
 
         public bool QualityCutoffNotMet { get; set; }
         public ParsedTrackInfo AudioTags { get; set; }
@@ -61,7 +62,8 @@ namespace Readarr.Api.V1.BookFiles
                 MediaType = model.MediaType != BookFileMediaType.Unknown
                     ? model.MediaType
                     : MediaFileExtensions.GetMediaTypeForPath(model.Path),
-                ConversionError = model.ConversionError
+                ConversionError = model.ConversionError,
+                ConversionErrorIsDrm = model.ConversionErrorIsDrm
             };
         }
 
@@ -89,7 +91,8 @@ namespace Readarr.Api.V1.BookFiles
                     : MediaFileExtensions.GetMediaTypeForPath(model.Path),
                 QualityCutoffNotMet = upgradableSpecification.QualityCutoffNotMet(author.QualityProfile.Value, model.Quality),
                 IndexerFlags = (int)model.IndexerFlags,
-                ConversionError = model.ConversionError
+                ConversionError = model.ConversionError,
+                ConversionErrorIsDrm = model.ConversionErrorIsDrm
             };
         }
     }

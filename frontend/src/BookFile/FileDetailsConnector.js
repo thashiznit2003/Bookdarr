@@ -173,6 +173,7 @@ class FileDetailsConnector extends Component {
         audioTags={item.audioTags}
         filename={item.path}
         conversionError={item.conversionError}
+        conversionErrorIsDrm={item.conversionErrorIsDrm}
         historyItems={this.state.historyItems}
         isHistoryFetching={this.state.isHistoryFetching}
         historyError={this.state.historyError}

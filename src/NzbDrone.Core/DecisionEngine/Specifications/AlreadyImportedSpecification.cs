@@ -33,6 +33,12 @@ namespace NzbDrone.Core.DecisionEngine.Specifications
 
         public Decision IsSatisfiedBy(RemoteBook subject, SearchCriteriaBase searchCriteria)
         {
+            if (searchCriteria != null && (searchCriteria.UserInvokedSearch || searchCriteria.InteractiveSearch))
+            {
+                _logger.Debug("Skipping already imported check because this is a user-initiated search");
+                return Decision.Accept();
+            }
+
             var cdhEnabled = _configService.EnableCompletedDownloadHandling;
 
             if (!cdhEnabled)

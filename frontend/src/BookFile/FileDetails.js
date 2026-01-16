@@ -37,6 +37,7 @@ function FileDetails(props) {
     filename,
     audioTags,
     conversionError,
+    conversionErrorIsDrm,
     rejections,
     historyItems,
     isHistoryFetching,
@@ -78,6 +79,12 @@ function FileDetails(props) {
             <div className={styles.conversionErrorTitle}>
               {translate('ConversionError')}
             </div>
+            {
+              conversionErrorIsDrm &&
+                <div className={styles.conversionErrorBadge}>
+                  {translate('ConversionErrorDrm')}
+                </div>
+            }
             <pre className={styles.conversionErrorMessage}>
               {conversionError}
             </pre>
@@ -327,6 +334,7 @@ FileDetails.propTypes = {
   filename: PropTypes.string,
   audioTags: PropTypes.object.isRequired,
   conversionError: PropTypes.string,
+  conversionErrorIsDrm: PropTypes.bool,
   rejections: PropTypes.arrayOf(PropTypes.object),
   historyItems: PropTypes.arrayOf(PropTypes.object),
   isHistoryFetching: PropTypes.bool,

@@ -13,11 +13,11 @@ using NzbDrone.Core.Parser.Model;
 
 namespace NzbDrone.Core.IndexerSearch
 {
-    public interface ISearchForReleases
-    {
-        Task<List<DownloadDecision>> BookSearch(int bookId, bool missingOnly, bool userInvokedSearch, bool interactiveSearch);
-        Task<List<DownloadDecision>> AuthorSearch(int authorId, bool missingOnly, bool userInvokedSearch, bool interactiveSearch);
-    }
+public interface ISearchForReleases
+{
+    Task<List<DownloadDecision>> BookSearch(int bookId, bool missingOnly, bool userInvokedSearch, bool interactiveSearch, int? requestedByUserId = null);
+    Task<List<DownloadDecision>> AuthorSearch(int authorId, bool missingOnly, bool userInvokedSearch, bool interactiveSearch, int? requestedByUserId = null);
+}
 
     public class ReleaseSearchService : ISearchForReleases
     {
@@ -40,47 +40,48 @@ namespace NzbDrone.Core.IndexerSearch
             _logger = logger;
         }
 
-        public async Task<List<DownloadDecision>> BookSearch(int bookId, bool missingOnly, bool userInvokedSearch, bool interactiveSearch)
+        public async Task<List<DownloadDecision>> BookSearch(int bookId, bool missingOnly, bool userInvokedSearch, bool interactiveSearch, int? requestedByUserId = null)
         {
             var downloadDecisions = new List<DownloadDecision>();
 
             var book = _bookService.GetBook(bookId);
 
-            var decisions = await BookSearch(book, missingOnly, userInvokedSearch, interactiveSearch);
+            var decisions = await BookSearch(book, missingOnly, userInvokedSearch, interactiveSearch, requestedByUserId);
             downloadDecisions.AddRange(decisions);
 
             return DeDupeDecisions(downloadDecisions);
         }
 
-        public async Task<List<DownloadDecision>> AuthorSearch(int authorId, bool missingOnly, bool userInvokedSearch, bool interactiveSearch)
+        public async Task<List<DownloadDecision>> AuthorSearch(int authorId, bool missingOnly, bool userInvokedSearch, bool interactiveSearch, int? requestedByUserId = null)
         {
             var downloadDecisions = new List<DownloadDecision>();
 
             var author = _authorService.GetAuthor(authorId);
 
-            var decisions = await AuthorSearch(author, missingOnly, userInvokedSearch, interactiveSearch);
+            var decisions = await AuthorSearch(author, missingOnly, userInvokedSearch, interactiveSearch, requestedByUserId);
             downloadDecisions.AddRange(decisions);
 
             return DeDupeDecisions(downloadDecisions);
         }
 
-        public async Task<List<DownloadDecision>> AuthorSearch(Author author, bool missingOnly, bool userInvokedSearch, bool interactiveSearch)
+        public async Task<List<DownloadDecision>> AuthorSearch(Author author, bool missingOnly, bool userInvokedSearch, bool interactiveSearch, int? requestedByUserId = null)
         {
-            var searchSpec = Get<AuthorSearchCriteria>(author, userInvokedSearch, interactiveSearch);
+            var searchSpec = Get<AuthorSearchCriteria>(author, userInvokedSearch, interactiveSearch, requestedByUserId);
             var books = _bookService.GetBooksByAuthor(author.Id);
 
             books = books.Where(a => a.Monitored).ToList();
 
             searchSpec.Books = books;
+            searchSpec.RequestedByUserId = requestedByUserId;
 
             return await Dispatch(indexer => indexer.Fetch(searchSpec), searchSpec);
         }
 
-        public async Task<List<DownloadDecision>> BookSearch(Book book, bool missingOnly, bool userInvokedSearch, bool interactiveSearch)
+        public async Task<List<DownloadDecision>> BookSearch(Book book, bool missingOnly, bool userInvokedSearch, bool interactiveSearch, int? requestedByUserId = null)
         {
             var author = _authorService.GetAuthor(book.AuthorId);
 
-            var searchSpec = Get<BookSearchCriteria>(author, new List<Book> { book }, userInvokedSearch, interactiveSearch);
+            var searchSpec = Get<BookSearchCriteria>(author, new List<Book> { book }, userInvokedSearch, interactiveSearch, requestedByUserId);
 
             searchSpec.BookTitle = book.Editions.Value.SingleOrDefault(x => x.Monitored).Title;
 
@@ -90,10 +91,12 @@ namespace NzbDrone.Core.IndexerSearch
                 searchSpec.BookYear = book.ReleaseDate.Value.Year;
             }
 
+            searchSpec.RequestedByUserId = requestedByUserId;
+
             return await Dispatch(indexer => indexer.Fetch(searchSpec), searchSpec);
         }
 
-        private TSpec Get<TSpec>(Author author, List<Book> books, bool userInvokedSearch, bool interactiveSearch)
+        private TSpec Get<TSpec>(Author author, List<Book> books, bool userInvokedSearch, bool interactiveSearch, int? requestedByUserId = null)
             where TSpec : SearchCriteriaBase, new()
         {
             var spec = new TSpec();
@@ -102,17 +105,19 @@ namespace NzbDrone.Core.IndexerSearch
             spec.Author = author;
             spec.UserInvokedSearch = userInvokedSearch;
             spec.InteractiveSearch = interactiveSearch;
+            spec.RequestedByUserId = requestedByUserId;
 
             return spec;
         }
 
-        private static TSpec Get<TSpec>(Author author, bool userInvokedSearch, bool interactiveSearch)
+        private static TSpec Get<TSpec>(Author author, bool userInvokedSearch, bool interactiveSearch, int? requestedByUserId = null)
             where TSpec : SearchCriteriaBase, new()
         {
             var spec = new TSpec();
             spec.Author = author;
             spec.UserInvokedSearch = userInvokedSearch;
             spec.InteractiveSearch = interactiveSearch;
+            spec.RequestedByUserId = requestedByUserId;
 
             return spec;
         }
