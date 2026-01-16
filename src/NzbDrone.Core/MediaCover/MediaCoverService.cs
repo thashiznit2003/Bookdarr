@@ -165,7 +165,9 @@ namespace NzbDrone.Core.MediaCover
 
         private MediaCover BuildLocalBookCover(int bookId)
         {
-            foreach (var extension in new[] { ".jpg", ".jpeg", ".png" })
+            var extensions = new[] { ".jpg", ".jpeg", ".png", string.Empty };
+
+            foreach (var extension in extensions)
             {
                 var path = GetCoverPath(bookId, MediaCoverEntity.Book, MediaCoverTypes.Cover, extension, null);
                 if (_diskProvider.FileExists(path))
