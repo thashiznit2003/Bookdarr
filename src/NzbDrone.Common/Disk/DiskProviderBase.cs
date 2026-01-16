@@ -41,7 +41,7 @@ namespace NzbDrone.Common.Disk
         {
             CheckFolderExists(path);
 
-            return _fileSystem.DirectoryInfo.FromDirectoryName(path).CreationTimeUtc;
+            return _fileSystem.DirectoryInfo.New(path).CreationTimeUtc;
         }
 
         public DateTime FolderGetLastWrite(string path)
@@ -52,17 +52,17 @@ namespace NzbDrone.Common.Disk
 
             if (!dirFiles.Any())
             {
-                return _fileSystem.DirectoryInfo.FromDirectoryName(path).LastWriteTimeUtc;
+                return _fileSystem.DirectoryInfo.New(path).LastWriteTimeUtc;
             }
 
-            return dirFiles.Select(f => _fileSystem.FileInfo.FromFileName(f)).Max(c => c.LastWriteTimeUtc);
+            return dirFiles.Select(f => _fileSystem.FileInfo.New(f)).Max(c => c.LastWriteTimeUtc);
         }
 
         public DateTime FileGetLastWrite(string path)
         {
             CheckFileExists(path);
 
-            return _fileSystem.FileInfo.FromFileName(path).LastWriteTimeUtc;
+            return _fileSystem.FileInfo.New(path).LastWriteTimeUtc;
         }
 
         private void CheckFolderExists(string path)
@@ -180,7 +180,7 @@ namespace NzbDrone.Common.Disk
         {
             Ensure.That(path, () => path).IsValidPath(PathValidationType.CurrentOs);
 
-            return GetFiles(path, true).Sum(e => _fileSystem.FileInfo.FromFileName(e).Length);
+            return GetFiles(path, true).Sum(e => _fileSystem.FileInfo.New(e).Length);
         }
 
         public long GetFileSize(string path)
@@ -192,7 +192,7 @@ namespace NzbDrone.Common.Disk
                 throw new FileNotFoundException("File doesn't exist: " + path);
             }
 
-            var fi = _fileSystem.FileInfo.FromFileName(path);
+            var fi = _fileSystem.FileInfo.New(path);
             return fi.Length;
         }
 
@@ -469,12 +469,12 @@ namespace NzbDrone.Common.Disk
                 throw new FileNotFoundException("Unable to find file: " + path, path);
             }
 
-            return (FileStream)_fileSystem.FileStream.Create(path, FileMode.Open, FileAccess.Read);
+            return (FileStream)_fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read);
         }
 
         public FileStream OpenWriteStream(string path)
         {
-            return (FileStream)_fileSystem.FileStream.Create(path, FileMode.Create);
+            return (FileStream)_fileSystem.FileStream.New(path, FileMode.Create);
         }
 
         public List<IMount> GetMounts()
@@ -523,7 +523,7 @@ namespace NzbDrone.Common.Disk
         {
             Ensure.That(path, () => path).IsValidPath(PathValidationType.CurrentOs);
 
-            var di = _fileSystem.DirectoryInfo.FromDirectoryName(path);
+            var di = _fileSystem.DirectoryInfo.New(path);
 
             return di.GetDirectories().ToList();
         }
@@ -531,14 +531,14 @@ namespace NzbDrone.Common.Disk
         public IDirectoryInfo GetDirectoryInfo(string path)
         {
             Ensure.That(path, () => path).IsValidPath(PathValidationType.CurrentOs);
-            return _fileSystem.DirectoryInfo.FromDirectoryName(path);
+            return _fileSystem.DirectoryInfo.New(path);
         }
 
         public List<IFileInfo> GetFileInfos(string path, bool recursive = false)
         {
             Ensure.That(path, () => path).IsValidPath(PathValidationType.CurrentOs);
 
-            var di = _fileSystem.DirectoryInfo.FromDirectoryName(path);
+            var di = _fileSystem.DirectoryInfo.New(path);
 
             return di.EnumerateFiles("*", new EnumerationOptions
             {
@@ -550,7 +550,7 @@ namespace NzbDrone.Common.Disk
         public IFileInfo GetFileInfo(string path)
         {
             Ensure.That(path, () => path).IsValidPath(PathValidationType.CurrentOs);
-            return _fileSystem.FileInfo.FromFileName(path);
+            return _fileSystem.FileInfo.New(path);
         }
 
         public void RemoveEmptySubfolders(string path)

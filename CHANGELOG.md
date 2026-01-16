@@ -1,4 +1,11 @@
-# Changelog
+ # Changelog
+
+## 1.3.12
+- Summary: Updated the disk provider and logging infrastructure for .NET 10 so the factory-based System.IO.Abstractions API and NLog 6.0 targets build cleanly again.
+- Why: NET 10 ships with the new `IFileSystem` helper methods and the legacy NLog concurrency/archiving APIs were removed, so the update script kept failing during CI/SSH runs.
+- Impact: `DiskProviderBase` now calls `DirectoryInfo.New`/`FileInfo.New` and uses the new file-stream constructors, while `NzbDroneLogger` uses `ArchiveSuffixFormat` instead of `ArchiveNumbering` and drops the obsolete concurrency properties; alongside the net10 release, `src/Directory.Build.props` now reports `1.3.12.*` so the UI version stays in sync and diagnostics logs keep building.
+- Files: `src/NzbDrone.Common/Disk/DiskProviderBase.cs`, `src/NzbDrone.Common/Test/DiskTests/DiskTransferServiceFixture.cs`, `src/NzbDrone.Common/Instrumentation/NzbDroneLogger.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: rerun `scripts/update-dev.sh` via SSH so `/opt/bookdarr-dev/Logs/update-075.log` captures the fully rebuilt app and diagnostics can confirm net10 compatibility before continuing with the multi-user UI tasks.
 
 ## 1.3.11
 - Summary: Completed the drag-and-drop refactor by deleting the remaining `react-dnd`/`react-dnd-multi-backend` helpers and reimplementing Table Options, Delay Profiles, Quality Profiles, and the custom format provider entirely with `@dnd-kit`.
