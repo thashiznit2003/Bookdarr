@@ -5,12 +5,13 @@ import BookCover from 'Book/BookCover';
 import BookTitleLink from 'Book/BookTitleLink';
 import IconButton from 'Components/Link/IconButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
+import FilterMenu from 'Components/Menu/FilterMenu';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
-import { icons } from 'Helpers/Props';
+import { align, icons } from 'Helpers/Props';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
@@ -40,11 +41,37 @@ export default class BookPoolPage extends Component {
       adding: {},
       filterKey: 'all'
     };
+    this.poolRefreshTimeout = null;
   }
 
   componentDidMount() {
     this.onFetchPool();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('bookPoolResourceUpdated', this.onBookPoolResourceUpdated);
+    }
   }
+
+  componentWillUnmount() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('bookPoolResourceUpdated', this.onBookPoolResourceUpdated);
+    }
+
+    if (this.poolRefreshTimeout) {
+      window.clearTimeout(this.poolRefreshTimeout);
+      this.poolRefreshTimeout = null;
+    }
+  }
+
+  onBookPoolResourceUpdated = () => {
+    if (this.poolRefreshTimeout) {
+      window.clearTimeout(this.poolRefreshTimeout);
+    }
+
+    this.poolRefreshTimeout = window.setTimeout(() => {
+      this.onFetchPool();
+      this.poolRefreshTimeout = null;
+    }, 800);
+  };
 
   onFetchPool = () => {
     this.setState({ isFetching: true, error: null });
@@ -103,6 +130,10 @@ export default class BookPoolPage extends Component {
     this.setState({ filterKey });
   };
 
+  onFilterSelect = (filterKey) => {
+    this.setFilterKey(filterKey);
+  };
+
   onAddToLibrary = (book) => {
     const { adding, books } = this.state;
 
@@ -145,24 +176,6 @@ export default class BookPoolPage extends Component {
     });
   };
 
-  renderFilterButtons = (counts, filterKey) => (
-    FILTERS.map((filter) => {
-      const normalizedKey = filter.key.toLowerCase();
-      const count = counts[normalizedKey] ?? 0;
-
-      return (
-        <button
-          key={filter.key}
-          type="button"
-          className={classNames(styles.filterButton, filterKey === filter.key && styles.filterButtonActive)}
-          onClick={() => this.setFilterKey(filter.key)}
-        >
-          {filter.label()} ({count})
-        </button>
-      );
-    })
-  );
-
   renderStatus(resource) {
     const { status, needsAttention } = resource;
     const normalizedStatus = (status || '').toLowerCase();
@@ -186,6 +199,15 @@ export default class BookPoolPage extends Component {
 
     const filteredBooks = this.getFilteredBooks();
     const statusCounts = this.getStatusCounts();
+    const filterOptions = FILTERS.map((filter) => {
+      const normalizedKey = filter.key.toLowerCase();
+      const count = statusCounts[normalizedKey] ?? 0;
+
+      return {
+        key: filter.key,
+        label: () => `${filter.label()} (${count})`
+      };
+    });
     const emptyMessage = books.length === 0
       ? translate('BookPoolEmpty')
       : translate('BookPoolEmptyFilter');
@@ -199,14 +221,20 @@ export default class BookPoolPage extends Component {
               onPress={this.onFetchPool}
               title={translate('Refresh')}
             />
-          </PageToolbarSection>
-          <PageToolbarSection>
             <span className={styles.description}>{translate('BookPoolDescription')}</span>
           </PageToolbarSection>
-          <PageToolbarSection>
-            <div className={styles.filterGroup}>
-              {this.renderFilterButtons(statusCounts, filterKey)}
-            </div>
+          <PageToolbarSection
+            alignContent={align.RIGHT}
+            collapseButtons={false}
+          >
+            <FilterMenu
+              selectedFilterKey={filterKey}
+              filters={filterOptions}
+              customFilters={[]}
+              isDisabled={isFetching}
+              onFilterSelect={this.onFilterSelect}
+              className={styles.filterMenu}
+            />
           </PageToolbarSection>
         </PageToolbar>
         <PageContentBody noPadding={true}>

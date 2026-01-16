@@ -187,6 +187,7 @@ class SignalRConnector extends Component {
         section,
         ...body.resource
       });
+      this.dispatchBookPoolRefresh();
     } else if (action === 'deleted') {
       this.props.dispatchRemoveItem({
         section,
@@ -200,10 +201,12 @@ class SignalRConnector extends Component {
 
     if (body.action === 'updated') {
       this.props.dispatchUpdateItem({ section, ...body.resource });
+      this.dispatchBookPoolRefresh();
     } else if (body.action === 'deleted') {
       this.props.dispatchRemoveItem({ section, id: body.resource.id });
 
       repopulatePage('bookFileDeleted');
+      this.dispatchBookPoolRefresh();
     }
 
     // Repopulate the page to handle recently imported file
@@ -292,6 +295,22 @@ class SignalRConnector extends Component {
       return;
     }
   };
+
+  dispatchBookPoolRefresh() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const CustomEventConstructor = typeof window.CustomEvent === 'function'
+      ? window.CustomEvent
+      : function CustomEvent(event, params = {}) {
+        const evt = document.createEvent('CustomEvent');
+        evt.initCustomEvent(event, params.bubbles || false, params.cancelable || false, params.detail || null);
+        return evt;
+      };
+
+    window.dispatchEvent(new CustomEventConstructor('bookPoolResourceUpdated', { detail: null }));
+  }
 
   //
   // Listeners

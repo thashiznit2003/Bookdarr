@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.41
+- Summary: Book Pool now mirrors the Library toolbar/filter experience, shows the + action as a subtle corner label, and auto-refreshes when books or files change so statuses never stay stuck on “Pending.”
+- Why: The shared pool was missing the Library-style filter button/group, the add action was intrusive, and newly downloaded ebook/audiobook files left the pool outline in red because the UI never refreshed after SignalR updates.
+- Impact: `frontend/src/Book/Pool/BookPoolPage.js` renders the standard filter menu, repositions the add control as a corner label, and listens for `bookPoolResourceUpdated` events; `frontend/src/Book/Pool/BookPoolPage.css` styles the new corner marker and filter area; `frontend/src/Components/SignalRConnector.js` emits those refresh events whenever books or book files update via SignalR; `src/Directory.Build.props` now reports `1.3.41.*` and `CHANGELOG.md` documents the Book Pool polish.
+- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `frontend/src/Components/SignalRConnector.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.40
 - Summary: Sanitized log entries that previously depended on user input so CodeQL’s `cs/log-forging` alerts were addressed.
 - Why: GitHub Code Scanning flagged the manual book and indexer tag logging paths because they directly wrote user values to the logs, which means a malicious value could forge new entries.
