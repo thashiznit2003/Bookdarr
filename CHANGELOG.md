@@ -7,6 +7,13 @@
 - Files: `package.json`, `yarn.lock`, `frontend/src/Store/Selectors/createAuthorClientSideCollectionItemsSelector.js`, `frontend/src/Store/Selectors/createBookClientSideCollectionItemsSelector.js`, `frontend/src/Store/Selectors/createDeepEqualSelector.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push to GitHub, and rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-088.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH so the Ubuntu VM and diagnostics repo capture the working v1.3.16 frontend.
 
+## 1.3.17
+- Summary: Expanded the Book Pool backend so it now returns every book in the catalog, not just titles that already have shared audiobook/eBook files.
+- Why: The shared pool should mirror the entire collection so users can see books that still need imported media, but the previous logic filtered out books without files.
+- Impact: `UserLibraryService.GetBooksInPool()` now pulls directly from the `Book` repository, so the Book Pool page can always list every book (pending or available) while the status badges reflect whether shared media exists.
+- Files: `src/NzbDrone.Core/Books/Services/UserLibraryService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, and rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-089.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` via SSH so diagnostics capture the new pool behavior.
+
 ## 1.3.15
 
 ## 1.3.14

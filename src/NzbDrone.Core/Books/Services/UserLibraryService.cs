@@ -108,33 +108,7 @@ namespace NzbDrone.Core.Books
 
         public List<Book> GetBooksInPool()
         {
-            var sharedFiles = _mediaFileRepository.All().Where(f => f.SharedWithAll).ToList();
-            var sharedBookIds = sharedFiles
-                .Select(f => f.Edition?.Value?.BookId ?? 0)
-                .Where(id => id > 0)
-                .Distinct();
-
-            var userBookIds = _userBookRepository.All()
-                .Select(u => u.BookId)
-                .Where(id => id > 0)
-                .Distinct();
-
-            var bookIds = sharedBookIds
-                .Union(userBookIds)
-                .Distinct()
-                .ToList();
-
-            var books = new List<Book>();
-            foreach (var id in bookIds)
-            {
-                var book = _bookRepository.Find(id);
-                if (book != null)
-                {
-                    books.Add(book);
-                }
-            }
-
-            return books;
+            return _bookRepository.All().ToList();
         }
 
         public LibraryStatus GetPoolStatus(int bookId, bool wantsEbook, bool wantsAudiobook)
