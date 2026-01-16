@@ -35,6 +35,10 @@ Use this file to onboard a new Codex chat.
 - SSH access is available via the unlocked private key at `~/.ssh/bookdarr-agent` and the command `ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103`; use this session to rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" /opt/bookdarr-dev/scripts/update-dev.sh` after each change so diagnostics logs and bundles are pushed automatically.
 - Workflow reminder: after implementing a change, run the same SSH update command on the Ubuntu VM (the machine actually running Bookdarr) so that update logs (`/opt/bookdarr-dev/Logs/update-0XX.log`) and diagnostics bundles are generated automatically; no need for the user to re-provide SSH or diagnostics repo details.
 
+## Command Continuity
+- If a command was interrupted, rerun it before continuing.
+- Keep the latest instructions/commands in this section so every agent knows what to execute next (e.g., the current SSH update command, diagnostics push steps, version bump, StyleCop build, etc.).
+
 ## Diagnostics Workflow
 
 - The diagnostics bundle pushes to `thashiznit2003/Bookdarr-Diagnostics` already happen during `update-dev.sh`, but keep this repo in sync by zipping `/opt/bookdarr-dev/Logs/update-0XX.log` along with any changed log files and pushing the archive as `diagnostics-YYYYMMDD-HHMM.zip`.
