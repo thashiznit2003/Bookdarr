@@ -423,6 +423,8 @@
   "DiagnosticsToken": "Diagnostics token",
   "DiagnosticsTokenConfigured": "Token configured",
   "DiagnosticsTokenMissing": "Token missing",
+  "ThrottleNotificationTitle": "Throttle warning",
+  "ThrottleNotificationFallback": "Requests are being rate-limited; try again in a few moments.",
   "PushDiagnostics": "Push Diagnostics",
   "Exception": "Exception",
   "ExistingBooks": "Existing Books",

@@ -4,11 +4,14 @@ interface CssExports {
   'sidebar': string;
   'sidebarContainer': string;
   'sidebarFooter': string;
-  'sidebarFooterTitle': string;
+  'sidebarFooterError': string;
+  'sidebarFooterMessage': string;
   'sidebarFooterNote': string;
   'sidebarFooterStatus': string;
-  'sidebarFooterMessage': string;
-  'sidebarFooterError': string;
+  'sidebarFooterTitle': string;
+  'sidebarThrottleMessage': string;
+  'sidebarThrottleNotification': string;
+  'sidebarThrottleTitle': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

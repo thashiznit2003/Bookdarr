@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.19
+- Summary: Book Pool now downloads any missing covers before converting them to the local `/MediaCover/Books/...` URLs so every card pulls from the cache, and the sidebar shows the latest throttle warning in the lower-left notification area.
+- Why: Trying to render dozens of remote thumbnails at once was triggering provider throttling and leaving most posters blank, and there was no persistent signal anywhere in the UI when any HTTP request was being rate-limited.
+- Impact: `UserLibraryController.GetBookPool()` now calls `IMapCoversToLocal.EnsureBookCovers()` before converting images so each poster has a cached asset, `HttpClient` records 429s via a new `IHttpThrottleNotificationService` which exposes `/system/throttle`, and the sidebar renders a throttling alert inside the diagnostics footer so any rate limiting is obvious. The new API and localization entries keep the message aligned with the previously-established diagnostics area.
+- Files: `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `src/NzbDrone.Core/Http/IHttpThrottleNotificationService.cs`, `src/NzbDrone.Core/Http/HttpThrottleNotificationService.cs`, `src/NzbDrone.Common/Http/HttpClient.cs`, `src/Readarr.Api.V1/System/ThrottleController.cs`, `src/Readarr.Api.V1/System/ThrottleStatusResource.cs`, `frontend/src/Components/Page/Sidebar/ThrottleNotification.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.css`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag and push `snapshot-YYYYMMDD-HHMM`, then rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-03.log" /opt/bookdarr-dev/scripts/update-dev.sh` over SSH so diagnostics show v1.3.19 and the new throttle warning alongside the cached covers.
+
 ## 1.3.16
 - Summary: Downgraded the front-end selector helpers to a reselect release that still exposes `defaultMemoize`, so the `memoize is not a function` crash no longer blocks the UI after login.
 - Why: The reselect 5 upgrade removed the `lruMemoize` export we relied on, which left `memoize` undefined inside `createSelectorCreator` and prevented the header/author search from rendering.

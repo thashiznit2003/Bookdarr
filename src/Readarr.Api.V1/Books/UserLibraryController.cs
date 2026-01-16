@@ -57,15 +57,26 @@ namespace Readarr.Api.V1.Books
             var user = GetCurrentUser();
             var books = _libraryService.GetBooksInPool();
 
-            var resources = books.Select(book => MapPool(book, user.Id)).ToList();
-
-            foreach (var resource in resources)
+            var resources = books.Select(book =>
             {
+                try
+                {
+                    _coverMapper.EnsureBookCovers(book);
+                }
+                catch
+                {
+                    // ignore cover download issues so the pool still loads
+                }
+
+                var resource = MapPool(book, user.Id);
+
                 if (resource.Book?.Images != null)
                 {
-                    _coverMapper.ConvertToLocalUrls(resource.Book.Id, MediaCoverEntity.Book, resource.Book.Images);
+                    _coverMapper.ConvertToLocalUrls(book.Id, MediaCoverEntity.Book, resource.Book.Images);
                 }
-            }
+
+                return resource;
+            }).ToList();
 
             return resources;
         }

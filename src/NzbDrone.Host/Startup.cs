@@ -13,11 +13,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi;
 using NLog.Extensions.Logging;
 using NzbDrone.Common.EnvironmentInfo;
+using NzbDrone.Common.Http;
 using NzbDrone.Common.Instrumentation;
 using NzbDrone.Common.Processes;
 using NzbDrone.Common.Serializer;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Datastore;
+using NzbDrone.Core.Http;
 using NzbDrone.Core.Instrumentation;
 using NzbDrone.Core.Lifecycle;
 using NzbDrone.Core.Messaging.Events;
@@ -182,6 +184,7 @@ namespace NzbDrone.Host
                 .Build();
             });
 
+            services.AddSingleton<IHttpThrottleNotificationService, HttpThrottleNotificationService>();
             services.AddAppAuthentication();
         }
 

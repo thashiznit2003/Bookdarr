@@ -12,6 +12,7 @@ import dimensions from 'Styles/Variables/dimensions';
 import HealthStatusConnector from 'System/Status/Health/HealthStatusConnector';
 import translate from 'Utilities/String/translate';
 import MessagesConnector from './Messages/MessagesConnector';
+import ThrottleNotification from './ThrottleNotification';
 import PageSidebarItem from './PageSidebarItem';
 import styles from './PageSidebar.css';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
@@ -671,6 +672,7 @@ class PageSidebar extends Component {
           </div>
 
           <MessagesConnector />
+          <ThrottleNotification />
           <SidebarDiagnosticsStatus />
         </ScrollerComponent>
       </div>

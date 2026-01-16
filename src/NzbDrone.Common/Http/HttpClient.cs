@@ -47,17 +47,20 @@ namespace NzbDrone.Common.Http
         private readonly ICached<CookieContainer> _cookieContainerCache;
         private readonly List<IHttpRequestInterceptor> _requestInterceptors;
         private readonly IHttpDispatcher _httpDispatcher;
+        private readonly IHttpThrottleNotificationService _throttleNotificationService;
 
         public HttpClient(IEnumerable<IHttpRequestInterceptor> requestInterceptors,
             ICacheManager cacheManager,
             IRateLimitService rateLimitService,
             IHttpDispatcher httpDispatcher,
-            Logger logger)
+            Logger logger,
+            IHttpThrottleNotificationService throttleNotificationService = null)
         {
             _requestInterceptors = requestInterceptors.ToList();
             _rateLimitService = rateLimitService;
             _httpDispatcher = httpDispatcher;
             _logger = logger;
+            _throttleNotificationService = throttleNotificationService ?? NullHttpThrottleNotificationService.Instance;
 
             _cookieContainerCache = cacheManager.GetCache<CookieContainer>(typeof(HttpClient));
         }
@@ -111,7 +114,9 @@ namespace NzbDrone.Common.Http
 
                 if ((int)response.StatusCode == 429)
                 {
-                    throw new TooManyRequestsException(request, response);
+                    var tooManyRequests = new TooManyRequestsException(request, response);
+                    _throttleNotificationService.RecordThrottle(request, tooManyRequests.RetryAfter);
+                    throw tooManyRequests;
                 }
                 else
                 {
