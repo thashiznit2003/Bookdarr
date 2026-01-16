@@ -13,11 +13,11 @@ using NzbDrone.Core.Parser.Model;
 
 namespace NzbDrone.Core.IndexerSearch
 {
-public interface ISearchForReleases
-{
-    Task<List<DownloadDecision>> BookSearch(int bookId, bool missingOnly, bool userInvokedSearch, bool interactiveSearch, int? requestedByUserId = null);
-    Task<List<DownloadDecision>> AuthorSearch(int authorId, bool missingOnly, bool userInvokedSearch, bool interactiveSearch, int? requestedByUserId = null);
-}
+    public interface ISearchForReleases
+    {
+        Task<List<DownloadDecision>> BookSearch(int bookId, bool missingOnly, bool userInvokedSearch, bool interactiveSearch, int? requestedByUserId = null);
+        Task<List<DownloadDecision>> AuthorSearch(int authorId, bool missingOnly, bool userInvokedSearch, bool interactiveSearch, int? requestedByUserId = null);
+    }
 
     public class ReleaseSearchService : ISearchForReleases
     {

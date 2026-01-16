@@ -52,16 +52,14 @@ namespace NzbDrone.Test.Common
         {
             const string layout = @"${level}|${message}${onexception:inner=${newline}${newline}${exception:format=ToString}${newline}}";
 
-            var fileTarget = new FileTarget();
-
-            fileTarget.Name = "Test File Logger";
-            fileTarget.FileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "TestLog.txt");
-            fileTarget.AutoFlush = false;
-            fileTarget.KeepFileOpen = true;
-            fileTarget.ConcurrentWrites = true;
-            fileTarget.ConcurrentWriteAttemptDelay = 50;
-            fileTarget.ConcurrentWriteAttempts = 10;
-            fileTarget.Layout = layout;
+            var fileTarget = new FileTarget
+            {
+                Name = "Test File Logger",
+                FileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "TestLog.txt"),
+                AutoFlush = false,
+                KeepFileOpen = true,
+                Layout = layout
+            };
 
             LogManager.Configuration.AddTarget(fileTarget.GetType().Name, fileTarget);
             LogManager.Configuration.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, fileTarget));

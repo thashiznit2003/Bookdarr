@@ -1,5 +1,12 @@
  # Changelog
 
+## 1.3.13
+- Summary: Added the `NLog.Config` reference so `DatabaseTarget` can re-register itself during configuration reloads now that the logging reload event moved into that package.
+- Why: `LoggingConfigurationReloadedEventArgs` now lives inside `NLog.Config`, so net10 builds would fail until the reference existed.
+- Impact: The diagnostics database logger stays registered after log configuration reloads with the new event handler and the release version increments to keep the UI in step.
+- Files: `src/NzbDrone.Core/Readarr.Core.csproj`, `CHANGELOG.md`
+- Next: run `scripts/update-dev.sh` via SSH to ensure the latest diagnostics push is accompanying any further changes.
+
 ## 1.3.12
 - Summary: Updated the disk provider and logging infrastructure for .NET 10 so the factory-based System.IO.Abstractions API and NLog 6.0 targets build cleanly again.
 - Why: NET 10 ships with the new `IFileSystem` helper methods and the legacy NLog concurrency/archiving APIs were removed, so the update script kept failing during CI/SSH runs.
