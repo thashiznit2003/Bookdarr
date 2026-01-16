@@ -1,11 +1,13 @@
 # Changelog
 
+## 1.3.16
+- Summary: Downgraded the front-end selector helpers to a reselect release that still exposes `defaultMemoize`, so the `memoize is not a function` crash no longer blocks the UI after login.
+- Why: The reselect 5 upgrade removed the `lruMemoize` export we relied on, which left `memoize` undefined inside `createSelectorCreator` and prevented the header/author search from rendering.
+- Impact: `createAuthorClientSideCollectionItemsSelector`, `createBookClientSideCollectionItemsSelector`, and `createDeepEqualSelector` now use `defaultMemoize`, `package.json`/`yarn.lock` pin to `reselect 4.1.5`, and the UI now mounts correctly without runtime errors (author search and Book Pool reappear).
+- Files: `package.json`, `yarn.lock`, `frontend/src/Store/Selectors/createAuthorClientSideCollectionItemsSelector.js`, `frontend/src/Store/Selectors/createBookClientSideCollectionItemsSelector.js`, `frontend/src/Store/Selectors/createDeepEqualSelector.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push to GitHub, and rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-088.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH so the Ubuntu VM and diagnostics repo capture the working v1.3.16 frontend.
+
 ## 1.3.15
-- Summary: Updated the client-side selectors to use `lruMemoize`, which ships with `reselect` v5, because `defaultMemoize` is no longer exported and left the UI blank after login.
-- Why: The selectors relied on `defaultMemoize`, but `reselect` removed that export, so the runtime threw “undefined is not a function” and the entire frontend failed to mount.
-- Impact: `createAuthorClientSideCollectionItemsSelector`, `createBookClientSideCollectionItemsSelector`, and `createDeepEqualSelector` now import `lruMemoize` instead of `defaultMemoize`; the app builds cleanly again and the Bookdarr UI renders after authentication. Rerun `scripts/update-dev.sh` so `/opt/bookdarr-dev/Logs/update-087.log` captures the successful diagnostics push.
-- Files: `frontend/src/Store/Selectors/createAuthorClientSideCollectionItemsSelector.js`, `frontend/src/Store/Selectors/createBookClientSideCollectionItemsSelector.js`, `frontend/src/Store/Selectors/createDeepEqualSelector.js`, `CHANGELOG.md`
-- Next: rerun the SSH update to publish diagnostics for v1.3.15.
 
 ## 1.3.14
 - Summary: Fixed the SQLite migration that adds user metadata so it no longer relies on a non-constant default value for `CreatedAt`.
@@ -1942,3 +1944,9 @@
 
 ## 1.0.0
 - Initial Bookdarr rebrand from Bookshelf/Readarr fork.
+# Summary: Downgraded the front-end selectors to a version of `reselect` that still exports `defaultMemoize` so the `memoize is not a function` errors stop happening on login.
+- Impact: The build now succeeds with `yarn build`, the Author search and Book Pool renderers load correctly (no more blank UI), and the deep-equality selectors continue reusing cached results via `defaultMemoize`.
+- Files: `package.json`, `yarn.lock`, `frontend/src/Store/Selectors/createAuthorClientSideCollectionItemsSelector.js`, `frontend/src/Store/Selectors/createBookClientSideCollectionItemsSelector.js`, `frontend/src/Store/Selectors/createDeepEqualSelector.js`, `src/Directory.Build.props`
+- Next: tag/push a snapshot for `v1.3.16`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-088.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH so the diagnostics bundle captures the working front end.
+
+## 1.3.15
