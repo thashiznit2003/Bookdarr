@@ -368,6 +368,7 @@ function BookPoolPoster({
           size={300}
           images={book.images || []}
           className={styles.posterImage}
+          lazy={false}
         />
         <IconButton
           className={styles.addButton}

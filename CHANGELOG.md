@@ -1,11 +1,11 @@
--﻿# Changelog
+# Changelog
 
-## 1.3.24
-- Summary: Book Pool finally mirrors the Books grid with full cover posters, filter chips that surface counts, pagination controls, and a centered “+” button so browsing the shared catalog feels just like the library.
-- Why: Now that every book’s metadata and cached cover URL is available, the Book Pool should expose controls for filtering, paging, and counting ready vs missing files so users can quickly explore the pool without reloading the entire catalog.
-- Impact: `frontend/src/Book/Pool/BookPoolPage.js` tracks pagination/filter state, renders counts inside each filter chip, and adds the pagination footer with per-page selector and page controls; `frontend/src/Book/Pool/BookPoolPage.css` styles the new footer and centers the overlay add button; `src/NzbDrone.Core/Localization/Core/en.json` documents the pagination labels; `src/Directory.Build.props` now reports `1.3.24.*` so the UI version reflects the updated experience.
-- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
-- Next: tag the new snapshot, push it, and rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-098.log" /opt/bookdarr-dev/scripts/update-dev.sh` via SSH so diagnostics capture the refreshed UI.
+## 1.3.26
+- Summary: Book Pool posters now render their cached covers even when outside the viewport so all artwork stays visible as you scroll.
+- Why: The grid used `AuthorImage`’s lazy loader, which hid posters whenever they scrolled offscreen and re-requested them when they re-entered the viewport.
+- Impact: `BookCover` inside `BookPoolPoster` now opts out of lazy loading (`lazy={false}`), so every card fetches its cached `/MediaCover/Books/...` image once and keeps it rendered as you move through the pool; `src/Directory.Build.props` reports `1.3.26.*` so the UI version reflects this behavior fix.
+- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, and rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-101.log" /opt/bookdarr-dev/scripts/update-dev.sh` via SSH.
 
 ## 1.3.25
 - Summary: Book Pool now returns `bookId` alongside each poster so the “Add to my library” button has a stable key and the card data stays consistent.
@@ -13,6 +13,13 @@
 - Impact: `BookPoolResource` exposes a `BookId` property, `BookPoolMapper` fills it from `Book.Id`, and the assembly version rises to `1.3.25.*` so the diagnostics logs and UI version match the fix.
 - Files: `src/Readarr.Api.V1/Books/BookPoolResource.cs`, `src/Readarr.Api.V1/Books/BookPoolMapper.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push to GitHub, and rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-100.log" /opt/bookdarr-dev/scripts/update-dev.sh` over SSH.
+
+## 1.3.24
+- Summary: Book Pool finally mirrors the Books grid with full cover posters, filter chips that surface counts, pagination controls, and a centered “+” button so browsing the shared catalog feels just like the library.
+- Why: Now that every book’s metadata and cached cover URL is available, the Book Pool should expose controls for filtering, paging, and counting ready vs missing files so users can quickly explore the pool without reloading the entire catalog.
+- Impact: `frontend/src/Book/Pool/BookPoolPage.js` tracks pagination/filter state, renders counts inside each filter chip, and adds the pagination footer with per-page selector and page controls; `frontend/src/Book/Pool/BookPoolPage.css` styles the new footer and centers the overlay add button; `src/NzbDrone.Core/Localization/Core/en.json` documents the pagination labels; `src/Directory.Build.props` now reports `1.3.24.*` so the UI version reflects the updated experience.
+- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag the new snapshot, push it, and rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-098.log" /opt/bookdarr-dev/scripts/update-dev.sh` via SSH so diagnostics capture the refreshed UI.
 
 ## 1.3.23
 - Summary: Built a shared BookPool metadata mapper so every card now references the same cached `BookResource` (including the local cover URLs and availability badges), and the user library no longer remaps the pool on every call.
