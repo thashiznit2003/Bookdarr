@@ -5,6 +5,7 @@ namespace Readarr.Api.V1.Books
 {
     public class BookPoolResource : RestResource
     {
+        public int BookId { get; set; }
         public BookResource Book { get; set; }
         public LibraryStatus Status { get; set; }
         public bool HasEbook { get; set; }

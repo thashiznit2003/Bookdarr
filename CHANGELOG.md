@@ -7,6 +7,13 @@
 - Files: `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag the new snapshot, push it, and rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-098.log" /opt/bookdarr-dev/scripts/update-dev.sh` via SSH so diagnostics capture the refreshed UI.
 
+## 1.3.25
+- Summary: Book Pool now returns `bookId` alongside each poster so the “Add to my library” button has a stable key and the card data stays consistent.
+- Why: React still relies on `bookId` to update individual cards, and without it the Add action and filters saw `null` keys even though the new mapper already had the ID.
+- Impact: `BookPoolResource` exposes a `BookId` property, `BookPoolMapper` fills it from `Book.Id`, and the assembly version rises to `1.3.25.*` so the diagnostics logs and UI version match the fix.
+- Files: `src/Readarr.Api.V1/Books/BookPoolResource.cs`, `src/Readarr.Api.V1/Books/BookPoolMapper.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push to GitHub, and rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-100.log" /opt/bookdarr-dev/scripts/update-dev.sh` over SSH.
+
 ## 1.3.23
 - Summary: Built a shared BookPool metadata mapper so every card now references the same cached `BookResource` (including the local cover URLs and availability badges), and the user library no longer remaps the pool on every call.
 - Why: The previous pool loop filtered out books without shared media and reconverted image URLs per request, leaving most covers blank and preventing the “All” view from ever showing titles that still need files.

@@ -42,6 +42,7 @@ namespace Readarr.Api.V1.Books
             var resource = new BookPoolResource
             {
                 Id = book.Id,
+                BookId = book.Id,
                 Book = book.ToResource(),
                 Status = _libraryService.GetPoolStatus(book.Id, true, true),
                 HasEbook = _libraryService.PoolHasMedia(book.Id, BookFileMediaType.Ebook),
