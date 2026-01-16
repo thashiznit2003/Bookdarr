@@ -42,6 +42,13 @@
 - Files: `frontend/src/Settings/Indexers/Indexers/EditIndexerModalContent.js`, `frontend/src/Settings/Indexers/Options/IndexerOptions.js`, `frontend/src/Settings/Metadata/MetadataProvider/MetadataProvider.js`, `frontend/src/Settings/Profiles/Delay/DelayProfile.js`, `frontend/src/Settings/Profiles/Delay/DelayProfiles.js`, `frontend/src/Settings/Profiles/Quality/QualityProfileItems.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
 
+## 1.3.37
+- Summary: Ignored the generated `frontend/src/Content/Scripts` bundle in ESLint so the thousands of upstream errors there no longer block the incremental lint cleanup elsewhere.
+- Why: These scripts are minified/third-party assets; manually fixing all 14,000+ lint violations would be impractical, so adding them to `.eslintignore` lets `yarn lint` focus on the application code.
+- Impact: `.eslintignore` now excludes `frontend/src/Content/Scripts/**`, and `src/Directory.Build.props` reports `1.3.37.*` so the diagnostics/version metadata stay in sync with this housekeeping pass.
+- Files: `frontend/.eslintignore`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.30
 - Summary: Book Pool posters now keep a fixed 162px width so they match the Library poster density instead of stretching on wide screens.
 - Why: Using `minmax(160px, 1fr)` allowed each column to inflate past the Library size, leaving the shared pool noticeably larger than the rest of the UI.
