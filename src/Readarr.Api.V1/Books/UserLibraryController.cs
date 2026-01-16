@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Books;
+using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MediaFiles;
 using Readarr.Http;
 using Readarr.Http.REST;
@@ -16,14 +17,17 @@ namespace Readarr.Api.V1.Books
         private readonly IUserService _userService;
         private readonly IUserLibraryService _libraryService;
         private readonly IBookService _bookService;
+        private readonly IMapCoversToLocal _coverMapper;
 
         public UserLibraryController(IUserService userService,
                                      IUserLibraryService libraryService,
-                                     IBookService bookService)
+                                     IBookService bookService,
+                                     IMapCoversToLocal coverMapper)
         {
             _userService = userService;
             _libraryService = libraryService;
             _bookService = bookService;
+            _coverMapper = coverMapper;
         }
 
         [HttpGet]
@@ -54,6 +58,15 @@ namespace Readarr.Api.V1.Books
             var books = _libraryService.GetBooksInPool();
 
             var resources = books.Select(book => MapPool(book, user.Id)).ToList();
+
+            foreach (var resource in resources)
+            {
+                if (resource.Book?.Images != null)
+                {
+                    _coverMapper.ConvertToLocalUrls(resource.Book.Id, MediaCoverEntity.Book, resource.Book.Images);
+                }
+            }
+
             return resources;
         }
 

@@ -14,6 +14,13 @@
 - Files: `src/NzbDrone.Core/Books/Services/UserLibraryService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push, and rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-089.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` via SSH so diagnostics capture the new pool behavior.
 
+## 1.3.18
+- Summary: Book Pool now reuses the locally cached media covers so every card shows the stored artwork instead of hitting Google repeatedly.
+- Why: The new pool grid loads dozens of posters at once, which was triggering provider throttling and left most covers stuck on the placeholder after the first few requests.
+- Impact: `UserLibraryController.GetBookPool()` converts each book’s images to the local `/MediaCover/Books/...` URL via `IMapCoversToLocal` so the thumbnails use already-downloaded files; books without a local cover still fall back to the remote source, and the status badge continues to highlight titles that lack media or need manual attention.
+- Files: `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, and rerun `LOG_FILE="/opt/bookdarr-dev/Logs/update-091.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH so diagnostics show the new cover behavior.
+
 ## 1.3.15
 
 ## 1.3.14
