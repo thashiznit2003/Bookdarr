@@ -28,6 +28,13 @@
 - Files: `frontend/src/Book/Combine/CombineAudiobookModalContent.js`, `frontend/src/Book/Details/BookCoverUploadModal.js`, `frontend/src/Book/Details/BookDetails.js`, `frontend/src/Book/Details/BookDetailsConnector.js`, `frontend/src/Book/Details/CombineAudiobookProgress.js`, `frontend/src/Book/Edit/EditBookModalContent.js`, `frontend/src/Book/Index/BookIndex.js`, `frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.js`, `frontend/src/Book/Index/ManualAdd/AddManualBookModalContentConnector.js`, `frontend/src/Book/Index/Overview/BookIndexOverviews.js`, `frontend/src/Book/Index/Posters/BookIndexPosters.js`, `frontend/src/Book/Pool/BookPoolPage.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
 
+## 1.3.35
+- Summary: System diagnostics code now satisfies ESLint so the `frontend/src/System` folder can be checked without the import/order noise.
+- Why: Running `npx eslint frontend/src/System` previously surfaced `simple-import-sort` complaints inside diagnostics/status files; sorting those imports lets the next cleanup round focus on other rule categories.
+- Impact: `frontend/src/System/Diagnostics/Diagnostics.js` keeps the same imports but in the canonical order required by the linter, and `src/Directory.Build.props` reports `1.3.35.*` so the diagnostics metadata matches this lint housekeeping pass.
+- Files: `frontend/src/System/Diagnostics/Diagnostics.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.30
 - Summary: Book Pool posters now keep a fixed 162px width so they match the Library poster density instead of stretching on wide screens.
 - Why: Using `minmax(160px, 1fr)` allowed each column to inflate past the Library size, leaving the shared pool noticeably larger than the rest of the UI.
