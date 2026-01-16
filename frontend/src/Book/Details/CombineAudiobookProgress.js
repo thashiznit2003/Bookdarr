@@ -84,7 +84,7 @@ class CombineAudiobookProgress extends Component {
         <div className={styles.container}>
           <ProgressBar
             progress={100}
-            showText
+            showText={true}
             text={translate('CombineAudiobookComplete')}
             kind={kinds.SUCCESS}
             size={sizes.MEDIUM}
@@ -104,7 +104,7 @@ class CombineAudiobookProgress extends Component {
       <div className={styles.container}>
         <ProgressBar
           progress={percent}
-          showText
+          showText={true}
           text={translate('CombineAudiobookProgressText', [percent.toFixed(0)])}
           kind={kinds.PRIMARY}
           size={sizes.MEDIUM}

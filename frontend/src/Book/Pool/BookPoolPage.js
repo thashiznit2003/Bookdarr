@@ -1,5 +1,8 @@
-import React, { Component } from 'react';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import React, { Component, useCallback } from 'react';
+import BookCover from 'Book/BookCover';
+import BookTitleLink from 'Book/BookTitleLink';
 import IconButton from 'Components/Link/IconButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
@@ -8,8 +11,6 @@ import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import { icons } from 'Helpers/Props';
-import BookCover from 'Book/BookCover';
-import BookTitleLink from 'Book/BookTitleLink';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
@@ -42,10 +43,10 @@ export default class BookPoolPage extends Component {
   }
 
   componentDidMount() {
-    this.fetchPool();
+    this.onFetchPool();
   }
 
-  fetchPool = () => {
+  onFetchPool = () => {
     this.setState({ isFetching: true, error: null });
 
     const request = createAjaxRequest({
@@ -195,7 +196,7 @@ export default class BookPoolPage extends Component {
           <PageToolbarSection>
             <PageToolbarButton
               name={icons.REFRESH}
-              onPress={this.fetchPool}
+              onPress={this.onFetchPool}
               title={translate('Refresh')}
             />
           </PageToolbarSection>
@@ -223,9 +224,9 @@ export default class BookPoolPage extends Component {
                     <BookPoolPoster
                       key={item.bookId}
                       resource={item}
-                      onAdd={() => this.onAddToLibrary(item)}
+                      onAdd={this.onAddToLibrary}
                       isAdding={adding[item.bookId]}
-                      renderStatus={() => this.renderStatus(item)}
+                      renderStatus={this.renderStatus}
                     />
                   ))}
                 </div>
@@ -254,6 +255,12 @@ function BookPoolPoster({
     needsAttention
   } = resource;
 
+  const onAddPress = useCallback(() => {
+    if (typeof onAdd === 'function') {
+      onAdd(resource);
+    }
+  }, [onAdd, resource]);
+
   return (
     <div className={classNames(styles.posterCard, needsAttention && styles.posterAttention)}>
       <div className={styles.posterWrapper}>
@@ -267,7 +274,7 @@ function BookPoolPoster({
           className={styles.addButton}
           name={icons.ADD}
           title={translate(inMyLibrary ? 'InMyLibrary' : 'AddToMyLibrary')}
-          onPress={onAdd}
+          onPress={onAddPress}
           isDisabled={inMyLibrary}
           isSpinning={isAdding}
         />
@@ -282,7 +289,7 @@ function BookPoolPoster({
         </div>
         <div className={styles.posterAuthor}>{book.authorTitle}</div>
         <div className={styles.posterStatusRow}>
-          {renderStatus()}
+        {renderStatus(resource)}
           {inMyLibrary && (
             <span className={styles.libraryBadge}>{translate('InMyLibrary')}</span>
           )}
@@ -301,3 +308,22 @@ function BookPoolPoster({
     </div>
   );
 }
+
+BookPoolPoster.propTypes = {
+  resource: PropTypes.shape({
+    book: PropTypes.shape({
+      images: PropTypes.arrayOf(PropTypes.object),
+      title: PropTypes.string,
+      titleSlug: PropTypes.string,
+      disambiguation: PropTypes.string,
+      authorTitle: PropTypes.string
+    }).isRequired,
+    hasEbook: PropTypes.bool,
+    hasAudiobook: PropTypes.bool,
+    inMyLibrary: PropTypes.bool,
+    needsAttention: PropTypes.bool
+  }).isRequired,
+  onAdd: PropTypes.func.isRequired,
+  isAdding: PropTypes.bool,
+  renderStatus: PropTypes.func.isRequired
+};

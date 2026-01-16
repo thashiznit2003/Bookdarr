@@ -12,9 +12,9 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { inputTypes, kinds } from 'Helpers/Props';
+import AddAuthorOptionsForm from 'Search/Common/AddAuthorOptionsForm';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
-import AddAuthorOptionsForm from 'Search/Common/AddAuthorOptionsForm';
 import styles from './AddManualBookModalContent.css';
 
 class AddManualBookModalContent extends Component {

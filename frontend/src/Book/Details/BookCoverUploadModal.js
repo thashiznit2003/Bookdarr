@@ -5,18 +5,18 @@ import FormGroup from 'Components/Form/FormGroup';
 import FormInputHelpText from 'Components/Form/FormInputHelpText';
 import FormLabel from 'Components/Form/FormLabel';
 import TextInput from 'Components/Form/TextInput';
-import SpinnerButton from 'Components/Link/SpinnerButton';
 import Button from 'Components/Link/Button';
+import SpinnerButton from 'Components/Link/SpinnerButton';
 import Modal from 'Components/Modal/Modal';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import { kinds } from 'Helpers/Props';
+import { updateItem } from 'Store/Actions/baseActions';
+import createAjaxRequest from 'Utilities/createAjaxRequest';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
-import createAjaxRequest from 'Utilities/createAjaxRequest';
-import { updateItem } from 'Store/Actions/baseActions';
 import styles from './BookCoverUploadModal.css';
 
 class BookCoverUploadModal extends Component {

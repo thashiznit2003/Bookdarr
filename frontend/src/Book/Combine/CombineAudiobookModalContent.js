@@ -2,9 +2,9 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import CheckInput from 'Components/Form/CheckInput';
+import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
 import SpinnerButton from 'Components/Link/SpinnerButton';
-import Icon from 'Components/Icon';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
@@ -150,7 +150,7 @@ class CombineAudiobookModalContent extends Component {
                 >
                   <div
                     className={styles.dragHandle}
-                    draggable
+                    draggable={true}
                     onDragStart={this.onDragStart(index)}
                     onDragEnd={this.onDragEnd}
                     title={translate('DragToReorder')}

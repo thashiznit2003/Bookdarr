@@ -303,6 +303,11 @@ BookDetailsConnector.propTypes = {
   refreshBookMetadata: PropTypes.func.isRequired,
   toggleBooksMonitored: PropTypes.func.isRequired,
   executeCommand: PropTypes.func.isRequired
+  ,
+  author: PropTypes.shape({
+    path: PropTypes.string,
+    id: PropTypes.number
+  })
 };
 
 export default connect(createMapStateToProps, mapDispatchToProps)(BookDetailsConnector);

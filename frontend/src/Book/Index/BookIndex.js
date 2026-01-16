@@ -21,6 +21,7 @@ import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import selectAll from 'Utilities/Table/selectAll';
 import toggleSelected from 'Utilities/Table/toggleSelected';
 import BookIndexFooterConnector from './BookIndexFooterConnector';
+import AddManualBookModal from './ManualAdd/AddManualBookModal';
 import BookIndexFilterMenu from './Menus/BookIndexFilterMenu';
 import BookIndexSortMenu from './Menus/BookIndexSortMenu';
 import BookIndexViewMenu from './Menus/BookIndexViewMenu';
@@ -30,7 +31,6 @@ import BookIndexPostersConnector from './Posters/BookIndexPostersConnector';
 import BookIndexPosterOptionsModal from './Posters/Options/BookIndexPosterOptionsModal';
 import BookIndexTableConnector from './Table/BookIndexTableConnector';
 import BookIndexTableOptionsConnector from './Table/BookIndexTableOptionsConnector';
-import AddManualBookModal from './ManualAdd/AddManualBookModal';
 import styles from './BookIndex.css';
 
 function getViewComponent(view) {

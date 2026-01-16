@@ -84,7 +84,7 @@ class AddManualBookModalContentConnector extends Component {
       format: bookFields.format,
       isbn13: bookFields.isbn13,
       asin: bookFields.asin,
-      pageCount: bookFields.pageCount ? parseInt(bookFields.pageCount, 10) : 0,
+      pageCount: bookFields.pageCount ? parseInt(bookFields.pageCount) : 0,
       isEbook: bookFields.isEbook,
       rootFolderPath: rootFolderPath.value,
       monitor: monitorValue,

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
+import CombineAudiobookModal from 'Book/Combine/CombineAudiobookModal';
 import DeleteBookModal from 'Book/Delete/DeleteBookModal';
 import EditBookModalConnector from 'Book/Edit/EditBookModalConnector';
 import BookFileEditorTable from 'BookFile/Editor/BookFileEditorTable';
@@ -14,16 +15,15 @@ import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
 import SwipeHeaderConnector from 'Components/Swipe/SwipeHeaderConnector';
 import { icons } from 'Helpers/Props';
+import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
 import InteractiveSearchFilterMenuConnector from 'InteractiveSearch/InteractiveSearchFilterMenuConnector';
 import InteractiveSearchTable from 'InteractiveSearch/InteractiveSearchTable';
 import OrganizePreviewModalConnector from 'Organize/OrganizePreviewModalConnector';
 import RetagPreviewModalConnector from 'Retag/RetagPreviewModalConnector';
 import translate from 'Utilities/String/translate';
-import CombineAudiobookModal from 'Book/Combine/CombineAudiobookModal';
-import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
-import CombineAudiobookProgress from './CombineAudiobookProgress';
-import BookDetailsHeaderConnector from './BookDetailsHeaderConnector';
 import BookCoverUploadModal from './BookCoverUploadModal';
+import BookDetailsHeaderConnector from './BookDetailsHeaderConnector';
+import CombineAudiobookProgress from './CombineAudiobookProgress';
 import styles from './BookDetails.css';
 
 function isAudiobookMp3(file) {
