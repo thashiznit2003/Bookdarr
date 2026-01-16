@@ -28,6 +28,8 @@ const FILTERS = [
   { key: 'needsManual', label: () => translate('BookPoolFilterNeedsManual') }
 ];
 
+const PAGE_SIZE_OPTIONS = [25, 50, 75, 100];
+
 export default class BookPoolPage extends Component {
 
   constructor(props) {
@@ -38,7 +40,9 @@ export default class BookPoolPage extends Component {
       isFetching: false,
       error: null,
       adding: {},
-      filterKey: 'all'
+      filterKey: 'all',
+      page: 0,
+      pageSize: PAGE_SIZE_OPTIONS[0]
     };
   }
 
@@ -64,8 +68,10 @@ export default class BookPoolPage extends Component {
   };
 
   getFilteredBooks = () => {
-    const { books, filterKey } = this.state;
+    return this.calculateFilteredBooks(this.state.books, this.state.filterKey);
+  };
 
+  calculateFilteredBooks = (books, filterKey) => {
     if (filterKey === 'all') {
       return books;
     }
@@ -78,8 +84,47 @@ export default class BookPoolPage extends Component {
     });
   };
 
+  getStatusCounts = () => {
+    const { books } = this.state;
+    const counts = {
+      all: 0,
+      available: 0,
+      needsmanual: 0,
+      pending: 0
+    };
+
+    books.forEach((book) => {
+      const status = (book.status || '').toLowerCase();
+      counts.all += 1;
+
+      if (Object.prototype.hasOwnProperty.call(counts, status)) {
+        counts[status] += 1;
+      }
+    });
+
+    return counts;
+  };
+
+  getPageCount = (total) => {
+    const { pageSize } = this.state;
+    const rawCount = Math.ceil(total / pageSize);
+    return Math.max(1, rawCount);
+  };
+
+  getVisibleBooks = (filteredBooks, currentPage) => {
+    const { pageSize } = this.state;
+    const start = currentPage * pageSize;
+    const end = start + pageSize;
+
+    if (filteredBooks.length === 0) {
+      return [];
+    }
+
+    return filteredBooks.slice(start, end);
+  };
+
   setFilterKey = (filterKey) => {
-    this.setState({ filterKey });
+    this.setState({ filterKey, page: 0 });
   };
 
   onAddToLibrary = (book) => {
@@ -124,9 +169,103 @@ export default class BookPoolPage extends Component {
     });
   };
 
+  handlePrevPage = () => {
+    const filteredBooks = this.getFilteredBooks();
+    const pageCount = this.getPageCount(filteredBooks.length);
+    this.setState(({ page }) => ({
+      page: Math.max(0, Math.min(pageCount - 1, page - 1))
+    }));
+  };
+
+  handleNextPage = () => {
+    const filteredBooks = this.getFilteredBooks();
+    const pageCount = this.getPageCount(filteredBooks.length);
+    this.setState(({ page }) => ({
+      page: Math.min(pageCount - 1, page + 1)
+    }));
+  };
+
+  handlePageSizeChange = (event) => {
+    const pageSize = parseInt(event.target.value, 10) || PAGE_SIZE_OPTIONS[0];
+    this.setState({ pageSize, page: 0 });
+  };
+
+  renderFilterButtons = (counts, filterKey) => (
+    FILTERS.map((filter) => {
+      const normalizedKey = filter.key.toLowerCase();
+      const count = counts[normalizedKey] ?? 0;
+
+      return (
+        <button
+          key={filter.key}
+          type="button"
+          className={classNames(styles.filterButton, filterKey === filter.key && styles.filterButtonActive)}
+          onClick={() => this.setFilterKey(filter.key)}
+        >
+          {filter.label()} ({count})
+        </button>
+      );
+    })
+  );
+
+  renderPagination(filteredBooks, pageCount, currentPage) {
+    const { pageSize } = this.state;
+
+    if (filteredBooks.length === 0) {
+      return null;
+    }
+
+    const total = filteredBooks.length;
+    const start = currentPage * pageSize + 1;
+    const end = Math.min((currentPage + 1) * pageSize, total);
+
+    return (
+      <div className={styles.pagination}>
+        <div className={styles.paginationInfo}>
+          {translate('BookPoolPaginationInfo', { start, end, total })}
+        </div>
+        <div className={styles.paginationControls}>
+          <button
+            type="button"
+            className={styles.paginationButton}
+            onClick={this.handlePrevPage}
+            disabled={currentPage === 0}
+          >
+            {translate('BookPoolPaginationPrev')}
+          </button>
+          <span className={styles.paginationPage}>
+            {translate('BookPoolPage', { current: currentPage + 1, total: pageCount })}
+          </span>
+          <button
+            type="button"
+            className={styles.paginationButton}
+            onClick={this.handleNextPage}
+            disabled={currentPage >= pageCount - 1}
+          >
+            {translate('BookPoolPaginationNext')}
+          </button>
+        </div>
+        <div className={styles.paginationPageSize}>
+          <label htmlFor="book-pool-page-size">{translate('BookPoolPageSize')}</label>
+          <select
+            id="book-pool-page-size"
+            value={pageSize}
+            onChange={this.handlePageSizeChange}
+            className={styles.pageSizeSelect}
+          >
+            {PAGE_SIZE_OPTIONS.map((size) => (
+              <option key={size} value={size}>{size}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+    );
+  }
+
   renderStatus(resource) {
     const { status, needsAttention } = resource;
-    const label = STATUS_LABELS[status] ? STATUS_LABELS[status]() : translate('Pending');
+    const normalizedStatus = (status || '').toLowerCase();
+    const label = STATUS_LABELS[normalizedStatus] ? STATUS_LABELS[normalizedStatus]() : translate('BookPoolStatusPending');
 
     return (
       <span className={needsAttention ? styles.statusAttention : styles.status}>
@@ -141,10 +280,15 @@ export default class BookPoolPage extends Component {
       isFetching,
       error,
       adding,
-      filterKey
+      filterKey,
+      page
     } = this.state;
 
     const filteredBooks = this.getFilteredBooks();
+    const pageCount = this.getPageCount(filteredBooks.length);
+    const currentPage = Math.min(page, pageCount - 1);
+    const visibleBooks = this.getVisibleBooks(filteredBooks, currentPage);
+    const statusCounts = this.getStatusCounts();
     const emptyMessage = books.length === 0
       ? translate('BookPoolEmpty')
       : translate('BookPoolEmptyFilter');
@@ -164,16 +308,7 @@ export default class BookPoolPage extends Component {
           </PageToolbarSection>
           <PageToolbarSection>
             <div className={styles.filterGroup}>
-              {FILTERS.map((filter) => (
-                <button
-                  key={filter.key}
-                  type="button"
-                  className={classNames(styles.filterButton, filterKey === filter.key && styles.filterButtonActive)}
-                  onClick={() => this.setFilterKey(filter.key)}
-                >
-                  {filter.label()}
-                </button>
-              ))}
+              {this.renderFilterButtons(statusCounts, filterKey)}
             </div>
           </PageToolbarSection>
         </PageToolbar>
@@ -187,17 +322,20 @@ export default class BookPoolPage extends Component {
           {!isFetching && !error && (
             <>
               {filteredBooks.length > 0 ? (
-                <div className={styles.grid}>
-                  {filteredBooks.map((item) => (
-                    <BookPoolPoster
-                      key={item.bookId}
-                      resource={item}
-                      onAdd={() => this.onAddToLibrary(item)}
-                      isAdding={adding[item.bookId]}
-                      renderStatus={() => this.renderStatus(item)}
-                    />
-                  ))}
-                </div>
+                <>
+                  <div className={styles.grid}>
+                    {visibleBooks.map((item) => (
+                      <BookPoolPoster
+                        key={item.bookId}
+                        resource={item}
+                        onAdd={() => this.onAddToLibrary(item)}
+                        isAdding={adding[item.bookId]}
+                        renderStatus={() => this.renderStatus(item)}
+                      />
+                    ))}
+                  </div>
+                  {this.renderPagination(filteredBooks, pageCount, currentPage)}
+                </>
               ) : (
                 <div className={styles.emptyState}>{emptyMessage}</div>
               )}
