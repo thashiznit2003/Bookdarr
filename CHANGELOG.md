@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.29
+- Summary: Book Pool posters now match the Library book size so the grid no longer feels oversized.
+- Why: The Book Pool grid was sizing each card to a 220px minimum width, which made the posters visually larger than the standard Library layout and wasted screen real estate.
+- Impact: `frontend/src/Book/Pool/BookPoolPage.css` uses the same `minmax(160px, 1fr)` grid sizing as the Library posters, and `src/Directory.Build.props` now reports `1.3.29.*` so diagnostics match the refreshed layout.
+- Files: `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.28
 - Summary: Book Pool now renders every filtered book at once so posters never vanish while scrolling and all covers stay visible even on large libraries.
 - Why: The drop-in pagination/infinite-scroll logic removed posters from the DOM as you scrolled, killing their cached image loads and leaving blank tiles instead of the expected covers.
