@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.28
+- Summary: Book Pool now renders every filtered book at once so posters never vanish while scrolling and all covers stay visible even on large libraries.
+- Why: The drop-in pagination/infinite-scroll logic removed posters from the DOM as you scrolled, killing their cached image loads and leaving blank tiles instead of the expected covers.
+- Impact: `frontend/src/Book/Pool/BookPoolPage.js` renders the filtered set directly, removes the unused pagination helpers, and keeps the grid visible for every book while `frontend/src/Book/Pool/BookPoolPage.css` drops the pagination styles and page-size controls; `src/Directory.Build.props` reports `1.3.28.*` so the version matches this visible-library refresh.
+- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
+## 1.3.27
+
 ## 1.3.26
 - Summary: Book Pool posters now render their cached covers even when outside the viewport so all artwork stays visible as you scroll.
 - Why: The grid used `AuthorImage`’s lazy loader, which hid posters whenever they scrolled offscreen and re-requested them when they re-entered the viewport.

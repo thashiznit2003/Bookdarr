@@ -100,66 +100,6 @@
   font-size: 1.35rem;
 }
 
-.pagination {
-  margin: 0 16px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.paginationInfo {
-  color: var(--dimColor);
-  font-size: 0.88rem;
-}
-
-.paginationControls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.paginationButton {
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: transparent;
-  color: var(--textColor);
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 150ms ease, border-color 150ms ease;
-}
-
-.paginationButton:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.paginationButton:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.paginationPage {
-  font-weight: 600;
-  color: var(--textColor);
-}
-
-.paginationPageSize {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--dimColor);
-}
-
-.pageSizeSelect {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 4px;
-  color: var(--textColor);
-  padding: 4px 8px;
-}
-
 .posterMeta {
   padding: 16px;
   display: flex;
