@@ -1,14 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Icon from 'Components/Icon';
+import Alert from 'Components/Alert';
 import FieldSet from 'Components/FieldSet';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
+import Icon from 'Components/Icon';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import Tooltip from 'Components/Tooltip/Tooltip';
-import { icons, inputTypes, tooltipPositions } from 'Helpers/Props';
+import { icons, inputTypes, kinds,tooltipPositions } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import styles from './MetadataProvider.css';
 

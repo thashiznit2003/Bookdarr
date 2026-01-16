@@ -12,7 +12,6 @@ import translate from 'Utilities/String/translate';
 
 function IndexerOptions(props) {
   const {
-    advancedSettings,
     isFetching,
     error,
     settings,
@@ -91,7 +90,6 @@ function IndexerOptions(props) {
 }
 
 IndexerOptions.propTypes = {
-  advancedSettings: PropTypes.bool.isRequired,
   isFetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
   settings: PropTypes.object.isRequired,

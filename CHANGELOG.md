@@ -35,6 +35,13 @@
 - Files: `frontend/src/System/Diagnostics/Diagnostics.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
 
+## 1.3.36
+- Summary: Cleared `frontend/src/Settings` lint failures by sorting imports and removing unused references so the settings screens can be verified with `npx eslint frontend/src/Settings`.
+- Why: The settings tree was another large error source for `yarn lint`, with `simple-import-sort`, unused variable, and undefined imports that blocked any further cleanup.
+- Impact: Settings components (indexer forms, metadata provider, delay profile, etc.) now follow ESLint’s ordering rules, drop unused props, and reintroduce the missing `Alert/kinds` imports necessary for the metadata provider, while `src/Directory.Build.props` now reports `1.3.36.*` so the version matches this lint-focused pass.
+- Files: `frontend/src/Settings/Indexers/Indexers/EditIndexerModalContent.js`, `frontend/src/Settings/Indexers/Options/IndexerOptions.js`, `frontend/src/Settings/Metadata/MetadataProvider/MetadataProvider.js`, `frontend/src/Settings/Profiles/Delay/DelayProfile.js`, `frontend/src/Settings/Profiles/Delay/DelayProfiles.js`, `frontend/src/Settings/Profiles/Quality/QualityProfileItems.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.30
 - Summary: Book Pool posters now keep a fixed 162px width so they match the Library poster density instead of stretching on wide screens.
 - Why: Using `minmax(160px, 1fr)` allowed each column to inflate past the Library size, leaving the shared pool noticeably larger than the rest of the UI.

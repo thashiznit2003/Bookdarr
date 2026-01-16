@@ -1,3 +1,15 @@
+import {
+  closestCenter,
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef, useState } from 'react';
 import FieldSet from 'Components/FieldSet';
@@ -9,19 +21,6 @@ import translate from 'Utilities/String/translate';
 import DelayProfile from './DelayProfile';
 import EditDelayProfileModalConnector from './EditDelayProfileModalConnector';
 import styles from './DelayProfiles.css';
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  useSortable
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 
 function getPointerY(event) {
   if (!event) {

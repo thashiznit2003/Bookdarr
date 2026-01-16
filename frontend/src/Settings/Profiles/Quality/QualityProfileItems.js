@@ -1,3 +1,17 @@
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import FormGroup from 'Components/Form/FormGroup';
@@ -10,21 +24,6 @@ import { icons, kinds, sizes } from 'Helpers/Props';
 import QualityProfileItem from './QualityProfileItem';
 import QualityProfileItemGroup from './QualityProfileItemGroup';
 import styles from './QualityProfileItems.css';
-import {
-  DndContext,
-  PointerSensor,
-  KeyboardSensor,
-  closestCenter,
-  useSensor,
-  useSensors
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  useSortable,
-  sortableKeyboardCoordinates
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 
 function getPointerY(event) {
   if (!event) {
@@ -153,7 +152,7 @@ function QualityProfileItems({
     }
 
     const dragQualityIndex = active.data.current?.qualityIndex;
-    let dropQualityIndex = over.data.current?.qualityIndex;
+    const dropQualityIndex = over.data.current?.qualityIndex;
 
     if (!dragQualityIndex || !dropQualityIndex) {
       return;
