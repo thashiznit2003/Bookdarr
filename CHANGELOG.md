@@ -1,4 +1,11 @@
- # Changelog
+# Changelog
+
+## 1.3.15
+- Summary: Updated the client-side selectors to use `lruMemoize`, which ships with `reselect` v5, because `defaultMemoize` is no longer exported and left the UI blank after login.
+- Why: The selectors relied on `defaultMemoize`, but `reselect` removed that export, so the runtime threw “undefined is not a function” and the entire frontend failed to mount.
+- Impact: `createAuthorClientSideCollectionItemsSelector`, `createBookClientSideCollectionItemsSelector`, and `createDeepEqualSelector` now import `lruMemoize` instead of `defaultMemoize`; the app builds cleanly again and the Bookdarr UI renders after authentication. Rerun `scripts/update-dev.sh` so `/opt/bookdarr-dev/Logs/update-087.log` captures the successful diagnostics push.
+- Files: `frontend/src/Store/Selectors/createAuthorClientSideCollectionItemsSelector.js`, `frontend/src/Store/Selectors/createBookClientSideCollectionItemsSelector.js`, `frontend/src/Store/Selectors/createDeepEqualSelector.js`, `CHANGELOG.md`
+- Next: rerun the SSH update to publish diagnostics for v1.3.15.
 
 ## 1.3.14
 - Summary: Fixed the SQLite migration that adds user metadata so it no longer relies on a non-constant default value for `CreatedAt`.
