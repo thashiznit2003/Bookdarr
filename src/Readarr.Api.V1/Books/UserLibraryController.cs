@@ -59,15 +59,6 @@ namespace Readarr.Api.V1.Books
 
             var resources = books.Select(book =>
             {
-                try
-                {
-                    _coverMapper.EnsureBookCovers(book);
-                }
-                catch
-                {
-                    // ignore cover download issues so the pool still loads
-                }
-
                 var resource = MapPool(book, user.Id);
 
                 if (resource.Book?.Images != null)
