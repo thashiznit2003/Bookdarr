@@ -7,6 +7,13 @@
 - Files: `frontend/src/Components/Page/PageConnector.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
 
+## 1.3.32
+- Summary: Book Pool posters now share the exact card width/aspect ratio that the Library’s book grid uses so the shared pool never feels oversized.
+- Why: Even after fixing pagination, the pooled cards still expanded to 220px columns and the images stretched beyond the Library’s 162px posters.
+- Impact: `frontend/src/Book/Pool/BookPoolPage.css` limits each column to 162px, centers the grid, matches the Library poster aspect ratio (`400/256`), and constrains `.posterCard` width; `frontend/src/Book/Pool/BookPoolPage.js` asks `BookCover` for a 162px image so cached assets align; `src/Directory.Build.props` now reports `1.3.32.*` to match the refreshed size.
+- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.30
 - Summary: Book Pool posters now keep a fixed 162px width so they match the Library poster density instead of stretching on wide screens.
 - Why: Using `minmax(160px, 1fr)` allowed each column to inflate past the Library size, leaving the shared pool noticeably larger than the rest of the UI.

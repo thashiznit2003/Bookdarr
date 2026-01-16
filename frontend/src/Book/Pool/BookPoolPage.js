@@ -258,7 +258,7 @@ function BookPoolPoster({
     <div className={classNames(styles.posterCard, needsAttention && styles.posterAttention)}>
       <div className={styles.posterWrapper}>
         <BookCover
-          size={300}
+          size={162}
           images={book.images || []}
           className={styles.posterImage}
           lazy={false}

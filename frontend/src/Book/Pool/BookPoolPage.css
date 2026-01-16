@@ -59,6 +59,8 @@
   flex-direction: column;
   min-height: 340px;
   transition: transform 200ms ease, box-shadow 200ms ease;
+  max-width: 162px;
+  width: 100%;
 }
 
 .posterCard:hover {
@@ -73,7 +75,7 @@
 .posterWrapper {
   position: relative;
   background: var(--borderColor);
-  padding-top: 150%;
+  padding-top: calc((400 / 256) * 100%);
 }
 
 .posterImage {
