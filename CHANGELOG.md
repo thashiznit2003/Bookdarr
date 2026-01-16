@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.30
+- Summary: Book Pool posters now keep a fixed 162px width so they match the Library poster density instead of stretching on wide screens.
+- Why: Using `minmax(160px, 1fr)` allowed each column to inflate past the Library size, leaving the shared pool noticeably larger than the rest of the UI.
+- Impact: `frontend/src/Book/Pool/BookPoolPage.css` fixes the grid to `repeat(auto-fit, 162px)` with centered layout, and `src/Directory.Build.props` reports `1.3.30.*` so diagnostics/version metadata align with this layout tweak.
+- Files: `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.29
 - Summary: Book Pool posters now match the Library book size so the grid no longer feels oversized.
 - Why: The Book Pool grid was sizing each card to a 220px minimum width, which made the posters visually larger than the standard Library layout and wasted screen real estate.
