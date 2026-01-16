@@ -45,12 +45,24 @@ namespace NzbDrone.Core.DecisionEngine.Specifications
 
             if (indexerTags.Any() && indexerTags.Intersect(subject.Author.Tags).Empty())
             {
-                _logger.Debug("Indexer {0} has tags. None of these are present on author {1}. Rejecting", subject.Release.Indexer, subject.Author);
+                _logger.Debug("Indexer {0} has tags. None of these are present on author {1}. Rejecting", CleanLogValue(subject.Release.Indexer), CleanLogValue(subject.Author?.CleanName ?? subject.Author?.Name));
 
                 return Decision.Reject("Author tags do not match any of the indexer tags");
             }
 
             return Decision.Accept();
+        }
+
+        private static string CleanLogValue(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+
+            return value
+                .Replace("\r", " ")
+                .Replace("\n", " ");
         }
     }
 }

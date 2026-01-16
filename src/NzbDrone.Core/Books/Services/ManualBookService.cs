@@ -70,7 +70,7 @@ namespace NzbDrone.Core.Books
             var author = FindOrCreateAuthor(authorName, definition);
             var book = BuildManualBook(definition, title, author);
 
-            _logger.Info("Adding manual book {0} for author {1}", title, author.Name);
+            _logger.Info("Adding manual book {0} for author {1}", CleanLogValue(title), CleanLogValue(author.Name));
 
             _bookService.AddBook(book, false);
             _mediaCoverService.EnsureBookCovers(book);
@@ -193,6 +193,18 @@ namespace NzbDrone.Core.Books
             }
 
             return path;
+        }
+
+        private static string CleanLogValue(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+
+            return value
+                .Replace("\r", " ")
+                .Replace("\n", " ");
         }
 
         private Book BuildManualBook(ManualBookDefinition definition, string title, Author author)

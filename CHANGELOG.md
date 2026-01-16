@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.40
+- Summary: Sanitized log entries that previously depended on user input so CodeQL’s `cs/log-forging` alerts were addressed.
+- Why: GitHub Code Scanning flagged the manual book and indexer tag logging paths because they directly wrote user values to the logs, which means a malicious value could forge new entries.
+- Impact: `src/NzbDrone.Core/Books/Services/ManualBookService.cs` and `src/NzbDrone.Core/DecisionEngine/Specifications/IndexerTagSpecification.cs` now trim line breaks from logged strings, `src/Directory.Build.props` reports `1.3.40.*`, and `CHANGELOG.md` documents the security update.
+- Files: `src/NzbDrone.Core/Books/Services/ManualBookService.cs`, `src/NzbDrone.Core/DecisionEngine/Specifications/IndexerTagSpecification.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.39
 - Summary: ESLint now finishes with zero problems after the ebook-convert scanning UI and indexer-import dialogs follow the required control-flow and notification rules.
 - Why: The last lint run still reported `no-negated-condition` plus `no-alert` warnings, so reorganizing `BookFileEbookConvertModal`’s PDF scan branch and replacing every `window.alert` in `IndexerSettings` with an inline `Alert` clears those violations.
