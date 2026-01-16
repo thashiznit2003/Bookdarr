@@ -49,10 +49,10 @@ class AddNewAuthorModalContentConnector extends Component {
   // Listeners
 
   componentDidMount() {
-    const { monitor, setAuthorAddDefault } = this.props;
+    const { monitor, setAuthorAddDefault: updateAuthorAddDefault } = this.props;
 
     if (monitor?.value && monitor.value !== 'none') {
-      setAuthorAddDefault({ monitor: 'none' });
+      updateAuthorAddDefault({ monitor: 'none' });
     }
   }
 

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import DeleteBookModal from 'Book/Delete/DeleteBookModal';
 import BookSearchCellConnector from 'Book/BookSearchCellConnector';
 import BookTitleLink from 'Book/BookTitleLink';
+import DeleteBookModal from 'Book/Delete/DeleteBookModal';
 import IndexerFlags from 'Book/IndexerFlags';
 import Icon from 'Components/Icon';
 import IconButton from 'Components/Link/IconButton';

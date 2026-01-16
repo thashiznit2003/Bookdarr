@@ -6,17 +6,16 @@ import ReactDOM from 'react-dom';
 import QueueStatusConnector from 'Activity/Queue/Status/QueueStatusConnector';
 import OverlayScroller from 'Components/Scroller/OverlayScroller';
 import Scroller from 'Components/Scroller/Scroller';
-import { icons, kinds, sizes } from 'Helpers/Props';
+import { icons } from 'Helpers/Props';
 import locationShape from 'Helpers/Props/Shapes/locationShape';
 import dimensions from 'Styles/Variables/dimensions';
 import HealthStatusConnector from 'System/Status/Health/HealthStatusConnector';
 import translate from 'Utilities/String/translate';
 import MessagesConnector from './Messages/MessagesConnector';
-import ThrottleNotification from './ThrottleNotification';
 import PageSidebarItem from './PageSidebarItem';
+import SidebarDiagnosticsStatus from './SidebarDiagnosticsStatus';
+import ThrottleNotification from './ThrottleNotification';
 import styles from './PageSidebar.css';
-import createAjaxRequest from 'Utilities/createAjaxRequest';
-import SpinnerButton from 'Components/Link/SpinnerButton';
 
 const HEADER_HEIGHT = parseInt(dimensions.headerHeight);
 const SIDEBAR_WIDTH = parseInt(dimensions.sidebarWidth);
@@ -231,18 +230,6 @@ function getActiveParent(pathname) {
   return activeParent;
 }
 
-function hasActiveChildLink(link, pathname) {
-  const children = link.children;
-
-  if (!children || !children.length) {
-    return false;
-  }
-
-  return _.some(children, (child) => {
-    return child.to === pathname;
-  });
-}
-
 function getPositioning() {
   const windowScroll = window.scrollY == null ? document.documentElement.scrollTop : window.scrollY;
   const top = Math.max(HEADER_HEIGHT - windowScroll, 0);
@@ -254,135 +241,16 @@ function getPositioning() {
   };
 }
 
-class SidebarDiagnosticsStatus extends Component {
-  state = {
-    isLoading: true,
-    status: null,
-    isPushing: false,
-    message: null,
-    error: null
-  };
+function hasActiveChildLink(link, pathname) {
+  const children = link.children;
 
-  componentDidMount() {
-    this.fetchStatus();
+  if (!children || !children.length) {
+    return false;
   }
 
-  fetchStatus = () => {
-    const { request } = createAjaxRequest({
-      url: '/diagnostics/status',
-      method: 'GET',
-      dataType: 'json',
-      skipDiagnostics: true
-    });
-
-    request.done((data) => {
-      this.setState({
-        status: data,
-        isLoading: false
-      });
-    });
-
-    request.fail(() => {
-      this.setState({
-        isLoading: false,
-        error: translate('DiagnosticsStatusLoadFailed')
-      });
-    });
-  };
-
-  onPushPress = () => {
-    this.setState({
-      isPushing: true,
-      message: null,
-      error: null
-    });
-
-    const { request } = createAjaxRequest({
-      url: '/diagnostics/push',
-      method: 'POST',
-      dataType: 'json',
-      data: JSON.stringify({}),
-      skipDiagnostics: true
-    });
-
-    request.done((data) => {
-      this.setState({
-        isPushing: false,
-        message: data.success ? data.message || translate('SidebarDiagnosticsPushSuccess') : null,
-        error: data.success ? null : data.message || translate('DiagnosticsPushFailed')
-      }, () => {
-        if (data.success) {
-          this.fetchStatus();
-        }
-      });
-    });
-
-    request.fail(() => {
-      this.setState({
-        isPushing: false,
-        error: translate('DiagnosticsPushFailed')
-      });
-    });
-  };
-
-  render() {
-    if (window.Readarr.branch !== 'develop') {
-      return null;
-    }
-
-    const {
-      status,
-      isPushing,
-      message,
-      error
-    } = this.state;
-
-    const isConfigured = !!(status?.repo && status?.hasToken);
-
-    return (
-      <div className={styles.sidebarFooter}>
-        <div className={styles.sidebarFooterTitle}>
-          {translate('Diagnostics')}
-        </div>
-        <div className={styles.sidebarFooterNote}>
-          {translate('SidebarDiagnosticsHelpText')}
-        </div>
-        <SpinnerButton
-          kind={kinds.INFO}
-          size={sizes.SMALL}
-          isSpinning={isPushing}
-          isDisabled={!isConfigured || isPushing}
-          onPress={this.onPushPress}
-        >
-          {translate('PushDiagnostics')}
-        </SpinnerButton>
-        {
-          status?.repo &&
-            <div className={styles.sidebarFooterStatus}>
-              {status.repo}
-            </div>
-        }
-        {
-          status &&
-            <div className={styles.sidebarFooterStatus}>
-              {status.hasToken ? translate('DiagnosticsTokenConfigured') : translate('DiagnosticsTokenMissing')}
-            </div>
-        }
-        {
-          message &&
-            <div className={styles.sidebarFooterMessage}>
-              {message}
-            </div>
-        }
-        {
-          error &&
-            <div className={styles.sidebarFooterError}>
-              {error}
-            </div>
-        }
-      </div>
-    );
-  }
+  return _.some(children, (child) => {
+    return child.to === pathname;
+  });
 }
 
 class PageSidebar extends Component {

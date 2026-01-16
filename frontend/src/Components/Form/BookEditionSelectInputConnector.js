@@ -1,7 +1,7 @@
+import { push } from 'connected-react-router';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { push } from 'connected-react-router';
 import { connect } from 'react-redux';
 import { updateItem } from 'Store/Actions/baseActions';
 import { fetchBooks } from 'Store/Actions/bookActions';
@@ -100,7 +100,7 @@ class BookEditionSelectInputConnector extends Component {
     return sourceEditions[0]?.foreignEditionId ?? '';
   };
 
-  lookupEditions = () => {
+  onLookupEditions = () => {
     const { bookId } = this.props;
 
     if (!bookId || this.state.isLookingUp) {
@@ -137,9 +137,9 @@ class BookEditionSelectInputConnector extends Component {
   applyLookupEdition = (edition) => {
     const {
       bookId,
-      fetchEditions,
-      fetchBooks,
-      push,
+      fetchEditions: loadEditions,
+      fetchBooks: loadBooks,
+      push: navigate,
       updateBookItem
     } = this.props;
 
@@ -165,14 +165,14 @@ class BookEditionSelectInputConnector extends Component {
       if (data?.id && updateBookItem) {
         updateBookItem(data);
       }
-      if (fetchBooks) {
-        fetchBooks();
+      if (loadBooks) {
+        loadBooks();
       }
       if (data?.titleSlug && push) {
-        push(`/book/${data.titleSlug}`);
+        navigate(`/book/${data.titleSlug}`);
       }
-      if (fetchEditions) {
-        fetchEditions({ bookId });
+      if (loadEditions) {
+        loadEditions({ bookId });
       }
     });
 
@@ -222,7 +222,7 @@ class BookEditionSelectInputConnector extends Component {
         values={values}
         value={value}
         onChange={this.onChange}
-        onFocus={this.lookupEditions}
+        onFocus={this.onLookupEditions}
       />
     );
   }

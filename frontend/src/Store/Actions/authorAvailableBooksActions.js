@@ -1,8 +1,8 @@
 import { createAction } from 'redux-actions';
 import { createThunk, handleThunks } from 'Store/thunks';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
-import { fetchBooks } from './bookActions';
 import { set, update } from './baseActions';
+import { fetchBooks } from './bookActions';
 import createHandleActions from './Creators/createHandleActions';
 import createClearReducer from './Creators/Reducers/createClearReducer';
 

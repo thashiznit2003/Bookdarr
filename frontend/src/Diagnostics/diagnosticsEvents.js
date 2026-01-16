@@ -54,6 +54,31 @@ function redactObject(obj, depth = 0) {
   }, {});
 }
 
+async function flushEvents() {
+  if (!isDevelopBranch() || isFlushing || buffer.length === 0) {
+    return;
+  }
+
+  isFlushing = true;
+  const payload = buffer.slice(0);
+  buffer = [];
+
+  try {
+    await fetch(`${window.Readarr.apiRoot}/diagnostics/ui-events`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Api-Key': window.Readarr.apiKey
+      },
+      body: JSON.stringify(payload)
+    });
+  } catch (error) {
+    buffer = payload.concat(buffer);
+  } finally {
+    isFlushing = false;
+  }
+}
+
 function scheduleFlush() {
   if (flushTimer || isFlushing) {
     return;
@@ -179,30 +204,7 @@ export function initDiagnostics(store, history) {
   }
 }
 
-export async function flushEvents() {
-  if (!isDevelopBranch() || isFlushing || buffer.length === 0) {
-    return;
-  }
-
-  isFlushing = true;
-  const payload = buffer.slice(0);
-  buffer = [];
-
-  try {
-    await fetch(`${window.Readarr.apiRoot}/diagnostics/ui-events`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Api-Key': window.Readarr.apiKey
-      },
-      body: JSON.stringify(payload)
-    });
-  } catch (error) {
-    buffer = payload.concat(buffer);
-  } finally {
-    isFlushing = false;
-  }
-}
+export { flushEvents };
 
 if (window.Readarr) {
   window.ReadarrDiagnostics = {

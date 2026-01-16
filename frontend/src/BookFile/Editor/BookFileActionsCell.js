@@ -5,11 +5,11 @@ import BookFileAudioModal from 'BookFile/BookFileAudioModal';
 import BookFileEbookConvertModal from 'BookFile/BookFileEbookConvertModal';
 import BookFileReaderModal from 'BookFile/BookFileReaderModal';
 import FileDetailsModal from 'BookFile/FileDetailsModal';
+import * as commandNames from 'Commands/commandNames';
 import IconButton from 'Components/Link/IconButton';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import { icons, kinds } from 'Helpers/Props';
-import * as commandNames from 'Commands/commandNames';
 import { executeCommand } from 'Store/Actions/commandActions';
 import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
 import translate from 'Utilities/String/translate';
@@ -81,9 +81,9 @@ class BookFileActionsCell extends Component {
   };
 
   onConvertConfirm = () => {
-    const { executeCommand, id } = this.props;
+    const { executeCommand: dispatchExecuteCommand, id } = this.props;
 
-    executeCommand({
+    dispatchExecuteCommand({
       name: commandNames.CONVERT_EBOOK,
       bookFileId: id
     });
@@ -112,8 +112,6 @@ class BookFileActionsCell extends Component {
     } = this.state;
 
     const pathLower = path ? path.toLowerCase() : '';
-    const extensionIndex = pathLower.lastIndexOf('.');
-    const extension = extensionIndex > -1 ? pathLower.slice(extensionIndex) : '';
     const mediaTypeValue = typeof mediaType === 'string' ? mediaType.toLowerCase().trim() : mediaType;
     const isAudioByMediaType = mediaTypeValue === 'audiobook' || mediaTypeValue === 2 || mediaTypeValue === '2';
     const isEbookByMediaType = mediaTypeValue === 'ebook' || mediaTypeValue === 1 || mediaTypeValue === '1';
@@ -133,7 +131,16 @@ class BookFileActionsCell extends Component {
     const isAudio = isAudioByExtension || isAudioByMediaType || isAudioByQuality;
     const isEbook = isEbookByExtension || isEbookByMediaType || isEbookByQuality;
     const canConvertEbook = isEbook && !isEpub && !isKepub;
-    const fileType = isPdf ? 'pdf' : (isEpub ? 'epub' : 'unknown');
+    let fileType = 'unknown';
+
+    if (isPdf)
+    {
+      fileType = 'pdf';
+    }
+    else if (isEpub)
+    {
+      fileType = 'epub';
+    }
 
     const apiKey = window.Readarr && window.Readarr.apiKey;
     const apiKeyQuery = apiKey ? `?apikey=${encodeURIComponent(apiKey)}` : '';

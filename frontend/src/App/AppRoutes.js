@@ -8,6 +8,7 @@ import AuthorDetailsPageConnector from 'Author/Details/AuthorDetailsPageConnecto
 import AuthorIndexConnector from 'Author/Index/AuthorIndexConnector';
 import BookDetailsPageConnector from 'Book/Details/BookDetailsPageConnector';
 import BookIndexConnector from 'Book/Index/BookIndexConnector';
+import BookPoolPage from 'Book/Pool/BookPoolPage';
 import CalendarPageConnector from 'Calendar/CalendarPageConnector';
 import NotFound from 'Components/NotFound';
 import Switch from 'Components/Router/Switch';
@@ -27,7 +28,6 @@ import Settings from 'Settings/Settings';
 import TagSettings from 'Settings/Tags/TagSettings';
 import UISettingsConnector from 'Settings/UI/UISettingsConnector';
 import BackupsConnector from 'System/Backup/BackupsConnector';
-import BookPoolPage from 'Book/Pool/BookPoolPage';
 import Diagnostics from 'System/Diagnostics/Diagnostics';
 import LogsTableConnector from 'System/Events/LogsTableConnector';
 import Logs from 'System/Logs/Logs';

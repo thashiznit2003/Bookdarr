@@ -1,8 +1,6 @@
-import PropTypes from 'prop-types';
-import React, { useEffect, useMemo, useState } from 'react';
 import {
-  DndContext,
   closestCenter,
+  DndContext,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -11,12 +9,13 @@ import {
 import {
   arrayMove,
   SortableContext,
-  verticalListSortingStrategy,
+  sortableKeyboardCoordinates,
   useSortable,
-  sortableKeyboardCoordinates
-} from '@dnd-kit/sortable';
+  verticalListSortingStrategy} from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
+import React, { useEffect, useMemo, useState } from 'react';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';

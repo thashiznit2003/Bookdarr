@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import translate from 'Utilities/String/translate';
 import { fetchRootFolders } from 'Store/Actions/settingsActions';
+import translate from 'Utilities/String/translate';
 import RootFolderSelectInput from './RootFolderSelectInput';
 
 const ADD_NEW_KEY = 'addNew';
@@ -93,11 +93,11 @@ class RootFolderSelectInputConnector extends Component {
       values,
       onChange,
       isFetching,
-      fetchRootFolders
+      fetchRootFolders: loadRootFolders
     } = this.props;
 
     if (!isFetching) {
-      fetchRootFolders();
+      loadRootFolders();
     }
 
     if (!value || !values.some((v) => v.key === value) || value === ADD_NEW_KEY) {

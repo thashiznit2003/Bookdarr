@@ -1,13 +1,13 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import LoadingIndicator from 'Components/Loading/LoadingIndicator';
+import HistoryDetailsConnector from 'Activity/History/Details/HistoryDetailsConnector';
 import DescriptionList from 'Components/DescriptionList/DescriptionList';
 import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem';
 import DescriptionListItemDescription from 'Components/DescriptionList/DescriptionListItemDescription';
 import DescriptionListItemTitle from 'Components/DescriptionList/DescriptionListItemTitle';
 import Link from 'Components/Link/Link';
-import HistoryDetailsConnector from 'Activity/History/Details/HistoryDetailsConnector';
+import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import stripHtml from 'Utilities/String/stripHtml';
 import translate from 'Utilities/String/translate';
 import styles from './FileDetails.css';

@@ -13,8 +13,8 @@ import styles from './BookFileReaderModal.css';
 
 const JSZIP_SCRIPT_PATH = '/Content/Scripts/jszip.min.js';
 const EPUB_SCRIPT_PATH = '/Content/Scripts/epub.min.js';
-let jszipLoadPromise;
-let epubLoadPromise;
+let jszipLoadPromise = null;
+let epubLoadPromise = null;
 
 function getScriptUrl(scriptPath) {
   const apiKey = window.Readarr && window.Readarr.apiKey;
@@ -94,6 +94,27 @@ class BookFileReaderModal extends Component {
     };
   }
 
+  componentDidUpdate(prevProps) {
+    const isOpening = this.props.isOpen && !prevProps.isOpen;
+    const isClosing = !this.props.isOpen && prevProps.isOpen;
+    const changedSource = this.props.isOpen && this.props.streamUrl !== prevProps.streamUrl;
+
+    if (isClosing || changedSource)
+    {
+      this.cleanupReader();
+    }
+
+    if (isOpening || changedSource)
+    {
+      this.setState({ loadError: false });
+      this.initializeReader();
+    }
+  }
+
+  componentWillUnmount() {
+    this.cleanupReader();
+  }
+
   getReaderThemeName = () => {
     const rawTheme = window.Readarr && window.Readarr.theme ? `${window.Readarr.theme}` : '';
     const theme = rawTheme.toLowerCase();
@@ -115,100 +136,6 @@ class BookFileReaderModal extends Component {
 
     return 'dark';
   };
-
-  registerReaderThemes = () => {
-    if (!this.rendition || !this.rendition.themes || this.themesRegistered)
-    {
-      return;
-    }
-
-    this.themesRegistered = true;
-
-    this.rendition.themes.register('bookdarr-dark', {
-      'html, body': {
-        'background': '#121212 !important',
-        'color': '#f1f1f1 !important'
-      },
-      'body *': {
-        'color': '#f1f1f1 !important'
-      },
-      a: {
-        'color': '#8ab4f8 !important'
-      }
-    });
-
-    this.rendition.themes.register('bookdarr-light', {
-      'html, body': {
-        'background': '#ffffff !important',
-        'color': '#111111 !important'
-      },
-      'body *': {
-        'color': '#111111 !important'
-      },
-      a: {
-        'color': '#0b57d0 !important'
-      }
-    });
-  };
-
-  applyReaderTheme = () => {
-    if (!this.rendition || !this.rendition.themes)
-    {
-      return;
-    }
-
-    this.registerReaderThemes();
-
-    const themeName = this.getReaderThemeName();
-    const selectedTheme = themeName === 'light' ? 'bookdarr-light' : 'bookdarr-dark';
-
-    this.rendition.themes.select(selectedTheme);
-  };
-
-  onPreviousPress = () => {
-    if (this.rendition && this.rendition.prev)
-    {
-      this.rendition.prev();
-    }
-  };
-
-  onNextPress = () => {
-    if (this.rendition && this.rendition.next)
-    {
-      this.rendition.next();
-    }
-  };
-
-  handleReaderError = () => {
-    if (!this.isReaderActive)
-    {
-      return;
-    }
-
-    this.isReaderActive = false;
-    this.setState({ loadError: true });
-  };
-
-  componentDidUpdate(prevProps) {
-    const isOpening = this.props.isOpen && !prevProps.isOpen;
-    const isClosing = !this.props.isOpen && prevProps.isOpen;
-    const changedSource = this.props.isOpen && this.props.streamUrl !== prevProps.streamUrl;
-
-    if (isClosing || changedSource)
-    {
-      this.cleanupReader();
-    }
-
-    if (isOpening || changedSource)
-    {
-      this.setState({ loadError: false });
-      this.initializeReader();
-    }
-  }
-
-  componentWillUnmount() {
-    this.cleanupReader();
-  }
 
   initializeReader() {
     if (this.props.fileType !== 'epub')
@@ -344,6 +271,79 @@ class BookFileReaderModal extends Component {
     }
   }
 
+  registerReaderThemes = () => {
+    if (!this.rendition || !this.rendition.themes || this.themesRegistered)
+    {
+      return;
+    }
+
+    this.themesRegistered = true;
+
+    this.rendition.themes.register('bookdarr-dark', {
+      'html, body': {
+        'background': '#121212 !important',
+        'color': '#f1f1f1 !important'
+      },
+      'body *': {
+        'color': '#f1f1f1 !important'
+      },
+      a: {
+        'color': '#8ab4f8 !important'
+      }
+    });
+
+    this.rendition.themes.register('bookdarr-light', {
+      'html, body': {
+        'background': '#ffffff !important',
+        'color': '#111111 !important'
+      },
+      'body *': {
+        'color': '#111111 !important'
+      },
+      a: {
+        'color': '#0b57d0 !important'
+      }
+    });
+  };
+
+  applyReaderTheme = () => {
+    if (!this.rendition || !this.rendition.themes)
+    {
+      return;
+    }
+
+    this.registerReaderThemes();
+
+    const themeName = this.getReaderThemeName();
+    const selectedTheme = themeName === 'light' ? 'bookdarr-light' : 'bookdarr-dark';
+
+    this.rendition.themes.select(selectedTheme);
+  };
+
+  onPreviousPress = () => {
+    if (this.rendition && this.rendition.prev)
+    {
+      this.rendition.prev();
+    }
+  };
+
+  onNextPress = () => {
+    if (this.rendition && this.rendition.next)
+    {
+      this.rendition.next();
+    }
+  };
+
+  handleReaderError = () => {
+    if (!this.isReaderActive)
+    {
+      return;
+    }
+
+    this.isReaderActive = false;
+    this.setState({ loadError: true });
+  };
+
   render() {
     const {
       isOpen,
@@ -358,6 +358,34 @@ class BookFileReaderModal extends Component {
     const isPdf = fileType === 'pdf';
     const isUnsupported = fileType === 'unknown';
     const showNavigation = isEpub && !isUnsupported && !loadError;
+
+    let readerContent = null;
+
+    if (isUnsupported) {
+      readerContent = (
+        <div className={styles.loadError}>
+          {translate('EbookReaderUnsupportedFormat')}
+        </div>
+      );
+    } else if (isEpub) {
+      readerContent = loadError ? (
+        <div className={styles.loadError}>
+          {translate('EbookReaderLoadFailed')}
+        </div>
+      ) : (
+        <div className={styles.readerContainer}>
+          <div className={styles.reader} ref={this.readerRef} />
+        </div>
+      );
+    } else if (isPdf) {
+      readerContent = (
+        <iframe
+          className={styles.pdf}
+          src={streamUrl}
+          title={title}
+        />
+      );
+    }
 
     return (
       <Modal
@@ -375,32 +403,8 @@ class BookFileReaderModal extends Component {
             className={styles.body}
             scrollDirection={scrollDirections.NONE}
           >
-            {
-              isUnsupported ?
-                <div className={styles.loadError}>
-                  {translate('EbookReaderUnsupportedFormat')}
-                </div> :
-              isEpub ?
-                (
-                  loadError ?
-                    <div className={styles.loadError}>
-                      {translate('EbookReaderLoadFailed')}
-                    </div> :
-                    <div className={styles.readerContainer}>
-                      <div className={styles.reader} ref={this.readerRef} />
-                    </div>
-                ) :
-                (
-                  isPdf ?
-                    <iframe
-                      className={styles.pdf}
-                      src={streamUrl}
-                      title={title}
-                    /> :
-                    null
-                )
-            }
-          </ModalBody>
+          {readerContent}
+        </ModalBody>
 
           {
             showNavigation ?

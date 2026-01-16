@@ -1,11 +1,11 @@
 import { createBrowserHistory } from 'history';
 import React from 'react';
 import { render } from 'react-dom';
+import { initDiagnostics } from 'Diagnostics/diagnosticsEvents';
 import createAppStore from 'Store/createAppStore';
 import App from './App/App';
 
 import 'Diag/ConsoleApi';
-import { initDiagnostics } from 'Diagnostics/diagnosticsEvents';
 
 export async function bootstrap() {
   const history = createBrowserHistory();

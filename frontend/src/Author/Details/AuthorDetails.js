@@ -26,8 +26,8 @@ import getSelectedIds from 'Utilities/Table/getSelectedIds';
 import selectAll from 'Utilities/Table/selectAll';
 import toggleSelected from 'Utilities/Table/toggleSelected';
 import InteractiveImportModal from '../../InteractiveImport/InteractiveImportModal';
-import AuthorDetailsHeaderConnector from './AuthorDetailsHeaderConnector';
 import AuthorDetailsAvailableBooksConnector from './AuthorDetailsAvailableBooksConnector';
+import AuthorDetailsHeaderConnector from './AuthorDetailsHeaderConnector';
 import AuthorDetailsSeasonConnector from './AuthorDetailsSeasonConnector';
 import styles from './AuthorDetails.css';
 
@@ -250,7 +250,6 @@ class AuthorDetails extends Component {
       selectedState,
       allExpanded,
       allCollapsed,
-      expandedState,
       selectedTabIndex
     } = this.state;
 

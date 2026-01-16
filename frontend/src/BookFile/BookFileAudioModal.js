@@ -32,7 +32,7 @@ function BookFileAudioModal(props) {
           <div className={styles.player}>
             <audio
               className={styles.audio}
-              controls
+              controls={true}
               preload="metadata"
               src={streamUrl}
             />
