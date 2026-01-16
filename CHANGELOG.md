@@ -1,11 +1,11 @@
  # Changelog
 
-## 1.3.13
-- Summary: Added the `NLog.Config` reference so `DatabaseTarget` can re-register itself during configuration reloads now that the logging reload event moved into that package.
-- Why: `LoggingConfigurationReloadedEventArgs` now lives inside `NLog.Config`, so net10 builds would fail until the reference existed.
-- Impact: The diagnostics database logger stays registered after log configuration reloads with the new event handler and the release version increments to keep the UI in step.
-- Files: `src/NzbDrone.Core/Readarr.Core.csproj`, `CHANGELOG.md`
-- Next: run `scripts/update-dev.sh` via SSH to ensure the latest diagnostics push is accompanying any further changes.
+## 1.3.14
+- Summary: Fixed the SQLite migration that adds user metadata so it no longer relies on a non-constant default value for `CreatedAt`.
+- Why: SQLite refuses to add a column whose default expression uses `datetime('now','localtime')`, so the migration failed and the app would not start after the database schema upgrade.
+- Impact: The migration now adds `CreatedAt` as nullable, populates every row with `CURRENT_TIMESTAMP`, and finally enforces `NOT NULL`, letting the database upgrade finish cleanly. Script runs through `update-dev.sh` again to push diagnostics after success.
+- Files: `src/NzbDrone.Core/Datastore/Migration/049_add_user_metadata.cs`, `CHANGELOG.md`
+- Next: rerun the SSH update so `/opt/bookdarr-dev/Logs/update-086.log` is produced and diagnostics push completes now that the migration can finish.
 
 ## 1.3.12
 - Summary: Updated the disk provider and logging infrastructure for .NET 10 so the factory-based System.IO.Abstractions API and NLog 6.0 targets build cleanly again.

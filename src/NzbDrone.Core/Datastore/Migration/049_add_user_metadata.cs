@@ -13,7 +13,7 @@ namespace NzbDrone.Core.Datastore.Migration
                 .AddColumn("Email").AsString(256).Nullable()
                 .AddColumn("Role").AsInt32().WithDefaultValue((int)UserRole.Standard)
                 .AddColumn("IsActive").AsBoolean().WithDefaultValue(true)
-                .AddColumn("CreatedAt").AsDateTime().WithDefault(SystemMethods.CurrentDateTime)
+                .AddColumn("CreatedAt").AsDateTime().Nullable()
                 .AddColumn("LastLogin").AsDateTime().Nullable()
                 .AddColumn("PreferredQualityMedia").AsString(32).WithDefaultValue("both");
 
@@ -23,6 +23,8 @@ namespace NzbDrone.Core.Datastore.Migration
             Execute.Sql(@"UPDATE ""Users"" SET ""PreferredQualityMedia"" = 'both' WHERE ""PreferredQualityMedia"" IS NULL");
             Execute.Sql(@"UPDATE ""Users"" SET ""IsActive"" = TRUE WHERE ""IsActive"" IS NULL");
             Execute.Sql(@"UPDATE ""Users"" SET ""IsAdmin"" = CASE WHEN ""Role"" = 0 THEN TRUE ELSE FALSE END");
+
+            Alter.Column("CreatedAt").OnTable("Users").AsDateTime().NotNullable();
         }
     }
 }
