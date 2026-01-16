@@ -23,6 +23,7 @@ import ErrorPage from './ErrorPage';
 import LoadingPage from './LoadingPage';
 import Page from './Page';
 
+const VERSION_POLL_INTERVAL = 60 * 1000;
 function testLocalStorage() {
   const key = 'readarrTest';
 
@@ -169,6 +170,7 @@ function createMapStateToProps() {
         isPopulated,
         isSmallScreen: dimensions.isSmallScreen,
         authenticationEnabled: systemStatus.authentication !== 'none',
+        systemVersion: systemStatus.version,
         enableColorImpairedMode
       };
     }
@@ -233,6 +235,8 @@ class PageConnector extends Component {
     this.state = {
       isLocalStorageSupported: testLocalStorage()
     };
+    this.versionPollInterval = null;
+    this.versionReloaded = false;
   }
 
   componentDidMount() {
@@ -250,6 +254,28 @@ class PageConnector extends Component {
       this.props.dispatchFetchStatus();
       this.props.dispatchFetchTranslations();
     }
+    this.startVersionPolling();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { systemVersion } = this.props;
+
+    if (
+      prevProps.systemVersion &&
+      systemVersion &&
+      prevProps.systemVersion !== systemVersion &&
+      !this.versionReloaded
+    ) {
+      this.versionReloaded = true;
+
+      if (typeof window !== 'undefined' && window.location) {
+        window.location.reload(true);
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    this.stopVersionPolling();
   }
 
   //
@@ -257,6 +283,23 @@ class PageConnector extends Component {
 
   onSidebarToggle = () => {
     this.props.onSidebarVisibleChange(!this.props.isSidebarVisible);
+  };
+
+  startVersionPolling = () => {
+    if (typeof window === 'undefined' || this.versionPollInterval !== null) {
+      return;
+    }
+
+    this.versionPollInterval = window.setInterval(() => {
+      this.props.dispatchFetchStatus();
+    }, VERSION_POLL_INTERVAL);
+  };
+
+  stopVersionPolling = () => {
+    if (this.versionPollInterval !== null) {
+      window.clearInterval(this.versionPollInterval);
+      this.versionPollInterval = null;
+    }
   };
 
   //
@@ -277,6 +320,7 @@ class PageConnector extends Component {
       dispatchFetchUISettings,
       dispatchFetchStatus,
       dispatchFetchTranslations,
+      systemVersion,
       ...otherProps
     } = this.props;
 
@@ -320,6 +364,7 @@ PageConnector.propTypes = {
   dispatchFetchUISettings: PropTypes.func.isRequired,
   dispatchFetchStatus: PropTypes.func.isRequired,
   dispatchFetchTranslations: PropTypes.func.isRequired,
+  systemVersion: PropTypes.string,
   onSidebarVisibleChange: PropTypes.func.isRequired
 };
 

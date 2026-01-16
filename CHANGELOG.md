@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.31
+- Summary: The UI now reloads itself automatically when the backend reports a new version so the browser always shows the latest build without manual refreshes.
+- Why: Deployments via `update-dev.sh` update the backend without prompting a browser refresh, which left stale assets under heavy development; the frontend already polls `/system/status`, so it can detect version changes and reload itself.
+- Impact: `frontend/src/Components/Page/PageConnector.js` starts a regular `/system/status` poll, tracks the reported version, and calls `window.location.reload(true)` whenever the version changes; `src/Directory.Build.props` now reports `1.3.31.*` so diagnostics match the upgrade notification; `CHANGELOG.md` now documents the change.
+- Files: `frontend/src/Components/Page/PageConnector.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.30
 - Summary: Book Pool posters now keep a fixed 162px width so they match the Library poster density instead of stretching on wide screens.
 - Why: Using `minmax(160px, 1fr)` allowed each column to inflate past the Library size, leaving the shared pool noticeably larger than the rest of the UI.
