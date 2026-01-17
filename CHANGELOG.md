@@ -149,6 +149,13 @@
 - Files: `src/NzbDrone.Core/AuthorStats/BookStatistics.cs`, `src/NzbDrone.Core/AuthorStats/AuthorStatisticsRepository.cs`, `src/Readarr.Api.V1/Books/BookStatisticsResource.cs`, `frontend/src/Book/Index/ProgressBar/BookIndexProgressBar.js`, `frontend/src/Book/Index/Posters/BookIndexPoster.js`, `frontend/src/Book/Index/Overview/BookIndexOverview.js`, `frontend/src/Book/Index/BookIndexFooter.js`, `frontend/src/Book/Index/BookIndexFooter.css`, `frontend/src/Store/Actions/bookIndexActions.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then verify Library shows green for both formats, orange for one, red for none, and no monitored labels.
 
+## 1.3.72
+- Summary: Include per-book format stats in the user-library endpoint so Library colors reflect actual ebook/audiobook files.
+- Why: Library views fetched from `/user/library/books` had no stats, so bars stayed red even when both formats existed.
+- Impact: `/api/v1/user/library/books` now attaches author stats (including ebook/audiobook counts) to each book resource; `src/Directory.Build.props` reports `1.3.72.*`.
+- Files: `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then confirm Library shows green when both formats exist, orange for one, red for none.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.

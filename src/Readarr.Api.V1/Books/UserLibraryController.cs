@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Core.Authentication;
+using NzbDrone.Core.AuthorStats;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.MediaFiles;
 using Readarr.Http;
@@ -17,16 +18,19 @@ namespace Readarr.Api.V1.Books
         private readonly IUserLibraryService _libraryService;
         private readonly IBookService _bookService;
         private readonly IBookPoolMapper _bookPoolMapper;
+        private readonly IAuthorStatisticsService _authorStatisticsService;
 
         public UserLibraryController(IUserService userService,
                                      IUserLibraryService libraryService,
                                      IBookService bookService,
-                                     IBookPoolMapper bookPoolMapper)
+                                     IBookPoolMapper bookPoolMapper,
+                                     IAuthorStatisticsService authorStatisticsService)
         {
             _userService = userService;
             _libraryService = libraryService;
             _bookService = bookService;
             _bookPoolMapper = bookPoolMapper;
+            _authorStatisticsService = authorStatisticsService;
         }
 
         [HttpGet]
@@ -81,7 +85,21 @@ namespace Readarr.Api.V1.Books
             var bookIds = userBooks.Select(x => x.BookId).Distinct().ToList();
             var books = _bookService.GetBooks(bookIds);
 
-            return books.ToResource();
+            var resources = books.ToResource();
+
+            // Populate statistics (includes ebook/audiobook counts)
+            var authorStats = _authorStatisticsService.AuthorStatistics();
+            var statsDict = authorStats.SelectMany(x => x.BookStatistics).ToDictionary(x => x.BookId);
+
+            foreach (var resource in resources)
+            {
+                if (statsDict.TryGetValue(resource.Id, out var stats))
+                {
+                    resource.Statistics = stats.ToResource();
+                }
+            }
+
+            return resources;
         }
 
         protected override UserLibraryResource GetResourceById(int id)
