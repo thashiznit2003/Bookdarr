@@ -396,14 +396,15 @@ class BookPoolPage extends Component {
     });
 
     request.request.done((data) => {
+      const responseBookId = data?.bookId || book.bookId;
       const updatedBooks = books.map((item) => {
-        if (item.bookId === data.bookId) {
+        if (item.bookId === responseBookId) {
           return {
             ...item,
             inMyLibrary: true,
-            status: data.status,
-            hasEbook: data.hasEbook,
-            hasAudiobook: data.hasAudiobook
+            status: data?.status ?? item.status,
+            hasEbook: data?.hasEbook ?? item.hasEbook,
+            hasAudiobook: data?.hasAudiobook ?? item.hasAudiobook
           };
         }
 
@@ -412,13 +413,13 @@ class BookPoolPage extends Component {
 
       this.setState({ books: updatedBooks, adding: { ...adding, [book.bookId]: false } });
 
-      const nextLibraryAdded = { ...libraryAdded, [book.bookId]: true };
+      const nextLibraryAdded = { ...libraryAdded, [responseBookId]: true };
       this.setState({ libraryAdded: nextLibraryAdded });
 
       window.setTimeout(() => {
         this.setState((currentState) => {
           const updatedFlag = { ...currentState.libraryAdded };
-          delete updatedFlag[book.bookId];
+          delete updatedFlag[responseBookId];
           return { libraryAdded: updatedFlag };
         });
       }, 5000);
@@ -607,7 +608,7 @@ function BookPoolPoster({
     libraryAdded
   } = resource;
 
-  const isInLibrary = Boolean(inMyLibrary || hasEbook || hasAudiobook || libraryAdded);
+  const isInLibrary = Boolean(inMyLibrary || libraryAdded);
 
   const onAddPress = useCallback(() => {
     if (typeof onAdd === 'function' && !isAdding) {

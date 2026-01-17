@@ -128,6 +128,13 @@
 - Files: `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `frontend/src/Store/Actions/bookActions.js`, `frontend/src/Components/Page/PageConnector.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push to `develop`, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM, and open Library → Books to confirm it’s empty until books are added from Book Pool.
 
+## 1.3.69
+- Summary: Fix Book Pool corner toggle so add/remove uses only the user library flag (not file presence), returns the created user-library payload, and updates the button state reliably.
+- Why: Files alone were turning the corner button red, and adds didn’t show up in Library because the API response had no body.
+- Impact: Corner “in library” now depends only on the user flag, add returns the mapped user-book, and the client updates the button state immediately; `src/Directory.Build.props` reports `1.3.69.*`; `CHANGELOG.md` records the toggle fix.
+- Files: `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `frontend/src/Book/Pool/BookPoolPage.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM, then add/remove from Book Pool and confirm Library updates and corner buttons behave as expected.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.
