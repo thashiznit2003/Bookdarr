@@ -9,6 +9,13 @@
 - Files: `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle lands in `Bookdarr-Diagnostics`.
 
+## 1.3.52
+- Summary: Serve the UI assets (index.js/css/icons, initialize.json) without redirecting to /login so the page doesn’t go blank when the auth cookie isn’t recognized; only the HTML shell still redirects when unauthenticated.
+- Why: The browser was getting 302 redirects for index.js even after login, which left a white screen; allowing static assets through lets the login page and app load while API calls continue to require auth.
+- Impact: `StaticResourceController` now bypasses the login redirect for requests with a file extension, ensuring scripts/styles load; `src/Directory.Build.props` reports `1.3.52.*`; `CHANGELOG.md` notes the auth bypass for static files.
+- Files: `src/Readarr.Http/Frontend/StaticResourceController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle lands in `Bookdarr-Diagnostics`.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.

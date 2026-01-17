@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
@@ -52,6 +53,14 @@ namespace Readarr.Http.Frontend
         [HttpGet("/{**path:regex(^(?!(api|feed)/).*)}")]
         public IActionResult Index([FromRoute] string path)
         {
+            // Allow static assets (js/css/ico/etc.) to be served without redirecting to /login.
+            // When the user is not authenticated we still want the login page to have access
+            // to its scripts/styles so it can render instead of going blank.
+            if (!path.IsNullOrWhiteSpace() && Path.HasExtension(path))
+            {
+                return MapResource(path);
+            }
+
             if (!User.Identity.IsAuthenticated && !IsAuthenticationBypassAllowed(HttpContext))
             {
                 var returnUrl = $"{Request.PathBase}{Request.Path}{Request.QueryString}";
