@@ -32,6 +32,7 @@ function AddUserModal({
   const [password, setPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [isActive, setIsActive] = useState(true);
+  const [email, setEmail] = useState('');
 
   const canSubmit = username.trim().length > 0 && password.trim().length > 0;
 
@@ -44,10 +45,12 @@ function AddUserModal({
       username: username.trim(),
       password,
       isAdmin,
-      isActive
+      isActive,
+      email: email.trim() || undefined
     });
     setPassword('');
     setUsername('');
+    setEmail('');
     setIsAdmin(false);
     setIsActive(true);
     onModalClose();
@@ -57,7 +60,7 @@ function AddUserModal({
     <Modal isOpen={isOpen} onModalClose={onModalClose}>
       <ModalContent onModalClose={onModalClose}>
         <ModalHeader>
-          {translate('AddUser')}
+          {translate('Add')} {translate('User')}
         </ModalHeader>
         <ModalBody>
           <div className={styles.modalField}>
@@ -67,6 +70,15 @@ function AddUserModal({
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoFocus
+            />
+          </div>
+
+          <div className={styles.modalField}>
+            <span className={styles.fieldLabel}>{translate('Email')}</span>
+            <TextInput
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
@@ -143,7 +155,6 @@ function Users({
     { name: 'username', label: translate('Username'), isVisible: true },
     { name: 'role', label: translate('Role'), isVisible: true },
     { name: 'active', label: translate('Active'), isVisible: true },
-    { name: 'lastLogin', label: translate('LastLogin'), isVisible: true },
     { name: 'email', label: translate('Email'), isVisible: true },
     { name: 'actions', label: translate('Actions'), isVisible: true, isSortable: false }
   ]), []);
@@ -201,14 +212,13 @@ function Users({
                     {user.isAdmin ? 'Admin' : (user.role || 'User')}
                   </Label>
                 </TableRowCell>
-                <TableRowCell>
-                  <Label kind={user.isActive ? 'success' : 'danger'}>
-                    {user.isActive ? translate('Active') : translate('Inactive')}
-                  </Label>
-                </TableRowCell>
-                <TableRowCell>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : '—'}</TableRowCell>
-                <TableRowCell>{user.email || '—'}</TableRowCell>
-                <TableRowCell>
+              <TableRowCell>
+                <Label kind={user.isActive ? 'success' : 'danger'}>
+                  {user.isActive ? translate('Active') : translate('Inactive')}
+                </Label>
+              </TableRowCell>
+              <TableRowCell>{user.email || '—'}</TableRowCell>
+              <TableRowCell>
                   <div className={styles.actionRow}>
                     <Button
                       kind={user.isActive ? 'danger' : 'success'}

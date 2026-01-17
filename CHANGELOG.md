@@ -1,9 +1,9 @@
 # Changelog
 
-## 1.3.84
-- Summary: Show explicit Admin/Active labels beside the checkboxes in the Users modal for clarity.
-- Why: Checkbox labels were still missing/hidden, making the toggles ambiguous.
-- Impact: Admin/Active text now appears next to their checkboxes in the modal; sidebar/users link and toolbar icons remain.
+## 1.3.85
+- Summary: Add email to the Add User modal, space the title, hide the unused LastLogin column, and keep Admin/Active labels visible.
+- Why: Users needed an email field; LastLogin wasn’t populated; modal title and checkbox labels needed polish.
+- Impact: Add User collects username/password/email/admin/active; LastLogin column removed; Admin/Active labels visible; title reads “Add User.”
 - Files: `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 
