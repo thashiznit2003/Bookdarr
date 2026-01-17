@@ -641,25 +641,24 @@ function BookPoolPoster({
   return (
     <div className={classNames(styles.posterCard, needsAttention && styles.posterAttention)}>
       <div className={styles.posterWrapper}>
+        <button
+          className={classNames(styles.addButton, inMyLibrary && styles.removeButton)}
+          type="button"
+          onClick={onAddPress}
+          aria-label={translate(inMyLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}
+          disabled={isAdding}
+          data-testid="pool-corner-action"
+          style={{ ...cornerStyle, pointerEvents: isAdding ? 'none' : 'auto' }}
+          title={translate(inMyLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}
+        >
+          {inMyLibrary ? '−' : '+'}
+        </button>
         <BookCover
           size={162}
           images={book.images || []}
           className={styles.posterImage}
           lazy={false}
         />
-        <Tooltip content={translate(inMyLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}>
-          <button
-            className={classNames(styles.addButton, inMyLibrary && styles.removeButton)}
-            type="button"
-            onClick={onAddPress}
-            aria-label={translate(inMyLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}
-            disabled={isAdding}
-            data-testid="pool-corner-action"
-            style={cornerStyle}
-          >
-            {inMyLibrary ? '−' : '+'}
-          </button>
-        </Tooltip>
         <div className={styles.posterOverlay}>
           <div className={styles.posterOverlayContent}>
             <div className={styles.posterTitle}>
