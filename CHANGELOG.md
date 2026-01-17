@@ -107,6 +107,13 @@
 - Files: `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then reload the UI to see a single +/− in the corner with red for in-library items.
 
+## 1.3.66
+- Summary: Let the inline corner button color override CSS by removing !important so in-library items actually render red.
+- Why: The button stayed blue because CSS `!important` overrode the inline background; removing it lets inline styles take effect.
+- Impact: `BookPoolPage.css` drops `!important` on the corner control’s background/border/color; `src/Directory.Build.props` reports `1.3.66.*`; `CHANGELOG.md` notes the fix.
+- Files: `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then reload Book Pool to see single +/− with red for in-library items.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.
