@@ -92,6 +92,14 @@
   border-bottom-left-radius: 4px;
 }
 
+.removeButton {
+  background: var(--dangerColor);
+}
+
+.removeButton::after {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), transparent 140%);
+}
+
 .posterOverlay {
   position: absolute;
   left: 0;

@@ -19,6 +19,7 @@ import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
+import Tooltip from 'Components/Tooltip/Tooltip';
 import { align, icons, kinds, sortDirections } from 'Helpers/Props';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
@@ -170,6 +171,7 @@ class BookPoolPage extends Component {
       isFetching: false,
       error: null,
       adding: {},
+      libraryAdded: {},
       filterKey: 'all',
       sortKey: 'title',
       sortDirection: sortDirections.ASCENDING,
@@ -338,7 +340,7 @@ class BookPoolPage extends Component {
   };
 
   onAddToLibrary = (book) => {
-    const { adding, books } = this.state;
+    const { adding, books, libraryAdded } = this.state;
 
     this.setState({
       adding: { ...adding, [book.bookId]: true }
@@ -372,6 +374,17 @@ class BookPoolPage extends Component {
       });
 
       this.setState({ books: updatedBooks, adding: { ...adding, [book.bookId]: false } });
+
+      const nextLibraryAdded = { ...libraryAdded, [book.bookId]: true };
+      this.setState({ libraryAdded: nextLibraryAdded });
+
+      window.setTimeout(() => {
+        this.setState((currentState) => {
+          const updatedFlag = { ...currentState.libraryAdded };
+          delete updatedFlag[book.bookId];
+          return { libraryAdded: updatedFlag };
+        });
+      }, 5000);
     });
 
     request.request.fail(() => {
@@ -385,6 +398,7 @@ class BookPoolPage extends Component {
       isFetching,
       error,
       adding,
+      libraryAdded,
       filterKey,
       sortKey,
       sortDirection,
@@ -492,14 +506,21 @@ class BookPoolPage extends Component {
             <>
               {filteredBooks.length > 0 ? (
                 <div className={styles.grid}>
-                  {sortedBooks.map((item) => (
+                  {sortedBooks.map((item) => {
+                    const decoratedResource = {
+                      ...item,
+                      libraryAdded: Boolean(libraryAdded[item.bookId])
+                    };
+
+                    return (
                     <BookPoolPoster
                       key={item.bookId}
-                      resource={item}
+                      resource={decoratedResource}
                       onAdd={this.onAddToLibrary}
                       isAdding={adding[item.bookId]}
                     />
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className={styles.emptyState}>{emptyMessage}</div>
@@ -545,7 +566,8 @@ function BookPoolPoster({
     hasEbook,
     hasAudiobook,
     inMyLibrary,
-    needsAttention
+    needsAttention,
+    libraryAdded
   } = resource;
 
   const onAddPress = useCallback(() => {
@@ -565,14 +587,15 @@ function BookPoolPoster({
           className={styles.posterImage}
           lazy={false}
         />
-        <IconButton
-          className={styles.addButton}
-          name={icons.ADD}
-          title={translate(inMyLibrary ? 'InMyLibrary' : 'AddToMyLibrary')}
-          onPress={onAddPress}
-          isDisabled={inMyLibrary}
-          isSpinning={isAdding}
-        />
+        <Tooltip content={translate(inMyLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}>
+          <IconButton
+            className={classNames(styles.addButton, inMyLibrary && styles.removeButton)}
+            name={inMyLibrary ? icons.REMOVE : icons.ADD}
+            onPress={onAddPress}
+            isDisabled={isAdding}
+            isSpinning={isAdding}
+          />
+        </Tooltip>
         <div className={styles.posterOverlay}>
           <div className={styles.posterOverlayContent}>
             <div className={styles.posterTitle}>
@@ -605,8 +628,10 @@ function BookPoolPoster({
             >
               Audiobook
             </span>
-            {inMyLibrary && (
-              <span className={styles.libraryBadge}>{translate('InMyLibrary')}</span>
+            {libraryAdded && (
+              <span className={styles.libraryBadge}>
+                {translate('InMyLibrary')}
+              </span>
             )}
           </div>
         </div>
@@ -631,7 +656,8 @@ BookPoolPoster.propTypes = {
     hasEbook: PropTypes.bool,
     hasAudiobook: PropTypes.bool,
     inMyLibrary: PropTypes.bool,
-    needsAttention: PropTypes.bool
+    needsAttention: PropTypes.bool,
+    libraryAdded: PropTypes.bool
   }).isRequired,
   onAdd: PropTypes.func.isRequired,
   isAdding: PropTypes.bool,

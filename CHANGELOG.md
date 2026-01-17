@@ -21,6 +21,13 @@
 - Files: `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle landed in `Bookdarr-Diagnostics`.
 
+## 1.3.50
+- Summary: After adding to the library, the corner control now turns red with a “-” icon and the “In My Library” badge shows only for 5 seconds; the badge then fades while the outline badges remain for media status.
+- Why: The badge and add button previously stayed static; this adds transient feedback and a visual remove state without keeping the pill around indefinitely.
+- Impact: `frontend/src/Book/Pool/BookPoolPage.js` tracks a per-book `libraryAdded` flag, clears it after 5 seconds, and flips the corner control to a red remove state when the book is in your library; `frontend/src/Book/Pool/BookPoolPage.css` styles the red corner; `src/Directory.Build.props` reports `1.3.50.*`; `CHANGELOG.md` documents the behavior tweak.
+- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.46
 - Summary: Removed the Ready/Files Pending status ovals on Book Pool posters and now rely on color-coded ebook/audiobook outlines (green when a file exists, red when it does not) so the card overlay stays compact while still showing availability at a glance.
 - Why: The status pills increased the card height and duplicated the information that the ebook/audiobook badges already provided, so replacing them with red/green outlines keeps the UX consistent with the Library cards while still highlighting missing files.
