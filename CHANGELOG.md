@@ -1,6 +1,11 @@
 # Changelog
 
-# Changelog
+## 1.3.78
+- Summary: Redesign Users settings with a clear title, Add User modal, and single table header so adding or managing users is obvious.
+- Why: The previous page duplicated headers, hid fields, and lacked clear controls, leaving users unsure how to add accounts.
+- Impact: Users page now has an Add User button that opens a modal for username/password/admin/active; table shows a single header row with actions; inline help clarifies usage.
+- Files: `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 
 ## 1.3.51
 - Summary: Force a fresh deploy of the latest Book Pool UI (green/red format badges and add/remove corner toggle) so browsers stop loading the old 1.3.42 bundle that’s now showing a blank page.

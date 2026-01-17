@@ -2,19 +2,125 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
+import Modal from 'Components/Modal/Modal';
+import ModalBody from 'Components/Modal/ModalBody';
+import ModalContent from 'Components/Modal/ModalContent';
+import ModalFooter from 'Components/Modal/ModalFooter';
+import ModalHeader from 'Components/Modal/ModalHeader';
 import Label from 'Components/Label';
 import Button from 'Components/Link/Button';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
-import TableHeader from 'Components/Table/TableHeader';
 import TableRow from 'Components/Table/TableRow';
-import TableHeaderCell from 'Components/Table/TableHeaderCell';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
-import TextInput from 'Components/Form/TextInput';
 import CheckInput from 'Components/Form/CheckInput';
+import TextInput from 'Components/Form/TextInput';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import translate from 'Utilities/String/translate';
 import styles from './Users.css';
+
+function AddUserModal({
+  isOpen,
+  isSaving,
+  onModalClose,
+  onSubmit
+}) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isActive, setIsActive] = useState(true);
+
+  const canSubmit = username.trim().length > 0 && password.trim().length > 0;
+
+  const handleSubmit = () => {
+    if (!canSubmit) {
+      return;
+    }
+
+    onSubmit({
+      username: username.trim(),
+      password,
+      isAdmin,
+      isActive
+    });
+    setPassword('');
+    setUsername('');
+    setIsAdmin(false);
+    setIsActive(true);
+    onModalClose();
+  };
+
+  return (
+    <Modal isOpen={isOpen} onModalClose={onModalClose}>
+      <ModalContent onModalClose={onModalClose}>
+        <ModalHeader>
+          {translate('AddUser')}
+        </ModalHeader>
+        <ModalBody>
+          <div className={styles.modalField}>
+            <TextInput
+              name="username"
+              label={translate('Username')}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder={translate('EnterUsername')}
+              autoFocus
+            />
+          </div>
+          <div className={styles.modalField}>
+            <TextInput
+              name="password"
+              type="password"
+              label={translate('Password')}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={translate('EnterPassword')}
+            />
+          </div>
+          <div className={styles.modalCheckRow}>
+            <CheckInput
+              name="isAdmin"
+              value={isAdmin}
+              onChange={(e) => setIsAdmin(e.value)}
+            >
+              {translate('Admin')}
+            </CheckInput>
+            <CheckInput
+              name="isActive"
+              value={isActive}
+              onChange={(e) => setIsActive(e.value)}
+            >
+              {translate('Active')}
+            </CheckInput>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button onPress={onModalClose}>
+            {translate('Cancel')}
+          </Button>
+          <Button
+            kind="primary"
+            onPress={handleSubmit}
+            isDisabled={!canSubmit || isSaving}
+          >
+            {translate('Add')}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
+AddUserModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  isSaving: PropTypes.bool,
+  onModalClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired
+};
+
+AddUserModal.defaultProps = {
+  isSaving: false
+};
 
 function Users({
   users,
@@ -25,10 +131,7 @@ function Users({
   onRefresh,
   onCreate
 }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isActive, setIsActive] = useState(true);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const rows = useMemo(() => users || [], [users]);
   const columns = useMemo(() => ([
@@ -36,27 +139,14 @@ function Users({
     { name: 'role', label: translate('Role'), isVisible: true },
     { name: 'active', label: translate('Active'), isVisible: true },
     { name: 'lastLogin', label: translate('LastLogin'), isVisible: true },
-    { name: 'email', label: translate('Email'), isVisible: true }
+    { name: 'email', label: translate('Email'), isVisible: true },
+    { name: 'actions', label: translate('Actions'), isVisible: true, isSortable: false }
   ]), []);
 
   useEffect(() => {
     onRefresh();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const onCreateClick = () => {
-    if (!username || !password) {
-      return;
-    }
-
-    onCreate({
-      username,
-      password,
-      isAdmin,
-      isActive
-    });
-    setPassword('');
-  };
 
   return (
     <PageContent title={translate('Users')}>
@@ -71,6 +161,18 @@ function Users({
             {translate('Users')}
           </div>
           <div className={styles.actions}>
+            <Button
+              kind="primary"
+              onPress={() => setIsAddModalOpen(true)}
+            >
+              {translate('AddUser')}
+            </Button>
+            <Button
+              onPress={onRefresh}
+              isDisabled={isFetching}
+            >
+              {translate('Refresh')}
+            </Button>
             <SpinnerIconButton
               name="refresh"
               isSpinning={isFetching}
@@ -80,48 +182,8 @@ function Users({
           </div>
         </div>
 
-        <div className={styles.formRow}>
-          <div className={styles.formField}>
-            <TextInput
-              name="username"
-              label={translate('Username')}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div className={styles.formField}>
-            <TextInput
-              name="password"
-              type="password"
-              label={translate('Password')}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div className={styles.formField}>
-            <CheckInput
-              name="isAdmin"
-              value={isAdmin}
-              onChange={(e) => setIsAdmin(e.value)}
-            >
-              {translate('Admin')}
-            </CheckInput>
-          </div>
-          <div className={styles.formField}>
-            <CheckInput
-              name="isActive"
-              value={isActive}
-              onChange={(e) => setIsActive(e.value)}
-            >
-              {translate('Active')}
-            </CheckInput>
-          </div>
-          <SpinnerIconButton
-            name="add"
-            title={translate('Create')}
-            onPress={onCreateClick}
-            isDisabled={!username || !password}
-          />
+        <div className={styles.helpText}>
+          Use Add User to create accounts. Toggle active or delete users in the table.
         </div>
 
         <Table
@@ -129,15 +191,6 @@ function Users({
           horizontalScroll={false}
           selectAll={false}
         >
-          <TableHeader>
-            <TableRow>
-              <TableHeaderCell>{translate('Username')}</TableHeaderCell>
-              <TableHeaderCell>{translate('Role')}</TableHeaderCell>
-              <TableHeaderCell>{translate('Active')}</TableHeaderCell>
-              <TableHeaderCell>{translate('LastLogin')}</TableHeaderCell>
-              <TableHeaderCell>{translate('Email')}</TableHeaderCell>
-            </TableRow>
-          </TableHeader>
           <TableBody>
             {rows.map((user) => (
               <TableRow key={user.id}>
@@ -176,6 +229,13 @@ function Users({
             ))}
           </TableBody>
         </Table>
+
+        <AddUserModal
+          isOpen={isAddModalOpen}
+          isSaving={isFetching}
+          onModalClose={() => setIsAddModalOpen(false)}
+          onSubmit={onCreate}
+        />
       </PageContentBody>
     </PageContent>
   );
