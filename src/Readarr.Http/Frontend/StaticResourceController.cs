@@ -1,4 +1,5 @@
 using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -122,6 +123,29 @@ namespace Readarr.Http.Frontend
             return trimmed.TrimEnd('/');
         }
 
+        private static bool ShouldDisableCache(string path, FileResult fileResult)
+        {
+            if (fileResult?.ContentType == null)
+            {
+                return false;
+            }
+
+            if (fileResult.ContentType.Equals("text/html", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            if (path.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            var lowered = path.ToLowerInvariant();
+            return lowered.EndsWith(".js") ||
+                   lowered.EndsWith(".css") ||
+                   lowered.EndsWith(".json");
+        }
+
         private IActionResult MapResource(string path)
         {
             path = "/" + (path ?? "");
@@ -134,7 +158,9 @@ namespace Readarr.Http.Frontend
 
                 if (result != null)
                 {
-                    if ((result as FileResult)?.ContentType == "text/html")
+                    var fileResult = result as FileResult;
+
+                    if (ShouldDisableCache(path, fileResult))
                     {
                         Response.Headers.DisableCache();
                     }
