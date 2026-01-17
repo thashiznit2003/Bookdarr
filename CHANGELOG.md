@@ -177,6 +177,13 @@
 - Files: `frontend/src/App/AppRoutes.js`, `frontend/src/Settings/Users/index.js`, `frontend/src/Settings/Users/Users.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push, and rerun `/opt/bookdarr-dev/scripts/update-dev.sh`; then open Settings → Users to confirm it renders and lists users.
 
+## 1.3.76
+- Summary: Stop the Users page from re-fetching in a render loop by only refreshing once on mount.
+- Why: The auto-refresh effect depended on a changing function reference, which could blank the page.
+- Impact: Users page now triggers its refresh only once; `src/Directory.Build.props` reports `1.3.76.*`.
+- Files: `frontend/src/Settings/Users/Users.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, rerun `/opt/bookdarr-dev/scripts/update-dev.sh`, then open Settings → Users and confirm it renders.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.

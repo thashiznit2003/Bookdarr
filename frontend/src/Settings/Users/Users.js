@@ -30,7 +30,8 @@ function Users({
 
   useEffect(() => {
     onRefresh();
-  }, [onRefresh]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onCreateClick = () => {
     if (!username || !password) {
