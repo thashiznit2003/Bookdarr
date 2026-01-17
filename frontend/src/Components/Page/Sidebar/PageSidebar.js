@@ -145,6 +145,10 @@ const links = [
         to: '/settings/tags'
       },
       {
+        title: () => translate('Users'),
+        to: '/settings/users'
+      },
+      {
         title: () => translate('Ui'),
         to: '/settings/ui'
       },

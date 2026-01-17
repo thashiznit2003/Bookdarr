@@ -29,8 +29,11 @@
 }
 
 .fieldLabel {
-  margin-bottom: 6px;
   display: block;
+  margin-bottom: 4px;
+  color: var(--textColor);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .modalCheckRow {

@@ -110,37 +110,29 @@ See `docs/LOGGING.md` for a logrotate example and cleanup guidance.
 
 ## Diagnostics & Update Workflow
 
-Every change to Bookdarr must be accompanied by:
+Every change to Bookdarr must follow the same tightly-controlled routine so we keep the diagnostics repo, changelog, and UI version in sync:
 
-1. A diagnostics push to `thashiznit2003/Bookdarr-Diagnostics`.
-2. An update run on the Ubuntu VM via the unlocked SSH key (`~/.ssh/bookdarr-agent`).
-3. A git tag (`snapshot-YYYYMMDD-HHMM`) and push on `develop`.
-4. A version bump so the UI’s top-left corner matches the new release.
+1. Run the native update script on the Ubuntu VM. Point it at the next sequential `Logs/update-0XX.log` file so the run is logged for later reference:
 
-Run this command on the Ubuntu VM after every change (incrementing the `update-0XX.log` file name and keeping the same path):
+   ```bash
+   LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh
+   ```
 
-```bash
-LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh
-```
+   When invoking the command over SSH, include the full path so the shell sees the same layout every time:
 
-Use the unlocked key with:
+   ```bash
+   ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh'
+   ```
 
-```bash
-ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh'
-```
+   The update script uploads the generated log bundle to `thashiznit2003/Bookdarr-Diagnostics` before exiting, so you can trust it to deliver the diagnostic archive every time (success or failure). Housekeeping note: keep iterating `update-0XX.log` (01, 02, 03, …) for every run so the diagnostics repo shows a linear history.
 
-The script now pushes diagnostics bundles before every exit (success or failure),
-so the log file you see in `/opt/bookdarr-dev/Logs/update-0XX.log` will automatically
-be zipped and committed to `Bookdarr-Diagnostics`. Diagnostics pushes must include
-the latest update log plus any log files that changed during the run.
+2. Commit and push your changes to GitHub on `develop` immediately after they build locally. Tag the release as `snapshot-YYYYMMDD-HHMM`, then push the tag along with the branch so the remote mirrors the local history.
 
-Every change also requires:
+3. Update `src/Directory.Build.props` with the new semantic version (e.g., bump from `1.3.26.*` to `1.3.27.*`) and make sure the UI header now reports exactly that version string. The header reads the version from `/initialize.json`, so keep `BuildInfo.Version` aligned with the assembly version.
 
-- Updating `src/Directory.Build.props` (AssemblyVersion) to the new minor version.
-- Ensuring the UI reports the same version string in the top-left corner.
-- Tagging the repo (`snapshot-YYYYMMDD-HHMM`) and pushing the tag and commits to `develop`.
-- Notifying the diagnostics repo (push the zipped bundle; a `Diagnostics` button exists in
-  the sidebar to help, but the update script already pushes the bundle automatically).
+4. After the push, verify that the diagnostics bundle exists in `Bookdarr-Diagnostics` and that any changed logs are attached. The `Diagnostics` button in the sidebar can trigger the upload manually, but the update script handles it automatically, so this is mostly a sanity check.
+
+These steps are the “always run” checklist in the handoff documentation so that every agent coming after you can follow the same workflow without reminding you again.
 
 ## Support
 

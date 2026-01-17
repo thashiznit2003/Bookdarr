@@ -61,9 +61,9 @@ function AddUserModal({
         </ModalHeader>
         <ModalBody>
           <div className={styles.modalField}>
+            <span className={styles.fieldLabel}>{translate('Username')}</span>
             <TextInput
               name="username"
-              label={translate('Username')}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoFocus
@@ -71,10 +71,10 @@ function AddUserModal({
           </div>
 
           <div className={styles.modalField}>
+            <span className={styles.fieldLabel}>{translate('Password')}</span>
             <TextInput
               name="password"
               type="password"
-              label={translate('Password')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
