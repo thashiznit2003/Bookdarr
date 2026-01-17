@@ -302,6 +302,7 @@ export const toggleBooksMonitored = createThunk(TOGGLE_BOOKS_MONITORED);
 
 export const saveBook = createThunk(SAVE_BOOK);
 export const refreshBookMetadata = createThunk(REFRESH_BOOK_METADATA);
+export const fetchUserLibraryBooks = (payload) => fetchBooks({ ...payload, useUserLibrary: true });
 
 export const deleteBook = createThunk(DELETE_BOOK, (payload) => {
   return {
@@ -336,17 +337,20 @@ export const actionHandlers = handleThunks({
   [FETCH_BOOKS]: function(getState, payload, dispatch) {
     dispatch(set({ section, isFetching: true }));
 
+    const { useUserLibrary, ...params } = payload || {};
+    const url = useUserLibrary ? '/user/library/books' : '/book';
+
     const { request, abortRequest } = createAjaxRequest({
-      url: '/book',
-      data: payload,
+      url,
+      data: params,
       traditional: true
     });
 
     request.done((data) => {
       // Preserve books for other authors we didn't fetch
-      if (payload.hasOwnProperty('authorId')) {
+      if (!useUserLibrary && params?.hasOwnProperty('authorId')) {
         const oldBooks = getState().books.items;
-        const newBooks = oldBooks.filter((x) => x.authorId !== payload.authorId);
+        const newBooks = oldBooks.filter((x) => x.authorId !== params.authorId);
         data = newBooks.concat(data);
       }
 

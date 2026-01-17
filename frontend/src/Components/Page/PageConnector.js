@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { createSelector } from 'reselect';
 import { fetchTranslations, saveDimensions, setIsSidebarVisible } from 'Store/Actions/appActions';
 import { fetchAuthor } from 'Store/Actions/authorActions';
-import { fetchBooks } from 'Store/Actions/bookActions';
+import { fetchUserLibraryBooks } from 'Store/Actions/bookActions';
 import { fetchCustomFilters } from 'Store/Actions/customFilterActions';
 import {
   fetchImportLists,
@@ -182,8 +182,8 @@ function createMapDispatchToProps(dispatch, props) {
     dispatchFetchAuthor() {
       dispatch(fetchAuthor());
     },
-    dispatchFetchBooks() {
-      dispatch(fetchBooks());
+    dispatchFetchUserLibraryBooks() {
+      dispatch(fetchUserLibraryBooks());
     },
     dispatchFetchCustomFilters() {
       dispatch(fetchCustomFilters());
@@ -242,7 +242,7 @@ class PageConnector extends Component {
   componentDidMount() {
     if (!this.props.isPopulated) {
       this.props.dispatchFetchAuthor();
-      this.props.dispatchFetchBooks();
+      this.props.dispatchFetchUserLibraryBooks();
       this.props.dispatchFetchCustomFilters();
       this.props.dispatchFetchTags();
       this.props.dispatchFetchLanguages();
@@ -310,7 +310,7 @@ class PageConnector extends Component {
       isPopulated,
       hasError,
       dispatchFetchAuthor,
-      dispatchFetchBooks,
+      dispatchFetchUserLibraryBooks,
       dispatchFetchTags,
       dispatchFetchLanguages,
       dispatchFetchQualityProfiles,
@@ -353,7 +353,7 @@ PageConnector.propTypes = {
   hasError: PropTypes.bool.isRequired,
   isSidebarVisible: PropTypes.bool.isRequired,
   dispatchFetchAuthor: PropTypes.func.isRequired,
-  dispatchFetchBooks: PropTypes.func.isRequired,
+  dispatchFetchUserLibraryBooks: PropTypes.func.isRequired,
   dispatchFetchCustomFilters: PropTypes.func.isRequired,
   dispatchFetchTags: PropTypes.func.isRequired,
   dispatchFetchLanguages: PropTypes.func.isRequired,

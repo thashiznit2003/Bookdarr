@@ -67,6 +67,23 @@ namespace Readarr.Api.V1.Books
             return _bookPoolMapper.GetPool(user.Id);
         }
 
+        [HttpGet("books")]
+        public ActionResult<List<BookResource>> GetUserLibraryBooks()
+        {
+            var user = GetCurrentUser();
+            var userBooks = _libraryService.GetUserLibrary(user.Id);
+
+            if (userBooks == null || userBooks.Count == 0)
+            {
+                return new List<BookResource>();
+            }
+
+            var bookIds = userBooks.Select(x => x.BookId).Distinct().ToList();
+            var books = _bookService.GetBooks(bookIds);
+
+            return books.ToResource();
+        }
+
         protected override UserLibraryResource GetResourceById(int id)
         {
             var user = GetCurrentUser();

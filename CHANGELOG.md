@@ -121,6 +121,13 @@
 - Files: `scripts/remove-library-books.sh`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then run the helper with API_KEY set to clear library flags.
 
+## 1.3.68
+- Summary: Load Library → Books from the signed-in user’s library only and expose a user-scoped books API to match.
+- Why: New users should start with an empty library and only see items they explicitly add; the Library page was still loading every book in the catalog.
+- Impact: `UserLibraryController` now serves `/api/v1/user/library/books`; the app boot fetch uses that endpoint instead of `/book`; `src/Directory.Build.props` reports `1.3.68.*`; `CHANGELOG.md` documents the user-scoped load.
+- Files: `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `frontend/src/Store/Actions/bookActions.js`, `frontend/src/Components/Page/PageConnector.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push to `develop`, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM, and open Library → Books to confirm it’s empty until books are added from Book Pool.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.
