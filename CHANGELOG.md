@@ -86,6 +86,13 @@
 - Files: `src/Readarr.Http/Middleware/CacheableSpecification.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push commits and tag to `develop`, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM so the no-cache headers go live.
 
+## 1.3.63
+- Summary: Double-disable cache headers for html/js/css/json after the response is written, ensuring no proxies/browsers reuse old bundles.
+- Why: Cache middleware still emitted `max-age` for scripts; forcing `DisableCache` post-request guarantees fresh assets.
+- Impact: `CacheHeaderMiddleware` now forces `DisableCache` for html/js/css/json; `src/Directory.Build.props` reports `1.3.63.*`; `CHANGELOG.md` notes the stricter cache headers.
+- Files: `src/Readarr.Http/Middleware/CacheHeaderMiddleware.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then load the app normally; hashed bundles + no-cache headers should show the corner control.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.

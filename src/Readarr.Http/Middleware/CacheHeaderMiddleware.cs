@@ -17,7 +17,14 @@ namespace Readarr.Http.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (context.Request.Method != "OPTIONS")
+            var path = context.Request.Path.Value ?? string.Empty;
+            var lowered = path.ToLowerInvariant();
+            var forceDisable = lowered.EndsWith(".js") ||
+                               lowered.EndsWith(".css") ||
+                               lowered.EndsWith(".json") ||
+                               lowered.EndsWith(".html");
+
+            if (context.Request.Method != "OPTIONS" && !forceDisable)
             {
                 if (_cacheableSpecification.IsCacheable(context.Request))
                 {
@@ -30,6 +37,11 @@ namespace Readarr.Http.Middleware
             }
 
             await _next(context);
+
+            if (forceDisable && context.Request.Method != "OPTIONS")
+            {
+                context.Response.Headers.DisableCache();
+            }
         }
     }
 }
