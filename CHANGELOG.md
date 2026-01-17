@@ -1,5 +1,14 @@
 # Changelog
 
+# Changelog
+
+## 1.3.51
+- Summary: Force a fresh deploy of the latest Book Pool UI (green/red format badges and add/remove corner toggle) so browsers stop loading the old 1.3.42 bundle that’s now showing a blank page.
+- Why: Diagnostics from 2026-01-17 report the server still running 1.3.42, which explains the stale cards and empty UI; bumping the version gives a clean rebuild and cache-busting release.
+- Impact: `src/Directory.Build.props` now reports `1.3.51.*`; `CHANGELOG.md` records the redeploy context so the update script can rebuild and ship the current UI.
+- Files: `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle lands in `Bookdarr-Diagnostics`.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.
