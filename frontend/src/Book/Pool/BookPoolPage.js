@@ -607,6 +607,8 @@ function BookPoolPoster({
     libraryAdded
   } = resource;
 
+  const isInLibrary = Boolean(inMyLibrary || hasEbook || hasAudiobook || libraryAdded);
+
   const onAddPress = useCallback(() => {
     if (typeof onAdd === 'function' && !isAdding) {
       onAdd(resource);
@@ -620,7 +622,7 @@ function BookPoolPoster({
     right: 4,
     width: 28,
     height: 28,
-    background: inMyLibrary ? 'var(--dangerColor)' : 'var(--primaryColor)',
+    background: isInLibrary ? 'var(--dangerColor)' : 'var(--primaryColor)',
     color: 'var(--white)',
     border: 'none',
     borderRadius: '0 0 0 6px',
@@ -649,9 +651,9 @@ function BookPoolPoster({
           disabled={isAdding}
           data-testid="pool-corner-action"
           style={{ ...cornerStyle, pointerEvents: isAdding ? 'none' : 'auto' }}
-          title={translate(inMyLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}
+          title={translate(isInLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}
         >
-          {inMyLibrary ? '−' : '+'}
+          {isInLibrary ? '−' : '+'}
         </button>
         <BookCover
           size={162}

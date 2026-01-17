@@ -100,6 +100,13 @@
 - Files: `src/Readarr.Http/Middleware/CacheHeaderMiddleware.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push, and rerun `/opt/bookdarr-dev/scripts/update-dev.sh`; verify the UI loads with the corner control.
 
+## 1.3.65
+- Summary: Remove the duplicate +/− glyph and make the corner control turn red for items already in the library (using ebook/audiobook presence as a fallback).
+- Why: Tooltip + pseudo glyphs rendered double symbols; existing items stayed blue; this makes the button single-glyph and red when already owned.
+- Impact: `BookPoolPage.js` now bases the state on hasEbook/hasAudiobook/libraryAdded and renders a single glyph; `BookPoolPage.css` removes the pseudo-glyph; `src/Directory.Build.props` reports `1.3.65.*`; `CHANGELOG.md` notes the UI fix.
+- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then reload the UI to see a single +/− in the corner with red for in-library items.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.

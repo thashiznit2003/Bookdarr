@@ -100,30 +100,6 @@
   border-bottom-left-radius: 4px;
 }
 
-.removeButton {
-  background: var(--dangerColor);
-}
-
-.removeButton::after {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), transparent 140%);
-}
-
-/* Fallback symbols to make the corner control obvious */
-.addButton :global(svg) {
-  display: inline-block;
-}
-
-.addButton::before {
-  content: '+';
-  position: relative;
-  z-index: 3;
-  color: var(--white);
-}
-
-.removeButton::before {
-  content: '−';
-}
-
 .posterStatusRow {
   display: flex;
   gap: 6px;
