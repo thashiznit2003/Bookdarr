@@ -184,6 +184,13 @@
 - Files: `frontend/src/Settings/Users/Users.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push, rerun `/opt/bookdarr-dev/scripts/update-dev.sh`, then open Settings → Users and confirm it renders.
 
+## 1.3.77
+- Summary: Fix Users state reducer initialization so the page renders (base/set now has default state).
+- Why: The Users reducer wasn’t given a defaultState/section, causing an invariant error and a blank screen after update.
+- Impact: `settingsUsers` now initializes with its default state; `src/Directory.Build.props` reports `1.3.77.*`.
+- Files: `frontend/src/Store/Actions/Settings/settingsUsersActions.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, rerun `/opt/bookdarr-dev/scripts/update-dev.sh`, then open Settings → Users; it should load instead of blanking.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.

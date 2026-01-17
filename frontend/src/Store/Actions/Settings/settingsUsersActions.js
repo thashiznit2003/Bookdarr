@@ -82,4 +82,4 @@ export const reducers = createHandleActions({
       ...payload
     };
   }
-});
+}, defaultState, section);
