@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import Icon from 'Components/Icon';
 import Menu from 'Components/Menu/Menu';
 import MenuButton from 'Components/Menu/MenuButton';
 import MenuContent from 'Components/Menu/MenuContent';
 import MenuItem from 'Components/Menu/MenuItem';
 import MenuItemSeparator from 'Components/Menu/MenuItemSeparator';
+import ConfirmModal from 'Components/Modal/ConfirmModal';
 import { align, icons, kinds } from 'Helpers/Props';
 import styles from './PageHeaderActionsMenu.css';
 
@@ -13,9 +14,10 @@ function PageHeaderActionsMenu(props) {
   const {
     formsAuth,
     onKeyboardShortcutsPress,
-    onRestartPress,
-    onShutdownPress
+    onRestartPress
   } = props;
+
+  const [isRestartConfirmOpen, setIsRestartConfirmOpen] = useState(false);
 
   return (
     <div>
@@ -37,21 +39,12 @@ function PageHeaderActionsMenu(props) {
 
           <MenuItemSeparator />
 
-          <MenuItem onPress={onRestartPress}>
+          <MenuItem onPress={() => setIsRestartConfirmOpen(true)}>
             <Icon
               className={styles.itemIcon}
               name={icons.RESTART}
             />
             Restart
-          </MenuItem>
-
-          <MenuItem onPress={onShutdownPress}>
-            <Icon
-              className={styles.itemIcon}
-              name={icons.SHUTDOWN}
-              kind={kinds.DANGER}
-            />
-            Shutdown
           </MenuItem>
 
           {
@@ -74,6 +67,20 @@ function PageHeaderActionsMenu(props) {
           }
         </MenuContent>
       </Menu>
+
+      <ConfirmModal
+        isOpen={isRestartConfirmOpen}
+        title="Restart Bookdarr"
+        message="Are you sure you want to restart Bookdarr?"
+        confirmLabel="Restart"
+        cancelLabel="Cancel"
+        kind={kinds.WARNING}
+        onConfirm={() => {
+          setIsRestartConfirmOpen(false);
+          onRestartPress();
+        }}
+        onCancel={() => setIsRestartConfirmOpen(false)}
+      />
     </div>
   );
 }
@@ -81,8 +88,7 @@ function PageHeaderActionsMenu(props) {
 PageHeaderActionsMenu.propTypes = {
   formsAuth: PropTypes.bool.isRequired,
   onKeyboardShortcutsPress: PropTypes.func.isRequired,
-  onRestartPress: PropTypes.func.isRequired,
-  onShutdownPress: PropTypes.func.isRequired
+  onRestartPress: PropTypes.func.isRequired
 };
 
 export default PageHeaderActionsMenu;

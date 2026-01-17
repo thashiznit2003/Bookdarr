@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { restart, shutdown } from 'Store/Actions/systemActions';
+import { restart } from 'Store/Actions/systemActions';
 import PageHeaderActionsMenu from './PageHeaderActionsMenu';
 
 function createMapStateToProps() {
@@ -17,8 +17,7 @@ function createMapStateToProps() {
 }
 
 const mapDispatchToProps = {
-  restart,
-  shutdown
+  restart
 };
 
 class PageHeaderActionsMenuConnector extends Component {
@@ -30,10 +29,6 @@ class PageHeaderActionsMenuConnector extends Component {
     this.props.restart();
   };
 
-  onShutdownPress = () => {
-    this.props.shutdown();
-  };
-
   //
   // Render
 
@@ -42,15 +37,13 @@ class PageHeaderActionsMenuConnector extends Component {
       <PageHeaderActionsMenu
         {...this.props}
         onRestartPress={this.onRestartPress}
-        onShutdownPress={this.onShutdownPress}
       />
     );
   }
 }
 
 PageHeaderActionsMenuConnector.propTypes = {
-  restart: PropTypes.func.isRequired,
-  shutdown: PropTypes.func.isRequired
+  restart: PropTypes.func.isRequired
 };
 
 export default connect(createMapStateToProps, mapDispatchToProps)(PageHeaderActionsMenuConnector);

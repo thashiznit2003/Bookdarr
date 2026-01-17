@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.3.87
-- Summary: Add Sign Out to the header actions menu, reorder Add User fields (Username, Password, Email), and hide unused LastLogin.
-- Why: Sign Out wasn’t easily accessible; email was in the wrong spot; LastLogin had no data.
-- Impact: Header now shows the actions menu with Logout; Add User shows fields in the right order with checkbox labels; LastLogin removed.
-- Files: `frontend/src/Components/Page/Header/PageHeader.js`, `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`
+## 1.3.88
+- Summary: Add a confirmation to Restart, remove Shutdown from the header menu, and keep Logout accessible.
+- Why: Shutdown shouldn’t be exposed; Restart needs confirmation to avoid accidental stops.
+- Impact: Header actions menu now shows Restart (with confirm) and Logout; Shutdown removed.
+- Files: `frontend/src/Components/Page/Header/PageHeader.js`, `frontend/src/Components/Page/Header/PageHeaderActionsMenu.js`, `frontend/src/Components/Page/Header/PageHeaderActionsMenuConnector.js`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 
 ## 1.3.51
