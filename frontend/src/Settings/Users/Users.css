@@ -32,10 +32,11 @@
 }
 
 .modalField {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .modalCheckRow {
   display: flex;
   gap: 16px;
+  align-items: center;
 }

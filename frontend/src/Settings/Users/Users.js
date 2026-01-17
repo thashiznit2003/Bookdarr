@@ -63,7 +63,6 @@ function AddUserModal({
               label={translate('Username')}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder={translate('EnterUsername')}
               autoFocus
             />
           </div>
@@ -74,7 +73,6 @@ function AddUserModal({
               label={translate('Password')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder={translate('EnterPassword')}
             />
           </div>
           <div className={styles.modalCheckRow}>

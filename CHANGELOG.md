@@ -1,9 +1,9 @@
 # Changelog
 
-## 1.3.78
-- Summary: Redesign Users settings with a clear title, Add User modal, and single table header so adding or managing users is obvious.
-- Why: The previous page duplicated headers, hid fields, and lacked clear controls, leaving users unsure how to add accounts.
-- Impact: Users page now has an Add User button that opens a modal for username/password/admin/active; table shows a single header row with actions; inline help clarifies usage.
+## 1.3.79
+- Summary: Polish the Users page: consistent modal styling, labeled inputs, and aligned controls to match other settings dialogs.
+- Why: The previous add-user modal felt bare and off-brand; this aligns spacing, labels, and buttons with the rest of Settings.
+- Impact: Users modal uses labeled fields, aligned admin/active toggles, and cleaner spacing; table remains single-header with clear actions.
 - Files: `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 
