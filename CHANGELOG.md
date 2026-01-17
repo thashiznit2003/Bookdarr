@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.3.91
-- Summary: Fix build warning in the new user reset-token migration (remove unused using).
-- Why: StyleCop failed the build after adding the migration.
-- Impact: Migration 050 now passes StyleCop; no functional changes beyond build fix.
-- Files: `src/NzbDrone.Core/Datastore/Migration/050_add_user_reset_token.cs`
+## 1.3.92
+- Summary: Fix build issues for the user update work (hashing import and using order).
+- Why: Build failed after adding the update endpoint; missing SHA256Hash import and StyleCop ordering.
+- Impact: UsersController now imports hashing utilities and passes StyleCop; no behavior change beyond build fix.
+- Files: `src/Readarr.Api.V1/Users/UsersController.cs`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 
 ## 1.3.51
