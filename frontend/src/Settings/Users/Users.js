@@ -28,6 +28,13 @@ function Users({
   const [isActive, setIsActive] = useState(true);
 
   const rows = useMemo(() => users || [], [users]);
+  const columns = useMemo(() => ([
+    { name: 'username', label: translate('Username'), isVisible: true },
+    { name: 'role', label: translate('Role'), isVisible: true },
+    { name: 'active', label: translate('Active'), isVisible: true },
+    { name: 'lastLogin', label: translate('LastLogin'), isVisible: true },
+    { name: 'email', label: translate('Email'), isVisible: true }
+  ]), []);
 
   useEffect(() => {
     onRefresh();
@@ -114,7 +121,11 @@ function Users({
           />
         </div>
 
-        <Table>
+        <Table
+          columns={columns}
+          horizontalScroll={false}
+          selectAll={false}
+        >
           <TableHeader>
             <TableRow>
               <TableHeaderCell>{translate('Username')}</TableHeaderCell>
