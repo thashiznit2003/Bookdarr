@@ -74,21 +74,21 @@ function AddUserModal({
           </div>
 
           <div className={styles.modalField}>
-            <span className={styles.fieldLabel}>{translate('Email')}</span>
-            <TextInput
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-
-          <div className={styles.modalField}>
             <span className={styles.fieldLabel}>{translate('Password')}</span>
             <TextInput
               name="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <div className={styles.modalField}>
+            <span className={styles.fieldLabel}>{translate('Email')}</span>
+            <TextInput
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 

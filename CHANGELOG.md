@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.3.85
-- Summary: Add email to the Add User modal, space the title, hide the unused LastLogin column, and keep Admin/Active labels visible.
-- Why: Users needed an email field; LastLogin wasn’t populated; modal title and checkbox labels needed polish.
-- Impact: Add User collects username/password/email/admin/active; LastLogin column removed; Admin/Active labels visible; title reads “Add User.”
-- Files: `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`
+## 1.3.86
+- Summary: Order Add User fields as Username, Password, Email to match expected flow; title spacing retained and LastLogin stays hidden.
+- Why: Email was positioned between username and password; reordering matches normal account creation.
+- Impact: Add User modal now shows Username, then Password, then Email; Admin/Active labels remain visible.
+- Files: `frontend/src/Settings/Users/Users.js`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 
 ## 1.3.51
