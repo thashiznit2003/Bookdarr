@@ -1,8 +1,11 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component, useCallback } from 'react';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 import BookCover from 'Book/BookCover';
 import BookTitleLink from 'Book/BookTitleLink';
+import AddManualBookModal from 'Book/Index/ManualAdd/AddManualBookModal';
 import IconButton from 'Components/Link/IconButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import FilterMenu from 'Components/Menu/FilterMenu';
@@ -11,10 +14,15 @@ import PageContentBody from 'Components/Page/PageContentBody';
 import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
-import { align, icons } from 'Helpers/Props';
+import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
+import ConfirmModal from 'Components/Modal/ConfirmModal';
+import { align, icons, kinds } from 'Helpers/Props';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
+import { executeCommand } from 'Store/Actions/commandActions';
+import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
+import * as commandNames from 'Commands/commandNames';
 import styles from './BookPoolPage.css';
 
 const STATUS_LABELS = {
@@ -29,7 +37,7 @@ const FILTERS = [
   { key: 'needsManual', label: () => translate('BookPoolFilterNeedsManual') }
 ];
 
-export default class BookPoolPage extends Component {
+class BookPoolPage extends Component {
 
   constructor(props) {
     super(props);
@@ -39,7 +47,9 @@ export default class BookPoolPage extends Component {
       isFetching: false,
       error: null,
       adding: {},
-      filterKey: 'all'
+      filterKey: 'all',
+      isManualBookModalOpen: false,
+      isConfirmSearchModalOpen: false
     };
     this.poolRefreshTimeout = null;
   }
@@ -88,6 +98,41 @@ export default class BookPoolPage extends Component {
     request.request.fail((xhr) => {
       this.setState({ error: xhr, isFetching: false });
     });
+  };
+
+  onManualBookModalOpen = () => {
+    this.setState({ isManualBookModalOpen: true });
+  };
+
+  onManualBookModalClose = () => {
+    this.setState({ isManualBookModalOpen: false });
+  };
+
+  onSearchPress = () => {
+    this.setState({ isConfirmSearchModalOpen: true });
+  };
+
+  onSearchConfirmed = () => {
+    const filteredBooks = this.getFilteredBooks();
+    const bookIds = filteredBooks.map((resource) => resource.bookId).filter(Boolean);
+
+    if (bookIds.length > 0) {
+      this.props.onSearchBooks(bookIds);
+    }
+
+    this.setState({ isConfirmSearchModalOpen: false });
+  };
+
+  onRefreshPress = () => {
+    if (this.props.onRefreshBooks) {
+      this.props.onRefreshBooks([]);
+    }
+
+    this.onFetchPool();
+  };
+
+  onConfirmSearchModalClose = () => {
+    this.setState({ isConfirmSearchModalOpen: false });
   };
 
   getFilteredBooks = () => {
@@ -194,8 +239,15 @@ export default class BookPoolPage extends Component {
       isFetching,
       error,
       adding,
-      filterKey
+      filterKey,
+      isManualBookModalOpen,
+      isConfirmSearchModalOpen
     } = this.state;
+
+    const {
+      isRefreshingBook,
+      isSearching
+    } = this.props;
 
     const filteredBooks = this.getFilteredBooks();
     const statusCounts = this.getStatusCounts();
@@ -211,16 +263,40 @@ export default class BookPoolPage extends Component {
     const emptyMessage = books.length === 0
       ? translate('BookPoolEmpty')
       : translate('BookPoolEmptyFilter');
+    const searchWarningCount = filteredBooks.length;
+    const searchDisabled = isSearching || !filteredBooks.length;
 
     return (
       <PageContent>
         <PageToolbar>
           <PageToolbarSection>
             <PageToolbarButton
-              name={icons.REFRESH}
-              onPress={this.onFetchPool}
-              title={translate('Refresh')}
+              label={translate('UpdateAll')}
+              iconName={icons.REFRESH}
+              isSpinning={isRefreshingBook}
+              onPress={this.onRefreshPress}
             />
+
+            <PageToolbarSeparator />
+
+            <PageToolbarButton
+              label={translate('AddBookManually')}
+              iconName={icons.ADD}
+              onPress={this.onManualBookModalOpen}
+            />
+
+            <PageToolbarSeparator />
+
+            <PageToolbarButton
+              label={translate('SearchAll')}
+              iconName={icons.SEARCH}
+              isDisabled={searchDisabled}
+              isSpinning={isSearching}
+              onPress={this.onSearchPress}
+            />
+
+            <PageToolbarSeparator />
+
             <span className={styles.description}>{translate('BookPoolDescription')}</span>
           </PageToolbarSection>
           <PageToolbarSection
@@ -265,6 +341,29 @@ export default class BookPoolPage extends Component {
             </>
           )}
         </PageContentBody>
+        <AddManualBookModal
+          isOpen={isManualBookModalOpen}
+          onModalClose={this.onManualBookModalClose}
+        />
+
+        <ConfirmModal
+          isOpen={isConfirmSearchModalOpen}
+          kind={kinds.DANGER}
+          title={translate('MassBookSearch')}
+          message={
+            <div>
+              <div>
+                {translate('MassBookSearchWarning', [searchWarningCount])}
+              </div>
+              <div>
+                {translate('ThisCannotBeCancelled')}
+              </div>
+            </div>
+          }
+          confirmLabel={translate('Search')}
+          onConfirm={this.onSearchConfirmed}
+          onCancel={this.onConfirmSearchModalClose}
+        />
       </PageContent>
     );
   }
@@ -356,3 +455,53 @@ BookPoolPoster.propTypes = {
   isAdding: PropTypes.bool,
   renderStatus: PropTypes.func.isRequired
 };
+
+BookPoolPage.propTypes = {
+  isRefreshingBook: PropTypes.bool.isRequired,
+  isSearching: PropTypes.bool.isRequired,
+  onRefreshBooks: PropTypes.func.isRequired,
+  onSearchBooks: PropTypes.func.isRequired
+};
+
+function createMapStateToProps() {
+  return createSelector(
+    createCommandExecutingSelector(commandNames.BULK_REFRESH_AUTHOR),
+    createCommandExecutingSelector(commandNames.BULK_REFRESH_BOOK),
+    createCommandExecutingSelector(commandNames.CUTOFF_UNMET_BOOK_SEARCH),
+    createCommandExecutingSelector(commandNames.MISSING_BOOK_SEARCH),
+    (
+      isRefreshingAuthorCommand,
+      isRefreshingBookCommand,
+      isCutoffBooksSearch,
+      isMissingBooksSearch
+    ) => {
+      const isRefreshingBook = isRefreshingBookCommand || isRefreshingAuthorCommand;
+      const isSearching = isCutoffBooksSearch || isMissingBooksSearch;
+
+      return {
+        isRefreshingBook,
+        isSearching
+      };
+    }
+  );
+}
+
+function createMapDispatchToProps(dispatch) {
+  return {
+    onRefreshBooks(bookIds = []) {
+      dispatch(executeCommand({
+        name: commandNames.BULK_REFRESH_BOOK,
+        bookIds
+      }));
+    },
+
+    onSearchBooks(bookIds) {
+      dispatch(executeCommand({
+        name: commandNames.BOOK_SEARCH,
+        bookIds
+      }));
+    }
+  };
+}
+
+export default connect(createMapStateToProps, createMapDispatchToProps)(BookPoolPage);

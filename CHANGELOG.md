@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.42
+- Summary: Book Pool now shares the same toolbar buttons as the Library -> Books page so updates, manual adds, and mass searches feel and behave exactly like the main catalog.
+- Why: The shared pool is meant to mirror the library experience, but the pool page previously only offered a refresh and filter menu, so contributors had to jump back to the library to trigger the other workflows.
+- Impact: `frontend/src/Book/Pool/BookPoolPage.js` renders the standard update/add/search buttons, reuses the manual add modal, ties the mass-search button to the same `BOOK_SEARCH` command (with a confirmation modal), and still keeps the filter menu and description in place; `src/Directory.Build.props` now reports `1.3.42.*` so diagnostics display the new UI version.
+- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.41
 - Summary: Book Pool now mirrors the Library toolbar/filter experience, shows the + action as a subtle corner label, and auto-refreshes when books or files change so statuses never stay stuck on “Pending.”
 - Why: The shared pool was missing the Library-style filter button/group, the add action was intrusive, and newly downloaded ebook/audiobook files left the pool outline in red because the UI never refreshed after SignalR updates.
