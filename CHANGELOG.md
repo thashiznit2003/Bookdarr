@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.45
+- Summary: Book Pool posters now mimic Library cards with condensed overlays, normalized author names, and a toolbar sort menu that lets contributors reorder status/title/author/release date.
+- Why: The shared pool overlay had extra vertical white space, uncapitalized authors, and no quick sort controls, so the cards were taller than Library posters and harder to browse or organize.
+- Impact: `frontend/src/Book/Pool/BookPoolPage.js` now title-cases lowercased author data, keeps the format badges inside the status row, and exposes the requested sort items right next to the filter menu; `frontend/src/Book/Pool/BookPoolPage.css` tightens the overlay padding and row wrapping so the card heights match the Library grid; `src/Directory.Build.props` reports `1.3.45.*`; `CHANGELOG.md` documents the latest UI polish.
+- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.43
 - Summary: The Book Pool toolbar now actually shows the update/add/search buttons instead of collapsing to a single filter action so contributors can trigger the same workflows they use in Library → Books.
 - Why: The toolbar’s default overflow logic hid every action once the layout narrowed, leaving only the filter menu visible even though the buttons were present in the markup.

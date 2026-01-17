@@ -22,6 +22,7 @@ import ConfirmModal from 'Components/Modal/ConfirmModal';
 import { align, icons, kinds, sortDirections } from 'Helpers/Props';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
+import titleCase from 'Utilities/String/titleCase';
 import translate from 'Utilities/String/translate';
 import sortCollection from 'Utilities/Array/sortCollection';
 import { executeCommand } from 'Store/Actions/commandActions';
@@ -93,6 +94,20 @@ function getAuthorDisplayName(book = {}) {
   }
 
   return book.authorTitle || '';
+}
+
+function formatAuthorName(value) {
+  const trimmedValue = (value || '').trim();
+
+  if (!trimmedValue) {
+    return '';
+  }
+
+  if (trimmedValue !== trimmedValue.toLowerCase()) {
+    return trimmedValue;
+  }
+
+  return titleCase(trimmedValue);
 }
 
 function getAuthorLastNameValue(resource) {
@@ -465,6 +480,8 @@ class BookPoolPage extends Component {
             </MenuContent>
           </SortMenu>
 
+          <PageToolbarSeparator />
+
           <FilterMenu
             selectedFilterKey={filterKey}
             filters={filterOptions}
@@ -551,7 +568,7 @@ function BookPoolPoster({
     }
   }, [onAdd, resource]);
 
-  const authorName = getAuthorDisplayName(book);
+  const authorName = formatAuthorName(getAuthorDisplayName(book));
 
   return (
     <div className={classNames(styles.posterCard, needsAttention && styles.posterAttention)}>
@@ -585,11 +602,6 @@ function BookPoolPoster({
           </div>
           <div className={styles.posterStatusRow}>
             {renderStatus(resource)}
-            {inMyLibrary && (
-              <span className={styles.libraryBadge}>{translate('InMyLibrary')}</span>
-            )}
-          </div>
-          <div className={styles.posterTypeRow}>
             <span
               className={classNames(
                 styles.posterTypeBadge,
@@ -608,6 +620,9 @@ function BookPoolPoster({
             >
               Audiobook
             </span>
+            {inMyLibrary && (
+              <span className={styles.libraryBadge}>{translate('InMyLibrary')}</span>
+            )}
           </div>
         </div>
       </div>
