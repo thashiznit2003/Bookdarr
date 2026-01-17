@@ -114,6 +114,13 @@
 - Files: `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then reload Book Pool to see single +/− with red for in-library items.
 
+## 1.3.67
+- Summary: Add a CLI helper to remove all “in my library” flags (no file deletion) so you can re-add via Book Pool; bumped version.
+- Why: Needed a repeatable way to clear existing library flags without touching files and without DevTools/API guesswork.
+- Impact: New script `scripts/remove-library-books.sh` hits the same DELETE endpoint as the corner control; `src/Directory.Build.props` reports `1.3.67.*`; `CHANGELOG.md` documents the helper.
+- Files: `scripts/remove-library-books.sh`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then run the helper with API_KEY set to clear library flags.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.
