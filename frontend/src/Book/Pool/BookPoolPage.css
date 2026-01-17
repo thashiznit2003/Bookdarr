@@ -161,6 +161,12 @@
   display: none !important;
 }
 
+/* Extra guard: hide any legacy status pill that sneaks into the Book Pool grid */
+.grid span[class*="status"],
+.grid div[class*="status"] {
+  display: none !important;
+}
+
 .emptyState {
   color: var(--dimColor);
   font-size: 1rem;

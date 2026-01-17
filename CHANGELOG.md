@@ -14,6 +14,13 @@
 - Files: `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle landed in `Bookdarr-Diagnostics`.
 
+## 1.3.49
+- Summary: Added an extra CSS guard scoped to the Book Pool grid to hide any lingering legacy status pills, ensuring only the green/red ebook/audiobook outlines appear even if stale markup slips through.
+- Why: Some clients were still showing the old “Ready/Files pending” spans; tightening the selector to the grid makes the hide rule unavoidable for leftover pill elements.
+- Impact: `frontend/src/Book/Pool/BookPoolPage.css` now hides any status-like spans/divs within the pool grid; `src/Directory.Build.props` reports `1.3.49.*`; `CHANGELOG.md` notes the hardened fallback.
+- Files: `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.46
 - Summary: Removed the Ready/Files Pending status ovals on Book Pool posters and now rely on color-coded ebook/audiobook outlines (green when a file exists, red when it does not) so the card overlay stays compact while still showing availability at a glance.
 - Why: The status pills increased the card height and duplicated the information that the ebook/audiobook badges already provided, so replacing them with red/green outlines keeps the UX consistent with the Library cards while still highlighting missing files.
