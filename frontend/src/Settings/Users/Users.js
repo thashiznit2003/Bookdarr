@@ -18,6 +18,7 @@ import styles from './Users.css';
 function Users({
   users,
   isFetching,
+  error,
   onRefresh,
   onCreate
 }) {
@@ -50,6 +51,11 @@ function Users({
   return (
     <PageContent title={translate('Users')}>
       <PageContentBody className={styles.pageBody}>
+        {error && (
+          <div style={{ color: 'var(--dangerColor)', marginBottom: 12 }}>
+            {translate('AnErrorOccurred')} ({error.status || 'error'})
+          </div>
+        )}
         <div className={styles.header}>
           <div className={styles.title}>
             {translate('Users')}
@@ -146,8 +152,13 @@ function Users({
 Users.propTypes = {
   users: PropTypes.arrayOf(PropTypes.object).isRequired,
   isFetching: PropTypes.bool.isRequired,
+  error: PropTypes.object,
   onRefresh: PropTypes.func.isRequired,
   onCreate: PropTypes.func.isRequired
+};
+
+Users.defaultProps = {
+  error: null
 };
 
 export default Users;

@@ -1,6 +1,7 @@
 import { createThunk, handleThunks } from 'Store/thunks';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import { set } from '../baseActions';
+import createHandleActions from '../Creators/createHandleActions';
 
 export const section = 'settingsUsers';
 
@@ -74,5 +75,11 @@ export const actionHandlers = handleThunks({
   }
 });
 
-export const reducers = {
-};
+export const reducers = createHandleActions({
+  '@@settingsUsers/set': (state, { payload }) => {
+    return {
+      ...state,
+      ...payload
+    };
+  }
+});

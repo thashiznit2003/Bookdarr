@@ -8,7 +8,8 @@ function createMapStateToProps() {
     (state) => state.settingsUsers,
     (usersState) => ({
       users: usersState.items || [],
-      isFetching: usersState.isFetching
+      isFetching: usersState.isFetching,
+      error: usersState.error
     })
   );
 }
