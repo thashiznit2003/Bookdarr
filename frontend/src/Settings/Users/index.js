@@ -1,3 +1,21 @@
-import UsersConnector from './UsersConnector';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
+import { fetchUsers, createUser } from 'Store/Actions/Settings/settingsUsersActions';
+import Users from './Users';
 
-export default UsersConnector;
+function createMapStateToProps() {
+  return createSelector(
+    (state) => state.settingsUsers,
+    (usersState) => ({
+      users: usersState.items || [],
+      isFetching: usersState.isFetching
+    })
+  );
+}
+
+const mapDispatchToProps = {
+  onRefresh: fetchUsers,
+  onCreate: createUser
+};
+
+export default connect(createMapStateToProps, mapDispatchToProps)(Users);

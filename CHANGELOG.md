@@ -170,6 +170,13 @@
 - Files: `frontend/src/Settings/Users/Users.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push, and rerun `/opt/bookdarr-dev/scripts/update-dev.sh`; then open Settings → Users to confirm it loads.
 
+## 1.3.75
+- Summary: Fix Users page routing/imports and auto-load the user list on page load.
+- Why: Users route pointed to a removed connector and didn’t fetch users automatically, causing a blank screen.
+- Impact: Users page now imports via `Settings/Users`, triggers a refresh on mount, and the version is `1.3.75.*`; `CHANGELOG.md` documents the fix.
+- Files: `frontend/src/App/AppRoutes.js`, `frontend/src/Settings/Users/index.js`, `frontend/src/Settings/Users/Users.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, and rerun `/opt/bookdarr-dev/scripts/update-dev.sh`; then open Settings → Users to confirm it renders and lists users.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.

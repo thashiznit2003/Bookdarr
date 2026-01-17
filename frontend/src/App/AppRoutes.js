@@ -25,7 +25,7 @@ import NotificationSettings from 'Settings/Notifications/NotificationSettings';
 import Profiles from 'Settings/Profiles/Profiles';
 import QualityConnector from 'Settings/Quality/QualityConnector';
 import Settings from 'Settings/Settings';
-import UsersConnector from 'Settings/Users/UsersConnector';
+import UsersConnector from 'Settings/Users';
 import TagSettings from 'Settings/Tags/TagSettings';
 import UISettingsConnector from 'Settings/UI/UISettingsConnector';
 import BackupsConnector from 'System/Backup/BackupsConnector';

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import Label from 'Components/Label';
@@ -27,6 +27,10 @@ function Users({
   const [isActive, setIsActive] = useState(true);
 
   const rows = useMemo(() => users || [], [users]);
+
+  useEffect(() => {
+    onRefresh();
+  }, [onRefresh]);
 
   const onCreateClick = () => {
     if (!username || !password) {
