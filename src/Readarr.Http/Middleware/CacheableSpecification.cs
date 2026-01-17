@@ -19,6 +19,17 @@ namespace Readarr.Http.Middleware
                 return false;
             }
 
+            // Never cache core frontend assets (html/js/css/json) so clients always fetch fresh bundles.
+            var path = request.Path.Value ?? string.Empty;
+            var lowered = path.ToLowerInvariant();
+            if (lowered.EndsWith(".js") ||
+                lowered.EndsWith(".css") ||
+                lowered.EndsWith(".json") ||
+                lowered.EndsWith(".html"))
+            {
+                return false;
+            }
+
             if (request.Query.ContainsKey("h"))
             {
                 return true;
@@ -38,8 +49,6 @@ namespace Readarr.Http.Middleware
             {
                 return false;
             }
-
-            var path = request.Path.Value ?? "";
 
             if (path.EndsWith("/index.js"))
             {

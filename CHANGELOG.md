@@ -79,6 +79,13 @@
 - Files: `scripts/dev-build.sh`, `scripts/dev-ubuntu.sh`, `scripts/install-bookdarr.sh`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push commits and tag to `develop`, run the usual `/opt/bookdarr-dev/scripts/update-dev.sh`, and verify the corner control appears without DevTools cache tricks.
 
+## 1.3.62
+- Summary: Disable caching for all html/js/css/json responses so browsers always fetch fresh UI bundles (corner +/- control) without relying on DevTools cache clears.
+- Why: Some clients still loaded stale hashed chunks; forcing no-cache on core assets avoids reused bundles altogether.
+- Impact: `CacheableSpecification` now treats html/js/css/json as non-cacheable; `src/Directory.Build.props` reports `1.3.62.*`; `CHANGELOG.md` documents the cache policy change.
+- Files: `src/Readarr.Http/Middleware/CacheableSpecification.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push commits and tag to `develop`, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM so the no-cache headers go live.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.
