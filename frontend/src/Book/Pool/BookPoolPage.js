@@ -9,6 +9,9 @@ import AddManualBookModal from 'Book/Index/ManualAdd/AddManualBookModal';
 import IconButton from 'Components/Link/IconButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import FilterMenu from 'Components/Menu/FilterMenu';
+import MenuContent from 'Components/Menu/MenuContent';
+import SortMenu from 'Components/Menu/SortMenu';
+import SortMenuItem from 'Components/Menu/SortMenuItem';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
@@ -16,10 +19,11 @@ import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
-import { align, icons, kinds } from 'Helpers/Props';
+import { align, icons, kinds, sortDirections } from 'Helpers/Props';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
+import sortCollection from 'Utilities/Array/sortCollection';
 import { executeCommand } from 'Store/Actions/commandActions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import * as commandNames from 'Commands/commandNames';
@@ -37,6 +41,110 @@ const FILTERS = [
   { key: 'needsManual', label: () => translate('BookPoolFilterNeedsManual') }
 ];
 
+const SORT_OPTIONS = [
+  { key: 'status', label: 'Status' },
+  { key: 'title', label: 'Title' },
+  { key: 'authorLastName', label: 'Author (Last Name)' },
+  { key: 'releaseDate', label: 'Release Date' }
+];
+
+function stripBookTitle(authorText, title) {
+  if (!authorText || !title) {
+    return authorText;
+  }
+
+  const trimmedTitle = title.trim();
+
+  if (!trimmedTitle) {
+    return authorText;
+  }
+
+  const normalizedAuthor = authorText.toLowerCase();
+  const normalizedTitle = trimmedTitle.toLowerCase();
+
+  if (normalizedAuthor.endsWith(normalizedTitle)) {
+    return authorText.slice(0, authorText.length - trimmedTitle.length).trim();
+  }
+
+  return authorText;
+}
+
+function getAuthorDisplayName(book = {}) {
+  const author = book.author;
+
+  if (author?.authorName) {
+    return author.authorName;
+  }
+
+  if (author?.authorNameLastFirst) {
+    const [lastPart, firstPart] = author.authorNameLastFirst.split(',');
+
+    if (firstPart) {
+      return `${firstPart.trim()} ${lastPart.trim()}`.trim();
+    }
+
+    return lastPart?.trim() || author.authorNameLastFirst;
+  }
+
+  const authorTitle = stripBookTitle(book.authorTitle, book.title);
+
+  if (authorTitle) {
+    return authorTitle;
+  }
+
+  return book.authorTitle || '';
+}
+
+function getAuthorLastNameValue(resource) {
+  const author = resource?.book?.author;
+
+  if (author?.authorNameLastFirst) {
+    const [lastName] = author.authorNameLastFirst.split(',');
+
+    if (lastName) {
+      return lastName.trim().toLowerCase();
+    }
+  }
+
+  if (author?.authorName) {
+    const segments = author.authorName.trim().split(/\s+/);
+    const lastSegment = segments.pop();
+
+    if (lastSegment) {
+      return lastSegment.toLowerCase();
+    }
+  }
+
+  const authorTitle = stripBookTitle(resource?.book?.authorTitle, resource?.book?.title);
+
+  if (authorTitle) {
+    return authorTitle.toLowerCase();
+  }
+
+  return '';
+}
+
+const SORT_PREDICATES = {
+  title: (resource) => (resource?.book?.title || '').toLowerCase(),
+  status: (resource) => (resource?.status || '').toLowerCase(),
+  authorLastName: getAuthorLastNameValue,
+  releaseDate: (resource) => {
+    const dateValue = resource?.book?.releaseDate;
+
+    if (!dateValue) {
+      return Number.MAX_SAFE_INTEGER;
+    }
+
+    const parsed = Date.parse(dateValue);
+
+    if (Number.isNaN(parsed)) {
+      return Number.MAX_SAFE_INTEGER;
+    }
+
+    return parsed;
+  }
+};
+
 class BookPoolPage extends Component {
 
   constructor(props) {
@@ -48,6 +156,8 @@ class BookPoolPage extends Component {
       error: null,
       adding: {},
       filterKey: 'all',
+      sortKey: 'title',
+      sortDirection: sortDirections.ASCENDING,
       isManualBookModalOpen: false,
       isConfirmSearchModalOpen: false
     };
@@ -150,6 +260,23 @@ class BookPoolPage extends Component {
     });
   };
 
+  getSortedBooks = (books) => {
+    const {
+      sortKey,
+      sortDirection
+    } = this.state;
+
+    if (!sortKey) {
+      return books;
+    }
+
+    return sortCollection(books, {
+      sortKey,
+      sortDirection,
+      sortPredicates: SORT_PREDICATES
+    });
+  };
+
   getStatusCounts = () => {
     const { books } = this.state;
     const counts = {
@@ -177,6 +304,22 @@ class BookPoolPage extends Component {
 
   onFilterSelect = (filterKey) => {
     this.setFilterKey(filterKey);
+  };
+
+  onSortSelect = (sortKey) => {
+    this.setState((prevState) => {
+      const sameKey = prevState.sortKey === sortKey;
+      const sortDirection = sameKey
+        ? (prevState.sortDirection === sortDirections.ASCENDING
+          ? sortDirections.DESCENDING
+          : sortDirections.ASCENDING)
+        : sortDirections.ASCENDING;
+
+      return {
+        sortKey,
+        sortDirection
+      };
+    });
   };
 
   onAddToLibrary = (book) => {
@@ -240,6 +383,8 @@ class BookPoolPage extends Component {
       error,
       adding,
       filterKey,
+      sortKey,
+      sortDirection,
       isManualBookModalOpen,
       isConfirmSearchModalOpen
     } = this.state;
@@ -250,6 +395,7 @@ class BookPoolPage extends Component {
     } = this.props;
 
     const filteredBooks = this.getFilteredBooks();
+    const sortedBooks = this.getSortedBooks(filteredBooks);
     const statusCounts = this.getStatusCounts();
     const filterOptions = FILTERS.map((filter) => {
       const normalizedKey = filter.key.toLowerCase();
@@ -295,23 +441,39 @@ class BookPoolPage extends Component {
               onPress={this.onSearchPress}
             />
 
-            <PageToolbarSeparator />
-
-            <span className={styles.description}>{translate('BookPoolDescription')}</span>
           </PageToolbarSection>
-          <PageToolbarSection
-            alignContent={align.RIGHT}
-            collapseButtons={false}
+        <PageToolbarSection
+          alignContent={align.RIGHT}
+          collapseButtons={false}
+        >
+          <SortMenu
+            className={styles.sortMenu}
+            isDisabled={isFetching}
           >
-            <FilterMenu
-              selectedFilterKey={filterKey}
-              filters={filterOptions}
-              customFilters={[]}
-              isDisabled={isFetching}
-              alignMenu={align.RIGHT}
-              onFilterSelect={this.onFilterSelect}
-              className={styles.filterMenu}
-            />
+            <MenuContent>
+              {SORT_OPTIONS.map((option) => (
+                <SortMenuItem
+                  key={option.key}
+                  name={option.key}
+                  sortKey={sortKey}
+                  sortDirection={sortDirection}
+                  onPress={this.onSortSelect}
+                >
+                  {option.label}
+                </SortMenuItem>
+              ))}
+            </MenuContent>
+          </SortMenu>
+
+          <FilterMenu
+            selectedFilterKey={filterKey}
+            filters={filterOptions}
+            customFilters={[]}
+            isDisabled={isFetching}
+            alignMenu={align.RIGHT}
+            onFilterSelect={this.onFilterSelect}
+            className={styles.filterMenu}
+          />
           </PageToolbarSection>
         </PageToolbar>
         <PageContentBody noPadding={true}>
@@ -325,7 +487,7 @@ class BookPoolPage extends Component {
             <>
               {filteredBooks.length > 0 ? (
                 <div className={styles.grid}>
-                  {filteredBooks.map((item) => (
+                  {sortedBooks.map((item) => (
                     <BookPoolPoster
                       key={item.bookId}
                       resource={item}
@@ -389,6 +551,8 @@ function BookPoolPoster({
     }
   }, [onAdd, resource]);
 
+  const authorName = getAuthorDisplayName(book);
+
   return (
     <div className={classNames(styles.posterCard, needsAttention && styles.posterAttention)}>
       <div className={styles.posterWrapper}>
@@ -406,30 +570,44 @@ function BookPoolPoster({
           isDisabled={inMyLibrary}
           isSpinning={isAdding}
         />
-      </div>
-      <div className={styles.posterMeta}>
-        <div className={styles.posterTitle}>
-          <BookTitleLink
-            title={book.title}
-            titleSlug={book.titleSlug}
-            disambiguation={book.disambiguation}
-          />
-        </div>
-        <div className={styles.posterAuthor}>{book.authorTitle}</div>
-        <div className={styles.posterStatusRow}>
-        {renderStatus(resource)}
-          {inMyLibrary && (
-            <span className={styles.libraryBadge}>{translate('InMyLibrary')}</span>
-          )}
-        </div>
-        <div className={styles.posterMetaRow}>
-          <div className={styles.posterMetaItem}>
-            <span className={styles.posterMetaLabel}>eBook</span>
-            <span className={styles.posterMetaValue}>{hasEbook ? translate('Yes') : translate('No')}</span>
+        <div className={styles.posterOverlay}>
+          <div className={styles.posterOverlayContent}>
+            <div className={styles.posterTitle}>
+              <BookTitleLink
+                title={book.title}
+                titleSlug={book.titleSlug}
+                disambiguation={book.disambiguation}
+              />
+            </div>
+            {authorName && (
+              <div className={styles.posterAuthor}>{authorName}</div>
+            )}
           </div>
-          <div className={styles.posterMetaItem}>
-            <span className={styles.posterMetaLabel}>Audiobook</span>
-            <span className={styles.posterMetaValue}>{hasAudiobook ? translate('Yes') : translate('No')}</span>
+          <div className={styles.posterStatusRow}>
+            {renderStatus(resource)}
+            {inMyLibrary && (
+              <span className={styles.libraryBadge}>{translate('InMyLibrary')}</span>
+            )}
+          </div>
+          <div className={styles.posterTypeRow}>
+            <span
+              className={classNames(
+                styles.posterTypeBadge,
+                hasEbook ? styles.posterTypeReady : styles.posterTypeMissing
+              )}
+              title={`eBook ${hasEbook ? translate('Yes') : translate('No')}`}
+            >
+              eBook
+            </span>
+            <span
+              className={classNames(
+                styles.posterTypeBadge,
+                hasAudiobook ? styles.posterTypeReady : styles.posterTypeMissing
+              )}
+              title={`Audiobook ${hasAudiobook ? translate('Yes') : translate('No')}`}
+            >
+              Audiobook
+            </span>
           </div>
         </div>
       </div>
@@ -444,7 +622,11 @@ BookPoolPoster.propTypes = {
       title: PropTypes.string,
       titleSlug: PropTypes.string,
       disambiguation: PropTypes.string,
-      authorTitle: PropTypes.string
+      authorTitle: PropTypes.string,
+      author: PropTypes.shape({
+        authorName: PropTypes.string,
+        authorNameLastFirst: PropTypes.string
+      })
     }).isRequired,
     hasEbook: PropTypes.bool,
     hasAudiobook: PropTypes.bool,

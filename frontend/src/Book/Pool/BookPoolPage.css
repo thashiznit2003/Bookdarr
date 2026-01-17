@@ -1,12 +1,9 @@
-.description {
-  color: var(--dimColor);
-  font-size: 0.9rem;
-  margin-left: 16px;
+.filterMenu {
+  margin-left: 8px;
 }
 
-
-.filterMenu {
-  margin-left: auto;
+.sortMenu {
+  margin-right: 6px;
 }
 
 .error {
@@ -33,7 +30,6 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 340px;
   transition: transform 200ms ease, box-shadow 200ms ease;
   max-width: 162px;
   width: 100%;
@@ -96,21 +92,34 @@
   border-bottom-left-radius: 4px;
 }
 
-.posterMeta {
-  padding: 16px;
+.posterOverlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 10px 10px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(3, 3, 3, 0.95) 100%);
   display: flex;
   flex-direction: column;
   gap: 6px;
+  z-index: 1;
+}
+
+.posterOverlayContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .posterTitle {
   font-size: 1rem;
   font-weight: 600;
+  color: var(--white);
 }
 
 .posterAuthor {
-  color: var(--dimColor);
-  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.8rem;
 }
 
 .posterStatusRow {
@@ -118,35 +127,34 @@
   gap: 8px;
   align-items: center;
 }
-
 .libraryBadge {
   padding: 4px 10px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   font-size: 0.8rem;
 }
-
-.posterMetaRow {
+.posterTypeRow {
   display: flex;
-  gap: 16px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.posterMetaItem {
-  display: flex;
-  flex-direction: column;
-}
-
-.posterMetaLabel {
-  color: var(--dimColor);
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+.posterTypeBadge {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  padding: 2px 6px;
 }
 
-.posterMetaValue {
-  font-size: 0.9rem;
-  font-weight: 600;
+.posterTypeReady {
+  border-color: var(--successColor);
+  color: var(--successColor);
+}
+
+.posterTypeMissing {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .status,

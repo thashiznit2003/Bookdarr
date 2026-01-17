@@ -7,6 +7,13 @@
 - Files: `frontend/src/Book/Pool/BookPoolPage.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and confirm the diagnostics bundle landed in `Bookdarr-Diagnostics`.
 
+## 1.3.44
+- Summary: Book Pool cards now match the Library posters with a condensed overlay (title/author/status/format badges), proper author capitalization, and a toolbar sort menu for status/title/author/release date, plus the REST resource now exposes author metadata.
+- Why: The shared pool cards had oversized footers with redundant text, inconsistent author casing, and no way to sort the shared catalog like the Library grid, which made browsing the pool slower than expected.
+- Impact: `frontend/src/Book/Pool/BookPoolPage.js` renders the new sort menu, sorts statuses/titles/authors/dates, and places the title/author details inside a condensed overlay with ebook/audiobook readiness badges; `frontend/src/Book/Pool/BookPoolPage.css` mimics the Library card height and gradient overlay; `src/Readarr.Api.V1/Books/BookResource.cs` now maps the author metadata so the UI can capitalize names consistently; `src/Directory.Build.props` reports `1.3.44.*` and `CHANGELOG.md` documents the shared-pool polish.
+- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `src/Readarr.Api.V1/Books/BookResource.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle landed in `Bookdarr-Diagnostics`.
+
 ## 1.3.42
 - Summary: Book Pool now mirrors the Library toolbar/filter experience, shows the + action as a subtle corner label, and auto-refreshes when books or files change so statuses never stay stuck on “Pending.”
 - Why: The shared pool was missing the Library-style filter button/group, the add action was intrusive, and newly downloaded ebook/audiobook files left the pool outline in red because the UI never refreshed after SignalR updates.

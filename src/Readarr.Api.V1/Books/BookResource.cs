@@ -84,6 +84,7 @@ namespace Readarr.Api.V1.Books
                 Genres = model.Genres,
                 Title = title,
                 AuthorTitle = authorTitle,
+                Author = model.Author?.Value?.ToResource(),
                 SeriesTitle = seriesTitle,
                 Disambiguation = selectedEdition?.Disambiguation,
                 Images = images.Any() ? images : selectedEdition?.Images ?? new List<MediaCover>(),

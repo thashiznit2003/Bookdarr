@@ -19,7 +19,9 @@ Use this file to onboard a new Codex chat.
 - Push updates to GitHub after every change.
 - Automatically run the tag and push steps after each change (do not ask the user to do it).
 - Update CHANGELOG.md and bump the version after every change.
+- Treat `CHANGELOG.md` as the authoritative history; update it before each Git push so the app’s latest behavior is always documented.
 - When the version changes, update the top-left app version by bumping `src/Directory.Build.props`.
+- Increment the assembly/app version (`src/Directory.Build.props`) before every Git push so the repo always reflects a higher release.
 - When giving install commands, use sudo and chain with `&&`.
 - Always put commands or code the user should run in fenced code blocks.
 - Update commands should `tee` to `/opt/bookdarr-dev/Logs/update-0XX.log`, starting at `update-01.log` now that logs were cleared.
@@ -38,6 +40,7 @@ Use this file to onboard a new Codex chat.
 ## Command Continuity
 - If a command was interrupted, rerun it before continuing.
 - Keep the latest instructions/commands in this section so every agent knows what to execute next (e.g., the current SSH update command, diagnostics push steps, version bump, StyleCop build, etc.).
+- After pushing to GitHub, immediately run the SSH update workflow (`ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-0XX.log'`) so the Ubuntu VM mirrors the latest version and the diagnostics bundle is generated.
 
 ## Diagnostics Workflow
 
