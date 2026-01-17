@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.3.83
-- Summary: Add clear labels to the Users modal checkboxes and keep the Users link in the Settings sidebar with toolbar icons.
-- Why: Admin/Active checkboxes had no visible labels; sidebar/toolbar need to stay discoverable.
-- Impact: Checkbox labels render next to the inputs; sidebar still includes Users; toolbar uses icon buttons.
-- Files: `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`
+## 1.3.84
+- Summary: Show explicit Admin/Active labels beside the checkboxes in the Users modal for clarity.
+- Why: Checkbox labels were still missing/hidden, making the toggles ambiguous.
+- Impact: Admin/Active text now appears next to their checkboxes in the modal; sidebar/users link and toolbar icons remain.
+- Files: `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 
 ## 1.3.51

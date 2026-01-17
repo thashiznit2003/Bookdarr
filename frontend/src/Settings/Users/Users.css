@@ -47,9 +47,15 @@
   align-items: center;
 }
 
-.checkLabel {
-  margin-left: 6px;
+.checkLabelRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkText {
   color: var(--textColor);
   font-size: 13px;
   font-weight: 600;
+  user-select: none;
 }
