@@ -156,6 +156,13 @@
 - Files: `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then confirm Library shows green when both formats exist, orange for one, red for none.
 
+## 1.3.73
+- Summary: Add a Users settings page (admin-only) to list and create users, and wire it into the Settings menu/routes.
+- Why: Needed a UI entry point to manage users for the coming multi-user flow.
+- Impact: New Settings → Users page lists users and supports creating new ones via `/api/v1/users`; `src/Directory.Build.props` reports `1.3.73.*`; `CHANGELOG.md` notes the new page.
+- Files: `frontend/src/Settings/Users/*`, `frontend/src/App/AppRoutes.js`, `frontend/src/Settings/Settings.js`, `frontend/src/Store/Actions/Settings/settingsUsersActions.js`, `frontend/src/Store/Actions/index.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then open Settings → Users to verify list/create works.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.

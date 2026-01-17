@@ -25,6 +25,7 @@ import NotificationSettings from 'Settings/Notifications/NotificationSettings';
 import Profiles from 'Settings/Profiles/Profiles';
 import QualityConnector from 'Settings/Quality/QualityConnector';
 import Settings from 'Settings/Settings';
+import UsersConnector from 'Settings/Users/UsersConnector';
 import TagSettings from 'Settings/Tags/TagSettings';
 import UISettingsConnector from 'Settings/UI/UISettingsConnector';
 import BackupsConnector from 'System/Backup/BackupsConnector';
@@ -222,6 +223,11 @@ function AppRoutes(props) {
       <Route
         path="/settings/ui"
         component={UISettingsConnector}
+      />
+
+      <Route
+        path="/settings/users"
+        component={UsersConnector}
       />
 
       <Route

@@ -27,6 +27,7 @@ import * as retagPreview from './retagPreviewActions';
 import * as search from './searchActions';
 import * as series from './seriesActions';
 import * as settings from './settingsActions';
+import * as settingsUsers from './Settings/settingsUsersActions';
 import * as system from './systemActions';
 import * as tags from './tagActions';
 import * as wanted from './wantedActions';
@@ -61,6 +62,7 @@ export default [
   search,
   series,
   settings,
+  settingsUsers,
   system,
   tags,
   wanted

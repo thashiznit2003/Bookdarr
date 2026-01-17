@@ -156,6 +156,17 @@ function Settings() {
         <div className={styles.summary}>
           Development settings
         </div>
+
+        <Link
+          className={styles.link}
+          to="/settings/users"
+        >
+          Users
+        </Link>
+
+        <div className={styles.summary}>
+          Manage Bookdarr users (admin only)
+        </div>
       </PageContentBody>
     </PageContent>
   );
