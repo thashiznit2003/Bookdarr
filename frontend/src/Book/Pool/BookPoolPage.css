@@ -124,6 +124,36 @@
   content: '−';
 }
 
+.posterStatusRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.actionButton {
+  margin-left: auto;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.addAction {
+  background: var(--primaryColor);
+  border-color: var(--primaryHoverColor);
+}
+
+.removeAction {
+  background: var(--dangerColor);
+  border-color: var(--dangerHoverColor, var(--dangerColor));
+}
+
 .posterOverlay {
   position: absolute;
   left: 0;
@@ -154,12 +184,6 @@
   font-size: 0.8rem;
 }
 
-.posterStatusRow {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
-}
 .libraryBadge {
   padding: 4px 10px;
   border-radius: 999px;
