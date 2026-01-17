@@ -2,6 +2,9 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
+import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
+import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
+import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import Modal from 'Components/Modal/Modal';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
@@ -15,7 +18,7 @@ import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import CheckInput from 'Components/Form/CheckInput';
 import TextInput from 'Components/Form/TextInput';
-import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
+import { icons } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import styles from './Users.css';
 
@@ -150,6 +153,22 @@ function Users({
 
   return (
     <PageContent title={translate('Users')}>
+      <PageToolbar>
+        <PageToolbarSection>
+          <PageToolbarButton
+            label={translate('AddUser')}
+            iconName={icons.ADD}
+            onPress={() => setIsAddModalOpen(true)}
+          />
+          <PageToolbarButton
+            label={translate('Refresh')}
+            iconName={icons.REFRESH}
+            isSpinning={isFetching}
+            onPress={onRefresh}
+          />
+        </PageToolbarSection>
+      </PageToolbar>
+
       <PageContentBody className={styles.pageBody}>
         {error && (
           <div style={{ color: 'var(--dangerColor)', marginBottom: 12 }}>
@@ -159,19 +178,6 @@ function Users({
         <div className={styles.header}>
           <div className={styles.title}>
             {translate('Users')}
-          </div>
-          <div className={styles.actions}>
-            <SpinnerIconButton
-              name="add"
-              title={translate('AddUser')}
-              onPress={() => setIsAddModalOpen(true)}
-            />
-            <SpinnerIconButton
-              name="refresh"
-              isSpinning={isFetching}
-              title={translate('Refresh')}
-              onPress={onRefresh}
-            />
           </div>
         </div>
 

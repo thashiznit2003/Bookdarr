@@ -2,17 +2,10 @@
   padding: 16px;
 }
 
-.actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .title {

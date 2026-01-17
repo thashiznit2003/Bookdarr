@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.3.81
-- Summary: Align Users UI with the rest of Settings: icon toolbar buttons and an Add User modal patterned after Add Indexer (labeled inputs and clear checkbox labels).
-- Why: The previous modal looked off-brand and unlabeled; toolbar buttons were plain text.
-- Impact: Toolbar uses icon buttons; modal uses labeled username/password fields and labeled admin/active toggles with consistent spacing.
-- Files: `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`
+## 1.3.82
+- Summary: Add Users to the Settings sidebar and move add/refresh controls into the Settings toolbar with icons; modal labels align with the rest of Settings.
+- Why: Users page lacked a sidebar entry and the toolbar buttons disappeared; aligning with Settings toolbar keeps controls discoverable.
+- Impact: Users appears under Settings; toolbar shows icon buttons for Add/Refresh; modal retains labeled fields and toggles.
+- Files: `frontend/src/Settings/Settings.js`, `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 
 ## 1.3.51
