@@ -631,6 +631,8 @@ function BookPoolPoster({
             onClick={onAddPress}
             aria-label={translate(inMyLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}
             disabled={isAdding}
+            data-testid="pool-corner-action"
+            style={{ position: 'absolute', top: 4, right: 4, zIndex: 10 }}
           >
             {inMyLibrary ? '−' : '+'}
           </button>
