@@ -72,6 +72,13 @@
 - Files: `frontend/src/Book/Pool/BookPoolPage.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle lands in `Bookdarr-Diagnostics`.
 
+## 1.3.61
+- Summary: Force the UI build to run in production mode with cache-busting output so new bundles (including the corner +/- control) load without manual DevTools cache clears.
+- Why: Browsers were still pulling stale `index.js`/chunks even after updates; production builds with hashed assets avoid reverse-proxy/browser cache reuse.
+- Impact: Build scripts now call `NODE_ENV=production yarn build --env production=true`; `src/Directory.Build.props` reports `1.3.61.*`; `CHANGELOG.md` notes the cache-busting build change.
+- Files: `scripts/dev-build.sh`, `scripts/dev-ubuntu.sh`, `scripts/install-bookdarr.sh`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push commits and tag to `develop`, run the usual `/opt/bookdarr-dev/scripts/update-dev.sh`, and verify the corner control appears without DevTools cache tricks.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.

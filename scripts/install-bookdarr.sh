@@ -57,9 +57,9 @@ log "Downloading source"
 curl -L "https://github.com/${REPO}/archive/refs/heads/${BRANCH}.tar.gz" | \
   tar -xz --strip-components=1 -C "$INSTALL_DIR"
 
-log "Building UI (yarn)"
+log "Building UI (yarn, production)"
 docker run --rm -v "${INSTALL_DIR}:/src" -w /src node:20-bullseye \
-  bash -lc "corepack enable && corepack prepare yarn@1.22.19 --activate && yarn install --frozen-lockfile --network-timeout 120000 && yarn build"
+  bash -lc "corepack enable && corepack prepare yarn@1.22.19 --activate && yarn install --frozen-lockfile --network-timeout 120000 && NODE_ENV=production yarn build --env production=true"
 
 log "Building server (.NET)"
 docker run --rm -v "${INSTALL_DIR}:/src" -w /src mcr.microsoft.com/dotnet/sdk:6.0 \

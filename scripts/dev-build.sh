@@ -19,7 +19,7 @@ fi
 export BROWSERSLIST_IGNORE_OLD_DATA=1
 
 yarn install --frozen-lockfile --network-timeout 120000
-yarn build
+NODE_ENV=production yarn build --env production=true
 
 restoreArgs=()
 
