@@ -77,6 +77,8 @@
   font-size: 0.7rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
   z-index: 2;
+  /* Fallback glyph so the control is visible even if icon fonts don't load */
+  font-weight: 700;
 }
 
 .addButton::after {
@@ -98,6 +100,22 @@
 
 .removeButton::after {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), transparent 140%);
+}
+
+/* Fallback symbols to make the corner control obvious */
+.addButton :global(svg) {
+  display: inline-block;
+}
+
+.addButton::before {
+  content: '+';
+  position: relative;
+  z-index: 3;
+  color: var(--white);
+}
+
+.removeButton::before {
+  content: '−';
 }
 
 .posterOverlay {

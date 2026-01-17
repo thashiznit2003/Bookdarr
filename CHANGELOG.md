@@ -16,6 +16,13 @@
 - Files: `src/Readarr.Http/Frontend/StaticResourceController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle lands in `Bookdarr-Diagnostics`.
 
+## 1.3.53
+- Summary: Ensure the Book Pool corner control is always visible by adding a plain-text +/− fallback so the add/remove button shows even if icon fonts fail to load.
+- Why: On some browsers the +/− icon disappeared, leaving no visible control; adding a text glyph guarantees the button is obvious.
+- Impact: `BookPoolPage.css` now renders a simple +/− overlay in the corner in addition to the icon; `src/Directory.Build.props` reports `1.3.53.*`; `CHANGELOG.md` captures the visibility fix.
+- Files: `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle lands in `Bookdarr-Diagnostics`.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.
