@@ -93,6 +93,13 @@
 - Files: `src/Readarr.Http/Middleware/CacheHeaderMiddleware.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then load the app normally; hashed bundles + no-cache headers should show the corner control.
 
+## 1.3.64
+- Summary: Fix header handling to avoid Kestrel “headers are read-only” exceptions while still disabling cache for html/js/css/json.
+- Why: Post-response cache disabling threw when the response had already started, causing blank pages; moving no-cache to the pre-write path fixes it.
+- Impact: `CacheHeaderMiddleware` applies `DisableCache` before the response for core assets; `src/Directory.Build.props` reports `1.3.64.*`; `CHANGELOG.md` documents the fix.
+- Files: `src/Readarr.Http/Middleware/CacheHeaderMiddleware.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, and rerun `/opt/bookdarr-dev/scripts/update-dev.sh`; verify the UI loads with the corner control.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.

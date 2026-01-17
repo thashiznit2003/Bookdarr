@@ -24,9 +24,13 @@ namespace Readarr.Http.Middleware
                                lowered.EndsWith(".json") ||
                                lowered.EndsWith(".html");
 
-            if (context.Request.Method != "OPTIONS" && !forceDisable)
+            if (context.Request.Method != "OPTIONS")
             {
-                if (_cacheableSpecification.IsCacheable(context.Request))
+                if (forceDisable)
+                {
+                    context.Response.Headers.DisableCache();
+                }
+                else if (_cacheableSpecification.IsCacheable(context.Request))
                 {
                     context.Response.Headers.EnableCache();
                 }
@@ -37,11 +41,6 @@ namespace Readarr.Http.Middleware
             }
 
             await _next(context);
-
-            if (forceDisable && context.Request.Method != "OPTIONS")
-            {
-                context.Response.Headers.DisableCache();
-            }
         }
     }
 }
