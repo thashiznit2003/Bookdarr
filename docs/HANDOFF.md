@@ -69,6 +69,7 @@ Use this file to onboard a new Codex chat.
 ## Open Work / Next Steps
 - Docker Hub publish pipeline (GitHub Action + secrets).
 - Overseerr-like request page.
+- Users: add backend `PUT /api/v1/users/{id}` to edit username/email/password (admin or self), keep numeric `Id` as key, enforce unique username, optional email, password only if provided, and guard against demoting your own admin role. Add reset-token scaffolding for a future email-based password reset (no email sender yet). Once the endpoint exists, add an Edit User modal (username/email/new password) and wire actions to the new endpoint; keep Activate/Deactivate/Delete as-is. Per-user libraries/book scoping still needs backend support (user_id ownership, auth scoping).
 
 ## Recent Changes (since last handoff)
 - Fixed manual import modal skipping upload screen by clearing folder state when modal opens with useBrowserUpload mode.
