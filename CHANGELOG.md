@@ -44,6 +44,13 @@
 - Files: `frontend/src/Book/Pool/BookPoolPage.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle lands in `Bookdarr-Diagnostics`.
 
+## 1.3.57
+- Summary: Make the Book Pool corner button unmissable with bigger size, heavier weight, white border accents, and a higher z-index so it stays visible above overlays.
+- Why: Some browsers still hid the button; increasing size/contrast and stacking order removes any ambiguity.
+- Impact: `BookPoolPage.css` enlarges the corner control, adds border accents and higher z-index; `src/Directory.Build.props` reports `1.3.57.*`; `CHANGELOG.md` records the visibility boost.
+- Files: `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle lands in `Bookdarr-Diagnostics`.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.
