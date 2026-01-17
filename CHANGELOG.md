@@ -1,9 +1,9 @@
 # Changelog
 
-## 1.3.80
-- Summary: Restyle the Users modal to match other Settings dialogs with labeled fields, aligned toggles, and tighter spacing.
-- Why: The add-user modal looked bare; matching the shared modal pattern keeps the UX consistent.
-- Impact: Username/password now show labels; admin/active toggles align in a row; spacing matches other modals.
+## 1.3.81
+- Summary: Align Users UI with the rest of Settings: icon toolbar buttons and an Add User modal patterned after Add Indexer (labeled inputs and clear checkbox labels).
+- Why: The previous modal looked off-brand and unlabeled; toolbar buttons were plain text.
+- Impact: Toolbar uses icon buttons; modal uses labeled username/password fields and labeled admin/active toggles with consistent spacing.
 - Files: `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 
