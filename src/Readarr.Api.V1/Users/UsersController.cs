@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Core.Authentication;
+using NzbDrone.Common.Extensions;
 using Readarr.Http;
 using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 using RestBadRequestException = Readarr.Http.REST.BadRequestException;
@@ -49,6 +50,52 @@ namespace Readarr.Api.V1.Users
             {
                 return NotFound();
             }
+
+            return Map(user);
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<UserResource> Update(int id, UserUpdateResource resource)
+        {
+            if (resource == null)
+            {
+                throw new RestBadRequestException("Request body can't be empty");
+            }
+
+            if (resource.Username.IsNullOrWhiteSpace())
+            {
+                throw new RestBadRequestException("Username is required");
+            }
+
+            var currentUser = GetCurrentUser();
+
+            if (!currentUser.IsAdmin && currentUser.Id != id)
+            {
+                return Forbid();
+            }
+
+            var user = _userService.FindUserById(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var existing = _userService.FindUserByUsername(resource.Username);
+            if (existing != null && existing.Id != id)
+            {
+                throw new RestBadRequestException("Username already exists");
+            }
+
+            user.Username = resource.Username.ToLowerInvariant();
+            user.Email = resource.Email;
+
+            if (resource.Password.IsNotNullOrWhiteSpace())
+            {
+                user.Password = resource.Password.SHA256Hash();
+            }
+
+            user = _userService.Update(user);
 
             return Map(user);
         }

@@ -15,5 +15,7 @@ namespace NzbDrone.Core.Authentication
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLogin { get; set; }
         public string PreferredQualityMedia { get; set; }
+        public string ResetToken { get; set; }
+        public DateTime? ResetTokenExpiration { get; set; }
     }
 }

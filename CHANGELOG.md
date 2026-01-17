@@ -1,11 +1,11 @@
 # Changelog
 
-## 1.3.89
-- Summary: Remove Keyboard Shortcuts from the header menu; keep Restart (with confirm) and Logout.
-- Why: Requested a leaner menu with only Restart/Logout.
-- Impact: Header actions menu now has Restart (with confirmation) and Logout; no Shutdown, no Keyboard Shortcuts.
-- Files: `frontend/src/Components/Page/Header/PageHeaderActionsMenu.js`
-- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
+## 1.3.90
+- Summary: Add backend user update endpoint and reset-token scaffolding (no email yet); allows admins or self to change username/email/password.
+- Why: Needed edit support for users and groundwork for future password reset.
+- Impact: New `PUT /api/v1/users/{id}` validates unique username and optional password; user model gains reset token fields.
+- Files: `src/Readarr.Api.V1/Users/UsersController.cs`, `src/Readarr.Api.V1/Users/UserUpdateResource.cs`, `src/NzbDrone.Core/Authentication/User.cs`, `src/NzbDrone.Core/Datastore/Migration/050_add_user_reset_token.cs`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics. Frontend edit modal still needed to call the new endpoint.
 
 ## 1.3.51
 - Summary: Force a fresh deploy of the latest Book Pool UI (green/red format badges and add/remove corner toggle) so browsers stop loading the old 1.3.42 bundle that’s now showing a blank page.
