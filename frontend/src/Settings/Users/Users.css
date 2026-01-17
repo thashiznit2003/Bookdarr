@@ -41,3 +41,15 @@
   gap: 24px;
   align-items: center;
 }
+
+.checkItem {
+  display: flex;
+  align-items: center;
+}
+
+.checkLabel {
+  margin-left: 6px;
+  color: var(--textColor);
+  font-size: 13px;
+  font-weight: 600;
+}

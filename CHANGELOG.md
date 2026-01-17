@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.3.82
-- Summary: Add Users to the Settings sidebar and move add/refresh controls into the Settings toolbar with icons; modal labels align with the rest of Settings.
-- Why: Users page lacked a sidebar entry and the toolbar buttons disappeared; aligning with Settings toolbar keeps controls discoverable.
-- Impact: Users appears under Settings; toolbar shows icon buttons for Add/Refresh; modal retains labeled fields and toggles.
-- Files: `frontend/src/Settings/Settings.js`, `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`
+## 1.3.83
+- Summary: Add clear labels to the Users modal checkboxes and keep the Users link in the Settings sidebar with toolbar icons.
+- Why: Admin/Active checkboxes had no visible labels; sidebar/toolbar need to stay discoverable.
+- Impact: Checkbox labels render next to the inputs; sidebar still includes Users; toolbar uses icon buttons.
+- Files: `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 
 ## 1.3.51

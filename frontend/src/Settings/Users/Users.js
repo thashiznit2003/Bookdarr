@@ -81,20 +81,24 @@ function AddUserModal({
           </div>
 
           <div className={styles.modalCheckRow}>
-            <CheckInput
-              name="isAdmin"
-              value={isAdmin}
-              onChange={(e) => setIsAdmin(e.value)}
-            >
-              {translate('Admin')}
-            </CheckInput>
-            <CheckInput
-              name="isActive"
-              value={isActive}
-              onChange={(e) => setIsActive(e.value)}
-            >
-              {translate('Active')}
-            </CheckInput>
+            <div className={styles.checkItem}>
+              <CheckInput
+                name="isAdmin"
+                value={isAdmin}
+                onChange={(e) => setIsAdmin(e.value)}
+              >
+                <span className={styles.checkLabel}>{translate('Admin')}</span>
+              </CheckInput>
+            </div>
+            <div className={styles.checkItem}>
+              <CheckInput
+                name="isActive"
+                value={isActive}
+                onChange={(e) => setIsActive(e.value)}
+              >
+                <span className={styles.checkLabel}>{translate('Active')}</span>
+              </CheckInput>
+            </div>
           </div>
         </ModalBody>
         <ModalFooter>
