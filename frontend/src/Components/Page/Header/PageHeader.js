@@ -6,6 +6,7 @@ import Link from 'Components/Link/Link';
 import { icons } from 'Helpers/Props';
 import AuthorSearchInputConnector from './AuthorSearchInputConnector';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
+import PageHeaderActionsMenuConnector from './PageHeaderActionsMenuConnector';
 import styles from './PageHeader.css';
 
 class PageHeader extends Component {
@@ -78,6 +79,10 @@ class PageHeader extends Component {
         </div>
 
         <AuthorSearchInputConnector />
+
+        <div className={styles.right}>
+          <PageHeaderActionsMenuConnector />
+        </div>
 
         <KeyboardShortcutsModal
           isOpen={this.state.isKeyboardShortcutsModalOpen}

@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.3.86
-- Summary: Order Add User fields as Username, Password, Email to match expected flow; title spacing retained and LastLogin stays hidden.
-- Why: Email was positioned between username and password; reordering matches normal account creation.
-- Impact: Add User modal now shows Username, then Password, then Email; Admin/Active labels remain visible.
-- Files: `frontend/src/Settings/Users/Users.js`
+## 1.3.87
+- Summary: Add Sign Out to the header actions menu, reorder Add User fields (Username, Password, Email), and hide unused LastLogin.
+- Why: Sign Out wasn’t easily accessible; email was in the wrong spot; LastLogin had no data.
+- Impact: Header now shows the actions menu with Logout; Add User shows fields in the right order with checkbox labels; LastLogin removed.
+- Files: `frontend/src/Components/Page/Header/PageHeader.js`, `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 
 ## 1.3.51
