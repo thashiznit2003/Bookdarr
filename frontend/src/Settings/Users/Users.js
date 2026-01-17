@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import Label from 'Components/Label';
-import LabelButton from 'Components/Label/LabelButton';
+import Button from 'Components/Link/Button';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableHeader from 'Components/Table/TableHeader';
@@ -156,19 +156,19 @@ function Users({
                 <TableRowCell>{user.email || '—'}</TableRowCell>
                 <TableRowCell>
                   <div className={styles.actionRow}>
-                    <LabelButton
+                    <Button
                       kind={user.isActive ? 'danger' : 'success'}
                       onPress={() => onToggleActive(user)}
                     >
                       {user.isActive ? translate('Deactivate') : translate('Activate')}
-                    </LabelButton>
+                    </Button>
                     {!user.isAdmin && (
-                      <LabelButton
+                      <Button
                         kind="danger"
                         onPress={() => onDelete(user)}
                       >
                         {translate('Delete')}
-                      </LabelButton>
+                      </Button>
                     )}
                   </div>
                 </TableRowCell>
