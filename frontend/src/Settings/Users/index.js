@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { fetchUsers, createUser } from 'Store/Actions/Settings/settingsUsersActions';
+import { fetchUsers, createUser, deleteUser, toggleUser } from 'Store/Actions/Settings/settingsUsersActions';
 import Users from './Users';
 
 function createMapStateToProps() {
@@ -16,7 +16,9 @@ function createMapStateToProps() {
 
 const mapDispatchToProps = {
   onRefresh: fetchUsers,
-  onCreate: createUser
+  onCreate: createUser,
+  onDelete: deleteUser,
+  onToggleActive: toggleUser
 };
 
 export default connect(createMapStateToProps, mapDispatchToProps)(Users);

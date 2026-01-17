@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import Label from 'Components/Label';
+import LabelButton from 'Components/Label/LabelButton';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableHeader from 'Components/Table/TableHeader';
@@ -19,6 +20,8 @@ function Users({
   users,
   isFetching,
   error,
+  onDelete,
+  onToggleActive,
   onRefresh,
   onCreate
 }) {
@@ -151,6 +154,24 @@ function Users({
                 </TableRowCell>
                 <TableRowCell>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : '—'}</TableRowCell>
                 <TableRowCell>{user.email || '—'}</TableRowCell>
+                <TableRowCell>
+                  <div className={styles.actionRow}>
+                    <LabelButton
+                      kind={user.isActive ? 'danger' : 'success'}
+                      onPress={() => onToggleActive(user)}
+                    >
+                      {user.isActive ? translate('Deactivate') : translate('Activate')}
+                    </LabelButton>
+                    {!user.isAdmin && (
+                      <LabelButton
+                        kind="danger"
+                        onPress={() => onDelete(user)}
+                      >
+                        {translate('Delete')}
+                      </LabelButton>
+                    )}
+                  </div>
+                </TableRowCell>
               </TableRow>
             ))}
           </TableBody>
@@ -164,6 +185,8 @@ Users.propTypes = {
   users: PropTypes.arrayOf(PropTypes.object).isRequired,
   isFetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
+  onDelete: PropTypes.func.isRequired,
+  onToggleActive: PropTypes.func.isRequired,
   onRefresh: PropTypes.func.isRequired,
   onCreate: PropTypes.func.isRequired
 };
