@@ -232,6 +232,7 @@ export default class BookPoolPage extends Component {
               filters={filterOptions}
               customFilters={[]}
               isDisabled={isFetching}
+              alignMenu={align.RIGHT}
               onFilterSelect={this.onFilterSelect}
               className={styles.filterMenu}
             />

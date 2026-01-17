@@ -181,8 +181,9 @@ class SignalRConnector extends Component {
   handleBook = (body) => {
     const action = body.action;
     const section = 'books';
+    const isChanged = action === 'updated' || action === 'created';
 
-    if (action === 'updated') {
+    if (isChanged) {
       this.props.dispatchUpdateItem({
         section,
         ...body.resource
@@ -199,18 +200,17 @@ class SignalRConnector extends Component {
   handleBookfile = (body) => {
     const section = 'bookFiles';
 
-    if (body.action === 'updated') {
+    if (body.action === 'updated' || body.action === 'created') {
       this.props.dispatchUpdateItem({ section, ...body.resource });
       this.dispatchBookPoolRefresh();
+      repopulatePage('bookFileUpdated');
     } else if (body.action === 'deleted') {
       this.props.dispatchRemoveItem({ section, id: body.resource.id });
-
       repopulatePage('bookFileDeleted');
       this.dispatchBookPoolRefresh();
+    } else if (body.action === 'sync') {
+      repopulatePage('bookFileUpdated');
     }
-
-    // Repopulate the page to handle recently imported file
-    repopulatePage('bookFileUpdated');
   };
 
   handleHealth = () => {
