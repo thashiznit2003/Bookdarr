@@ -22,6 +22,112 @@ import { icons } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import styles from './Users.css';
 
+function EditUserModal({
+  user,
+  isOpen,
+  isSaving,
+  onModalClose,
+  onSubmit
+}) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setUsername(user.username || '');
+      setEmail(user.email || '');
+      setPassword('');
+    }
+  }, [user]);
+
+  const canSubmit = username.trim().length > 0;
+
+  const handleSubmit = () => {
+    if (!canSubmit || !user) {
+      return;
+    }
+
+    onSubmit({
+      id: user.id,
+      username: username.trim(),
+      email: email.trim() || null,
+      password: password || null
+    });
+
+    onModalClose();
+  };
+
+  return (
+    <Modal isOpen={isOpen} onModalClose={onModalClose}>
+      <ModalContent onModalClose={onModalClose}>
+        <ModalHeader>
+          {translate('Edit')} {translate('User')}
+        </ModalHeader>
+        <ModalBody>
+          <div className={styles.modalField}>
+            <span className={styles.fieldLabel}>{translate('Username')}</span>
+            <TextInput
+              name="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoFocus
+            />
+          </div>
+
+          <div className={styles.modalField}>
+            <span className={styles.fieldLabel}>{translate('Password')}</span>
+            <TextInput
+              name="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Leave blank to keep current password"
+            />
+            <div className={styles.note}>
+              Leave blank to keep the current password
+            </div>
+          </div>
+
+          <div className={styles.modalField}>
+            <span className={styles.fieldLabel}>{translate('Email')}</span>
+            <TextInput
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button onPress={onModalClose}>
+            {translate('Cancel')}
+          </Button>
+          <Button
+            kind="primary"
+            onPress={handleSubmit}
+            isDisabled={!canSubmit || isSaving}
+          >
+            {translate('Save')}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
+EditUserModal.propTypes = {
+  user: PropTypes.object,
+  isOpen: PropTypes.bool.isRequired,
+  isSaving: PropTypes.bool,
+  onModalClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired
+};
+
+EditUserModal.defaultProps = {
+  user: null,
+  isSaving: false
+};
+
 function AddUserModal({
   isOpen,
   isSaving,
@@ -146,9 +252,11 @@ function Users({
   onDelete,
   onToggleActive,
   onRefresh,
-  onCreate
+  onCreate,
+  onUpdate
 }) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
 
   const rows = useMemo(() => users || [], [users]);
   const columns = useMemo(() => ([
@@ -195,7 +303,7 @@ function Users({
         </div>
 
         <div className={styles.helpText}>
-          Use Add User to create accounts. Toggle active or delete users in the table.
+          Use Add User to create accounts. Toggle active, edit, or delete users in the table.
         </div>
 
         <Table
@@ -212,14 +320,20 @@ function Users({
                     {user.isAdmin ? 'Admin' : (user.role || 'User')}
                   </Label>
                 </TableRowCell>
-              <TableRowCell>
-                <Label kind={user.isActive ? 'success' : 'danger'}>
-                  {user.isActive ? translate('Active') : translate('Inactive')}
-                </Label>
-              </TableRowCell>
-              <TableRowCell>{user.email || '—'}</TableRowCell>
-              <TableRowCell>
+                <TableRowCell>
+                  <Label kind={user.isActive ? 'success' : 'danger'}>
+                    {user.isActive ? translate('Active') : translate('Inactive')}
+                  </Label>
+                </TableRowCell>
+                <TableRowCell>{user.email || '—'}</TableRowCell>
+                <TableRowCell>
                   <div className={styles.actionRow}>
+                    <Button
+                      kind="default"
+                      onPress={() => setEditingUser(user)}
+                    >
+                      {translate('Edit')}
+                    </Button>
                     <Button
                       kind={user.isActive ? 'danger' : 'success'}
                       onPress={() => onToggleActive(user)}
@@ -247,6 +361,14 @@ function Users({
           onModalClose={() => setIsAddModalOpen(false)}
           onSubmit={onCreate}
         />
+
+        <EditUserModal
+          user={editingUser}
+          isOpen={!!editingUser}
+          isSaving={isFetching}
+          onModalClose={() => setEditingUser(null)}
+          onSubmit={onUpdate}
+        />
       </PageContentBody>
     </PageContent>
   );
@@ -259,7 +381,8 @@ Users.propTypes = {
   onDelete: PropTypes.func.isRequired,
   onToggleActive: PropTypes.func.isRequired,
   onRefresh: PropTypes.func.isRequired,
-  onCreate: PropTypes.func.isRequired
+  onCreate: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired
 };
 
 Users.defaultProps = {

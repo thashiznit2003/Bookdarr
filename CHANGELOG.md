@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.93
+- Summary: Finish the Users edit flow: add an Edit modal, wire the update thunk, include email on create, and let the API toggle active state.
+- Why: Admins need to update usernames/emails/passwords and deactivate accounts from the UI; previous toggle calls were ignored because the API didn’t accept `isActive`.
+- Impact: Users page now has Edit buttons with a prefilled modal (username/email, optional new password); Add modal collects email; update thunk calls the new endpoint; API update accepts `isActive`; user create sends email. Version bumped for deploy/cache-bust.
+- Files: `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`, `frontend/src/Settings/Users/index.js`, `frontend/src/Store/Actions/Settings/settingsUsersActions.js`, `src/Readarr.Api.V1/Users/UserUpdateResource.cs`, `src/Readarr.Api.V1/Users/UsersController.cs`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to the next `/opt/bookdarr-dev/Logs/update-0XX.log`), verify diagnostics, then continue with per-user libraries and self-service password reset/email sending.
+
 ## 1.3.92
 - Summary: Fix build issues for the user update work (hashing import and using order).
 - Why: Build failed after adding the update endpoint; missing SHA256Hash import and StyleCop ordering.

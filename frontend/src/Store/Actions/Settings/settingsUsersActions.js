@@ -15,11 +15,13 @@ export const FETCH_USERS = 'settings/users/fetch';
 export const CREATE_USER = 'settings/users/create';
 export const DELETE_USER = 'settings/users/delete';
 export const TOGGLE_USER = 'settings/users/toggle';
+export const UPDATE_USER = 'settings/users/update';
 
 export const fetchUsers = createThunk(FETCH_USERS);
 export const createUser = createThunk(CREATE_USER);
 export const deleteUser = createThunk(DELETE_USER);
 export const toggleUser = createThunk(TOGGLE_USER);
+export const updateUser = createThunk(UPDATE_USER);
 
 export const actionHandlers = handleThunks({
   [FETCH_USERS]: function(getState, payload, dispatch) {
@@ -60,6 +62,7 @@ export const actionHandlers = handleThunks({
       data: JSON.stringify({
         username: payload.username,
         password: payload.password,
+        email: payload.email,
         isAdmin: payload.isAdmin,
         isActive: payload.isActive
       })
@@ -109,9 +112,43 @@ export const actionHandlers = handleThunks({
       dataType: 'json',
       contentType: 'application/json',
       data: JSON.stringify({
-        ...payload,
+        username: payload.username,
+        email: payload.email,
         isActive: !payload.isActive
       })
+    });
+
+    request.done(() => {
+      dispatch(fetchUsers());
+    });
+
+    request.fail((xhr) => {
+      dispatch(set({
+        section,
+        isFetching: false,
+        error: xhr
+      }));
+    });
+  },
+
+  [UPDATE_USER]: function(getState, payload, dispatch) {
+    dispatch(set({ section, isFetching: true }));
+
+    const body = {
+      username: payload.username,
+      email: payload.email || null
+    };
+
+    if (payload.password) {
+      body.password = payload.password;
+    }
+
+    const { request } = createAjaxRequest({
+      url: `/users/${payload.id}`,
+      method: 'PUT',
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify(body)
     });
 
     request.done(() => {

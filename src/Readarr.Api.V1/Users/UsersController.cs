@@ -91,6 +91,11 @@ namespace Readarr.Api.V1.Users
             user.Username = resource.Username.ToLowerInvariant();
             user.Email = resource.Email;
 
+            if (resource.IsActive.HasValue)
+            {
+                user.IsActive = resource.IsActive.Value;
+            }
+
             if (resource.Password.IsNotNullOrWhiteSpace())
             {
                 user.Password = resource.Password.SHA256Hash();

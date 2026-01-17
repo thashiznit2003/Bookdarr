@@ -59,3 +59,9 @@
   font-weight: 600;
   user-select: none;
 }
+
+.note {
+  margin-top: 4px;
+  color: var(--dimTextColor);
+  font-size: 12px;
+}
