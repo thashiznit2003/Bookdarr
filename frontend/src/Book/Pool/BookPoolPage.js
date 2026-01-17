@@ -269,7 +269,7 @@ class BookPoolPage extends Component {
     return (
       <PageContent>
         <PageToolbar>
-          <PageToolbarSection>
+          <PageToolbarSection collapseButtons={false}>
             <PageToolbarButton
               label={translate('UpdateAll')}
               iconName={icons.REFRESH}
