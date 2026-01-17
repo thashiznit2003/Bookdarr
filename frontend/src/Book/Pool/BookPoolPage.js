@@ -6,7 +6,6 @@ import { createSelector } from 'reselect';
 import BookCover from 'Book/BookCover';
 import BookTitleLink from 'Book/BookTitleLink';
 import AddManualBookModal from 'Book/Index/ManualAdd/AddManualBookModal';
-import IconButton from 'Components/Link/IconButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import FilterMenu from 'Components/Menu/FilterMenu';
 import MenuContent from 'Components/Menu/MenuContent';
@@ -609,10 +608,10 @@ function BookPoolPoster({
   } = resource;
 
   const onAddPress = useCallback(() => {
-    if (typeof onAdd === 'function') {
+    if (typeof onAdd === 'function' && !isAdding) {
       onAdd(resource);
     }
-  }, [onAdd, resource]);
+  }, [onAdd, resource, isAdding]);
 
   const authorName = formatAuthorName(getAuthorDisplayName(book));
 
@@ -626,13 +625,15 @@ function BookPoolPoster({
           lazy={false}
         />
         <Tooltip content={translate(inMyLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}>
-          <IconButton
+          <button
             className={classNames(styles.addButton, inMyLibrary && styles.removeButton)}
-            name={inMyLibrary ? icons.REMOVE : icons.ADD}
-            onPress={onAddPress}
-            isDisabled={isAdding}
-            isSpinning={isAdding}
-          />
+            type="button"
+            onClick={onAddPress}
+            aria-label={translate(inMyLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}
+            disabled={isAdding}
+          >
+            {inMyLibrary ? '−' : '+'}
+          </button>
         </Tooltip>
         <div className={styles.posterOverlay}>
           <div className={styles.posterOverlayContent}>
