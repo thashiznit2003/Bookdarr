@@ -73,7 +73,7 @@ namespace Readarr.Api.V1.Books
             var user = GetCurrentUser();
             var userBooks = _libraryService.GetUserLibrary(user.Id);
 
-            if (userBooks == null || userBooks.Count == 0)
+            if (userBooks == null || !userBooks.Any())
             {
                 return new List<BookResource>();
             }
