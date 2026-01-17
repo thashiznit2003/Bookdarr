@@ -93,7 +93,6 @@ class BookIndexPoster extends Component {
       title,
       authorId,
       author,
-      monitored,
       titleSlug,
       nextAiring,
       statistics,
@@ -103,7 +102,6 @@ class BookIndexPoster extends Component {
       detailedProgressBar,
       showTitle,
       showAuthor,
-      showMonitored,
       showQualityProfile,
       qualityProfile,
       showSearchAction,
@@ -232,9 +230,10 @@ class BookIndexPoster extends Component {
           </div>
 
           <BookIndexProgressBar
-            monitored={monitored}
             bookCount={bookCount}
             bookFileCount={bookFileCount}
+            ebookFileCount={statistics?.ebookFileCount || 0}
+            audiobookFileCount={statistics?.audiobookFileCount || 0}
             totalBookCount={totalBookCount}
             posterWidth={posterWidth}
             detailedProgressBar={detailedProgressBar}
@@ -251,13 +250,6 @@ class BookIndexPoster extends Component {
             showAuthor &&
               <div className={styles.title}>
                 {author.authorName}
-              </div>
-          }
-
-          {
-            showMonitored &&
-              <div className={styles.title}>
-                {monitored ? 'Monitored' : 'Unmonitored'}
               </div>
           }
 
@@ -325,7 +317,6 @@ BookIndexPoster.propTypes = {
   title: PropTypes.string.isRequired,
   authorId: PropTypes.number.isRequired,
   author: PropTypes.object.isRequired,
-  monitored: PropTypes.bool.isRequired,
   titleSlug: PropTypes.string.isRequired,
   nextAiring: PropTypes.string,
   statistics: PropTypes.object.isRequired,
@@ -335,7 +326,6 @@ BookIndexPoster.propTypes = {
   detailedProgressBar: PropTypes.bool.isRequired,
   showTitle: PropTypes.bool.isRequired,
   showAuthor: PropTypes.bool.isRequired,
-  showMonitored: PropTypes.bool.isRequired,
   showQualityProfile: PropTypes.bool.isRequired,
   qualityProfile: PropTypes.object.isRequired,
   showSearchAction: PropTypes.bool.isRequired,

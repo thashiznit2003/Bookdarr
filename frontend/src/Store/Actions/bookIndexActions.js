@@ -35,7 +35,7 @@ export const defaultState = {
     size: 'large',
     showTitle: true,
     showAuthor: true,
-    showMonitored: true,
+    showMonitored: false,
     showQualityProfile: true,
     showSearchAction: false
   },
@@ -44,7 +44,7 @@ export const defaultState = {
     detailedProgressBar: false,
     size: 'medium',
     showReleaseDate: true,
-    showMonitored: true,
+    showMonitored: false,
     showQualityProfile: true,
     showAdded: false,
     showPath: false,

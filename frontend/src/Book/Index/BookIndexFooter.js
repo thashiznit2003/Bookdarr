@@ -18,8 +18,10 @@ class BookIndexFooter extends PureComponent {
     const count = book.length;
     let books = 0;
     let bookFiles = 0;
-    let monitored = 0;
     let totalFileSize = 0;
+    let fullFormats = 0;
+    let partialFormats = 0;
+    let missingFormats = 0;
 
     const authors = new Set();
 
@@ -31,14 +33,23 @@ class BookIndexFooter extends PureComponent {
       const {
         bookCount = 0,
         bookFileCount = 0,
+        ebookFileCount = 0,
+        audiobookFileCount = 0,
         sizeOnDisk = 0
       } = statistics;
 
       books += bookCount;
       bookFiles += bookFileCount;
 
-      if (s.monitored) {
-        monitored++;
+      const hasEbook = ebookFileCount > 0;
+      const hasAudiobook = audiobookFileCount > 0;
+
+      if (hasEbook && hasAudiobook) {
+        fullFormats++;
+      } else if (hasEbook || hasAudiobook) {
+        partialFormats++;
+      } else {
+        missingFormats++;
       }
 
       totalFileSize += sizeOnDisk;
@@ -58,7 +69,7 @@ class BookIndexFooter extends PureComponent {
                     )}
                   />
                   <div>
-                    {translate('ContinuingAllBooksDownloaded')}
+                    Full (ebook + audiobook)
                   </div>
                 </div>
 
@@ -70,7 +81,7 @@ class BookIndexFooter extends PureComponent {
                     )}
                   />
                   <div>
-                    {translate('EndedAllBooksDownloaded')}
+                    Partial (one format)
                   </div>
                 </div>
 
@@ -82,36 +93,12 @@ class BookIndexFooter extends PureComponent {
                     )}
                   />
                   <div>
-                    {translate('MissingBooksAuthorMonitored')}
-                  </div>
-                </div>
-
-                <div className={styles.legendItem}>
-                  <div
-                    className={classNames(
-                      styles.missingUnmonitored,
-                      enableColorImpairedMode && 'colorImpaired'
-                    )}
-                  />
-                  <div>
-                    {translate('MissingBooksAuthorNotMonitored')}
+                    Missing files
                   </div>
                 </div>
               </div>
 
               <div className={styles.statistics}>
-                <DescriptionList>
-                  <DescriptionListItem
-                    title={translate('Monitored')}
-                    data={monitored}
-                  />
-
-                  <DescriptionListItem
-                    title={translate('Unmonitored')}
-                    data={count - monitored}
-                  />
-                </DescriptionList>
-
                 <DescriptionList>
                   <DescriptionListItem
                     title={translate('Authors')}
@@ -126,6 +113,21 @@ class BookIndexFooter extends PureComponent {
                   <DescriptionListItem
                     title={translate('Files')}
                     data={bookFiles}
+                  />
+
+                  <DescriptionListItem
+                    title="Full"
+                    data={fullFormats}
+                  />
+
+                  <DescriptionListItem
+                    title="Partial"
+                    data={partialFormats}
+                  />
+
+                  <DescriptionListItem
+                    title="Missing"
+                    data={missingFormats}
                   />
                 </DescriptionList>
 

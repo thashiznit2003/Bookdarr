@@ -21,13 +21,13 @@
 .continuing {
   composes: legendItemColor;
 
-  background-color: var(--primaryColor);
+  background-color: var(--successColor);
 }
 
 .ended {
   composes: legendItemColor;
 
-  background-color: var(--successColor);
+  background-color: var(--warningColor);
 }
 
 .missingMonitored {
@@ -43,7 +43,7 @@
 .missingUnmonitored {
   composes: legendItemColor;
 
-  background-color: var(--warningColor);
+  background-color: var(--dangerColor);
 
   &:global(.colorImpaired) {
     background: repeating-linear-gradient(45deg, #ffa500, #ffa500 5px, color(#ffa500 tint(15%)) 5px, color(#ffa500 tint(15%)) 10px);

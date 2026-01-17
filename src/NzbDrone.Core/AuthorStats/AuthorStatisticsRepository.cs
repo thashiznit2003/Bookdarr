@@ -53,6 +53,8 @@ namespace NzbDrone.Core.AuthorStats
             .Select($@"""Authors"".""Id"" AS ""AuthorId"",
                      ""Books"".""Id"" AS ""BookId"",
                      SUM(COALESCE(""BookFiles"".""Size"", 0)) AS ""SizeOnDisk"",
+                     SUM(CASE WHEN ""BookFiles"".""MediaType"" = {(int)BookFileMediaType.Ebook} THEN 1 ELSE 0 END) AS ""EbookFileCount"",
+                     SUM(CASE WHEN ""BookFiles"".""MediaType"" = {(int)BookFileMediaType.Audiobook} THEN 1 ELSE 0 END) AS ""AudiobookFileCount"",
                      1 AS ""TotalBookCount"",
                      CASE WHEN MIN(""BookFiles"".""Id"") IS NULL THEN 0 ELSE 1 END AS ""AvailableBookCount"",
                      CASE WHEN (""Books"".""Monitored"" = {trueIndicator} AND (""Books"".""ReleaseDate"" < @currentDate) OR ""Books"".""ReleaseDate"" IS NULL) OR MIN(""BookFiles"".""Id"") IS NOT NULL THEN 1 ELSE 0 END AS ""BookCount"",

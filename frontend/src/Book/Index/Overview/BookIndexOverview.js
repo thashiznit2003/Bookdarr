@@ -202,9 +202,10 @@ class BookIndexOverview extends Component {
             </Link>
 
             <BookIndexProgressBar
-              monitored={monitored}
               bookCount={bookCount}
               bookFileCount={bookFileCount}
+              ebookFileCount={statistics?.ebookFileCount || 0}
+              audiobookFileCount={statistics?.audiobookFileCount || 0}
               totalBookCount={totalBookCount}
               posterWidth={posterWidth}
               detailedProgressBar={overviewOptions.detailedProgressBar}
@@ -295,7 +296,6 @@ class BookIndexOverview extends Component {
 BookIndexOverview.propTypes = {
   id: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
-  monitored: PropTypes.bool.isRequired,
   titleSlug: PropTypes.string.isRequired,
   nextAiring: PropTypes.string,
   statistics: PropTypes.object.isRequired,
