@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.3.88
-- Summary: Add a confirmation to Restart, remove Shutdown from the header menu, and keep Logout accessible.
-- Why: Shutdown shouldn’t be exposed; Restart needs confirmation to avoid accidental stops.
-- Impact: Header actions menu now shows Restart (with confirm) and Logout; Shutdown removed.
-- Files: `frontend/src/Components/Page/Header/PageHeader.js`, `frontend/src/Components/Page/Header/PageHeaderActionsMenu.js`, `frontend/src/Components/Page/Header/PageHeaderActionsMenuConnector.js`
+## 1.3.89
+- Summary: Remove Keyboard Shortcuts from the header menu; keep Restart (with confirm) and Logout.
+- Why: Requested a leaner menu with only Restart/Logout.
+- Impact: Header actions menu now has Restart (with confirmation) and Logout; no Shutdown, no Keyboard Shortcuts.
+- Files: `frontend/src/Components/Page/Header/PageHeaderActionsMenu.js`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 
 ## 1.3.51

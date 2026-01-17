@@ -13,7 +13,6 @@ import styles from './PageHeaderActionsMenu.css';
 function PageHeaderActionsMenu(props) {
   const {
     formsAuth,
-    onKeyboardShortcutsPress,
     onRestartPress
   } = props;
 
@@ -29,16 +28,6 @@ function PageHeaderActionsMenu(props) {
         </MenuButton>
 
         <MenuContent>
-          <MenuItem onPress={onKeyboardShortcutsPress}>
-            <Icon
-              className={styles.itemIcon}
-              name={icons.KEYBOARD}
-            />
-            Keyboard Shortcuts
-          </MenuItem>
-
-          <MenuItemSeparator />
-
           <MenuItem onPress={() => setIsRestartConfirmOpen(true)}>
             <Icon
               className={styles.itemIcon}
@@ -87,7 +76,6 @@ function PageHeaderActionsMenu(props) {
 
 PageHeaderActionsMenu.propTypes = {
   formsAuth: PropTypes.bool.isRequired,
-  onKeyboardShortcutsPress: PropTypes.func.isRequired,
   onRestartPress: PropTypes.func.isRequired
 };
 
