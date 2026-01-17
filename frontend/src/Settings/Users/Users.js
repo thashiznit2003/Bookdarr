@@ -5,9 +5,10 @@ import PageContentBody from 'Components/Page/PageContentBody';
 import Label from 'Components/Label';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
-import TableCell from 'Components/Table/TableCell';
 import TableHeader from 'Components/Table/TableHeader';
 import TableRow from 'Components/Table/TableRow';
+import TableHeaderCell from 'Components/Table/TableHeaderCell';
+import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TextInput from 'Components/Form/TextInput';
 import CheckInput from 'Components/Form/CheckInput';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
@@ -105,29 +106,29 @@ function Users({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableCell>{translate('Username')}</TableCell>
-              <TableCell>{translate('Role')}</TableCell>
-              <TableCell>{translate('Active')}</TableCell>
-              <TableCell>{translate('LastLogin')}</TableCell>
-              <TableCell>{translate('Email')}</TableCell>
+              <TableHeaderCell>{translate('Username')}</TableHeaderCell>
+              <TableHeaderCell>{translate('Role')}</TableHeaderCell>
+              <TableHeaderCell>{translate('Active')}</TableHeaderCell>
+              <TableHeaderCell>{translate('LastLogin')}</TableHeaderCell>
+              <TableHeaderCell>{translate('Email')}</TableHeaderCell>
             </TableRow>
           </TableHeader>
           <TableBody>
             {rows.map((user) => (
               <TableRow key={user.id}>
-                <TableCell>{user.username}</TableCell>
-                <TableCell>
+                <TableRowCell>{user.username}</TableRowCell>
+                <TableRowCell>
                   <Label kind={user.isAdmin ? 'primary' : 'default'}>
                     {user.isAdmin ? 'Admin' : (user.role || 'User')}
                   </Label>
-                </TableCell>
-                <TableCell>
+                </TableRowCell>
+                <TableRowCell>
                   <Label kind={user.isActive ? 'success' : 'danger'}>
                     {user.isActive ? translate('Active') : translate('Inactive')}
                   </Label>
-                </TableCell>
-                <TableCell>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : '—'}</TableCell>
-                <TableCell>{user.email || '—'}</TableCell>
+                </TableRowCell>
+                <TableRowCell>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : '—'}</TableRowCell>
+                <TableRowCell>{user.email || '—'}</TableRowCell>
               </TableRow>
             ))}
           </TableBody>
