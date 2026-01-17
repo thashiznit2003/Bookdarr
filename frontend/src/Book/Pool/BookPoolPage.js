@@ -379,18 +379,6 @@ class BookPoolPage extends Component {
     });
   };
 
-  renderStatus(resource) {
-    const { status, needsAttention } = resource;
-    const normalizedStatus = (status || '').toLowerCase();
-    const label = STATUS_LABELS[normalizedStatus] ? STATUS_LABELS[normalizedStatus]() : translate('BookPoolStatusPending');
-
-    return (
-      <span className={needsAttention ? styles.statusAttention : styles.status}>
-        {label}
-      </span>
-    );
-  }
-
   render() {
     const {
       books,
@@ -510,7 +498,6 @@ class BookPoolPage extends Component {
                       resource={item}
                       onAdd={this.onAddToLibrary}
                       isAdding={adding[item.bookId]}
-                      renderStatus={this.renderStatus}
                     />
                   ))}
                 </div>
@@ -551,8 +538,7 @@ class BookPoolPage extends Component {
 function BookPoolPoster({
   resource,
   onAdd,
-  isAdding,
-  renderStatus
+  isAdding
 }) {
   const {
     book,
@@ -601,7 +587,6 @@ function BookPoolPoster({
             )}
           </div>
           <div className={styles.posterStatusRow}>
-            {renderStatus(resource)}
             <span
               className={classNames(
                 styles.posterTypeBadge,
@@ -650,7 +635,6 @@ BookPoolPoster.propTypes = {
   }).isRequired,
   onAdd: PropTypes.func.isRequired,
   isAdding: PropTypes.bool,
-  renderStatus: PropTypes.func.isRequired
 };
 
 BookPoolPage.propTypes = {

@@ -136,11 +136,13 @@
 }
 .posterTypeBadge {
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.25);
   font-size: 0.65rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 2px 6px;
+  padding: 2px 8px;
+  min-width: 66px;
+  text-align: center;
 }
 
 .posterTypeReady {
@@ -149,26 +151,7 @@
 }
 
 .posterTypeMissing {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.status,
-.statusAttention {
-  padding: 4px 12px;
-  border-radius: 999px;
-  display: inline-flex;
-  justify-content: center;
-  font-size: 0.78rem;
-  min-width: 70px;
-}
-
-.status {
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: var(--textColor);
-}
-
-.statusAttention {
-  border: 1px solid var(--dangerColor);
+  border-color: var(--dangerColor);
   color: var(--dangerColor);
 }
 
