@@ -135,6 +135,13 @@
 - Files: `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `frontend/src/Book/Pool/BookPoolPage.js`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM, then add/remove from Book Pool and confirm Library updates and corner buttons behave as expected.
 
+## 1.3.70
+- Summary: Refresh the Library list automatically after Book Pool add/remove so new items appear without a manual page refresh.
+- Why: Books added from Book Pool required a hard refresh to show up in Library → Books; we need live updates.
+- Impact: Book Pool now dispatches a user-library reload after add/remove, keeping the Library view in sync; `src/Directory.Build.props` reports `1.3.70.*`; `CHANGELOG.md` documents the live refresh.
+- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh`, then add/remove a book in Book Pool and confirm it appears/disappears in Library → Books without refreshing.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.

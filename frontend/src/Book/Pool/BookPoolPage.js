@@ -26,6 +26,7 @@ import titleCase from 'Utilities/String/titleCase';
 import translate from 'Utilities/String/translate';
 import sortCollection from 'Utilities/Array/sortCollection';
 import { executeCommand } from 'Store/Actions/commandActions';
+import { fetchUserLibraryBooks } from 'Store/Actions/bookActions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import * as commandNames from 'Commands/commandNames';
 import styles from './BookPoolPage.css';
@@ -340,6 +341,7 @@ class BookPoolPage extends Component {
 
   onAddToLibrary = (book) => {
     const { adding, books, libraryAdded } = this.state;
+    const { dispatchFetchUserLibraryBooks } = this.props;
 
     this.setState({
       adding: { ...adding, [book.bookId]: true }
@@ -374,6 +376,10 @@ class BookPoolPage extends Component {
           adding: { ...adding, [book.bookId]: false },
           libraryAdded: nextLibraryAdded
         });
+
+        if (typeof dispatchFetchUserLibraryBooks === 'function') {
+          dispatchFetchUserLibraryBooks();
+        }
       });
 
       removeRequest.request.fail(() => {
@@ -423,6 +429,10 @@ class BookPoolPage extends Component {
           return { libraryAdded: updatedFlag };
         });
       }, 5000);
+
+      if (typeof dispatchFetchUserLibraryBooks === 'function') {
+        dispatchFetchUserLibraryBooks();
+      }
     });
 
     request.request.fail(() => {
@@ -733,7 +743,8 @@ BookPoolPage.propTypes = {
   isRefreshingBook: PropTypes.bool.isRequired,
   isSearching: PropTypes.bool.isRequired,
   onRefreshBooks: PropTypes.func.isRequired,
-  onSearchBooks: PropTypes.func.isRequired
+  onSearchBooks: PropTypes.func.isRequired,
+  dispatchFetchUserLibraryBooks: PropTypes.func
 };
 
 function createMapStateToProps() {
@@ -773,6 +784,10 @@ function createMapDispatchToProps(dispatch) {
         name: commandNames.BOOK_SEARCH,
         bookIds
       }));
+    },
+
+    dispatchFetchUserLibraryBooks() {
+      dispatch(fetchUserLibraryBooks());
     }
   };
 }
