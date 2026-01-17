@@ -47,7 +47,7 @@ namespace Readarr.Api.V1.Books
             var userBook = _libraryService.AddOrGetUserBook(user.Id, resource.BookId, resource.WantsEbook, resource.WantsAudiobook);
             var mapped = MapUserBook(userBook);
 
-            return Created(mapped.Id, mapped);
+            return Created(mapped.Id);
         }
 
         [HttpDelete("{bookId:int}")]
