@@ -23,6 +23,13 @@
 - Files: `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
 - Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle lands in `Bookdarr-Diagnostics`.
 
+## 1.3.54
+- Summary: Force the add/remove corner control’s colors to override the base Link styles so the blue/red corner stays visible even if the Link CSS wipes the background.
+- Why: Link.css was resetting background/color, making the corner control invisible; explicit overrides keep the control visible.
+- Impact: `BookPoolPage.css` now applies `!important` overrides and a fixed line-height so the corner button shows; `src/Directory.Build.props` reports `1.3.54.*`; `CHANGELOG.md` logs the visibility override.
+- Files: `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: tag `snapshot-YYYYMMDD-HHMM`, push the commits and tag to `develop`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH, and verify the diagnostics bundle lands in `Bookdarr-Diagnostics`.
+
 ## 1.3.47
 - Summary: Added a macOS helper that clears Chrome’s Bookdarr cache and service worker storage so the client can download the v1.3.46 bundle (with no “Ready/Files pending” pills) without extra guesswork.
 - Why: Re-running the DevTools cache-clearing steps manually was error prone, so packaging them in a script saves time and lets anyone confirm they’re on the latest bundle before reporting UI issues.
