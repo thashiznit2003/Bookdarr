@@ -614,6 +614,29 @@ function BookPoolPoster({
   }, [onAdd, resource, isAdding]);
 
   const authorName = formatAuthorName(getAuthorDisplayName(book));
+  const cornerStyle = {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 28,
+    height: 28,
+    background: inMyLibrary ? 'var(--dangerColor)' : 'var(--primaryColor)',
+    color: 'var(--white)',
+    border: 'none',
+    borderRadius: '0 0 0 6px',
+    fontWeight: 800,
+    fontSize: 14,
+    lineHeight: '1',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 4px 10px rgba(0,0,0,0.35)',
+    borderLeft: '1px solid rgba(255,255,255,0.6)',
+    borderBottom: '1px solid rgba(255,255,255,0.6)',
+    textShadow: '0 1px 2px rgba(0,0,0,0.4)',
+    zIndex: 20,
+    cursor: isAdding ? 'default' : 'pointer'
+  };
 
   return (
     <div className={classNames(styles.posterCard, needsAttention && styles.posterAttention)}>
@@ -632,7 +655,7 @@ function BookPoolPoster({
             aria-label={translate(inMyLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}
             disabled={isAdding}
             data-testid="pool-corner-action"
-            style={{ position: 'absolute', top: 4, right: 4, zIndex: 10 }}
+            style={cornerStyle}
           >
             {inMyLibrary ? '−' : '+'}
           </button>
