@@ -63,8 +63,8 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   margin: 0;
   padding: 0;
   border-radius: 0 0 0 5px;
@@ -76,15 +76,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 700;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
   z-index: 4;
-  border-left: 2px solid rgba(255, 255, 255, 0.6);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+  border-left: 1px solid rgba(255, 255, 255, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
   /* Fallback glyph so the control is visible even if icon fonts don't load */
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .addButton::after {
@@ -129,29 +129,6 @@
   gap: 6px;
   align-items: center;
   flex-wrap: wrap;
-  justify-content: flex-start;
-}
-
-.actionButton {
-  margin-left: auto;
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(0, 0, 0, 0.5);
-  color: var(--white);
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.addAction {
-  background: var(--primaryColor);
-  border-color: var(--primaryHoverColor);
-}
-
-.removeAction {
-  background: var(--dangerColor);
-  border-color: var(--dangerHoverColor, var(--dangerColor));
 }
 
 .posterOverlay {

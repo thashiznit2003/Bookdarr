@@ -672,18 +672,6 @@ function BookPoolPoster({
                 {translate('InMyLibrary')}
               </span>
             )}
-            <button
-              type="button"
-              className={classNames(
-                styles.actionButton,
-                inMyLibrary ? styles.removeAction : styles.addAction
-              )}
-              onClick={onAddPress}
-              disabled={isAdding}
-              aria-label={translate(inMyLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}
-            >
-              {inMyLibrary ? translate('RemoveFromMyLibrary') : translate('AddToMyLibrary')}
-            </button>
           </div>
         </div>
       </div>
