@@ -346,6 +346,44 @@ class BookPoolPage extends Component {
       adding: { ...adding, [book.bookId]: true }
     });
 
+    if (book.inMyLibrary) {
+      const removeRequest = createAjaxRequest({
+        url: `/user/library/${book.bookId}`,
+        method: 'DELETE'
+      });
+
+      removeRequest.request.done(() => {
+        const updatedBooks = books.map((item) => {
+          if (item.bookId === book.bookId) {
+            return {
+              ...item,
+              inMyLibrary: false,
+              status: item.status,
+              hasEbook: item.hasEbook,
+              hasAudiobook: item.hasAudiobook
+            };
+          }
+
+          return item;
+        });
+
+        const nextLibraryAdded = { ...libraryAdded };
+        delete nextLibraryAdded[book.bookId];
+
+        this.setState({
+          books: updatedBooks,
+          adding: { ...adding, [book.bookId]: false },
+          libraryAdded: nextLibraryAdded
+        });
+      });
+
+      removeRequest.request.fail(() => {
+        this.setState({ adding: { ...adding, [book.bookId]: false } });
+      });
+
+      return;
+    }
+
     const request = createAjaxRequest({
       url: '/user/library',
       method: 'POST',

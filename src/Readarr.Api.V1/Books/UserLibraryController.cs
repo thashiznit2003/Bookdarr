@@ -50,6 +50,16 @@ namespace Readarr.Api.V1.Books
             return Created(mapped.Id);
         }
 
+        [HttpDelete("{bookId:int}")]
+        public ActionResult RemoveFromLibrary(int bookId)
+        {
+            var user = GetCurrentUser();
+
+            _libraryService.RemoveUserBook(user.Id, bookId);
+
+            return NoContent();
+        }
+
         [HttpGet("pool")]
         public ActionResult<List<BookPoolResource>> GetBookPool()
         {

@@ -13,6 +13,7 @@ namespace NzbDrone.Core.Books
         UserBook GetUserBook(int userId, int bookId);
         IEnumerable<UserBook> GetUserLibrary(int userId);
         UserBook GetUserBookById(int id, int userId);
+        void RemoveUserBook(int userId, int bookId);
         bool IsBookAvailableInPool(int bookId);
         LibraryStatus GetPoolStatus(int bookId, bool wantsEbook, bool wantsAudiobook);
         bool PoolHasMedia(int bookId, BookFileMediaType mediaType);
@@ -97,6 +98,24 @@ namespace NzbDrone.Core.Books
             }
 
             return userBook;
+        }
+
+        public void RemoveUserBook(int userId, int bookId)
+        {
+            var userBook = _userBookRepository.GetByUserAndBook(userId, bookId);
+
+            if (userBook == null)
+            {
+                return;
+            }
+
+            var userBookFiles = _userBookFileRepository.GetByUserBook(userBook.Id);
+            foreach (var userBookFile in userBookFiles)
+            {
+                _userBookFileRepository.Delete(userBookFile.Id);
+            }
+
+            _userBookRepository.Delete(userBook.Id);
         }
 
         public bool IsBookAvailableInPool(int bookId)
