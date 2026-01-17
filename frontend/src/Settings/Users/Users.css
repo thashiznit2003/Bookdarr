@@ -35,6 +35,11 @@
   margin-bottom: 16px;
 }
 
+.fieldLabel {
+  margin-bottom: 6px;
+  display: block;
+}
+
 .modalCheckRow {
   display: flex;
   gap: 16px;

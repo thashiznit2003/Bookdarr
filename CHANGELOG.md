@@ -1,9 +1,9 @@
 # Changelog
 
-## 1.3.79
-- Summary: Polish the Users page: consistent modal styling, labeled inputs, and aligned controls to match other settings dialogs.
-- Why: The previous add-user modal felt bare and off-brand; this aligns spacing, labels, and buttons with the rest of Settings.
-- Impact: Users modal uses labeled fields, aligned admin/active toggles, and cleaner spacing; table remains single-header with clear actions.
+## 1.3.80
+- Summary: Restyle the Users modal to match other Settings dialogs with labeled fields, aligned toggles, and tighter spacing.
+- Why: The add-user modal looked bare; matching the shared modal pattern keeps the UX consistent.
+- Impact: Username/password now show labels; admin/active toggles align in a row; spacing matches other modals.
 - Files: `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/Users.css`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM to deploy and generate diagnostics.
 

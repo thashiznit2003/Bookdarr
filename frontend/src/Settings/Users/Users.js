@@ -9,6 +9,7 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import Label from 'Components/Label';
 import Button from 'Components/Link/Button';
+import FormGroup from 'Components/Form/FormGroup';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableRow from 'Components/Table/TableRow';
@@ -57,24 +58,26 @@ function AddUserModal({
           {translate('AddUser')}
         </ModalHeader>
         <ModalBody>
-          <div className={styles.modalField}>
+          <FormGroup className={styles.modalField}>
+            <Label className={styles.fieldLabel}>{translate('Username')}</Label>
             <TextInput
               name="username"
-              label={translate('Username')}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoFocus
             />
-          </div>
-          <div className={styles.modalField}>
+          </FormGroup>
+
+          <FormGroup className={styles.modalField}>
+            <Label className={styles.fieldLabel}>{translate('Password')}</Label>
             <TextInput
               name="password"
               type="password"
-              label={translate('Password')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-          </div>
+          </FormGroup>
+
           <div className={styles.modalCheckRow}>
             <CheckInput
               name="isAdmin"
