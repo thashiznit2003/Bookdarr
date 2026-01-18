@@ -155,6 +155,10 @@ namespace Readarr.Api.V1.Books
                     return MapToResource(new List<Book>(), false);
                 }
 
+                // Hydrate author and editions for detail views
+                book.Author = _authorService.GetAuthor(book.AuthorId);
+                book.Editions = _editionService.GetEditionsByBook(book.Id);
+
                 if (includeAllAuthorBooks)
                 {
                     return MapToResource(_bookService.GetBooksByAuthor(book.AuthorId), false);

@@ -52,7 +52,14 @@ function createMapStateToProps() {
     createDimensionsSelector(),
     (titleSlug, bookFiles, books, editions, authors, commands, uiSettings, dimensions) => {
       const book = books.items.find((b) => b.titleSlug === titleSlug);
-      const author = authors.find((a) => a.id === book.authorId);
+      if (!book) {
+        return {
+          isFetching: books.isFetching,
+          isPopulated: books.isPopulated
+        };
+      }
+
+      const author = authors.find((a) => a.id === book.authorId) || book.author;
       const sortedBooks = books.items.filter((b) => b.authorId === book.authorId);
       sortedBooks.sort((a, b) => ((a.releaseDate > b.releaseDate) ? 1 : -1));
       const bookIndex = sortedBooks.findIndex((b) => b.id === book.id);

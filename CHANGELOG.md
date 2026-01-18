@@ -2376,3 +2376,9 @@
 - Impact: Authors page now says “Add books to see Authors” when no authors are visible.
 - Files: `frontend/src/Author/NoAuthor.js`, `src/Directory.Build.props`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), then continue scoping other views (Wanted/Calendar/Search) to per-user data.
+## 1.3.97
+- Summary: Allow Book Pool titles to open their details page by hydrating books fetched by slug and triggering a fetch when opening from the pool.
+- Why: Clicking a book from Book Pool was 404ing because the slug lookup didn’t populate author/editions and the details page lacked the book in store.
+- Impact: TitleSlug API now attaches author/editions; book details page fetches the slug on navigation. Pool books now open their detail view instead of NotFound.
+- Files: `src/Readarr.Api.V1/Books/BookController.cs`, `frontend/src/Book/Details/BookDetailsPageConnector.js`, `frontend/src/Book/Details/BookDetailsConnector.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), and verify Book Pool links open details without 404. Continue per-user scoping for other views after verification.
