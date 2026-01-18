@@ -2488,3 +2488,9 @@
 - Impact: Book fetches now merge the existing `inMyLibrary` flag and keep non-library items while loading user-library items; details toolbar stays on “Remove from My Library” for books you’ve added.
 - Files: `frontend/src/Store/Actions/bookActions.js`, `src/Directory.Build.props`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), then verify the button remains on “Remove” after navigating away/back.
+## 1.3.116
+- Summary: Deduplicate manual import rows so Link Existing Files no longer shows the same file multiple times.
+- Why: The Armada link-existing modal listed identical file paths repeatedly, making it unclear which entries to import.
+- Impact: Manual import results are now de-duplicated by path before rendering; version bumped for cache-busting.
+- Files: `frontend/src/Store/Actions/interactiveImportActions.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-182.log`).

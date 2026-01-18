@@ -148,6 +148,18 @@ export const actionHandlers = handleThunks({
     abortCurrentFetchRequest = abortRequest;
 
     request.done((data) => {
+      if (Array.isArray(data)) {
+        const seenPaths = new Set();
+        data = data.filter((item) => {
+          const key = (item.path || '').toLowerCase();
+          if (seenPaths.has(key)) {
+            return false;
+          }
+          seenPaths.add(key);
+          return true;
+        });
+      }
+
       dispatch(batchActions([
         update({ section, data }),
 
