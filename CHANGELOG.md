@@ -2397,6 +2397,6 @@
 ## 1.3.100
 - Summary: Keep the details page add/remove button in sync across navigation by preserving `inMyLibrary` when refetching books.
 - Why: Fetching a book by slug reset `inMyLibrary` to false, so the button flipped back to “Add” after leaving and returning.
-- Impact: Book fetches now merge the existing `inMyLibrary` flag; details toolbar stays on “Remove from My Library” for books you’ve added.
+- Impact: Book fetches now merge the existing `inMyLibrary` flag and keep non-library items while loading user-library items; details toolbar stays on “Remove from My Library” for books you’ve added.
 - Files: `frontend/src/Store/Actions/bookActions.js`, `src/Directory.Build.props`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), then verify the button remains on “Remove” after navigating away/back.

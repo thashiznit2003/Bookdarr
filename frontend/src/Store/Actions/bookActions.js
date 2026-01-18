@@ -349,13 +349,31 @@ export const actionHandlers = handleThunks({
     request.done((data) => {
       if (Array.isArray(data)) {
         const existing = getState().books.items || [];
-        data = data.map((item) => {
-          const found = existing.find((b) => b.id === item.id);
-          return {
-            ...item,
-            inMyLibrary: useUserLibrary ? true : (found?.inMyLibrary ?? false)
-          };
-        });
+
+        if (useUserLibrary) {
+          const nonLibrary = existing.filter((b) => !b.inMyLibrary);
+          const merged = [...nonLibrary];
+
+          data.forEach((item) => {
+            const idx = merged.findIndex((b) => b.id === item.id);
+            const next = { ...item, inMyLibrary: true };
+            if (idx >= 0) {
+              merged[idx] = next;
+            } else {
+              merged.push(next);
+            }
+          });
+
+          data = merged;
+        } else {
+          data = data.map((item) => {
+            const found = existing.find((b) => b.id === item.id);
+            return {
+              ...item,
+              inMyLibrary: found?.inMyLibrary ?? false
+            };
+          });
+        }
       }
 
       // Preserve books for other authors we didn't fetch
