@@ -12,8 +12,7 @@ const columns = [
   { name: 'author', label: 'Author', isVisible: true, isSortable: false },
   { name: 'ebook', label: 'eBook', isVisible: true, isSortable: false },
   { name: 'audiobook', label: 'Audiobook', isVisible: true, isSortable: false },
-  { name: 'search', label: 'Search', isVisible: true, isSortable: false },
-  { name: 'convert', label: 'Convert', isVisible: true, isSortable: false }
+  { name: 'search', label: 'Search', isVisible: true, isSortable: false }
 ];
 
 function UserMissing(props) {

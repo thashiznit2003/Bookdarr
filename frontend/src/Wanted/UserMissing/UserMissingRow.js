@@ -4,11 +4,8 @@ import AuthorNameLink from 'Author/AuthorNameLink';
 import BookTitleLink from 'Book/BookTitleLink';
 import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
-import BookEntities from 'Book/bookEntities';
-import BookSearchCellConnector from 'Book/BookSearchCellConnector';
 
 function UserMissingRow({
-  bookId,
   book,
   missingEbook,
   missingAudiobook
@@ -43,22 +40,11 @@ function UserMissingRow({
       </TableRowCell>
 
       <TableRowCell>
-        <BookSearchCellConnector
-          bookId={bookId}
-          authorId={book.authorId}
-          bookTitle={book.title}
-          authorName={book.author?.authorName}
-          bookEntity={BookEntities.WANTED_MISSING}
-          showOpenAuthorButton={false}
-        />
-      </TableRowCell>
-
-      <TableRowCell>
         <a
-          href={`/book/${book.titleSlug}?convert=true`}
-          aria-label="Convert"
+          href={`/book/${book.titleSlug}?tab=search&autoSearch=true`}
+          aria-label="Search"
         >
-          Convert
+          Search
         </a>
       </TableRowCell>
     </TableRow>
@@ -66,7 +52,6 @@ function UserMissingRow({
 }
 
 UserMissingRow.propTypes = {
-  bookId: PropTypes.number.isRequired,
   book: PropTypes.object.isRequired,
   missingEbook: PropTypes.bool.isRequired,
   missingAudiobook: PropTypes.bool.isRequired

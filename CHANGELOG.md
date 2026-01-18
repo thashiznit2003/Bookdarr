@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.106
+- Summary: Wanted Missing Files now omits the Convert column and links search to book details; sidebar labels translated; version bumped for cache-busting.
+- Why: The Convert action doesn’t belong on Missing Files and searches should land on the book details search tab.
+- Impact: Missing Files shows a Search link per book (no Convert column), localization remains intact, and build version is incremented.
+- Files: `frontend/src/Wanted/UserMissing/UserMissing.js`, `frontend/src/Wanted/UserMissing/UserMissingRow.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-171.log`).
 ## 1.3.105
 - Summary: Fix the user-scoped Wanted pages so they render correctly and register their API thunks.
 - Why: The new Missing Files/File Upgrades views blanked out because the thunks weren’t registered, the tables lacked column metadata, and translations were missing.
