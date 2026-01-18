@@ -8330,6 +8330,54 @@
           }
         }
       }
+    },
+    "/api/v1/user/wanted/missing-files": {
+      "get": {
+        "tags": [
+          "Wanted"
+        ],
+        "summary": "List missing ebook/audiobook files for the current user's library",
+        "operationId": "getUserMissingFiles",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserMissingFilesResource"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/wanted/file-upgrades": {
+      "get": {
+        "tags": [
+          "Wanted"
+        ],
+        "summary": "List format upgrades (non-EPUB/M4B) for the current user's library",
+        "operationId": "getUserFileUpgrades",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserFileUpgradeResource"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -9756,7 +9804,7 @@
             "type": "array",
             "items": {
               "type": "object",
-              "additionalProperties": { }
+              "additionalProperties": {}
             },
             "nullable": true
           }
@@ -13741,6 +13789,56 @@
           "sync"
         ],
         "type": "string"
+      },
+      "UserMissingFilesResource": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RestResource"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "bookId": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "book": {
+                "$ref": "#/components/schemas/BookResource"
+              },
+              "missingEbook": {
+                "type": "boolean"
+              },
+              "missingAudiobook": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "UserFileUpgradeResource": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RestResource"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "bookId": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "book": {
+                "$ref": "#/components/schemas/BookResource"
+              },
+              "needsEpub": {
+                "type": "boolean"
+              },
+              "needsM4b": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
       }
     },
     "securitySchemes": {
@@ -13760,10 +13858,10 @@
   },
   "security": [
     {
-      "X-Api-Key": [ ]
+      "X-Api-Key": []
     },
     {
-      "apikey": [ ]
+      "apikey": []
     }
   ]
 }

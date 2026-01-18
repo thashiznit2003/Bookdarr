@@ -31,6 +31,8 @@ import * as settingsUsers from './Settings/settingsUsersActions';
 import * as system from './systemActions';
 import * as tags from './tagActions';
 import * as wanted from './wantedActions';
+import * as userMissing from './userMissingActions';
+import * as userFileUpgrades from './userFileUpgradeActions';
 
 export default [
   app,
@@ -65,5 +67,7 @@ export default [
   settingsUsers,
   system,
   tags,
-  wanted
+  wanted,
+  userMissing,
+  userFileUpgrades
 ];

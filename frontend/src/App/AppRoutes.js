@@ -36,8 +36,8 @@ import Tasks from 'System/Tasks/Tasks';
 import Updates from 'System/Updates/Updates';
 import UnmappedFilesTableConnector from 'UnmappedFiles/UnmappedFilesTableConnector';
 import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
-import CutoffUnmetConnector from 'Wanted/CutoffUnmet/CutoffUnmetConnector';
-import MissingConnector from 'Wanted/Missing/MissingConnector';
+import UserMissingConnector from 'Wanted/UserMissing/UserMissingConnector';
+import UserUpgradesConnector from 'Wanted/UserUpgrades/UserUpgradesConnector';
 
 function AppRoutes(props) {
   const {
@@ -136,13 +136,13 @@ function AppRoutes(props) {
       */}
 
       <Route
-        path="/wanted/missing"
-        component={MissingConnector}
+        path="/wanted/missing-files"
+        component={UserMissingConnector}
       />
 
       <Route
-        path="/wanted/cutoffunmet"
-        component={CutoffUnmetConnector}
+        path="/wanted/file-upgrades"
+        component={UserUpgradesConnector}
       />
 
       {/*

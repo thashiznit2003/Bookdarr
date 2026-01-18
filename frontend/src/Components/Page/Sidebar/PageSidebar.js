@@ -76,15 +76,15 @@ const links = [
   {
     iconName: icons.WARNING,
     title: () => translate('Wanted'),
-    to: '/wanted/missing',
+    to: '/wanted/missing-files',
     children: [
       {
-        title: () => translate('Missing'),
-        to: '/wanted/missing'
+        title: () => translate('MissingFiles'),
+        to: '/wanted/missing-files'
       },
       {
-        title: () => translate('CutoffUnmet'),
-        to: '/wanted/cutoffunmet'
+        title: () => translate('FileUpgrades'),
+        to: '/wanted/file-upgrades'
       }
     ]
   },

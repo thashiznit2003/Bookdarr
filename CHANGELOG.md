@@ -14,6 +14,13 @@
 - Files: `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/App/AppRoutes.js`, `src/Directory.Build.props`, `docs/HANDOFF.md`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-168.log`) so diagnostics capture the deploy.
 
+## 1.3.104
+- Summary: Rework Wanted to be user-scoped: Missing Files shows per-user library gaps (ebook/audiobook), and File Upgrades flags non-EPUB/M4B files. Added new endpoints and UI tables; removed monitoring dependency.
+- Why: The old Wanted views were global/monitor-based and didn’t show which formats were missing or need upgrading to the preferred formats.
+- Impact: New endpoints `/api/v1/user/wanted/missing-files` and `/api/v1/user/wanted/file-upgrades`; Wanted menu routes now point to user-scoped lists with per-format status and search/convert links; monitoring toggles removed. Version bumped for cache-busting.
+- Files: `src/Readarr.Api.V1/Wanted/UserMissingFilesController.cs`, `src/Readarr.Api.V1/Wanted/UserFileUpgradesController.cs`, `src/Readarr.Api.V1/Wanted/UserMissingFilesResource.cs`, `src/Readarr.Api.V1/Wanted/UserFileUpgradeResource.cs`, `src/Readarr.Api.V1/openapi.json`, `frontend/src/Store/Actions/index.js`, `frontend/src/Store/Actions/userMissingActions.js`, `frontend/src/Store/Actions/userFileUpgradeActions.js`, `frontend/src/Wanted/UserMissing/*`, `frontend/src/Wanted/UserUpgrades/*`, `frontend/src/App/AppRoutes.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-169.log`) so diagnostics capture the deploy.
+
 ## 1.3.101
 - Summary: Keep book details working after removing a title from your library by merging user-library fetches without dropping non-library books.
 - Why: The details “Remove from my Library” action would reload the user library, wipe the book from the client store, and the details route then 404’d; the button state also reverted.
