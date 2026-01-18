@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.130
+- Summary: Fix metadata-add assignment by preserving the edition ID on newly added books.
+- Why: Assigning files to a book added via metadata search still failed because the new book lacked its `foreignEditionId` in the Assign list.
+- Impact: Newly added books now keep `foreignEditionId` before auto-assigning files, preventing the ManualImport null ref; version bumped for cache-busting.
+- Files: `frontend/src/UnmappedFiles/assign/AssignUnmappedModalContentConnector.js`, `frontend/src/UnmappedFiles/assign/AssignUnmappedModalContent.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-195.log`).
+
 ## 1.3.129
 - Summary: Fix metadata-add assignment and enable Enter-to-search in Assign.
 - Why: Adding a book from metadata search didn’t attach the selected files and searching required a mouse click.

@@ -141,7 +141,8 @@ class AssignUnmappedModalContentConnector extends Component {
             title: newBook.title,
             authorName: newBook.author?.authorName,
             authorId: newBook.author?.id,
-            titleSlug: newBook.titleSlug
+            titleSlug: newBook.titleSlug,
+            foreignEditionId: newBook.foreignEditionId
           }
         ]
       }), () => {
