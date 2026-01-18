@@ -83,6 +83,11 @@ namespace Readarr.Api.V1.Wanted
             return results;
         }
 
+        protected override UserMissingFilesResource GetResourceById(int id)
+        {
+            throw new ModelNotFoundException(typeof(UserMissingFilesResource), id);
+        }
+
         private User GetCurrentUser()
         {
             var user = _userService.FindUser(HttpContext?.User);

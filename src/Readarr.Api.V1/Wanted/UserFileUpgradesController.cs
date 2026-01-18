@@ -83,6 +83,11 @@ namespace Readarr.Api.V1.Wanted
             return results;
         }
 
+        protected override UserFileUpgradeResource GetResourceById(int id)
+        {
+            throw new ModelNotFoundException(typeof(UserFileUpgradeResource), id);
+        }
+
         private static bool IsEpubFile(BookFile file)
         {
             var path = file.Path ?? string.Empty;
