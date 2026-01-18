@@ -2364,3 +2364,9 @@
 - Impact: Author refresh/available calls now load from the user’s library endpoint; existing fetches already prime user books on app load. No backend changes.
 - Files: `frontend/src/Store/Actions/authorActions.js`, `frontend/src/Store/Actions/authorAvailableBooksActions.js`, `src/Directory.Build.props`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), then continue per-user scoping for other views as needed (wanted/calendar/search) and add per-user libraries on backend if new endpoints are required.
+## 1.3.95
+- Summary: Scope the Authors list to the current user’s library so you only see authors for books you’ve added.
+- Why: The Authors page was showing every author from the global pool even when the user’s library was empty.
+- Impact: Author selectors now filter against the user’s book list; users with no books see an empty author list. No backend changes.
+- Files: `frontend/src/Store/Selectors/createAuthorClientSideCollectionItemsSelector.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), continue scoping other views (Wanted/Calendar/Search) to the per-user library and add per-user backend filtering where needed.

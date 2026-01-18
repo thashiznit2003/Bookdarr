@@ -5,28 +5,33 @@ import createClientSideCollectionSelector from './createClientSideCollectionSele
 function createUnoptimizedSelector(uiSection) {
   return createSelector(
     createClientSideCollectionSelector('authors', uiSection),
-    (authors) => {
-      const items = authors.items.map((s) => {
-        const {
-          id,
-          authorName,
-          authorNameLastFirst,
-          sortName,
-          sortNameLastFirst
-        } = s;
+    (state) => state.books?.items || [],
+    (authors, books) => {
+      const authorIds = new Set(books.map((b) => b.authorId));
 
-        return {
-          id,
-          authorName,
-          authorNameLastFirst,
-          sortName,
-          sortNameLastFirst
-        };
-      });
+      const filteredItems = authors.items
+        .filter((s) => authorIds.has(s.id))
+        .map((s) => {
+          const {
+            id,
+            authorName,
+            authorNameLastFirst,
+            sortName,
+            sortNameLastFirst
+          } = s;
+
+          return {
+            id,
+            authorName,
+            authorNameLastFirst,
+            sortName,
+            sortNameLastFirst
+          };
+        });
 
       return {
         ...authors,
-        items
+        items: filteredItems
       };
     }
   );
