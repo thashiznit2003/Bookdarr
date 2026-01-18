@@ -27,12 +27,12 @@ import BookDetailsHeaderConnector from './BookDetailsHeaderConnector';
 import CombineAudiobookProgress from './CombineAudiobookProgress';
 import styles from './BookDetails.css';
 
-function isAudiobookMp3(file) {
+function isAudiobookAudio(file) {
   const mediaType = (file.mediaType || '').toString().toLowerCase();
   const isAudiobook = mediaType === 'audiobook' || mediaType === '2';
   const path = (file.path || '').toLowerCase();
 
-  return isAudiobook && path.endsWith('.mp3');
+  return isAudiobook && (path.endsWith('.mp3') || path.endsWith('.flac'));
 }
 
 class BookDetails extends Component {
@@ -201,7 +201,7 @@ class BookDetails extends Component {
       selectedTabIndex
     } = this.state;
 
-    const audioFiles = (bookFiles || []).filter(isAudiobookMp3);
+    const audioFiles = (bookFiles || []).filter(isAudiobookAudio);
     const canCombine = audioFiles.length > 1;
 
     return (

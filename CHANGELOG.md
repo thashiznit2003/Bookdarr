@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.108
+- Summary: Enable combining audiobooks when the parts are FLAC by allowing the UI button to activate for FLAC files.
+- Why: Combine was still disabled in the book details toolbar because the UI only counted MP3 parts.
+- Impact: The Combine Audiobook button now enables when multiple audiobook files are FLAC or MP3; backend already transcodes FLAC. Version bumped for cache-busting.
+- Files: `frontend/src/Book/Details/BookDetails.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-173.log`).
 ## 1.3.107
 - Summary: Allow combining FLAC audiobook parts and transcode non-MP3 inputs instead of failing.
 - Why: The combine tool rejected FLAC sources, blocking users from merging common lossless downloads.
