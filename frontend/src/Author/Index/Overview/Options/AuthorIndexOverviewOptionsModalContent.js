@@ -61,7 +61,6 @@ class AuthorIndexOverviewOptionsModalContent extends Component {
       showTitle: props.showTitle,
       detailedProgressBar: props.detailedProgressBar,
       size: props.size,
-      showMonitored: props.showMonitored,
       showQualityProfile: props.showQualityProfile,
       showLastBook: props.showLastBook,
       showAdded: props.showAdded,
@@ -77,7 +76,6 @@ class AuthorIndexOverviewOptionsModalContent extends Component {
       showTitle,
       detailedProgressBar,
       size,
-      showMonitored,
       showQualityProfile,
       showLastBook,
       showAdded,
@@ -99,10 +97,6 @@ class AuthorIndexOverviewOptionsModalContent extends Component {
 
     if (size !== prevProps.size) {
       state.size = size;
-    }
-
-    if (showMonitored !== prevProps.showMonitored) {
-      state.showMonitored = showMonitored;
     }
 
     if (showQualityProfile !== prevProps.showQualityProfile) {
@@ -161,7 +155,6 @@ class AuthorIndexOverviewOptionsModalContent extends Component {
       showTitle,
       detailedProgressBar,
       size,
-      showMonitored,
       showQualityProfile,
       showLastBook,
       showAdded,
@@ -217,19 +210,6 @@ class AuthorIndexOverviewOptionsModalContent extends Component {
                 name="detailedProgressBar"
                 value={detailedProgressBar}
                 helpText={translate('DetailedProgressBarHelpText')}
-                onChange={this.onChangeOverviewOption}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <FormLabel>
-                {translate('ShowMonitored')}
-              </FormLabel>
-
-              <FormInputGroup
-                type={inputTypes.CHECK}
-                name="showMonitored"
-                value={showMonitored}
                 onChange={this.onChangeOverviewOption}
               />
             </FormGroup>
@@ -345,7 +325,6 @@ AuthorIndexOverviewOptionsModalContent.propTypes = {
   showTitle: PropTypes.string.isRequired,
   size: PropTypes.string.isRequired,
   detailedProgressBar: PropTypes.bool.isRequired,
-  showMonitored: PropTypes.bool.isRequired,
   showQualityProfile: PropTypes.bool.isRequired,
   showLastBook: PropTypes.bool.isRequired,
   showAdded: PropTypes.bool.isRequired,

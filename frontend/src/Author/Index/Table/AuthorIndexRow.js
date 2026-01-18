@@ -15,11 +15,9 @@ import RelativeDateCellConnector from 'Components/Table/Cells/RelativeDateCellCo
 import VirtualTableRowCell from 'Components/Table/Cells/VirtualTableRowCell';
 import VirtualTableSelectCell from 'Components/Table/Cells/VirtualTableSelectCell';
 import TagListConnector from 'Components/TagListConnector';
-import { icons } from 'Helpers/Props';
-import getProgressBarKind from 'Utilities/Author/getProgressBarKind';
+import { icons, kinds } from 'Helpers/Props';
 import formatBytes from 'Utilities/Number/formatBytes';
 import translate from 'Utilities/String/translate';
-import AuthorStatusCell from './AuthorStatusCell';
 import hasGrowableColumns from './hasGrowableColumns';
 import styles from './AuthorIndexRow.css';
 
@@ -80,8 +78,6 @@ class AuthorIndexRow extends Component {
   render() {
     const {
       id,
-      monitored,
-      status,
       authorName,
       authorNameLastFirst,
       titleSlug,
@@ -145,18 +141,6 @@ class AuthorIndexRow extends Component {
                   isSelected={isSelected}
                   isDisabled={false}
                   onSelectedChange={onSelectedChange}
-                />
-              );
-            }
-
-            if (name === 'status') {
-              return (
-                <AuthorStatusCell
-                  key={name}
-                  className={styles[name]}
-                  monitored={monitored}
-                  status={status}
-                  component={VirtualTableRowCell}
                 />
               );
             }
@@ -296,7 +280,7 @@ class AuthorIndexRow extends Component {
                 >
                   <ProgressBar
                     progress={progress}
-                    kind={getProgressBarKind(status, monitored, progress)}
+                    kind={kinds.DEFAULT}
                     showText={true}
                     text={`${availableBookCount} / ${bookCount}`}
                     title={translate('AuthorProgressBarText', { bookCount, availableBookCount, bookFileCount, totalBookCount })}
@@ -425,8 +409,6 @@ class AuthorIndexRow extends Component {
 
 AuthorIndexRow.propTypes = {
   id: PropTypes.number.isRequired,
-  monitored: PropTypes.bool.isRequired,
-  status: PropTypes.string.isRequired,
   authorName: PropTypes.string.isRequired,
   authorNameLastFirst: PropTypes.string.isRequired,
   titleSlug: PropTypes.string.isRequired,

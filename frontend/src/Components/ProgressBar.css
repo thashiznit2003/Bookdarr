@@ -21,6 +21,10 @@
     background-color: var(--primaryColor);
   }
 
+  &.default {
+    background-color: var(--progressBarNeutralColor);
+  }
+
   &.danger {
     background-color: var(--dangerColor);
 

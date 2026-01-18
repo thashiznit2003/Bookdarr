@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.133
+- Summary: Remove author status color indicators and monitored/unmonitored labels across Authors views.
+- Why: Monitoring/status color cues are no longer needed and add visual noise in both library and Book Pool author pages.
+- Impact: Author posters/overviews no longer show status badges or monitored labels, progress bars use neutral styling, the status column/sort entry is removed, and the footer legend is gone while stats remain; version bumped for cache-busting.
+- Files: `frontend/src/Author/Index/*`, `frontend/src/Components/ProgressBar.css`, `frontend/src/Store/Migrators/migrateRemoveAuthorStatusIndicators.js`, `frontend/src/Store/Migrators/migrate.js`, `frontend/src/Store/Actions/authorIndexActions.js`, `frontend/src/Styles/Themes/dark.js`, `frontend/src/Styles/Themes/light.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-198.log`).
+
 ## 1.3.132
 - Summary: Add a Book Pool Authors page with full author tooling, backed by a pool-author API.
 - Why: Users need the same author organization UI for the shared Book Pool, not just their personal library.

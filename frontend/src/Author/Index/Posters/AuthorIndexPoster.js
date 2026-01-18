@@ -81,9 +81,7 @@ class AuthorIndexPoster extends Component {
       id,
       authorName,
       authorNameLastFirst,
-      monitored,
       titleSlug,
-      status,
       nextAiring,
       statistics = {},
       images,
@@ -91,7 +89,6 @@ class AuthorIndexPoster extends Component {
       posterHeight,
       detailedProgressBar,
       showTitle,
-      showMonitored,
       showQualityProfile,
       qualityProfile,
       metadataProfile,
@@ -175,14 +172,6 @@ class AuthorIndexPoster extends Component {
               />
             </Label>
 
-            {
-              status === 'ended' &&
-                <div
-                  className={styles.ended}
-                  title={translate('Ended')}
-                />
-            }
-
             <Link
               className={styles.link}
               style={elementStyle}
@@ -211,8 +200,6 @@ class AuthorIndexPoster extends Component {
           </div>
 
           <AuthorIndexProgressBar
-            monitored={monitored}
-            status={status}
             bookCount={bookCount}
             availableBookCount={availableBookCount}
             bookFileCount={bookFileCount}
@@ -225,13 +212,6 @@ class AuthorIndexPoster extends Component {
             showTitle !== 'no' &&
               <div className={styles.title}>
                 {showTitle === 'firstLast' ? authorName : authorNameLastFirst}
-              </div>
-          }
-
-          {
-            showMonitored &&
-              <div className={styles.title}>
-                {monitored ? 'Monitored' : 'Unmonitored'}
               </div>
           }
 
@@ -291,8 +271,6 @@ AuthorIndexPoster.propTypes = {
   id: PropTypes.number.isRequired,
   authorName: PropTypes.string.isRequired,
   authorNameLastFirst: PropTypes.string.isRequired,
-  monitored: PropTypes.bool.isRequired,
-  status: PropTypes.string.isRequired,
   titleSlug: PropTypes.string.isRequired,
   nextAiring: PropTypes.string,
   statistics: PropTypes.object.isRequired,
@@ -301,7 +279,6 @@ AuthorIndexPoster.propTypes = {
   posterHeight: PropTypes.number.isRequired,
   detailedProgressBar: PropTypes.bool.isRequired,
   showTitle: PropTypes.string.isRequired,
-  showMonitored: PropTypes.bool.isRequired,
   showQualityProfile: PropTypes.bool.isRequired,
   qualityProfile: PropTypes.object.isRequired,
   metadataProfile: PropTypes.object.isRequired,

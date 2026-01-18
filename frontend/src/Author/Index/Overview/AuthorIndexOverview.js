@@ -86,8 +86,6 @@ class AuthorIndexOverview extends Component {
       authorName,
       authorNameLastFirst,
       overview,
-      monitored,
-      status,
       titleSlug,
       nextAiring,
       statistics = {},
@@ -152,14 +150,6 @@ class AuthorIndexOverview extends Component {
                 </div>
             }
 
-            {
-              status === 'ended' &&
-                <div
-                  className={styles.ended}
-                  title={translate('Ended')}
-                />
-            }
-
             <Link
               className={styles.link}
               style={elementStyle}
@@ -177,8 +167,6 @@ class AuthorIndexOverview extends Component {
             </Link>
 
             <AuthorIndexProgressBar
-              monitored={monitored}
-              status={status}
               bookCount={bookCount}
               availableBookCount={availableBookCount}
               bookFileCount={bookFileCount}
@@ -238,7 +226,6 @@ class AuthorIndexOverview extends Component {
 
               <AuthorIndexOverviewInfo
                 height={overviewHeight}
-                monitored={monitored}
                 nextAiring={nextAiring}
                 bookCount={bookCount}
                 sizeOnDisk={sizeOnDisk}
@@ -276,8 +263,6 @@ AuthorIndexOverview.propTypes = {
   authorName: PropTypes.string.isRequired,
   authorNameLastFirst: PropTypes.string.isRequired,
   overview: PropTypes.string,
-  monitored: PropTypes.bool.isRequired,
-  status: PropTypes.string.isRequired,
   titleSlug: PropTypes.string.isRequired,
   nextAiring: PropTypes.string,
   statistics: PropTypes.object.isRequired,

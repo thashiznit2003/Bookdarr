@@ -67,7 +67,6 @@ class AuthorIndexPosterOptionsModalContent extends Component {
       detailedProgressBar: props.detailedProgressBar,
       size: props.size,
       showTitle: props.showTitle,
-      showMonitored: props.showMonitored,
       showQualityProfile: props.showQualityProfile,
       showSearchAction: props.showSearchAction
     };
@@ -78,7 +77,6 @@ class AuthorIndexPosterOptionsModalContent extends Component {
       detailedProgressBar,
       size,
       showTitle,
-      showMonitored,
       showQualityProfile,
       showSearchAction
     } = this.props;
@@ -95,10 +93,6 @@ class AuthorIndexPosterOptionsModalContent extends Component {
 
     if (showTitle !== prevProps.showTitle) {
       state.showTitle = showTitle;
-    }
-
-    if (showMonitored !== prevProps.showMonitored) {
-      state.showMonitored = showMonitored;
     }
 
     if (showQualityProfile !== prevProps.showQualityProfile) {
@@ -137,7 +131,6 @@ class AuthorIndexPosterOptionsModalContent extends Component {
       detailedProgressBar,
       size,
       showTitle,
-      showMonitored,
       showQualityProfile,
       showSearchAction
     } = this.state;
@@ -195,20 +188,6 @@ class AuthorIndexPosterOptionsModalContent extends Component {
 
             <FormGroup>
               <FormLabel>
-                {translate('ShowMonitored')}
-              </FormLabel>
-
-              <FormInputGroup
-                type={inputTypes.CHECK}
-                name="showMonitored"
-                value={showMonitored}
-                helpText={translate('ShowMonitoredHelpText')}
-                onChange={this.onChangePosterOption}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <FormLabel>
                 {translate('ShowQualityProfile')}
               </FormLabel>
 
@@ -252,7 +231,6 @@ class AuthorIndexPosterOptionsModalContent extends Component {
 AuthorIndexPosterOptionsModalContent.propTypes = {
   size: PropTypes.string.isRequired,
   showTitle: PropTypes.string.isRequired,
-  showMonitored: PropTypes.bool.isRequired,
   showQualityProfile: PropTypes.bool.isRequired,
   detailedProgressBar: PropTypes.bool.isRequired,
   showSearchAction: PropTypes.bool.isRequired,

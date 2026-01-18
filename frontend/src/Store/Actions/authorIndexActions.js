@@ -36,7 +36,6 @@ export const defaultState = {
     detailedProgressBar: false,
     size: 'large',
     showTitle: 'lastFirst',
-    showMonitored: true,
     showQualityProfile: true,
     showSearchAction: false
   },
@@ -45,7 +44,6 @@ export const defaultState = {
     showTitle: 'lastFirst',
     detailedProgressBar: false,
     size: 'medium',
-    showMonitored: true,
     showQualityProfile: true,
     showLastBook: false,
     showAdded: false,
@@ -69,13 +67,6 @@ export const defaultState = {
       isVisible: true,
       isModifiable: false,
       isHidden: true
-    },
-    {
-      name: 'status',
-      columnLabel: 'Status',
-      isSortable: true,
-      isVisible: true,
-      isModifiable: false
     },
     {
       name: 'sortName',

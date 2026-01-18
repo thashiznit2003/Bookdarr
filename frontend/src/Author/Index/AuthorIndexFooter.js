@@ -1,7 +1,5 @@
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { ColorImpairedConsumer } from 'App/ColorImpairedContext';
 import DescriptionList from 'Components/DescriptionList/DescriptionList';
 import DescriptionListItem from 'Components/DescriptionList/DescriptionListItem';
 import formatBytes from 'Utilities/Number/formatBytes';
@@ -49,113 +47,57 @@ class AuthorIndexFooter extends PureComponent {
     });
 
     return (
-      <ColorImpairedConsumer>
-        {(enableColorImpairedMode) => {
-          return (
-            <div className={styles.footer}>
-              <div>
-                <div className={styles.legendItem}>
-                  <div
-                    className={classNames(
-                      styles.continuing,
-                      enableColorImpairedMode && 'colorImpaired'
-                    )}
-                  />
-                  <div>
-                    {translate('ContinuingAllBooksDownloaded')}
-                  </div>
-                </div>
+      <div className={styles.footer}>
+        <div className={styles.statistics}>
+          <DescriptionList>
+            <DescriptionListItem
+              title={translate('Authors')}
+              data={count}
+            />
 
-                <div className={styles.legendItem}>
-                  <div
-                    className={classNames(
-                      styles.ended,
-                      enableColorImpairedMode && 'colorImpaired'
-                    )}
-                  />
-                  <div>
-                    {translate('EndedAllBooksDownloaded')}
-                  </div>
-                </div>
+            <DescriptionListItem
+              title={translate('Ended')}
+              data={ended}
+            />
 
-                <div className={styles.legendItem}>
-                  <div
-                    className={classNames(
-                      styles.missingMonitored,
-                      enableColorImpairedMode && 'colorImpaired'
-                    )}
-                  />
-                  <div>
-                    {translate('MissingBooksAuthorMonitored')}
-                  </div>
-                </div>
+            <DescriptionListItem
+              title={translate('Continuing')}
+              data={continuing}
+            />
+          </DescriptionList>
 
-                <div className={styles.legendItem}>
-                  <div
-                    className={classNames(
-                      styles.missingUnmonitored,
-                      enableColorImpairedMode && 'colorImpaired'
-                    )}
-                  />
-                  <div>
-                    {translate('MissingBooksAuthorNotMonitored')}
-                  </div>
-                </div>
-              </div>
+          <DescriptionList>
+            <DescriptionListItem
+              title={translate('Monitored')}
+              data={monitored}
+            />
 
-              <div className={styles.statistics}>
-                <DescriptionList>
-                  <DescriptionListItem
-                    title={translate('Authors')}
-                    data={count}
-                  />
+            <DescriptionListItem
+              title={translate('Unmonitored')}
+              data={count - monitored}
+            />
+          </DescriptionList>
 
-                  <DescriptionListItem
-                    title={translate('Ended')}
-                    data={ended}
-                  />
+          <DescriptionList>
+            <DescriptionListItem
+              title={translate('Books')}
+              data={books}
+            />
 
-                  <DescriptionListItem
-                    title={translate('Continuing')}
-                    data={continuing}
-                  />
-                </DescriptionList>
+            <DescriptionListItem
+              title={translate('Files')}
+              data={bookFiles}
+            />
+          </DescriptionList>
 
-                <DescriptionList>
-                  <DescriptionListItem
-                    title={translate('Monitored')}
-                    data={monitored}
-                  />
-
-                  <DescriptionListItem
-                    title={translate('Unmonitored')}
-                    data={count - monitored}
-                  />
-                </DescriptionList>
-
-                <DescriptionList>
-                  <DescriptionListItem
-                    title={translate('Books')}
-                    data={books}
-                  />
-
-                  <DescriptionListItem
-                    title={translate('Files')}
-                    data={bookFiles}
-                  />
-                </DescriptionList>
-
-                <DescriptionList>
-                  <DescriptionListItem
-                    title={translate('TotalFileSize')}
-                    data={formatBytes(totalFileSize)}
-                  />
-                </DescriptionList>
-              </div>
-            </div>
-          );
-        }}
-      </ColorImpairedConsumer>
+          <DescriptionList>
+            <DescriptionListItem
+              title={translate('TotalFileSize')}
+              data={formatBytes(totalFileSize)}
+            />
+          </DescriptionList>
+        </div>
+      </div>
     );
   }
 }

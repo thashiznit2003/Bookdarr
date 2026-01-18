@@ -13,12 +13,6 @@ const infoRowHeight = parseInt(dimensions.authorIndexOverviewInfoRowHeight);
 
 const rows = [
   {
-    name: 'monitored',
-    showProp: 'showMonitored',
-    valueProp: 'monitored'
-
-  },
-  {
     name: 'qualityProfileId',
     showProp: 'showQualityProfile',
     valueProp: 'qualityProfileId'
@@ -66,16 +60,6 @@ function isVisible(row, props) {
 
 function getInfoRowProps(row, props) {
   const { name } = row;
-
-  if (name === 'monitored') {
-    const monitoredText = props.monitored ? 'Monitored' : 'Unmonitored';
-
-    return {
-      title: monitoredText,
-      iconName: props.monitored ? icons.MONITORED : icons.UNMONITORED,
-      label: monitoredText
-    };
-  }
 
   if (name === 'qualityProfileId' && !!props.qualityProfile?.name) {
     return {
@@ -227,13 +211,11 @@ function AuthorIndexOverviewInfo(props) {
 
 AuthorIndexOverviewInfo.propTypes = {
   height: PropTypes.number.isRequired,
-  showMonitored: PropTypes.bool.isRequired,
   showQualityProfile: PropTypes.bool.isRequired,
   showAdded: PropTypes.bool.isRequired,
   showBookCount: PropTypes.bool.isRequired,
   showPath: PropTypes.bool.isRequired,
   showSizeOnDisk: PropTypes.bool.isRequired,
-  monitored: PropTypes.bool.isRequired,
   nextAiring: PropTypes.string,
   qualityProfile: PropTypes.object.isRequired,
   lastBook: PropTypes.object,

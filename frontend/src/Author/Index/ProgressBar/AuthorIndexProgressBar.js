@@ -1,15 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ProgressBar from 'Components/ProgressBar';
-import { sizes } from 'Helpers/Props';
-import getProgressBarKind from 'Utilities/Author/getProgressBarKind';
+import { kinds, sizes } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import styles from './AuthorIndexProgressBar.css';
 
 function AuthorIndexProgressBar(props) {
   const {
-    monitored,
-    status,
     bookCount,
     availableBookCount,
     bookFileCount,
@@ -26,7 +23,7 @@ function AuthorIndexProgressBar(props) {
       className={styles.progressBar}
       containerClassName={styles.progress}
       progress={progress}
-      kind={getProgressBarKind(status, monitored, progress)}
+      kind={kinds.DEFAULT}
       size={detailedProgressBar ? sizes.MEDIUM : sizes.SMALL}
       showText={detailedProgressBar}
       text={text}
@@ -37,8 +34,6 @@ function AuthorIndexProgressBar(props) {
 }
 
 AuthorIndexProgressBar.propTypes = {
-  monitored: PropTypes.bool.isRequired,
-  status: PropTypes.string.isRequired,
   bookCount: PropTypes.number.isRequired,
   availableBookCount: PropTypes.number.isRequired,
   bookFileCount: PropTypes.number.isRequired,
