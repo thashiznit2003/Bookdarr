@@ -85,6 +85,7 @@ class AssignUnmappedModalContent extends Component {
 
     if (created && created.id) {
       this.props.onBookAdded?.({ book: created });
+      this.props.onAssign(created.id);
     }
   };
 

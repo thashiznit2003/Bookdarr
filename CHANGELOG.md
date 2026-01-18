@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.128
+- Summary: Auto-assign unmapped files when adding a book from metadata search.
+- Why: Adding a book from the metadata results didn’t attach the selected unmapped files.
+- Impact: After a metadata add completes, the Assign modal immediately imports the selected files into the new book; version bumped for cache-busting.
+- Files: `frontend/src/UnmappedFiles/assign/AssignUnmappedModalContent.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-193.log`).
+
 ## 1.3.127
 - Summary: Remove the Edition column from metadata search results to tighten the Assign modal.
 - Why: Edition data isn’t useful in the Assign search results and wastes vertical space.
