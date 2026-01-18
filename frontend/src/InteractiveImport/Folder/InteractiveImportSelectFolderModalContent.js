@@ -44,7 +44,7 @@ class InteractiveImportSelectFolderModalContent extends Component {
     super(props, context);
 
     this.state = {
-      folder: '',
+      folder: props.initialFolder || '',
       selectedFiles: [],
       isUploading: false,
       uploadError: null
@@ -53,6 +53,16 @@ class InteractiveImportSelectFolderModalContent extends Component {
 
   //
   // Listeners
+
+  componentDidUpdate(prevProps) {
+    if (
+      this.state.folder === '' &&
+      this.props.initialFolder &&
+      this.props.initialFolder !== prevProps.initialFolder
+    ) {
+      this.setState({ folder: this.props.initialFolder });
+    }
+  }
 
   onPathChange = ({ value }) => {
     this.setState({ folder: value });
@@ -127,6 +137,7 @@ class InteractiveImportSelectFolderModalContent extends Component {
       recentFolders,
       onRemoveRecentFolderPress,
       useBrowserUpload,
+      showPathInput,
       onModalClose
     } = this.props;
 
@@ -186,6 +197,11 @@ class InteractiveImportSelectFolderModalContent extends Component {
                   }
                 </div>
               </div> :
+              null
+          }
+
+          {
+            (!useBrowserUpload || showPathInput) &&
               <PathInputConnector
                 name="folder"
                 value={folder}
@@ -274,6 +290,8 @@ InteractiveImportSelectFolderModalContent.propTypes = {
   onInteractiveImportPress: PropTypes.func.isRequired,
   onRemoveRecentFolderPress: PropTypes.func.isRequired,
   useBrowserUpload: PropTypes.bool,
+  showPathInput: PropTypes.bool,
+  initialFolder: PropTypes.string,
   onModalClose: PropTypes.func.isRequired
 };
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.113
+- Summary: Add a “Link Existing Files” flow on book details to manually associate stray files (pre-fills the author folder and keeps the path picker even with uploads enabled).
+- Why: Armada (and similar books) had downloaded files that weren’t linked to the book and didn’t appear in Unmapped Files; users need a direct way to point the manual import at the author folder and link files.
+- Impact: Book details now offer a Link Existing Files button that opens manual import with path input plus uploads, defaulting to the author’s folder; UI string added; version bumped for cache-busting.
+- Files: `frontend/src/Book/Details/BookDetails.js`, `frontend/src/InteractiveImport/InteractiveImportModal.js`, `frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent*.js`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-178.log`).
 ## 1.3.112
 - Summary: Keep library entries when fetching a single book so downloads/searches don’t clear the library view.
 - Why: Navigating to a book detail (e.g., to download files) fetched only that book and replaced the store, hiding the rest of the library until a reload.

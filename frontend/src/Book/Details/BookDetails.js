@@ -52,7 +52,8 @@ class BookDetails extends Component {
       isCombineModalOpen: false,
       isInteractiveImportModalOpen: false,
       isUploadCoverModalOpen: false,
-      selectedTabIndex: 0
+      selectedTabIndex: 0,
+      interactiveImportUseBrowserUpload: true
     };
   }
 
@@ -103,11 +104,24 @@ class BookDetails extends Component {
   };
 
   onInteractiveImportPress = () => {
-    this.setState({ isInteractiveImportModalOpen: true });
+    this.setState({
+      isInteractiveImportModalOpen: true,
+      interactiveImportUseBrowserUpload: true
+    });
+  };
+
+  onLinkExistingFilesPress = () => {
+    this.setState({
+      isInteractiveImportModalOpen: true,
+      interactiveImportUseBrowserUpload: false
+    });
   };
 
   onInteractiveImportModalClose = () => {
-    this.setState({ isInteractiveImportModalOpen: false });
+    this.setState({
+      isInteractiveImportModalOpen: false,
+      interactiveImportUseBrowserUpload: true
+    });
   };
 
   onAddToLibrary = () => {
@@ -282,6 +296,12 @@ class BookDetails extends Component {
               label={translate('ManualImport')}
               iconName={icons.INTERACTIVE}
               onPress={this.onInteractiveImportPress}
+            />
+
+            <PageToolbarButton
+              label={translate('LinkExistingFiles')}
+              iconName={icons.FOLDER}
+              onPress={this.onLinkExistingFilesPress}
             />
 
             <PageToolbarButton
@@ -465,7 +485,9 @@ class BookDetails extends Component {
             allowAuthorChange={true}
             showFilterExistingFiles={true}
             showImportMode={false}
-            useBrowserUpload={true}
+            useBrowserUpload={this.state.interactiveImportUseBrowserUpload}
+            showPathInput={true}
+            initialFolder={author.path}
             onModalClose={this.onInteractiveImportModalClose}
           />
 

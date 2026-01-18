@@ -633,6 +633,7 @@
   "ImportIndexers": "Import Indexers",
   "ManageLists": "Manage Lists",
   "ManualDownload": "Manual Download",
+  "LinkExistingFiles": "Link Existing Files",
   "ManualImport": "Manual Import",
   "ManualImportSelectEdition": "Manual Import - Select Edition",
   "ManualBookTitleHelpText": "Leave blank to use 'Untitled Book'.",
