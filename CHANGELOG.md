@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.127
+- Summary: Remove the Edition column from metadata search results to tighten the Assign modal.
+- Why: Edition data isn’t useful in the Assign search results and wastes vertical space.
+- Impact: Metadata search results now show Title, Author, and Year only, keeping rows compact; version bumped for cache-busting.
+- Files: `frontend/src/UnmappedFiles/assign/AssignUnmappedModalContent.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-192.log`).
+
 ## 1.3.126
 - Summary: Simplify metadata search results in Assign and reduce slow search churn.
 - Why: Metadata searches were firing on every keystroke and the results view was too large for the modal.

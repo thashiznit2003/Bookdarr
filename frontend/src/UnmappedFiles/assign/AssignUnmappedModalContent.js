@@ -105,7 +105,6 @@ class AssignUnmappedModalContent extends Component {
       { name: 'title', label: translate('Title'), isVisible: true },
       { name: 'author', label: translate('Author'), isVisible: true },
       { name: 'year', label: translate('ReleaseDate'), isVisible: true },
-      { name: 'edition', label: translate('Edition'), isVisible: true },
       { name: 'action', label: translate('Actions'), isVisible: true }
     ];
 
@@ -206,13 +205,6 @@ class AssignUnmappedModalContent extends Component {
                               }
 
                               const book = item.book;
-                              const editions = book.editions || [];
-                              const edition = editions.find((ed) => ed.monitored) || editions[0];
-                              const editionInfo = [
-                                edition?.format,
-                                edition?.isbn13 || edition?.asin,
-                                edition?.disambiguation
-                              ].filter(Boolean).join(' • ');
                               const releaseYear = book.releaseDate ? new Date(book.releaseDate).getFullYear() : '';
                               const isExisting = book.id && book.id !== 0;
 
@@ -225,7 +217,6 @@ class AssignUnmappedModalContent extends Component {
                                   <TableRowCell>{book.title}</TableRowCell>
                                   <TableRowCell>{book.author?.authorName}</TableRowCell>
                                   <TableRowCell>{releaseYear || '-'}</TableRowCell>
-                                  <TableRowCell>{editionInfo || '-'}</TableRowCell>
                                   <TableRowCell>
                                     <Button
                                       kind="primary"
