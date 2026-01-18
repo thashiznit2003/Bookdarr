@@ -2494,3 +2494,9 @@
 - Impact: Manual import results are now de-duplicated by path before rendering; version bumped for cache-busting.
 - Files: `frontend/src/Store/Actions/interactiveImportActions.js`, `src/Directory.Build.props`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-182.log`).
+## 1.3.117
+- Summary: Make Manual Import use the browser file picker while Link Existing Files stays on filesystem browse.
+- Why: Manual Import should prompt for local uploads, while Link Existing Files should browse server paths for already-downloaded files.
+- Impact: Manual Import opens with browser upload (no path picker); Link Existing Files keeps the server path picker/auto-start flow. Version bumped for cache-busting.
+- Files: `frontend/src/Book/Details/BookDetails.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-183.log`).

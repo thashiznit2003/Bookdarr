@@ -53,7 +53,10 @@ class BookDetails extends Component {
       isInteractiveImportModalOpen: false,
       isUploadCoverModalOpen: false,
       selectedTabIndex: 0,
-      interactiveImportUseBrowserUpload: true
+      interactiveImportUseBrowserUpload: true,
+      interactiveImportShowPathInput: false,
+      interactiveImportAutoStart: false,
+      interactiveImportForceAllFiles: false
     };
   }
 
@@ -106,14 +109,20 @@ class BookDetails extends Component {
   onInteractiveImportPress = () => {
     this.setState({
       isInteractiveImportModalOpen: true,
-      interactiveImportUseBrowserUpload: true
+      interactiveImportUseBrowserUpload: true,
+      interactiveImportShowPathInput: false,
+      interactiveImportAutoStart: false,
+      interactiveImportForceAllFiles: false
     });
   };
 
   onLinkExistingFilesPress = () => {
     this.setState({
       isInteractiveImportModalOpen: true,
-      interactiveImportUseBrowserUpload: false
+      interactiveImportUseBrowserUpload: false,
+      interactiveImportShowPathInput: true,
+      interactiveImportAutoStart: true,
+      interactiveImportForceAllFiles: true
     });
   };
 
@@ -486,10 +495,10 @@ class BookDetails extends Component {
             showFilterExistingFiles={true}
             showImportMode={false}
             useBrowserUpload={this.state.interactiveImportUseBrowserUpload}
-            showPathInput={true}
+            showPathInput={this.state.interactiveImportShowPathInput}
             initialFolder={author.path}
-            autoStartInteractive={true}
-            forceAllFiles={true}
+            autoStartInteractive={this.state.interactiveImportAutoStart}
+            forceAllFiles={this.state.interactiveImportForceAllFiles}
             onModalClose={this.onInteractiveImportModalClose}
           />
 
