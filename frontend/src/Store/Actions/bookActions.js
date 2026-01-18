@@ -351,20 +351,17 @@ export const actionHandlers = handleThunks({
         const existing = getState().books.items || [];
 
         if (useUserLibrary) {
-          const nonLibrary = existing.filter((b) => !b.inMyLibrary);
-          const merged = [...nonLibrary];
-
+          const base = existing.map((b) => ({ ...b, inMyLibrary: false }));
           data.forEach((item) => {
-            const idx = merged.findIndex((b) => b.id === item.id);
+            const idx = base.findIndex((b) => b.id === item.id);
             const next = { ...item, inMyLibrary: true };
             if (idx >= 0) {
-              merged[idx] = next;
+              base[idx] = next;
             } else {
-              merged.push(next);
+              base.push(next);
             }
           });
-
-          data = merged;
+          data = base;
         } else {
           data = data.map((item) => {
             const found = existing.find((b) => b.id === item.id);

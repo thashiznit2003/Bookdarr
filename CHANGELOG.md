@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.101
+- Summary: Keep book details working after removing a title from your library by merging user-library fetches without dropping non-library books.
+- Why: The details “Remove from my Library” action would reload the user library, wipe the book from the client store, and the details route then 404’d; the button state also reverted.
+- Impact: User-library fetch now clears only the `inMyLibrary` flag on existing books and re-applies it to the fetched items, preserving other books so details pages stay reachable; version bumped for cache-busting.
+- Files: `frontend/src/Store/Actions/bookActions.js`, `src/Directory.Build.props`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-166.log`) so diagnostics capture the deploy.
+
 ## 1.3.93
 - Summary: Finish the Users edit flow: add an Edit modal, wire the update thunk, include email on create, and let the API toggle active state.
 - Why: Admins need to update usernames/emails/passwords and deactivate accounts from the UI; previous toggle calls were ignored because the API didn’t accept `isActive`.

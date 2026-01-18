@@ -40,7 +40,7 @@ Use this file to onboard a new Codex chat.
 ## Command Continuity
 - If a command was interrupted, rerun it before continuing.
 - Keep the latest instructions/commands in this section so every agent knows what to execute next (e.g., the current SSH update command, diagnostics push steps, version bump, StyleCop build, etc.).
-- After pushing to GitHub, immediately run the SSH update workflow (`ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-160.log'`) so the Ubuntu VM mirrors the latest version and the diagnostics bundle is generated.
+- After pushing to GitHub, immediately run the SSH update workflow (`ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-166.log'`) so the Ubuntu VM mirrors the latest version and the diagnostics bundle is generated.
 
 ## Diagnostics Workflow
 
@@ -72,6 +72,7 @@ Use this file to onboard a new Codex chat.
 - Users: backend update endpoint exists (username/email/password + isActive, admin or self) with reset-token scaffolding; frontend has Add/Edit modals and activate/deactivate/delete. Still needed: per-user libraries/book scoping (user_id ownership + auth scoping), self-service password reset via email sender, and confirmation of per-user library isolation.
 
 ## Recent Changes (since last handoff)
+- User-library fetch now keeps non-library books in the store while toggling `inMyLibrary`, preventing book details from 404’ing after a remove; version bumped to 1.3.101.
 - Users: toolbar Add/Refresh icons, sidebar link, Add/Edit modals (username/email/password), and actions wired to the new update endpoint; activate/deactivate/delete still available. Update API now accepts `isActive`; email captured on create; logout menu keeps Restart (with confirm) and removed Shutdown/Keyboard Shortcuts.
 - Fixed manual import modal skipping upload screen by clearing folder state when modal opens with useBrowserUpload mode.
 - Added multi-machine workflow scripts (switch-to-laptop.sh, switch-to-desktop.sh, sync-from-remote.sh) for seamless switching between desktop and laptop.
