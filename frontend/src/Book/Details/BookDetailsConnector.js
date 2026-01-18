@@ -7,6 +7,7 @@ import { createSelector } from 'reselect';
 import * as commandNames from 'Commands/commandNames';
 import { refreshBookMetadata, toggleBooksMonitored } from 'Store/Actions/bookActions';
 import { clearBookFiles, fetchBookFiles } from 'Store/Actions/bookFileActions';
+import { fetchUserLibraryBooks } from 'Store/Actions/bookActions';
 import { executeCommand } from 'Store/Actions/commandActions';
 import { clearEditions, fetchEditions } from 'Store/Actions/editionActions';
 import { cancelFetchReleases, clearReleases } from 'Store/Actions/releaseActions';
@@ -139,7 +140,8 @@ const mapDispatchToProps = {
   clearReleases,
   cancelFetchReleases,
   refreshBookMetadata,
-  toggleBooksMonitored
+  toggleBooksMonitored,
+  fetchUserLibraryBooks
 };
 
 function getMonitoredEditions(props) {

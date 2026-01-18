@@ -44,6 +44,7 @@ class BookDetails extends Component {
     super(props, context);
 
     this.state = {
+      inMyLibrary: props.inMyLibrary,
       isOrganizeModalOpen: false,
       isRetagModalOpen: false,
       isEditBookModalOpen: false,
@@ -110,18 +111,23 @@ class BookDetails extends Component {
   };
 
   onAddToLibrary = () => {
-    const { id } = this.props;
+    const { id, fetchUserLibraryBooks } = this.props;
 
     createAjaxRequest({
-      url: '/user/library',
-      method: 'POST',
+      url: this.state.inMyLibrary ? `/user/library/${id}` : '/user/library',
+      method: this.state.inMyLibrary ? 'DELETE' : 'POST',
       dataType: 'json',
       contentType: 'application/json',
-      data: JSON.stringify({
+      data: this.state.inMyLibrary ? undefined : JSON.stringify({
         bookId: id,
         wantsEbook: true,
         wantsAudiobook: true
       })
+    }).request.always(() => {
+      this.setState((state) => ({ inMyLibrary: !state.inMyLibrary }));
+      if (typeof fetchUserLibraryBooks === 'function') {
+        fetchUserLibraryBooks();
+      }
     });
   };
 
@@ -143,6 +149,12 @@ class BookDetails extends Component {
   onTabSelect = (index, lastIndex) => {
     this.setState({ selectedTabIndex: index });
   };
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.inMyLibrary !== this.props.inMyLibrary) {
+      this.setState({ inMyLibrary: this.props.inMyLibrary });
+    }
+  }
 
   //
   // Render
@@ -170,7 +182,8 @@ class BookDetails extends Component {
       onRefreshMetadataPress,
       onRescanFilesPress,
       onSearchPress,
-      statistics = {}
+      statistics = {},
+      fetchUserLibraryBooks
     } = this.props;
 
     const {
@@ -230,12 +243,11 @@ class BookDetails extends Component {
             />
 
             {
-              !inMyLibrary &&
-                <PageToolbarButton
-                  label={translate('AddToMyLibrary')}
-                  iconName={icons.ADD}
-                  onPress={this.onAddToLibrary}
-                />
+              <PageToolbarButton
+                label={translate(inMyLibrary ? 'RemoveFromMyLibrary' : 'AddToMyLibrary')}
+                iconName={inMyLibrary ? icons.DELETE : icons.ADD}
+                onPress={this.onAddToLibrary}
+              />
             }
 
             <PageToolbarSeparator />
@@ -483,6 +495,7 @@ BookDetails.propTypes = {
   statistics: PropTypes.object.isRequired,
   monitored: PropTypes.bool.isRequired,
   inMyLibrary: PropTypes.bool,
+  fetchUserLibraryBooks: PropTypes.func,
   shortDateFormat: PropTypes.string.isRequired,
   isSaving: PropTypes.bool.isRequired,
   isRefreshing: PropTypes.bool,
@@ -513,7 +526,8 @@ BookDetails.defaultProps = {
   isRescanningFiles: false,
   bookFiles: [],
   combineCommand: null,
-  inMyLibrary: false
+  inMyLibrary: false,
+  fetchUserLibraryBooks: null
 };
 
 export default BookDetails;

@@ -2388,3 +2388,9 @@
 - Impact: Books fetched for pool/details are marked outside your library; library/author selectors now only show `inMyLibrary` items; Book Details shows an “Add to My Library” toolbar button when absent. Pool clicks no longer auto-add.
 - Files: `frontend/src/Store/Actions/bookActions.js`, `frontend/src/Store/Selectors/createBooksClientSideCollectionSelector.js`, `frontend/src/Store/Selectors/createAuthorClientSideCollectionItemsSelector.js`, `frontend/src/Book/Details/BookDetails.js`, `frontend/src/Book/Details/BookDetailsConnector.js`, `src/Directory.Build.props`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), then verify pool -> details doesn’t add to library and the new button adds only when pressed.
+## 1.3.99
+- Summary: Stop Book Pool views from altering your library and add an explicit add/remove toggle on book details.
+- Why: Opening a book from Book Pool was implicitly adding it; users need a clear button to add/remove instead.
+- Impact: Book details shows an “Add to My Library” / “Remove from My Library” button based on state; clicking it posts to `/user/library` and refreshes the user library. Simply viewing from Book Pool no longer affects your library.
+- Files: `frontend/src/Book/Details/BookDetails.js`, `frontend/src/Book/Details/BookDetailsConnector.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), and verify pool → details no longer auto-adds; use the button to add/remove.
