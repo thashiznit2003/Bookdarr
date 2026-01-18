@@ -12,7 +12,7 @@ import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
-import { icons, scrollDirections } from 'Helpers/Props';
+import { icons, kinds, scrollDirections } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import AddManualBookModal from 'Book/Index/ManualAdd/AddManualBookModal';
 import AddNewBookSearchResultConnector from 'Search/Book/AddNewBookSearchResultConnector';
@@ -128,7 +128,7 @@ class AssignUnmappedModalContent extends Component {
 
           {
             searchError &&
-              <Alert>
+              <Alert kind={kinds.WARNING}>
                 {translate('FailedLoadingSearchResults')}
               </Alert>
           }
@@ -136,6 +136,9 @@ class AssignUnmappedModalContent extends Component {
           {
             !!searchResults.length &&
               <div className={styles.searchResults}>
+                <div className={styles.sectionLabel}>
+                  {translate('AddNewBook')}
+                </div>
                 {
                   searchResults.map((item) => {
                     if (!item.book) {

@@ -321,6 +321,10 @@ class UnmappedFilesTable extends Component {
           fileIds={assignFileIds}
           files={assignFiles}
           folder={assignFolder}
+          onAssigned={() => {
+            this.props.fetchUnmappedFiles();
+            this.onAssignModalClose();
+          }}
           onModalClose={this.onAssignModalClose}
         />
       </PageContent>
@@ -342,6 +346,7 @@ UnmappedFilesTable.propTypes = {
   onSortPress: PropTypes.func.isRequired,
   deleteUnmappedFile: PropTypes.func.isRequired,
   deleteUnmappedFiles: PropTypes.func.isRequired,
+  fetchUnmappedFiles: PropTypes.func.isRequired,
   isScanningFolders: PropTypes.bool.isRequired,
   onAddMissingAuthorsPress: PropTypes.func.isRequired
 };

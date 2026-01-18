@@ -177,7 +177,7 @@ export const actionHandlers = handleThunks({
       itemToAdd.book = data;
       dispatch(batchActions([
         updateItem({ section: 'authors', ...data.author }),
-        updateItem({ section: 'books', ...data }),
+        updateItem({ section: 'books', ...data, inMyLibrary: true }),
         updateItem({ section, ...itemToAdd }),
 
         set({
@@ -187,6 +187,21 @@ export const actionHandlers = handleThunks({
           addError: null
         })
       ]));
+
+      // Also add to the current user's library so it shows up immediately
+      createAjaxRequest({
+        url: '/user/library',
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({
+          bookId: data.id,
+          wantsEbook: true,
+          wantsAudiobook: true
+        })
+      }).request.always(() => {
+        dispatch(updateItem({ section: 'books', ...data, inMyLibrary: true }));
+      });
 
       if (payload.onBookAdded) {
         payload.onBookAdded({

@@ -23,3 +23,8 @@
 .searchResults {
   margin-bottom: 16px;
 }
+
+.sectionLabel {
+  font-weight: 600;
+  margin-bottom: 8px;
+}

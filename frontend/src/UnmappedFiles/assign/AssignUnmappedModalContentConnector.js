@@ -110,7 +110,11 @@ class AssignUnmappedModalContentConnector extends Component {
       contentType: 'application/json',
       dataType: 'json'
     }).request.always(() => {
-      this.props.onModalClose();
+      if (this.props.onAssigned) {
+        this.props.onAssigned();
+      } else {
+        this.props.onModalClose();
+      }
     });
   };
 
@@ -167,6 +171,7 @@ AssignUnmappedModalContentConnector.propTypes = {
   searchError: PropTypes.object,
   getSearchResults: PropTypes.func.isRequired,
   clearSearchResults: PropTypes.func.isRequired,
+  onAssigned: PropTypes.func,
   onModalClose: PropTypes.func.isRequired
 };
 

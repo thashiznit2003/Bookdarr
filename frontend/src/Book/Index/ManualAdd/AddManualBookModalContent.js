@@ -82,176 +82,185 @@ class AddManualBookModalContent extends Component {
 
         <ModalBody>
           <div className={styles.container}>
-            <Form {...otherProps}>
-              <div className={styles.grid}>
-                <FormGroup className={classNames(styles.fieldGroup, styles.wideField)}>
-                  <FormLabel>
-                    {translate('Title')}
-                  </FormLabel>
+            <div className={styles.panel}>
+              <div className={styles.sectionHeader}>{translate('AddBookManually')}</div>
+              <Form {...otherProps}>
+                <div className={styles.grid}>
+                  <FormGroup className={classNames(styles.fieldGroup, styles.wideField)}>
+                    <FormLabel>
+                      {translate('Title')}
+                    </FormLabel>
 
-                  <FormInputGroup
-                    type={inputTypes.TEXT}
-                    name="title"
-                    value={title}
-                    helpText={translate('ManualBookTitleHelpText')}
-                    onChange={this.onInputChange}
-                  />
-                </FormGroup>
+                    <FormInputGroup
+                      type={inputTypes.TEXT}
+                      name="title"
+                      value={title}
+                      placeholder={translate('ManualBookTitleHelpText')}
+                      onChange={this.onInputChange}
+                    />
+                  </FormGroup>
 
-                <FormGroup className={classNames(styles.fieldGroup, styles.wideField)}>
-                  <FormLabel>
-                    {translate('Author')}
-                  </FormLabel>
+                  <FormGroup className={classNames(styles.fieldGroup, styles.wideField)}>
+                    <FormLabel>
+                      {translate('Author')}
+                    </FormLabel>
 
-                  <FormInputGroup
-                    type={inputTypes.TEXT}
-                    name="authorName"
-                    value={authorName}
-                    helpText={translate('ManualBookAuthorHelpText')}
-                    onChange={this.onInputChange}
-                  />
-                </FormGroup>
+                    <FormInputGroup
+                      type={inputTypes.TEXT}
+                      name="authorName"
+                      value={authorName}
+                      placeholder={translate('ManualBookAuthorHelpText')}
+                      onChange={this.onInputChange}
+                    />
+                  </FormGroup>
 
-                <FormGroup className={classNames(styles.fieldGroup, styles.wideField)}>
-                  <FormLabel>
-                    {translate('ReleaseDate')}
-                  </FormLabel>
+                  <FormGroup className={classNames(styles.fieldGroup, styles.wideField)}>
+                    <FormLabel>
+                      {translate('ReleaseDate')}
+                    </FormLabel>
 
-                  <FormInputGroup
-                    type={inputTypes.TEXT}
-                    name="releaseDate"
-                    value={releaseDate}
-                    placeholder="YYYY-MM-DD"
-                    helpText={translate('ManualBookReleaseDateHelpText')}
-                    onChange={this.onInputChange}
-                  />
-                </FormGroup>
+                    <FormInputGroup
+                      type={inputTypes.TEXT}
+                      name="releaseDate"
+                      value={releaseDate}
+                      placeholder="YYYY-MM-DD"
+                      helpText={translate('ManualBookReleaseDateHelpText')}
+                      onChange={this.onInputChange}
+                    />
+                  </FormGroup>
 
-                <FormGroup className={classNames(styles.fieldGroup, styles.wideField)}>
-                  <FormLabel>
-                    {translate('Overview')}
-                  </FormLabel>
+                  <FormGroup className={classNames(styles.fieldGroup, styles.wideField)}>
+                    <FormLabel>
+                      {translate('Overview')}
+                    </FormLabel>
 
-                  <FormInputGroup
-                    type={inputTypes.TEXT_AREA}
-                    name="overview"
-                    value={overview}
-                    onChange={this.onInputChange}
-                  />
-                </FormGroup>
+                    <FormInputGroup
+                      type={inputTypes.TEXT_AREA}
+                      name="overview"
+                      value={overview}
+                      placeholder={translate('ManualBookMatchHelpText')}
+                      onChange={this.onInputChange}
+                    />
+                  </FormGroup>
 
-                <FormGroup className={styles.fieldGroup}>
-                  <FormLabel>
-                    {translate('Publisher')}
-                  </FormLabel>
+                  <FormGroup className={styles.fieldGroup}>
+                    <FormLabel>
+                      {translate('Publisher')}
+                    </FormLabel>
 
-                  <FormInputGroup
-                    type={inputTypes.TEXT}
-                    name="publisher"
-                    value={publisher}
-                    onChange={this.onInputChange}
-                  />
-                </FormGroup>
+                    <FormInputGroup
+                      type={inputTypes.TEXT}
+                      name="publisher"
+                      value={publisher}
+                      placeholder={translate('Publisher')}
+                      onChange={this.onInputChange}
+                    />
+                  </FormGroup>
 
-                <FormGroup className={styles.fieldGroup}>
-                  <FormLabel>
-                    {translate('Language')}
-                  </FormLabel>
+                  <FormGroup className={styles.fieldGroup}>
+                    <FormLabel>
+                      {translate('Language')}
+                    </FormLabel>
 
-                  <FormInputGroup
-                    type={inputTypes.TEXT}
-                    name="language"
-                    value={language}
-                    onChange={this.onInputChange}
-                  />
-                </FormGroup>
+                    <FormInputGroup
+                      type={inputTypes.TEXT}
+                      name="language"
+                      value={language}
+                      placeholder="en"
+                      onChange={this.onInputChange}
+                    />
+                  </FormGroup>
 
-                <FormGroup className={styles.fieldGroup}>
-                  <FormLabel>
-                    {translate('Format')}
-                  </FormLabel>
+                  <FormGroup className={styles.fieldGroup}>
+                    <FormLabel>
+                      {translate('Format')}
+                    </FormLabel>
 
-                  <FormInputGroup
-                    type={inputTypes.TEXT}
-                    name="format"
-                    value={format}
-                    onChange={this.onInputChange}
-                  />
-                </FormGroup>
+                    <FormInputGroup
+                      type={inputTypes.TEXT}
+                      name="format"
+                      value={format}
+                      placeholder="EPUB / M4B / PDF"
+                      onChange={this.onInputChange}
+                    />
+                  </FormGroup>
 
-                <FormGroup className={styles.fieldGroup}>
-                  <FormLabel>
-                    {translate('BookIsbn13')}
-                  </FormLabel>
+                  <FormGroup className={styles.fieldGroup}>
+                    <FormLabel>
+                      {translate('BookIsbn13')}
+                    </FormLabel>
 
-                  <FormInputGroup
-                    type={inputTypes.TEXT}
-                    name="isbn13"
-                    value={isbn13}
-                    onChange={this.onInputChange}
-                  />
-                </FormGroup>
+                    <FormInputGroup
+                      type={inputTypes.TEXT}
+                      name="isbn13"
+                      value={isbn13}
+                      placeholder="978..."
+                      onChange={this.onInputChange}
+                    />
+                  </FormGroup>
 
-                <FormGroup className={styles.fieldGroup}>
-                  <FormLabel>
-                    {translate('ASIN')}
-                  </FormLabel>
+                  <FormGroup className={styles.fieldGroup}>
+                    <FormLabel>
+                      {translate('ASIN')}
+                    </FormLabel>
 
-                  <FormInputGroup
-                    type={inputTypes.TEXT}
-                    name="asin"
-                    value={asin}
-                    onChange={this.onInputChange}
-                  />
-                </FormGroup>
+                    <FormInputGroup
+                      type={inputTypes.TEXT}
+                      name="asin"
+                      value={asin}
+                      placeholder="B00JCDK5ME"
+                      onChange={this.onInputChange}
+                    />
+                  </FormGroup>
 
-                <FormGroup className={styles.fieldGroup}>
-                  <FormLabel>
-                    {translate('PageCount')}
-                  </FormLabel>
+                  <FormGroup className={styles.fieldGroup}>
+                    <FormLabel>
+                      {translate('PageCount')}
+                    </FormLabel>
 
-                  <FormInputGroup
-                    type={inputTypes.NUMBER}
-                    name="pageCount"
-                    value={pageCount}
-                    onChange={this.onInputChange}
-                  />
-                </FormGroup>
+                    <FormInputGroup
+                      type={inputTypes.NUMBER}
+                      name="pageCount"
+                      value={pageCount}
+                      placeholder="368"
+                      onChange={this.onInputChange}
+                    />
+                  </FormGroup>
 
-                <FormGroup className={styles.fieldGroup}>
-                  <FormLabel>
-                    {translate('IsEbook')}
-                  </FormLabel>
+                  <FormGroup className={styles.fieldGroup}>
+                    <FormLabel>
+                      {translate('IsEbook')}
+                    </FormLabel>
 
-                  <FormInputGroup
-                    type={inputTypes.CHECK}
-                    name="isEbook"
-                    value={isEbook}
-                    onChange={this.onInputChange}
-                  />
-                </FormGroup>
-              </div>
-            </Form>
-
-            <div className={styles.hint}>
-              {translate('ManualBookMatchHelpText')}
+                    <FormInputGroup
+                      type={inputTypes.CHECK}
+                      name="isEbook"
+                      value={isEbook}
+                      onChange={this.onInputChange}
+                    />
+                  </FormGroup>
+                </div>
+              </Form>
             </div>
 
-            <AddAuthorOptionsForm
-              rootFolderPath={rootFolderPath}
-              monitor={monitor}
-              monitorNewItems={monitorNewItems}
-              qualityProfileId={qualityProfileId}
-              metadataProfileId={metadataProfileId}
-              tags={tags}
-              includeNoneMetadataProfile={true}
-              includeSpecificBookMonitor={true}
-              showMetadataProfile={true}
-              onInputChange={onAuthorOptionsChange}
-              {...otherProps}
-              validationErrors={validationErrors}
-              validationWarnings={validationWarnings}
-            />
+            <div className={styles.panel}>
+              <div className={styles.sectionHeader}>{translate('AddAuthor')}</div>
+              <AddAuthorOptionsForm
+                rootFolderPath={rootFolderPath}
+                monitor={monitor}
+                monitorNewItems={monitorNewItems}
+                qualityProfileId={qualityProfileId}
+                metadataProfileId={metadataProfileId}
+                tags={tags}
+                includeNoneMetadataProfile={true}
+                includeSpecificBookMonitor={true}
+                showMetadataProfile={true}
+                onInputChange={onAuthorOptionsChange}
+                {...otherProps}
+                validationErrors={validationErrors}
+                validationWarnings={validationWarnings}
+              />
+            </div>
 
             {
               addError &&

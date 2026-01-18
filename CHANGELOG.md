@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.121
+- Summary: Fix Assign-to-Book flows and polish manual add: metadata search now works in the Unmapped modal, assigns refresh immediately, manual create looks sane, and adding a book also joins your library.
+- Why: Add-new search in the modal did nothing, manual add looked broken, new books only landed in Book Pool, and assigning unmapped files didn’t refresh the list or attach files.
+- Impact: Unmapped Assign modal now searches metadata, shows results, and refetches the unmapped list after assigning; manual add is restyled into readable panels; search adds books straight to your library; version bumped for cache-busting.
+- Files: `frontend/src/UnmappedFiles/*`, `frontend/src/Store/Actions/searchActions.js`, `frontend/src/Book/Index/ManualAdd/*`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-186.log`).
+
 ## 1.3.120
 - Summary: Fix Assign-to-Book unmapped flow with working metadata search and manual create options plus book assignment wiring.
 - Why: The Add New Book button crashed (missing book data) and users couldn’t search metadata or create a new book directly from Unmapped Files before assigning files.

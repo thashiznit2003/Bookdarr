@@ -24,6 +24,7 @@ AssignUnmappedModal.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object),
   fileIds: PropTypes.arrayOf(PropTypes.number),
   folder: PropTypes.string,
+  onAssigned: PropTypes.func,
   onModalClose: PropTypes.func.isRequired
 };
 
