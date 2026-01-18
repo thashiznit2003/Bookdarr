@@ -349,8 +349,15 @@ export const actionHandlers = handleThunks({
     request.done((data) => {
       if (Array.isArray(data)) {
         const existing = getState().books.items || [];
+        const hadExisting = existing.length > 0;
 
         if (useUserLibrary) {
+          // If the API returns empty but we already had items, keep the current
+          // view instead of clearing the user's library from the client.
+          if (hadExisting && data.length === 0) {
+            data = existing;
+          }
+
           const base = existing.map((b) => ({ ...b, inMyLibrary: false }));
           data.forEach((item) => {
             const idx = base.findIndex((b) => b.id === item.id);

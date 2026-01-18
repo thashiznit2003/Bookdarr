@@ -40,7 +40,7 @@ Use this file to onboard a new Codex chat.
 ## Command Continuity
 - If a command was interrupted, rerun it before continuing.
 - Keep the latest instructions/commands in this section so every agent knows what to execute next (e.g., the current SSH update command, diagnostics push steps, version bump, StyleCop build, etc.).
-- After pushing to GitHub, immediately run the SSH update workflow (`ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-174.log'`) so the Ubuntu VM mirrors the latest version and the diagnostics bundle is generated.
+- After pushing to GitHub, immediately run the SSH update workflow (`ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-175.log'`) so the Ubuntu VM mirrors the latest version and the diagnostics bundle is generated.
 
 ## Diagnostics Workflow
 
@@ -72,6 +72,7 @@ Use this file to onboard a new Codex chat.
 - Users: backend update endpoint exists (username/email/password + isActive, admin or self) with reset-token scaffolding; frontend has Add/Edit modals and activate/deactivate/delete. Still needed: per-user libraries/book scoping (user_id ownership + auth scoping), self-service password reset via email sender, and confirmation of per-user library isolation.
 
 ## Recent Changes (since last handoff)
+- Guard against clearing the user library view when `/user/library/books` returns empty; client preserves existing items; version bumped to 1.3.110.
 - Combine audiobooks: backend accepts 1+ parts, UI enables with a single MP3/FLAC (convert to M4B); version bumped to 1.3.109.
 - Combine audiobooks supports FLAC sources in backend and now enables the UI button for FLAC/MP3 parts; version bumped to 1.3.108.
 - Combine audiobooks supports FLAC sources (transcodes when needed) instead of erroring; version bumped to 1.3.107.

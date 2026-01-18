@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.110
+- Summary: Prevent the user library view from wiping out books/authors when the user-library API briefly returns an empty list.
+- Why: During queued downloads/restarts the client could clear the library if the endpoint responded with an empty array.
+- Impact: If the user-library fetch returns empty while we already have entries, the client keeps the existing items instead of clearing them. Version bumped for cache-busting.
+- Files: `frontend/src/Store/Actions/bookActions.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-175.log`).
 ## 1.3.109
 - Summary: Allow single-file audiobook conversions: Combine now enables with one MP3/FLAC part and backend accepts 1+ parts.
 - Why: Users with a single non-M4B audiobook couldn’t use Combine to convert it to M4B.
