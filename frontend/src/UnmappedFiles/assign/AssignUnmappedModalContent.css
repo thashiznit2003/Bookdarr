@@ -1,0 +1,14 @@
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.filterInput {
+  width: 250px;
+}
+
+.modalBody {
+  min-height: 300px;
+}

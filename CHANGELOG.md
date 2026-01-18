@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.119
+- Summary: Add an Assign to Book flow for Unmapped Files so selected items can be mapped to an existing pool book or a newly created one.
+- Why: Unmapped files are already known but lack a book; users need to pick a book (or add one) and import those files directly from the Unmapped page.
+- Impact: Unmapped Files now has an Assign to Book toolbar action that opens a book-picker modal (with filter and Add New Book search) and posts the selected files to manual import; added a no-books-found translation and bumped the version for cache-busting.
+- Files: `frontend/src/UnmappedFiles/UnmappedFilesTable.js`, `frontend/src/UnmappedFiles/assign/*`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-184.log`).
+
 ## 1.3.115
 - Summary: Link Existing Files now includes a full file browser so you can navigate any path and import all files, not just unmapped ones.
 - Why: The Armada manual import showed an empty list; users need to browse the filesystem, pick a folder, and see every file to link them to the current book.
@@ -2500,3 +2507,9 @@
 - Impact: Manual Import opens with browser upload (no path picker); Link Existing Files keeps the server path picker/auto-start flow. Version bumped for cache-busting.
 - Files: `frontend/src/Book/Details/BookDetails.js`, `src/Directory.Build.props`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-183.log`).
+## 1.3.118 (work in progress)
+- Summary: Start wiring Unmapped Files “Assign to Book” with a Book Pool picker + add-new hook (frontend only, partial).
+- Why: Need a modal to pick existing books or add a new one when files lack a home.
+- Impact: Adds an Assign to Book modal (pool list + Add New Book) and preps the manual import assign flow; version bumped for cache-busting. Backend mapping still needs wiring.
+- Files: `frontend/src/UnmappedFiles/UnmappedFilesTable.js`, `frontend/src/UnmappedFiles/assign/*`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-184.log`); wire files → book assignment and metadata search integration.

@@ -10,6 +10,7 @@ import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import TableOptionsModalWrapper from 'Components/Table/TableOptions/TableOptionsModalWrapper';
 import VirtualTable from 'Components/Table/VirtualTable';
 import VirtualTableRow from 'Components/Table/VirtualTableRow';
+import AssignUnmappedModal from 'UnmappedFiles/assign/AssignUnmappedModal';
 import { align, icons, kinds, sortDirections } from 'Helpers/Props';
 import hasDifferentItemsOrOrder from 'Utilities/Object/hasDifferentItemsOrOrder';
 import translate from 'Utilities/String/translate';
@@ -32,7 +33,11 @@ class UnmappedFilesTable extends Component {
       allSelected: false,
       allUnselected: false,
       lastToggled: null,
-      selectedState: {}
+      selectedState: {},
+      isAssignModalOpen: false,
+      assignFolder: null,
+      assignFileIds: [],
+      assignFiles: []
     };
   }
 
@@ -134,6 +139,37 @@ class UnmappedFilesTable extends Component {
     this.props.deleteUnmappedFiles(selectedIds);
   };
 
+  onAssignPress = () => {
+    const selectedIds = this.getSelectedIds();
+    if (!selectedIds.length) {
+      return;
+    }
+
+    const selectedItems = this.props.items.filter((x) => selectedIds.includes(x.id));
+    const first = selectedItems[0];
+
+    if (!first) {
+      return;
+    }
+
+    const folder = first.path.substring(0, Math.max(first.path.lastIndexOf('/'), first.path.lastIndexOf('\\')));
+
+    this.setState({
+      isAssignModalOpen: true,
+      assignFolder: folder,
+      assignFileIds: selectedIds,
+      assignFiles: selectedItems
+    });
+  };
+
+  onAssignModalClose = () => {
+    this.setState({
+      isAssignModalOpen: false,
+      assignFolder: null,
+      assignFileIds: []
+    });
+  };
+
   rowRenderer = ({ key, rowIndex, style }) => {
     const {
       items,
@@ -187,7 +223,11 @@ class UnmappedFilesTable extends Component {
       scroller,
       allSelected,
       allUnselected,
-      selectedState
+      selectedState,
+      isAssignModalOpen,
+      assignFolder,
+      assignFileIds,
+      assignFiles
     } = this.state;
 
     const selectedTrackFileIds = this.getSelectedIds();
@@ -209,6 +249,12 @@ class UnmappedFilesTable extends Component {
               isDisabled={selectedTrackFileIds.length === 0}
               isSpinning={isDeleting}
               onPress={this.onDeleteUnmappedFilesPress}
+            />
+            <PageToolbarButton
+              label={translate('AssignToBook')}
+              iconName={icons.INTERACTIVE}
+              isDisabled={selectedTrackFileIds.length === 0}
+              onPress={this.onAssignPress}
             />
           </PageToolbarSection>
 
@@ -269,6 +315,14 @@ class UnmappedFilesTable extends Component {
               />
           }
         </PageContentBody>
+
+        <AssignUnmappedModal
+          isOpen={isAssignModalOpen}
+          fileIds={assignFileIds}
+          files={assignFiles}
+          folder={assignFolder}
+          onModalClose={this.onAssignModalClose}
+        />
       </PageContent>
     );
   }
