@@ -18,29 +18,6 @@
   font-size: 16px;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 0 16px;
-}
-
-.fieldGroup {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  margin-bottom: 16px;
-}
-
-.wideField {
-  grid-column: 1 / -1;
-}
-
-@media only screen and (max-width: $breakpointLarge) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 .hint {
   color: var(--disabledColor);
   font-size: 12px;

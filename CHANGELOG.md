@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.125
+- Summary: Match the Manual Add form spacing to the AddAuthor panel.
+- Why: The Add Book Manually fields were overly spaced compared to the rest of the modal.
+- Impact: Manual Add now uses the standard FormGroup layout (label left, input right) for compact vertical spacing; version bumped for cache-busting.
+- Files: `frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.js`, `frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-190.log`).
+
 ## 1.3.124
 - Summary: Make the Assign modal scrollable, swap the list for metadata results on search, and tighten Manual Add spacing.
 - Why: The book list couldn’t scroll, metadata search didn’t replace the list, and Manual Add fields were spaced too far apart.
