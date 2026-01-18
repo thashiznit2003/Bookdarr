@@ -2358,3 +2358,9 @@
 - Next: tag/push a snapshot for `v1.3.16`, run `LOG_FILE="/opt/bookdarr-dev/Logs/update-088.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh` over SSH so the diagnostics bundle captures the working front end.
 
 ## 1.3.15
+## 1.3.94
+- Summary: Scope Library/Books and author fetches to the current user by using the per-user library endpoints.
+- Why: Global `/book` data kept mixing in other users’ books; using `/user/library/books` keeps each user’s library isolated while leaving Book Pool flows intact.
+- Impact: Author refresh/available calls now load from the user’s library endpoint; existing fetches already prime user books on app load. No backend changes.
+- Files: `frontend/src/Store/Actions/authorActions.js`, `frontend/src/Store/Actions/authorAvailableBooksActions.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), then continue per-user scoping for other views as needed (wanted/calendar/search) and add per-user libraries on backend if new endpoints are required.

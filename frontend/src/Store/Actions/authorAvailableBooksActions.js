@@ -2,7 +2,7 @@ import { createAction } from 'redux-actions';
 import { createThunk, handleThunks } from 'Store/thunks';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import { set, update } from './baseActions';
-import { fetchBooks } from './bookActions';
+import { fetchUserLibraryBooks } from './bookActions';
 import createHandleActions from './Creators/createHandleActions';
 import createClearReducer from './Creators/Reducers/createClearReducer';
 
@@ -110,7 +110,7 @@ export const actionHandlers = handleThunks({
         addError: null
       }));
 
-      dispatch(fetchBooks({ authorId }));
+      dispatch(fetchUserLibraryBooks({ authorId }));
       dispatch(fetchAuthorAvailableBooks({ authorId }));
     });
 
