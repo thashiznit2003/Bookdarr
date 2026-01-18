@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.129
+- Summary: Fix metadata-add assignment and enable Enter-to-search in Assign.
+- Why: Adding a book from metadata search didn’t attach the selected files and searching required a mouse click.
+- Impact: Assign now handles the add-book callback correctly and triggers search on Enter; version bumped for cache-busting.
+- Files: `frontend/src/UnmappedFiles/assign/AssignUnmappedModalContent.js`, `frontend/src/Components/Form/TextInput.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-194.log`).
+
 ## 1.3.128
 - Summary: Auto-assign unmapped files when adding a book from metadata search.
 - Why: Adding a book from the metadata results didn’t attach the selected unmapped files.

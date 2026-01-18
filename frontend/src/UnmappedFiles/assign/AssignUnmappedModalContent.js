@@ -83,9 +83,18 @@ class AssignUnmappedModalContent extends Component {
   onSearchAddModalClose = (created) => {
     this.setState({ searchBookToAdd: null });
 
-    if (created && created.id) {
-      this.props.onBookAdded?.({ book: created });
-      this.props.onAssign(created.id);
+    const createdBook = created?.book ?? created;
+
+    if (createdBook && createdBook.id) {
+      this.props.onBookAdded?.({ book: createdBook });
+      this.props.onAssign(createdBook.id);
+    }
+  };
+
+  onSearchKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.onSearchSubmit();
     }
   };
 
@@ -156,6 +165,7 @@ class AssignUnmappedModalContent extends Component {
               name="search"
               value={search}
               onChange={this.onSearchChange}
+              onKeyDown={this.onSearchKeyDown}
             />
 
             <SpinnerIconButton

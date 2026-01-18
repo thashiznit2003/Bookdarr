@@ -137,7 +137,8 @@ class TextInput extends Component {
       min,
       max,
       onBlur,
-      onCopy
+      onCopy,
+      onKeyDown
     } = this.props;
 
     return (
@@ -164,6 +165,7 @@ class TextInput extends Component {
         onBlur={onBlur}
         onCopy={onCopy}
         onCut={onCopy}
+        onKeyDown={onKeyDown}
         onKeyUp={this.onKeyUp}
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
@@ -188,6 +190,7 @@ TextInput.propTypes = {
   min: PropTypes.number,
   max: PropTypes.number,
   onChange: PropTypes.func.isRequired,
+  onKeyDown: PropTypes.func,
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,
   onCopy: PropTypes.func,
