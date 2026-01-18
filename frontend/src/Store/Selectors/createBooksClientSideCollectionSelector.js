@@ -13,7 +13,7 @@ function createBooksClientSideCollectionSelector(uiSection) {
     (bookState, authorState, uiSectionState = {}, customFilters) => {
       const state = Object.assign({}, bookState, uiSectionState, { customFilters });
 
-      const books = state.items;
+      const books = state.items.filter((b) => b.inMyLibrary);
       for (const book of books) {
         book.author = authorState.items[authorState.itemMap[book.authorId]];
       }

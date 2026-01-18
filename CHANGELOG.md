@@ -2382,3 +2382,9 @@
 - Impact: TitleSlug API now attaches author/editions; book details page fetches the slug on navigation. Pool books now open their detail view instead of NotFound.
 - Files: `src/Readarr.Api.V1/Books/BookController.cs`, `frontend/src/Book/Details/BookDetailsPageConnector.js`, `frontend/src/Book/Details/BookDetailsConnector.js`, `src/Directory.Build.props`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), and verify Book Pool links open details without 404. Continue per-user scoping for other views after verification.
+## 1.3.98
+- Summary: Stop Book Pool clicks from polluting your library and add an “Add to Library” button on book details.
+- Why: Opening a book from Book Pool was flagging it as part of your library; details lacked a clear way to add when not in your library.
+- Impact: Books fetched for pool/details are marked outside your library; library/author selectors now only show `inMyLibrary` items; Book Details shows an “Add to My Library” toolbar button when absent. Pool clicks no longer auto-add.
+- Files: `frontend/src/Store/Actions/bookActions.js`, `frontend/src/Store/Selectors/createBooksClientSideCollectionSelector.js`, `frontend/src/Store/Selectors/createAuthorClientSideCollectionItemsSelector.js`, `frontend/src/Book/Details/BookDetails.js`, `frontend/src/Book/Details/BookDetailsConnector.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), then verify pool -> details doesn’t add to library and the new button adds only when pressed.

@@ -347,6 +347,13 @@ export const actionHandlers = handleThunks({
     });
 
     request.done((data) => {
+      if (Array.isArray(data)) {
+        data = data.map((item) => ({
+          ...item,
+          inMyLibrary: useUserLibrary ? true : false
+        }));
+      }
+
       // Preserve books for other authors we didn't fetch
       if (!useUserLibrary && params?.hasOwnProperty('authorId')) {
         const oldBooks = getState().books.items;

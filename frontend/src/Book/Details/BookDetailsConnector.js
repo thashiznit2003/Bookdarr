@@ -109,6 +109,7 @@ function createMapStateToProps() {
         ...book,
         shortDateFormat: uiSettings.shortDateFormat,
         author,
+        inMyLibrary: !!book.inMyLibrary,
         isRefreshing,
         isSearching,
         isRescanningFiles,

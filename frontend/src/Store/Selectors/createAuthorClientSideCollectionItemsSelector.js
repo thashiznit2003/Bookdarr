@@ -5,7 +5,7 @@ import createClientSideCollectionSelector from './createClientSideCollectionSele
 function createUnoptimizedSelector(uiSection) {
   return createSelector(
     createClientSideCollectionSelector('authors', uiSection),
-    (state) => state.books?.items || [],
+    (state) => (state.books?.items || []).filter((b) => b.inMyLibrary),
     (authors, books) => {
       const authorIds = new Set(books.map((b) => b.authorId));
 

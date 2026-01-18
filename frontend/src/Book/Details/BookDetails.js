@@ -15,6 +15,7 @@ import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
 import SwipeHeaderConnector from 'Components/Swipe/SwipeHeaderConnector';
 import { icons } from 'Helpers/Props';
+import createAjaxRequest from 'Utilities/createAjaxRequest';
 import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
 import InteractiveSearchFilterMenuConnector from 'InteractiveSearch/InteractiveSearchFilterMenuConnector';
 import InteractiveSearchTable from 'InteractiveSearch/InteractiveSearchTable';
@@ -108,6 +109,22 @@ class BookDetails extends Component {
     this.setState({ isInteractiveImportModalOpen: false });
   };
 
+  onAddToLibrary = () => {
+    const { id } = this.props;
+
+    createAjaxRequest({
+      url: '/user/library',
+      method: 'POST',
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        bookId: id,
+        wantsEbook: true,
+        wantsAudiobook: true
+      })
+    });
+  };
+
   onUploadCoverPress = () => {
     this.setState({ isUploadCoverModalOpen: true });
   };
@@ -148,6 +165,7 @@ class BookDetails extends Component {
       combineCommand,
       isRescanningFiles,
       isRefreshingMetadata,
+      inMyLibrary,
       onRefreshPress,
       onRefreshMetadataPress,
       onRescanFilesPress,
@@ -210,6 +228,15 @@ class BookDetails extends Component {
               isSpinning={isSearching}
               onPress={onSearchPress}
             />
+
+            {
+              !inMyLibrary &&
+                <PageToolbarButton
+                  label={translate('AddToMyLibrary')}
+                  iconName={icons.ADD}
+                  onPress={this.onAddToLibrary}
+                />
+            }
 
             <PageToolbarSeparator />
 
@@ -455,6 +482,7 @@ BookDetails.propTypes = {
   links: PropTypes.arrayOf(PropTypes.object).isRequired,
   statistics: PropTypes.object.isRequired,
   monitored: PropTypes.bool.isRequired,
+  inMyLibrary: PropTypes.bool,
   shortDateFormat: PropTypes.string.isRequired,
   isSaving: PropTypes.bool.isRequired,
   isRefreshing: PropTypes.bool,
@@ -484,7 +512,8 @@ BookDetails.defaultProps = {
   isSaving: false,
   isRescanningFiles: false,
   bookFiles: [],
-  combineCommand: null
+  combineCommand: null,
+  inMyLibrary: false
 };
 
 export default BookDetails;
