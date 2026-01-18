@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import * as commandNames from 'Commands/commandNames';
+import { executeCommand } from 'Store/Actions/commandActions';
 import { clearSearchResults, getSearchResults } from 'Store/Actions/searchActions';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import AssignUnmappedModalContent from './AssignUnmappedModalContent';
@@ -19,7 +21,8 @@ function createMapStateToProps() {
 
 const mapDispatchToProps = {
   getSearchResults,
-  clearSearchResults
+  clearSearchResults,
+  executeCommand
 };
 
 class AssignUnmappedModalContentConnector extends Component {
@@ -46,13 +49,20 @@ class AssignUnmappedModalContentConnector extends Component {
     this.setState({ isLoading: true, error: null });
 
     const { request } = createAjaxRequest({
-      url: '/user/library/pool',
-      method: 'GET'
+      url: '/book',
+      method: 'GET',
+      data: {
+        page: 1,
+        pageSize: 5000,
+        sortKey: 'title',
+        sortDir: 'asc'
+      },
+      traditional: true
     });
 
     request.done((data) => {
-      const books = (data || []).map((x) => {
-        const book = x.book || {};
+      const items = Array.isArray(data) ? data : (data?.records || []);
+      const books = items.map((book) => {
         return {
           id: book.id,
           title: book.title,
@@ -89,33 +99,32 @@ class AssignUnmappedModalContentConnector extends Component {
     const book = this.state.books.find((b) => b.id === bookId);
     const authorId = book?.authorId || null;
 
-    const items = (this.props.files || []).map((f) => ({
+    const files = (this.props.files || []).map((f) => ({
       path: f.path,
       bookId,
       authorId,
-      replaceExistingFiles: false,
-      additionalFile: false,
+      quality: f.quality,
+      indexerFlags: f.indexerFlags || 0,
       disableReleaseSwitching: true
     }));
 
-    if (!items.length) {
+    if (!files.length) {
       this.props.onModalClose();
       return;
     }
 
-    createAjaxRequest({
-      url: '/manualimport',
-      method: 'POST',
-      data: JSON.stringify(items),
-      contentType: 'application/json',
-      dataType: 'json'
-    }).request.always(() => {
-      if (this.props.onAssigned) {
-        this.props.onAssigned();
-      } else {
-        this.props.onModalClose();
-      }
+    this.props.executeCommand({
+      name: commandNames.INTERACTIVE_IMPORT,
+      files,
+      importMode: 'auto',
+      replaceExistingFiles: false
     });
+
+    if (this.props.onAssigned) {
+      this.props.onAssigned();
+    } else {
+      this.props.onModalClose();
+    }
   };
 
   onBookAdded = (result) => {
@@ -171,6 +180,7 @@ AssignUnmappedModalContentConnector.propTypes = {
   searchError: PropTypes.object,
   getSearchResults: PropTypes.func.isRequired,
   clearSearchResults: PropTypes.func.isRequired,
+  executeCommand: PropTypes.func.isRequired,
   onAssigned: PropTypes.func,
   onModalClose: PropTypes.func.isRequired
 };

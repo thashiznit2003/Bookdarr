@@ -111,9 +111,22 @@ class AddManualBookModalContentConnector extends Component {
       }
       if (data?.id) {
         updateBookItem(data);
-        if (onBookAdded) {
-          onBookAdded({ book: data });
-        }
+        // Add to the current user's library so it appears immediately
+        createAjaxRequest({
+          url: '/user/library',
+          method: 'POST',
+          contentType: 'application/json',
+          dataType: 'json',
+          data: JSON.stringify({
+            bookId: data.id,
+            wantsEbook: true,
+            wantsAudiobook: true
+          })
+        }).request.always(() => {
+          if (onBookAdded) {
+            onBookAdded({ book: data });
+          }
+        });
       }
       onModalClose();
     });

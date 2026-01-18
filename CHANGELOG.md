@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.122
+- Summary: Make Unmapped Assign actually import files, show full library list, and clarify the search fields.
+- Why: Assigning files didn’t attach them to books, the list appeared truncated, and the two search inputs were unclear.
+- Impact: Assign now runs the ManualImport command for selected files, the book picker loads the full `/book` list, and the modal labels/alerts are clearer; version bumped for cache-busting.
+- Files: `frontend/src/UnmappedFiles/assign/*`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-187.log`).
+
 ## 1.3.121
 - Summary: Fix Assign-to-Book flows and polish manual add: metadata search now works in the Unmapped modal, assigns refresh immediately, manual create looks sane, and adding a book also joins your library.
 - Why: Add-new search in the modal did nothing, manual add looked broken, new books only landed in Book Pool, and assigning unmapped files didn’t refresh the list or attach files.

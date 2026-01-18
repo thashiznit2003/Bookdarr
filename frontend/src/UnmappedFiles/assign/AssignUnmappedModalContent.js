@@ -13,6 +13,7 @@ import TableBody from 'Components/Table/TableBody';
 import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import { icons, kinds, scrollDirections } from 'Helpers/Props';
+import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import AddManualBookModal from 'Book/Index/ManualAdd/AddManualBookModal';
 import AddNewBookSearchResultConnector from 'Search/Book/AddNewBookSearchResultConnector';
@@ -87,6 +88,10 @@ class AssignUnmappedModalContent extends Component {
           className={styles.modalBody}
           scrollDirection={scrollDirections.NONE}
         >
+          <div className={styles.sectionLabel}>
+            {translate('Library')}
+          </div>
+
           <div className={styles.filters}>
             <TextInput
               className={styles.filterInput}
@@ -100,8 +105,12 @@ class AssignUnmappedModalContent extends Component {
               kind="primary"
               onPress={this.onManualModalOpen}
             >
-              {translate('AddNewBook')}
+              {translate('AddBookManually')}
             </Button>
+          </div>
+
+          <div className={styles.sectionLabel}>
+            {translate('Search')}
           </div>
 
           <div className={styles.searchRow}>
@@ -129,7 +138,7 @@ class AssignUnmappedModalContent extends Component {
           {
             searchError &&
               <Alert kind={kinds.WARNING}>
-                {translate('FailedLoadingSearchResults')}
+                {getErrorMessage(searchError, translate('FailedLoadingSearchResults'))}
               </Alert>
           }
 
