@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.131
+- Summary: Prevent multi-part audiobook imports from collapsing to a single file when tags are missing.
+- Why: Manual/auto imports defaulted missing track numbers to part 1, so the import pipeline treated later audio files as duplicates.
+- Impact: Audiobook files without track tags now start at part 0 so ImportApprovedBooks assigns ordered parts, allowing all selected files to import.
+- Files: `src/NzbDrone.Core/MediaFiles/BookImport/ImportDecisionMaker.cs`, `src/NzbDrone.Core/MediaFiles/BookImport/Manual/ManualImportService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-196.log`).
+
 ## 1.3.130
 - Summary: Fix metadata-add assignment by preserving the edition ID on newly added books.
 - Why: Assigning files to a book added via metadata search still failed because the new book lacked its `foreignEditionId` in the Assign list.
