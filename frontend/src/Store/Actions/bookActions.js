@@ -347,10 +347,10 @@ export const actionHandlers = handleThunks({
     });
 
     request.done((data) => {
-      if (Array.isArray(data)) {
-        const existing = getState().books.items || [];
-        const hadExisting = existing.length > 0;
+      const existing = getState().books.items || [];
+      const hadExisting = existing.length > 0;
 
+      if (Array.isArray(data)) {
         if (useUserLibrary) {
           // If the API returns empty but we already had items, keep the current
           // view instead of clearing the user's library from the client.
@@ -378,6 +378,24 @@ export const actionHandlers = handleThunks({
             };
           });
         }
+      }
+
+      // Single-book fetches (e.g., by titleSlug) should update or add the item
+      // without dropping the rest of the library from state.
+      if (!useUserLibrary && params?.titleSlug && hadExisting && Array.isArray(data)) {
+        const merged = existing.map((book) => ({ ...book }));
+
+        data.forEach((item) => {
+          const existingIndex = merged.findIndex((book) => book.id === item.id);
+
+          if (existingIndex >= 0) {
+            merged[existingIndex] = item;
+          } else {
+            merged.push(item);
+          }
+        });
+
+        data = merged;
       }
 
       // Preserve books for other authors we didn't fetch

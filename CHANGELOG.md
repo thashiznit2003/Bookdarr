@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.112
+- Summary: Keep library entries when fetching a single book so downloads/searches don’t clear the library view.
+- Why: Navigating to a book detail (e.g., to download files) fetched only that book and replaced the store, hiding the rest of the library until a reload.
+- Impact: Single-book fetches merge into the existing collection and preserve `inMyLibrary` flags instead of replacing the entire list. Version bumped for cache-busting.
+- Files: `frontend/src/Store/Actions/bookActions.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-177.log`).
 ## 1.3.111
 - Summary: Fix user library fetch when some books are missing from the main store.
 - Why: After removing all books, `/user/library/books` could 500 with “Expected query to return N rows but returned M,” blocking adds from Book Pool and showing an empty library.
