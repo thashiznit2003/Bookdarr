@@ -53,12 +53,6 @@ const links = [
   },
 
   {
-    iconName: icons.CALENDAR,
-    title: () => translate('Calendar'),
-    to: '/calendar'
-  },
-
-  {
     iconName: icons.ACTIVITY,
     title: () => translate('Activity'),
     to: '/activity/queue',

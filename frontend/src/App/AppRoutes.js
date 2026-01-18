@@ -9,7 +9,6 @@ import AuthorIndexConnector from 'Author/Index/AuthorIndexConnector';
 import BookDetailsPageConnector from 'Book/Details/BookDetailsPageConnector';
 import BookIndexConnector from 'Book/Index/BookIndexConnector';
 import BookPoolPage from 'Book/Pool/BookPoolPage';
-import CalendarPageConnector from 'Calendar/CalendarPageConnector';
 import NotFound from 'Components/NotFound';
 import Switch from 'Components/Router/Switch';
 import AddNewItemConnector from 'Search/AddNewItemConnector';
@@ -111,15 +110,6 @@ function AppRoutes(props) {
       <Route
         path="/book/:titleSlug"
         component={BookDetailsPageConnector}
-      />
-
-      {/*
-        Calendar
-      */}
-
-      <Route
-        path="/calendar"
-        component={CalendarPageConnector}
       />
 
       {/*

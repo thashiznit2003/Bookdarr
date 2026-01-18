@@ -7,6 +7,13 @@
 - Files: `src/NzbDrone.Core/Books/Services/UserLibraryService.cs`, `src/Directory.Build.props`, `docs/HANDOFF.md`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-167.log`) so diagnostics capture the deploy.
 
+## 1.3.103
+- Summary: Hide the Calendar UI (sidebar link and route) until a metadata provider with reliable future release dates is available.
+- Why: Google Books doesn’t reliably list unreleased titles, so the calendar isn’t useful right now.
+- Impact: Calendar link is removed from the sidebar and the route is disabled; version bumped for cache-busting.
+- Files: `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/App/AppRoutes.js`, `src/Directory.Build.props`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-168.log`) so diagnostics capture the deploy.
+
 ## 1.3.101
 - Summary: Keep book details working after removing a title from your library by merging user-library fetches without dropping non-library books.
 - Why: The details “Remove from my Library” action would reload the user library, wipe the book from the client store, and the details route then 404’d; the button state also reverted.
