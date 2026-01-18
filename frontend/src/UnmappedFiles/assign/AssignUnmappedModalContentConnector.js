@@ -68,7 +68,8 @@ class AssignUnmappedModalContentConnector extends Component {
           title: book.title,
           authorName: book.author?.authorName,
           authorId: book.authorId,
-          titleSlug: book.titleSlug
+          titleSlug: book.titleSlug,
+          foreignEditionId: book.foreignEditionId
         };
       });
 
@@ -88,6 +89,7 @@ class AssignUnmappedModalContentConnector extends Component {
       return;
     }
 
+    this.props.clearSearchResults();
     this.props.getSearchResults({ term: trimmed });
   };
 
@@ -103,6 +105,7 @@ class AssignUnmappedModalContentConnector extends Component {
       path: f.path,
       bookId,
       authorId,
+      foreignEditionId: book?.foreignEditionId,
       quality: f.quality,
       indexerFlags: f.indexerFlags || 0,
       disableReleaseSwitching: true

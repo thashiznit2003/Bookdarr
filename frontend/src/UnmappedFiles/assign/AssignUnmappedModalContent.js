@@ -95,7 +95,7 @@ class AssignUnmappedModalContent extends Component {
           <div className={styles.filters}>
             <TextInput
               className={styles.filterInput}
-              placeholder={translate('FilterPlaceHolder')}
+              placeholder={translate('FilterLibraryList')}
               name="filter"
               value={filter}
               onChange={this.onFilterChange}
@@ -110,7 +110,7 @@ class AssignUnmappedModalContent extends Component {
           </div>
 
           <div className={styles.sectionLabel}>
-            {translate('Search')}
+            {translate('MetadataSearch')}
           </div>
 
           <div className={styles.searchRow}>
@@ -146,7 +146,7 @@ class AssignUnmappedModalContent extends Component {
             !!searchResults.length &&
               <div className={styles.searchResults}>
                 <div className={styles.sectionLabel}>
-                  {translate('AddNewBook')}
+                  {translate('MetadataResults')}
                 </div>
                 {
                   searchResults.map((item) => {

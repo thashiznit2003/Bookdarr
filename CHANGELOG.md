@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.123
+- Summary: Fix Unmapped Assign imports by sending edition IDs, clarify labels, and improve metadata search/filters.
+- Why: Assigning files failed with a ManualImport null ref, the library list felt truncated, and the modal’s fields were unclear.
+- Impact: Assign now passes `foreignEditionId` into the ManualImport command, the picker uses the full book list, metadata search errors are clearer, and the filter/search labels are explicit; version bumped for cache-busting.
+- Files: `frontend/src/UnmappedFiles/assign/*`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-188.log`).
+
 ## 1.3.122
 - Summary: Make Unmapped Assign actually import files, show full library list, and clarify the search fields.
 - Why: Assigning files didn’t attach them to books, the list appeared truncated, and the two search inputs were unclear.
