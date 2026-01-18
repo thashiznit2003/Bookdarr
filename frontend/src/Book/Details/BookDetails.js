@@ -489,6 +489,7 @@ class BookDetails extends Component {
             showPathInput={true}
             initialFolder={author.path}
             autoStartInteractive={true}
+            forceAllFiles={true}
             onModalClose={this.onInteractiveImportModalClose}
           />
 

@@ -40,6 +40,10 @@ class InteractiveImportModal extends Component {
     this.setState({ folder });
   };
 
+  onFolderChange = (folder) => {
+    this.setState({ folder });
+  };
+
   //
   // Render
 
@@ -71,6 +75,7 @@ class InteractiveImportModal extends Component {
               folder={folderPath}
               downloadId={downloadId}
               {...otherProps}
+              onFolderChange={this.onFolderChange}
               onModalClose={onModalClose}
             /> :
             <InteractiveImportSelectFolderModalContentConnector

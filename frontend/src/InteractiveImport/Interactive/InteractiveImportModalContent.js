@@ -137,7 +137,8 @@ class InteractiveImportModalContent extends Component {
       selectModalOpen: null,
       booksImported: [],
       isConfirmImportModalOpen: false,
-      inconsistentBookReleases: false
+      inconsistentBookReleases: false,
+      isBrowseModalOpen: false
     };
   }
 
@@ -262,6 +263,19 @@ class InteractiveImportModalContent extends Component {
     this.setState({ isConfirmImportModalOpen: false });
   };
 
+  onBrowsePress = () => {
+    this.setState({ isBrowseModalOpen: true });
+  };
+
+  onBrowseClose = () => {
+    this.setState({ isBrowseModalOpen: false });
+  };
+
+  onBrowseChange = ({ value }) => {
+    this.setState({ isBrowseModalOpen: false });
+    this.props.onFolderChange?.(value);
+  };
+
   //
   // Render
 
@@ -297,7 +311,8 @@ class InteractiveImportModalContent extends Component {
       selectModalOpen,
       booksImported,
       isConfirmImportModalOpen,
-      inconsistentBookReleases
+      inconsistentBookReleases,
+      isBrowseModalOpen
     } = this.state;
 
     const allColumns = _.cloneDeep(COLUMNS);
@@ -344,6 +359,15 @@ class InteractiveImportModalContent extends Component {
         </ModalHeader>
 
         <ModalBody scrollDirection={scrollDirections.BOTH}>
+          <div className={styles.filterContainer}>
+            <Button
+              kind={kinds.DEFAULT}
+              onPress={this.onBrowsePress}
+            >
+              <Icon name={icons.FOLDER} /> {translate('Browse')}
+            </Button>
+          </div>
+
           <div className={styles.filterContainer}>
             {
               showFilterExistingFiles &&
@@ -511,6 +535,15 @@ class InteractiveImportModalContent extends Component {
           </div>
         </ModalFooter>
 
+        <FileBrowserModal
+          isOpen={isBrowseModalOpen}
+          name="folder"
+          value={folder}
+          includeFiles={true}
+          onChange={this.onBrowseChange}
+          onModalClose={this.onBrowseClose}
+        />
+
         <SelectAuthorModal
           isOpen={selectModalOpen === AUTHOR}
           ids={selectedIds}
@@ -592,6 +625,7 @@ InteractiveImportModalContent.propTypes = {
   onImportSelectedPress: PropTypes.func.isRequired,
   saveInteractiveImportItem: PropTypes.func.isRequired,
   updateInteractiveImportItem: PropTypes.func.isRequired,
+  onFolderChange: PropTypes.func,
   onModalClose: PropTypes.func.isRequired
 };
 

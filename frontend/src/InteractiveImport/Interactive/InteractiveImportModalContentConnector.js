@@ -44,7 +44,7 @@ class InteractiveImportModalContentConnector extends Component {
 
     this.state = {
       interactiveImportErrorMessage: null,
-      filterExistingFiles: props.filterExistingFiles,
+      filterExistingFiles: props.forceAllFiles ? false : props.filterExistingFiles,
       replaceExistingFiles: props.replaceExistingFiles
     };
   }
@@ -79,7 +79,8 @@ class InteractiveImportModalContentConnector extends Component {
     } = this.state;
 
     if (prevState.filterExistingFiles !== filterExistingFiles ||
-        prevState.replaceExistingFiles !== replaceExistingFiles) {
+        prevState.replaceExistingFiles !== replaceExistingFiles ||
+        prevProps.folder !== this.props.folder) {
       const {
         authorId,
         bookId,
@@ -217,6 +218,7 @@ InteractiveImportModalContentConnector.propTypes = {
   folder: PropTypes.string,
   filterExistingFiles: PropTypes.bool.isRequired,
   replaceExistingFiles: PropTypes.bool.isRequired,
+  forceAllFiles: PropTypes.bool,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   fetchInteractiveImportItems: PropTypes.func.isRequired,
   setInteractiveImportSort: PropTypes.func.isRequired,
@@ -230,7 +232,8 @@ InteractiveImportModalContentConnector.propTypes = {
 InteractiveImportModalContentConnector.defaultProps = {
   authorId: 0,
   filterExistingFiles: true,
-  replaceExistingFiles: false
+  replaceExistingFiles: false,
+  forceAllFiles: false
 };
 
 export default connect(createMapStateToProps, mapDispatchToProps)(InteractiveImportModalContentConnector);
