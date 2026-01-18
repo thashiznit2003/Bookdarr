@@ -3,7 +3,7 @@
 ## 1.3.115
 - Summary: Link Existing Files now includes a full file browser so you can navigate any path and import all files, not just unmapped ones.
 - Why: The Armada manual import showed an empty list; users need to browse the filesystem, pick a folder, and see every file to link them to the current book.
-- Impact: Added a Browse button in manual import that opens the file browser (with files), refreshed automatically when changing folders; default to showing all files for link-existing; version bumped for cache-busting.
+- Impact: Added a Browse button in manual import that opens the file browser (with files), refreshed automatically when changing folders; default to showing all files for link-existing and fixed the browse modal crash; version bumped for cache-busting.
 - Files: `frontend/src/Book/Details/BookDetails.js`, `frontend/src/InteractiveImport/InteractiveImportModal.js`, `frontend/src/InteractiveImport/Interactive/InteractiveImportModalContent*.js`, `frontend/src/InteractiveImport/Interactive/InteractiveImportModalContentConnector.js`, `src/Directory.Build.props`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-180.log`).
 ## 1.3.114
