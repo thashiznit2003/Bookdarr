@@ -5,7 +5,7 @@ import PageContentBody from 'Components/Page/PageContentBody';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
-import TableHead from 'Components/Table/TableHead';
+import TableHeader from 'Components/Table/TableHeader';
 import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import UserUpgradesRow from './UserUpgradesRow';
@@ -20,7 +20,7 @@ function UserUpgrades(props) {
         {error && <div>Unable to load File Upgrades</div>}
         {!isFetching && !error && (
           <Table>
-            <TableHead>
+            <TableHeader>
               <TableRow>
                 <TableRowCell>Title</TableRowCell>
                 <TableRowCell>Author</TableRowCell>
@@ -28,7 +28,7 @@ function UserUpgrades(props) {
                 <TableRowCell>Audiobook</TableRowCell>
                 <TableRowCell>Convert</TableRowCell>
               </TableRow>
-            </TableHead>
+            </TableHeader>
             <TableBody>
               {items.map((item) => (
                 <UserUpgradesRow

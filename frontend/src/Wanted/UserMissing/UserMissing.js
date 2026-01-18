@@ -5,7 +5,7 @@ import PageContentBody from 'Components/Page/PageContentBody';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
-import TableHead from 'Components/Table/TableHead';
+import TableHeader from 'Components/Table/TableHeader';
 import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import UserMissingRow from './UserMissingRow';
@@ -22,7 +22,7 @@ function UserMissing(props) {
         )}
         {!isFetching && !error && (
           <Table>
-            <TableHead>
+            <TableHeader>
               <TableRow>
                 <TableRowCell>Title</TableRowCell>
                 <TableRowCell>Author</TableRowCell>
@@ -31,7 +31,7 @@ function UserMissing(props) {
                 <TableRowCell>Search</TableRowCell>
                 <TableRowCell>Convert</TableRowCell>
               </TableRow>
-            </TableHead>
+            </TableHeader>
             <TableBody>
               {items.map((item) => (
                 <UserMissingRow
