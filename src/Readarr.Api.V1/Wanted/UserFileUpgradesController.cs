@@ -92,13 +92,13 @@ namespace Readarr.Api.V1.Wanted
         private static bool IsEpubFile(BookFile file)
         {
             var path = file.Path ?? string.Empty;
-            return path.EndsWith(".epub", System.StringComparison.OrdinalIgnoreCase);
+            return path.EndsWith(".epub", StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool IsM4bFile(BookFile file)
         {
             var path = file.Path ?? string.Empty;
-            return path.EndsWith(".m4b", System.StringComparison.OrdinalIgnoreCase);
+            return path.EndsWith(".m4b", StringComparison.OrdinalIgnoreCase);
         }
 
         private User GetCurrentUser()
