@@ -348,10 +348,14 @@ export const actionHandlers = handleThunks({
 
     request.done((data) => {
       if (Array.isArray(data)) {
-        data = data.map((item) => ({
-          ...item,
-          inMyLibrary: useUserLibrary ? true : false
-        }));
+        const existing = getState().books.items || [];
+        data = data.map((item) => {
+          const found = existing.find((b) => b.id === item.id);
+          return {
+            ...item,
+            inMyLibrary: useUserLibrary ? true : (found?.inMyLibrary ?? false)
+          };
+        });
       }
 
       // Preserve books for other authors we didn't fetch

@@ -2394,3 +2394,9 @@
 - Impact: Book details shows an “Add to My Library” / “Remove from My Library” button based on state; clicking it posts to `/user/library` and refreshes the user library. Simply viewing from Book Pool no longer affects your library.
 - Files: `frontend/src/Book/Details/BookDetails.js`, `frontend/src/Book/Details/BookDetailsConnector.js`, `src/Directory.Build.props`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), and verify pool → details no longer auto-adds; use the button to add/remove.
+## 1.3.100
+- Summary: Keep the details page add/remove button in sync across navigation by preserving `inMyLibrary` when refetching books.
+- Why: Fetching a book by slug reset `inMyLibrary` to false, so the button flipped back to “Add” after leaving and returning.
+- Impact: Book fetches now merge the existing `inMyLibrary` flag; details toolbar stays on “Remove from My Library” for books you’ve added.
+- Files: `frontend/src/Store/Actions/bookActions.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), then verify the button remains on “Remove” after navigating away/back.
