@@ -83,7 +83,7 @@ namespace Readarr.Api.V1.Books
             }
 
             var bookIds = userBooks.Select(x => x.BookId).Distinct().ToList();
-            var books = _bookService.GetBooks(bookIds);
+            var books = _bookService.GetBooks(bookIds, allowMissing: true);
 
             var resources = books.ToResource();
 

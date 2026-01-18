@@ -13,7 +13,7 @@ namespace NzbDrone.Core.Books
     public interface IBookService
     {
         Book GetBook(int bookId);
-        List<Book> GetBooks(IEnumerable<int> bookIds);
+        List<Book> GetBooks(IEnumerable<int> bookIds, bool allowMissing = false);
         List<Book> GetBooksByAuthor(int authorId);
         List<Book> GetNextBooksByAuthorMetadataId(IEnumerable<int> authorMetadataIds);
         List<Book> GetLastBooksByAuthorMetadataId(IEnumerable<int> authorMetadataIds);
@@ -181,9 +181,22 @@ namespace NzbDrone.Core.Books
             return _bookRepository.Get(bookId);
         }
 
-        public List<Book> GetBooks(IEnumerable<int> bookIds)
+        public List<Book> GetBooks(IEnumerable<int> bookIds, bool allowMissing = false)
         {
-            return _bookRepository.Get(bookIds).ToList();
+            var ids = bookIds?.Distinct().ToList() ?? new List<int>();
+            if (ids.Count == 0)
+            {
+                return new List<Book>();
+            }
+
+            var result = _bookRepository.All().Where(b => ids.Contains(b.Id)).ToList();
+
+            if (!allowMissing && result.Count != ids.Count)
+            {
+                throw new ApplicationException($"Expected query to return {ids.Count} rows but returned {result.Count}");
+            }
+
+            return result;
         }
 
         public List<Book> GetBooksByAuthor(int authorId)

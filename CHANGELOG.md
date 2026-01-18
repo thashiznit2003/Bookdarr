@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.111
+- Summary: Fix user library fetch when some books are missing from the main store.
+- Why: After removing all books, `/user/library/books` could 500 with “Expected query to return N rows but returned M,” blocking adds from Book Pool and showing an empty library.
+- Impact: BookService GetBooks can tolerate missing IDs (when allowed), and the user library endpoint uses that safe path, preventing 500s and letting Book Pool adds succeed. Version bumped for cache-busting.
+- Files: `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `src/NzbDrone.Core/Books/Services/BookService.cs`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-176.log`).
 ## 1.3.110
 - Summary: Prevent the user library view from wiping out books/authors when the user-library API briefly returns an empty list.
 - Why: During queued downloads/restarts the client could clear the library if the endpoint responded with an empty array.
