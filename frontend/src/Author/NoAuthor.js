@@ -15,7 +15,7 @@ function NoAuthor(props) {
     return (
       <div>
         <div className={styles.message}>
-          {`All ${itemType} are hidden due to the applied filter.`}
+          {`Add books to see ${itemType === 'authors' ? 'Authors' : itemType}`}
         </div>
       </div>
     );

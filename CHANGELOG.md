@@ -2370,3 +2370,9 @@
 - Impact: Author selectors now filter against the user’s book list; users with no books see an empty author list. No backend changes.
 - Files: `frontend/src/Store/Selectors/createAuthorClientSideCollectionItemsSelector.js`, `src/Directory.Build.props`
 - Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), continue scoping other views (Wanted/Calendar/Search) to the per-user library and add per-user backend filtering where needed.
+## 1.3.96
+- Summary: Improve the empty Authors message to prompt adding books instead of showing the filter warning when your library is empty.
+- Why: With per-user scoping, users with no books saw “All authors are hidden due to the applied filter,” which was confusing.
+- Impact: Authors page now says “Add books to see Authors” when no authors are visible.
+- Files: `frontend/src/Author/NoAuthor.js`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, run `/opt/bookdarr-dev/scripts/update-dev.sh` on the VM (log to next `/opt/bookdarr-dev/Logs/update-0XX.log`), then continue scoping other views (Wanted/Calendar/Search) to per-user data.
