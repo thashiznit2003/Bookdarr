@@ -1,6 +1,6 @@
 import createHandleActions from './Creators/createHandleActions';
 import { set } from './baseActions';
-import { createThunk } from 'Store/thunks';
+import { createThunk, handleThunks } from 'Store/thunks';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 
 export const section = 'userFileUpgrades';
@@ -15,7 +15,7 @@ export const defaultState = {
 export const FETCH_USER_UPGRADES = 'userFileUpgrades/fetch';
 export const fetchUserUpgrades = createThunk(FETCH_USER_UPGRADES);
 
-export const actionHandlers = {
+handleThunks({
   [FETCH_USER_UPGRADES]: function(getState, payload, dispatch) {
     dispatch(set({ section, isFetching: true, error: null }));
 
@@ -39,6 +39,6 @@ export const actionHandlers = {
       }));
     });
   }
-};
+});
 
-export const reducers = createHandleActions(actionHandlers, defaultState, section);
+export const reducers = createHandleActions({}, defaultState, section);

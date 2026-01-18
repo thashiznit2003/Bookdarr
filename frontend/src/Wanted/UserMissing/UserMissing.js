@@ -5,10 +5,16 @@ import PageContentBody from 'Components/Page/PageContentBody';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
-import TableHeader from 'Components/Table/TableHeader';
-import TableRow from 'Components/Table/TableRow';
-import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import UserMissingRow from './UserMissingRow';
+
+const columns = [
+  { name: 'title', label: 'Title', isVisible: true, isSortable: false },
+  { name: 'author', label: 'Author', isVisible: true, isSortable: false },
+  { name: 'ebook', label: 'eBook', isVisible: true, isSortable: false },
+  { name: 'audiobook', label: 'Audiobook', isVisible: true, isSortable: false },
+  { name: 'search', label: 'Search', isVisible: true, isSortable: false },
+  { name: 'convert', label: 'Convert', isVisible: true, isSortable: false }
+];
 
 function UserMissing(props) {
   const { items, isFetching, error } = props;
@@ -21,17 +27,11 @@ function UserMissing(props) {
           <div>Unable to load Missing Files</div>
         )}
         {!isFetching && !error && (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableRowCell>Title</TableRowCell>
-                <TableRowCell>Author</TableRowCell>
-                <TableRowCell>eBook</TableRowCell>
-                <TableRowCell>Audiobook</TableRowCell>
-                <TableRowCell>Search</TableRowCell>
-                <TableRowCell>Convert</TableRowCell>
-              </TableRow>
-            </TableHeader>
+          <Table
+            columns={columns}
+            selectAll={false}
+            horizontalScroll={false}
+          >
             <TableBody>
               {items.map((item) => (
                 <UserMissingRow

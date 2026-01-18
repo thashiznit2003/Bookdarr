@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.105
+- Summary: Fix the user-scoped Wanted pages so they render correctly and register their API thunks.
+- Why: The new Missing Files/File Upgrades views blanked out because the thunks weren’t registered, the tables lacked column metadata, and translations were missing.
+- Impact: Thunks are registered for the new endpoints, table headers render via columns, sidebar labels are translated, and the pages load instead of crashing. Version bumped for cache-busting.
+- Files: `frontend/src/Store/Actions/userMissingActions.js`, `frontend/src/Store/Actions/userFileUpgradeActions.js`, `frontend/src/Wanted/UserMissing/UserMissing.js`, `frontend/src/Wanted/UserUpgrades/UserUpgrades.js`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-170.log`) so diagnostics capture the deploy.
+
 ## 1.3.102
 - Summary: Book Pool now reflects newly added files in the ebook/audiobook badges instead of requiring files to be marked “shared with all.”
 - Why: After importing files, Book Pool still showed missing statuses because the pool checks only shared files; typical imports aren’t marked shared.

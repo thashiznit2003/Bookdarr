@@ -5,10 +5,15 @@ import PageContentBody from 'Components/Page/PageContentBody';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
-import TableHeader from 'Components/Table/TableHeader';
-import TableRow from 'Components/Table/TableRow';
-import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import UserUpgradesRow from './UserUpgradesRow';
+
+const columns = [
+  { name: 'title', label: 'Title', isVisible: true, isSortable: false },
+  { name: 'author', label: 'Author', isVisible: true, isSortable: false },
+  { name: 'ebook', label: 'eBook', isVisible: true, isSortable: false },
+  { name: 'audiobook', label: 'Audiobook', isVisible: true, isSortable: false },
+  { name: 'convert', label: 'Convert', isVisible: true, isSortable: false }
+];
 
 function UserUpgrades(props) {
   const { items, isFetching, error } = props;
@@ -19,16 +24,11 @@ function UserUpgrades(props) {
         {isFetching && <LoadingIndicator />}
         {error && <div>Unable to load File Upgrades</div>}
         {!isFetching && !error && (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableRowCell>Title</TableRowCell>
-                <TableRowCell>Author</TableRowCell>
-                <TableRowCell>eBook</TableRowCell>
-                <TableRowCell>Audiobook</TableRowCell>
-                <TableRowCell>Convert</TableRowCell>
-              </TableRow>
-            </TableHeader>
+          <Table
+            columns={columns}
+            selectAll={false}
+            horizontalScroll={false}
+          >
             <TableBody>
               {items.map((item) => (
                 <UserUpgradesRow
