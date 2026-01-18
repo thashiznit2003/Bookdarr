@@ -28,3 +28,24 @@
   font-weight: 600;
   margin-bottom: 8px;
 }
+
+.libraryList {
+  max-height: 360px;
+  overflow-y: auto;
+  border: 1px solid var(--borderColor);
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.resultsContainer {
+  max-height: 360px;
+  overflow-y: auto;
+  border: 1px solid var(--borderColor);
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 16px;
+}
+
+.emptyResults {
+  min-height: 120px;
+}

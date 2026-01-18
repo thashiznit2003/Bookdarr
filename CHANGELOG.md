@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.124
+- Summary: Make the Assign modal scrollable, swap the list for metadata results on search, and tighten Manual Add spacing.
+- Why: The book list couldn’t scroll, metadata search didn’t replace the list, and Manual Add fields were spaced too far apart.
+- Impact: Assign now shows a scrollable list, metadata search replaces the list with a results pane, and Manual Add uses tighter vertical spacing; version bumped for cache-busting.
+- Files: `frontend/src/UnmappedFiles/assign/*`, `frontend/src/Book/Index/ManualAdd/AddManualBookModalContent.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-189.log`).
+
 ## 1.3.123
 - Summary: Fix Unmapped Assign imports by sending edition IDs, clarify labels, and improve metadata search/filters.
 - Why: Assigning files failed with a ManualImport null ref, the library list felt truncated, and the modal’s fields were unclear.

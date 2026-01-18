@@ -7,6 +7,7 @@ import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import TextInput from 'Components/Form/TextInput';
 import Alert from 'Components/Alert';
+import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
@@ -77,6 +78,7 @@ class AssignUnmappedModalContent extends Component {
     } = this.props;
     const { filter, search, isManualModalOpen } = this.state;
     const filterLower = filter.toLowerCase();
+    const showMetadataResults = !!search;
 
     return (
       <ModalContent onModalClose={onModalClose}>
@@ -88,26 +90,31 @@ class AssignUnmappedModalContent extends Component {
           className={styles.modalBody}
           scrollDirection={scrollDirections.NONE}
         >
-          <div className={styles.sectionLabel}>
-            {translate('Library')}
-          </div>
+          {
+            !showMetadataResults &&
+              <>
+                <div className={styles.sectionLabel}>
+                  {translate('Library')}
+                </div>
 
-          <div className={styles.filters}>
-            <TextInput
-              className={styles.filterInput}
-              placeholder={translate('FilterLibraryList')}
-              name="filter"
-              value={filter}
-              onChange={this.onFilterChange}
-            />
+                <div className={styles.filters}>
+                  <TextInput
+                    className={styles.filterInput}
+                    placeholder={translate('FilterLibraryList')}
+                    name="filter"
+                    value={filter}
+                    onChange={this.onFilterChange}
+                  />
 
-            <Button
-              kind="primary"
-              onPress={this.onManualModalOpen}
-            >
-              {translate('AddBookManually')}
-            </Button>
-          </div>
+                  <Button
+                    kind="primary"
+                    onPress={this.onManualModalOpen}
+                  >
+                    {translate('AddBookManually')}
+                  </Button>
+                </div>
+              </>
+          }
 
           <div className={styles.sectionLabel}>
             {translate('MetadataSearch')}
@@ -143,67 +150,87 @@ class AssignUnmappedModalContent extends Component {
           }
 
           {
-            !!searchResults.length &&
-              <div className={styles.searchResults}>
-                <div className={styles.sectionLabel}>
-                  {translate('MetadataResults')}
-                </div>
+            showMetadataResults &&
+              <div className={styles.resultsContainer}>
                 {
-                  searchResults.map((item) => {
-                    if (!item.book) {
-                      return null;
-                    }
+                  isSearching &&
+                    <LoadingIndicator />
+                }
 
-                    const book = item.book;
+                {
+                  !isSearching && !searchError && !searchResults.length &&
+                    <div className={styles.emptyResults} />
+                }
 
-                    return (
-                      <AddNewBookSearchResultConnector
-                        key={item.id}
-                        isExistingBook={'id' in book && book.id !== 0}
-                        isExistingAuthor={'id' in book.author && book.author.id !== 0}
-                        onBookAdded={this.props.onBookAdded}
-                        {...book}
-                      />
-                    );
-                  })
+                {
+                  !isSearching && !searchError && !!searchResults.length &&
+                    <div className={styles.searchResults}>
+                      <div className={styles.sectionLabel}>
+                        {translate('MetadataResults')}
+                      </div>
+                      {
+                        searchResults.map((item) => {
+                          if (!item.book) {
+                            return null;
+                          }
+
+                          const book = item.book;
+
+                          return (
+                            <AddNewBookSearchResultConnector
+                              key={item.id}
+                              isExistingBook={'id' in book && book.id !== 0}
+                              isExistingAuthor={'id' in book.author && book.author.id !== 0}
+                              onBookAdded={this.props.onBookAdded}
+                              {...book}
+                            />
+                          );
+                        })
+                      }
+                    </div>
                 }
               </div>
           }
 
-          <Table
-            columns={columns}
-          >
-            <TableBody>
-              {
-                (books || []).map((book) => {
-                  const text = `${book.title} ${book.authorName || ''}`.toLowerCase();
-                  if (!text.includes(filterLower)) {
-                    return null;
-                  }
+          {
+            !showMetadataResults &&
+              <div className={styles.libraryList}>
+                <Table
+                  columns={columns}
+                >
+                  <TableBody>
+                    {
+                      (books || []).map((book) => {
+                        const text = `${book.title} ${book.authorName || ''}`.toLowerCase();
+                        if (!text.includes(filterLower)) {
+                          return null;
+                        }
 
-                  return (
-                    <TableRow
-                      key={book.id}
-                      onClick={() => this.onBookSelect(book.id)}
-                      className={styles.bookRow}
-                    >
-                      <TableRowCell>{book.title}</TableRowCell>
-                      <TableRowCell>{book.authorName}</TableRowCell>
-                    </TableRow>
-                  );
-                })
-              }
+                        return (
+                          <TableRow
+                            key={book.id}
+                            onClick={() => this.onBookSelect(book.id)}
+                            className={styles.bookRow}
+                          >
+                            <TableRowCell>{book.title}</TableRowCell>
+                            <TableRowCell>{book.authorName}</TableRowCell>
+                          </TableRow>
+                        );
+                      })
+                    }
 
-              {
-                !isLoading && (!books || books.length === 0) &&
-                  <TableRow>
-                    <TableRowCell colSpan={2}>
-                      {translate('NoBooksFound')}
-                    </TableRowCell>
-                  </TableRow>
-              }
-            </TableBody>
-          </Table>
+                    {
+                      !isLoading && (!books || books.length === 0) &&
+                        <TableRow>
+                          <TableRowCell colSpan={2}>
+                            {translate('NoBooksFound')}
+                          </TableRowCell>
+                        </TableRow>
+                    }
+                  </TableBody>
+                </Table>
+              </div>
+          }
         </ModalBody>
 
         <ModalFooter>
