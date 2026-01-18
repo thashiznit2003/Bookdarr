@@ -69,9 +69,9 @@ namespace NzbDrone.Core.MediaFiles
                 throw new InvalidOperationException("Combine audiobooks is disabled in settings.");
             }
 
-            if (command.BookFileIds == null || command.BookFileIds.Count < 2)
+            if (command.BookFileIds == null || command.BookFileIds.Count < 1)
             {
-                throw new InvalidOperationException("At least two audiobook files are required.");
+                throw new InvalidOperationException("At least one audiobook file is required.");
             }
 
             var bookFiles = _mediaFileService.Get(command.BookFileIds);

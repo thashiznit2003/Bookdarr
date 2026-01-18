@@ -202,7 +202,7 @@ class BookDetails extends Component {
     } = this.state;
 
     const audioFiles = (bookFiles || []).filter(isAudiobookAudio);
-    const canCombine = audioFiles.length > 1;
+    const canCombine = audioFiles.length >= 1;
 
     return (
       <PageContent title={title}>

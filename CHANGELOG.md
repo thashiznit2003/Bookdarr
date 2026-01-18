@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.109
+- Summary: Allow single-file audiobook conversions: Combine now enables with one MP3/FLAC part and backend accepts 1+ parts.
+- Why: Users with a single non-M4B audiobook couldn’t use Combine to convert it to M4B.
+- Impact: Combine button enables for any supported audiobook file; backend no longer requires 2 parts and shows a clearer message. Version bumped for cache-busting.
+- Files: `frontend/src/Book/Details/BookDetails.js`, `src/NzbDrone.Core/MediaFiles/CombineAudiobookService.cs`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-174.log`).
 ## 1.3.108
 - Summary: Enable combining audiobooks when the parts are FLAC by allowing the UI button to activate for FLAC files.
 - Why: Combine was still disabled in the book details toolbar because the UI only counted MP3 parts.
