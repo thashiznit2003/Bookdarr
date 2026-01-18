@@ -14,7 +14,7 @@ class InteractiveImportModal extends Component {
     super(props, context);
 
     this.state = {
-      folder: null
+      folder: props.folder || null
     };
   }
 
@@ -26,9 +26,11 @@ class InteractiveImportModal extends Component {
 
     // Clear folder when modal opens if useBrowserUpload is true
     // This ensures upload mode is shown instead of folder view
-    if (!prevProps.isOpen && this.props.isOpen && this.props.useBrowserUpload) {
+    if (!prevProps.isOpen && this.props.isOpen && this.props.useBrowserUpload && !this.props.autoStartInteractive) {
       this.setState({ folder: null });
     }
+
+    // If auto-starting and initialFolder changes, selection view will pick it up
   }
 
   //
@@ -49,6 +51,7 @@ class InteractiveImportModal extends Component {
       useBrowserUpload,
       initialFolder,
       showPathInput,
+      autoStartInteractive,
       onModalClose,
       ...otherProps
     } = this.props;
@@ -75,6 +78,7 @@ class InteractiveImportModal extends Component {
               initialFolder={initialFolder}
               useBrowserUpload={useBrowserUpload}
               showPathInput={showPathInput}
+              autoStartInteractive={autoStartInteractive}
               onFolderSelect={this.onFolderSelect}
               onModalClose={onModalClose}
             />
@@ -94,6 +98,7 @@ InteractiveImportModal.propTypes = {
   useBrowserUpload: PropTypes.bool,
   initialFolder: PropTypes.string,
   showPathInput: PropTypes.bool,
+  autoStartInteractive: PropTypes.bool,
   modalTitle: PropTypes.string.isRequired,
   onModalClose: PropTypes.func.isRequired
 };

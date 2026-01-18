@@ -51,6 +51,12 @@ class InteractiveImportSelectFolderModalContent extends Component {
     };
   }
 
+  componentDidMount() {
+    if (this.props.autoStartInteractive && this.state.folder) {
+      this.props.onInteractiveImportPress(this.state.folder);
+    }
+  }
+
   //
   // Listeners
 
@@ -61,11 +67,19 @@ class InteractiveImportSelectFolderModalContent extends Component {
       this.props.initialFolder !== prevProps.initialFolder
     ) {
       this.setState({ folder: this.props.initialFolder });
+
+      if (this.props.autoStartInteractive) {
+        this.props.onInteractiveImportPress(this.props.initialFolder);
+      }
     }
   }
 
   onPathChange = ({ value }) => {
     this.setState({ folder: value });
+
+    if (this.props.autoStartInteractive && value) {
+      this.props.onInteractiveImportPress(value);
+    }
   };
 
   onUploadFilesChange = ({ files }) => {
@@ -119,6 +133,10 @@ class InteractiveImportSelectFolderModalContent extends Component {
 
   onRecentPathPress = (folder) => {
     this.setState({ folder });
+
+    if (this.props.autoStartInteractive && folder) {
+      this.props.onInteractiveImportPress(folder);
+    }
   };
 
   onQuickImportPress = () => {
@@ -138,6 +156,7 @@ class InteractiveImportSelectFolderModalContent extends Component {
       onRemoveRecentFolderPress,
       useBrowserUpload,
       showPathInput,
+      autoStartInteractive,
       onModalClose
     } = this.props;
 
@@ -236,41 +255,42 @@ class InteractiveImportSelectFolderModalContent extends Component {
 
           {
             !useBrowserUpload &&
-              <div className={styles.buttonsContainer}>
-                <div className={styles.buttonContainer}>
-                  <Button
-                    className={styles.button}
-                    kind={kinds.PRIMARY}
-                    size={sizes.LARGE}
-                    isDisabled={!folder}
-                    onPress={this.onQuickImportPress}
-                  >
-                    <Icon
-                      className={styles.buttonIcon}
-                      name={icons.QUICK}
-                    />
+              !autoStartInteractive &&
+                <div className={styles.buttonsContainer}>
+                  <div className={styles.buttonContainer}>
+                    <Button
+                      className={styles.button}
+                      kind={kinds.PRIMARY}
+                      size={sizes.LARGE}
+                      isDisabled={!folder}
+                      onPress={this.onQuickImportPress}
+                    >
+                      <Icon
+                        className={styles.buttonIcon}
+                        name={icons.QUICK}
+                      />
 
-                    Move Automatically
-                  </Button>
+                      Move Automatically
+                    </Button>
+                  </div>
+
+                  <div className={styles.buttonContainer}>
+                    <Button
+                      className={styles.button}
+                      kind={kinds.PRIMARY}
+                      size={sizes.LARGE}
+                      isDisabled={!folder}
+                      onPress={this.onInteractiveImportPress}
+                    >
+                      <Icon
+                        className={styles.buttonIcon}
+                        name={icons.INTERACTIVE}
+                      />
+
+                      Interactive Import
+                    </Button>
+                  </div>
                 </div>
-
-                <div className={styles.buttonContainer}>
-                  <Button
-                    className={styles.button}
-                    kind={kinds.PRIMARY}
-                    size={sizes.LARGE}
-                    isDisabled={!folder}
-                    onPress={this.onInteractiveImportPress}
-                  >
-                    <Icon
-                      className={styles.buttonIcon}
-                      name={icons.INTERACTIVE}
-                    />
-
-                    Interactive Import
-                  </Button>
-                </div>
-              </div>
           }
         </ModalBody>
 

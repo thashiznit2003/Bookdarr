@@ -488,6 +488,7 @@ class BookDetails extends Component {
             useBrowserUpload={this.state.interactiveImportUseBrowserUpload}
             showPathInput={true}
             initialFolder={author.path}
+            autoStartInteractive={true}
             onModalClose={this.onInteractiveImportModalClose}
           />
 

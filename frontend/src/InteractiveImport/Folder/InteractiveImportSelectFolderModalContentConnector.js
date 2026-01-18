@@ -73,6 +73,7 @@ InteractiveImportSelectFolderModalContentConnector.propTypes = {
   useBrowserUpload: PropTypes.bool,
   initialFolder: PropTypes.string,
   showPathInput: PropTypes.bool,
+  autoStartInteractive: PropTypes.bool,
   onFolderSelect: PropTypes.func.isRequired,
   onModalClose: PropTypes.func.isRequired,
   addRecentFolder: PropTypes.func.isRequired,
