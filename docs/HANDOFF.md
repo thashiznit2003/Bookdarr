@@ -70,6 +70,7 @@ Use this file to onboard a new Codex chat.
 - Docker Hub publish pipeline (GitHub Action + secrets).
 - Overseerr-like request page.
 - Users: backend update endpoint exists (username/email/password + isActive, admin or self) with reset-token scaffolding; frontend has Add/Edit modals and activate/deactivate/delete. Still needed: per-user libraries/book scoping (user_id ownership + auth scoping), self-service password reset via email sender, and confirmation of per-user library isolation.
+- Library stability: after clearing the user library, `/api/v1/user/library/books` has thrown “Expected query to return N rows but returned M” and the UI then showed only downloading books. Latest attempt (v1.3.111, tag snapshot-20260118-0647, update-176) makes `GetBooks` tolerate missing IDs and uses that in the user-library endpoint. If it recurs, pull the latest diagnostics and recheck the user-library fetch path/DB integrity.
 
 ## Recent Changes (since last handoff)
 - User library fetch no longer 500s when book IDs are missing; endpoint tolerates missing rows; version bumped to 1.3.111.
