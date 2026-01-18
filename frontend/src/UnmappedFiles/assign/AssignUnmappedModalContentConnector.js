@@ -81,7 +81,7 @@ class AssignUnmappedModalContentConnector extends Component {
     });
   };
 
-  onSearchChange = (term) => {
+  onSearchSubmit = (term) => {
     const trimmed = term?.trim();
 
     if (!trimmed) {
@@ -169,7 +169,7 @@ class AssignUnmappedModalContentConnector extends Component {
         error={error}
         onAssign={this.onAssign}
         onBookAdded={this.onBookAdded}
-        onSearchChange={this.onSearchChange}
+        onSearchSubmit={this.onSearchSubmit}
         onSearchClear={this.onSearchClear}
       />
     );

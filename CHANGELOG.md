@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.126
+- Summary: Simplify metadata search results in Assign and reduce slow search churn.
+- Why: Metadata searches were firing on every keystroke and the results view was too large for the modal.
+- Impact: Metadata search now submits on the search button, replaces the library list with a compact table (title/author/year/edition), and keeps the list scrollable; version bumped for cache-busting.
+- Files: `frontend/src/UnmappedFiles/assign/AssignUnmappedModalContent.js`, `frontend/src/UnmappedFiles/assign/AssignUnmappedModalContentConnector.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-191.log`).
+
 ## 1.3.125
 - Summary: Match the Manual Add form spacing to the AddAuthor panel.
 - Why: The Add Book Manually fields were overly spaced compared to the rest of the modal.

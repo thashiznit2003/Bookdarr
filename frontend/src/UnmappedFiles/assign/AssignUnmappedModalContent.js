@@ -17,7 +17,7 @@ import { icons, kinds, scrollDirections } from 'Helpers/Props';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
 import translate from 'Utilities/String/translate';
 import AddManualBookModal from 'Book/Index/ManualAdd/AddManualBookModal';
-import AddNewBookSearchResultConnector from 'Search/Book/AddNewBookSearchResultConnector';
+import AddNewBookModal from 'Search/Book/AddNewBookModal';
 import styles from './AssignUnmappedModalContent.css';
 
 const columns = [
@@ -32,7 +32,8 @@ class AssignUnmappedModalContent extends Component {
     this.state = {
       filter: '',
       search: '',
-      isManualModalOpen: false
+      isManualModalOpen: false,
+      searchBookToAdd: null
     };
   }
 
@@ -42,7 +43,10 @@ class AssignUnmappedModalContent extends Component {
 
   onSearchChange = ({ value }) => {
     this.setState({ search: value });
-    this.props.onSearchChange(value);
+  };
+
+  onSearchSubmit = () => {
+    this.props.onSearchSubmit(this.state.search);
   };
 
   onSearchClear = () => {
@@ -66,6 +70,24 @@ class AssignUnmappedModalContent extends Component {
     }
   };
 
+  onSearchResultPress = (book) => {
+    const isExisting = book?.id && book.id !== 0;
+    if (isExisting) {
+      this.props.onAssign(book.id);
+      return;
+    }
+
+    this.setState({ searchBookToAdd: book });
+  };
+
+  onSearchAddModalClose = (created) => {
+    this.setState({ searchBookToAdd: null });
+
+    if (created && created.id) {
+      this.props.onBookAdded?.({ book: created });
+    }
+  };
+
   render() {
     const {
       books,
@@ -76,9 +98,16 @@ class AssignUnmappedModalContent extends Component {
       isSearching,
       searchError
     } = this.props;
-    const { filter, search, isManualModalOpen } = this.state;
+    const { filter, search, isManualModalOpen, searchBookToAdd } = this.state;
     const filterLower = filter.toLowerCase();
     const showMetadataResults = !!search;
+    const searchColumns = [
+      { name: 'title', label: translate('Title'), isVisible: true },
+      { name: 'author', label: translate('Author'), isVisible: true },
+      { name: 'year', label: translate('ReleaseDate'), isVisible: true },
+      { name: 'edition', label: translate('Edition'), isVisible: true },
+      { name: 'action', label: translate('Actions'), isVisible: true }
+    ];
 
     return (
       <ModalContent onModalClose={onModalClose}>
@@ -132,7 +161,7 @@ class AssignUnmappedModalContent extends Component {
             <SpinnerIconButton
               name={icons.SEARCH}
               isSpinning={isSearching}
-              onPress={() => this.props.onSearchChange(search)}
+              onPress={this.onSearchSubmit}
             />
 
             <Button
@@ -168,25 +197,49 @@ class AssignUnmappedModalContent extends Component {
                       <div className={styles.sectionLabel}>
                         {translate('MetadataResults')}
                       </div>
-                      {
-                        searchResults.map((item) => {
-                          if (!item.book) {
-                            return null;
+                      <Table columns={searchColumns}>
+                        <TableBody>
+                          {
+                            searchResults.map((item) => {
+                              if (!item.book) {
+                                return null;
+                              }
+
+                              const book = item.book;
+                              const editions = book.editions || [];
+                              const edition = editions.find((ed) => ed.monitored) || editions[0];
+                              const editionInfo = [
+                                edition?.format,
+                                edition?.isbn13 || edition?.asin,
+                                edition?.disambiguation
+                              ].filter(Boolean).join(' • ');
+                              const releaseYear = book.releaseDate ? new Date(book.releaseDate).getFullYear() : '';
+                              const isExisting = book.id && book.id !== 0;
+
+                              return (
+                                <TableRow
+                                  key={item.id}
+                                  onClick={() => this.onSearchResultPress(book)}
+                                  className={styles.bookRow}
+                                >
+                                  <TableRowCell>{book.title}</TableRowCell>
+                                  <TableRowCell>{book.author?.authorName}</TableRowCell>
+                                  <TableRowCell>{releaseYear || '-'}</TableRowCell>
+                                  <TableRowCell>{editionInfo || '-'}</TableRowCell>
+                                  <TableRowCell>
+                                    <Button
+                                      kind="primary"
+                                      onPress={() => this.onSearchResultPress(book)}
+                                    >
+                                      {isExisting ? translate('AssignToBook') : translate('AddBook')}
+                                    </Button>
+                                  </TableRowCell>
+                                </TableRow>
+                              );
+                            })
                           }
-
-                          const book = item.book;
-
-                          return (
-                            <AddNewBookSearchResultConnector
-                              key={item.id}
-                              isExistingBook={'id' in book && book.id !== 0}
-                              isExistingAuthor={'id' in book.author && book.author.id !== 0}
-                              onBookAdded={this.props.onBookAdded}
-                              {...book}
-                            />
-                          );
-                        })
-                      }
+                        </TableBody>
+                      </Table>
                     </div>
                 }
               </div>
@@ -245,6 +298,21 @@ class AssignUnmappedModalContent extends Component {
           onBookAdded={({ book }) => this.onManualModalClose(book)}
           initialFolder={folder}
         />
+
+        <AddNewBookModal
+          isOpen={!!searchBookToAdd}
+          isExistingAuthor={searchBookToAdd?.author?.id ? searchBookToAdd.author.id !== 0 : false}
+          foreignBookId={searchBookToAdd?.foreignBookId}
+          bookTitle={searchBookToAdd?.title}
+          seriesTitle={searchBookToAdd?.seriesTitle}
+          disambiguation={searchBookToAdd?.disambiguation}
+          authorName={searchBookToAdd?.author?.authorName}
+          overview={searchBookToAdd?.overview}
+          folder={searchBookToAdd?.author?.folder}
+          images={searchBookToAdd?.images || []}
+          onBookAdded={this.onSearchAddModalClose}
+          onModalClose={this.onSearchAddModalClose}
+        />
       </ModalContent>
     );
   }
@@ -260,7 +328,7 @@ AssignUnmappedModalContent.propTypes = {
   folder: PropTypes.string,
   onAssign: PropTypes.func.isRequired,
   onBookAdded: PropTypes.func,
-  onSearchChange: PropTypes.func.isRequired,
+  onSearchSubmit: PropTypes.func.isRequired,
   onSearchClear: PropTypes.func.isRequired,
   onModalClose: PropTypes.func.isRequired
 };
