@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.120
+- Summary: Fix Assign-to-Book unmapped flow with working metadata search and manual create options plus book assignment wiring.
+- Why: The Add New Book button crashed (missing book data) and users couldn’t search metadata or create a new book directly from Unmapped Files before assigning files.
+- Impact: Assign modal now includes metadata search results with add flow, a manual create option, and propagates new books back into the pool before posting the unmapped files to manual import; version bumped for cache-busting.
+- Files: `frontend/src/UnmappedFiles/assign/*`, `frontend/src/Search/Book/AddNewBookSearchResult.js`, `frontend/src/Book/Index/ManualAdd/*`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-185.log`).
+
 ## 1.3.119
 - Summary: Add an Assign to Book flow for Unmapped Files so selected items can be mapped to an existing pool book or a newly created one.
 - Why: Unmapped files are already known but lack a book; users need to pick a book (or add one) and import those files directly from the Unmapped page.

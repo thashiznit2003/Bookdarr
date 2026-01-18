@@ -68,6 +68,7 @@ class AddManualBookModalContentConnector extends Component {
       metadataProfileId,
       tags,
       onModalClose,
+      onBookAdded,
       updateBookItem,
       updateAuthorItem
     } = this.props;
@@ -110,6 +111,9 @@ class AddManualBookModalContentConnector extends Component {
       }
       if (data?.id) {
         updateBookItem(data);
+        if (onBookAdded) {
+          onBookAdded({ book: data });
+        }
       }
       onModalClose();
     });
@@ -144,6 +148,7 @@ AddManualBookModalContentConnector.propTypes = {
   metadataProfileId: PropTypes.object,
   tags: PropTypes.object.isRequired,
   onModalClose: PropTypes.func.isRequired,
+  onBookAdded: PropTypes.func,
   setBookAddDefault: PropTypes.func.isRequired,
   fetchRootFolders: PropTypes.func.isRequired,
   updateBookItem: PropTypes.func.isRequired,

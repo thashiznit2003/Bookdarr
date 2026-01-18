@@ -6,6 +6,7 @@ import AddManualBookModalContentConnector from './AddManualBookModalContentConne
 function AddManualBookModal(props) {
   const {
     isOpen,
+    onBookAdded,
     onModalClose,
     ...otherProps
   } = props;
@@ -17,6 +18,7 @@ function AddManualBookModal(props) {
     >
       <AddManualBookModalContentConnector
         {...otherProps}
+        onBookAdded={onBookAdded}
         onModalClose={onModalClose}
       />
     </Modal>
@@ -25,6 +27,7 @@ function AddManualBookModal(props) {
 
 AddManualBookModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
+  onBookAdded: PropTypes.func,
   onModalClose: PropTypes.func.isRequired
 };
 

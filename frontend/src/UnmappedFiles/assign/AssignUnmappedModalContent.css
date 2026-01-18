@@ -12,3 +12,14 @@
 .modalBody {
   min-height: 300px;
 }
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.searchResults {
+  margin-bottom: 16px;
+}

@@ -6,13 +6,16 @@ import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
 import TextInput from 'Components/Form/TextInput';
+import Alert from 'Components/Alert';
+import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import Table from 'Components/Table/Table';
 import TableBody from 'Components/Table/TableBody';
 import TableRow from 'Components/Table/TableRow';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
-import { scrollDirections } from 'Helpers/Props';
+import { icons, scrollDirections } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
-import AddNewBookModal from 'Search/Book/AddNewBookModal';
+import AddManualBookModal from 'Book/Index/ManualAdd/AddManualBookModal';
+import AddNewBookSearchResultConnector from 'Search/Book/AddNewBookSearchResultConnector';
 import styles from './AssignUnmappedModalContent.css';
 
 const columns = [
@@ -26,7 +29,8 @@ class AssignUnmappedModalContent extends Component {
 
     this.state = {
       filter: '',
-      isAddNewModalOpen: false
+      search: '',
+      isManualModalOpen: false
     };
   }
 
@@ -34,25 +38,43 @@ class AssignUnmappedModalContent extends Component {
     this.setState({ filter: value });
   };
 
+  onSearchChange = ({ value }) => {
+    this.setState({ search: value });
+    this.props.onSearchChange(value);
+  };
+
+  onSearchClear = () => {
+    this.setState({ search: '' });
+    this.props.onSearchClear();
+  };
+
   onBookSelect = (bookId) => {
     this.props.onAssign(bookId);
   };
 
-  onAddNewPress = () => {
-    this.setState({ isAddNewModalOpen: true });
+  onManualModalOpen = () => {
+    this.setState({ isManualModalOpen: true });
   };
 
-  onAddNewModalClose = (created) => {
-    this.setState({ isAddNewModalOpen: false });
+  onManualModalClose = (book) => {
+    this.setState({ isManualModalOpen: false });
 
-    if (created && created.id) {
-      this.props.onBookAdded?.({ book: created });
+    if (book?.id) {
+      this.props.onBookAdded?.({ book });
     }
   };
 
   render() {
-    const { books, onModalClose, folder, isLoading } = this.props;
-    const { filter, isAddNewModalOpen } = this.state;
+    const {
+      books,
+      onModalClose,
+      folder,
+      isLoading,
+      searchResults,
+      isSearching,
+      searchError
+    } = this.props;
+    const { filter, search, isManualModalOpen } = this.state;
     const filterLower = filter.toLowerCase();
 
     return (
@@ -76,11 +98,65 @@ class AssignUnmappedModalContent extends Component {
 
             <Button
               kind="primary"
-              onPress={this.onAddNewPress}
+              onPress={this.onManualModalOpen}
             >
               {translate('AddNewBook')}
             </Button>
           </div>
+
+          <div className={styles.searchRow}>
+            <TextInput
+              className={styles.filterInput}
+              placeholder={translate('SearchBoxPlaceHolder')}
+              name="search"
+              value={search}
+              onChange={this.onSearchChange}
+            />
+
+            <SpinnerIconButton
+              name={icons.SEARCH}
+              isSpinning={isSearching}
+              onPress={() => this.props.onSearchChange(search)}
+            />
+
+            <Button
+              onPress={this.onSearchClear}
+            >
+              {translate('Clear')}
+            </Button>
+          </div>
+
+          {
+            searchError &&
+              <Alert>
+                {translate('FailedLoadingSearchResults')}
+              </Alert>
+          }
+
+          {
+            !!searchResults.length &&
+              <div className={styles.searchResults}>
+                {
+                  searchResults.map((item) => {
+                    if (!item.book) {
+                      return null;
+                    }
+
+                    const book = item.book;
+
+                    return (
+                      <AddNewBookSearchResultConnector
+                        key={item.id}
+                        isExistingBook={'id' in book && book.id !== 0}
+                        isExistingAuthor={'id' in book.author && book.author.id !== 0}
+                        onBookAdded={this.props.onBookAdded}
+                        {...book}
+                      />
+                    );
+                  })
+                }
+              </div>
+          }
 
           <Table
             columns={columns}
@@ -124,10 +200,10 @@ class AssignUnmappedModalContent extends Component {
           </Button>
         </ModalFooter>
 
-        <AddNewBookModal
-          isOpen={isAddNewModalOpen}
-          onBookAdded={this.onAddNewModalClose}
-          onModalClose={this.onAddNewModalClose}
+        <AddManualBookModal
+          isOpen={isManualModalOpen}
+          onModalClose={() => this.onManualModalClose()}
+          onBookAdded={({ book }) => this.onManualModalClose(book)}
           initialFolder={folder}
         />
       </ModalContent>
@@ -138,17 +214,24 @@ class AssignUnmappedModalContent extends Component {
 AssignUnmappedModalContent.propTypes = {
   books: PropTypes.arrayOf(PropTypes.object).isRequired,
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  searchResults: PropTypes.arrayOf(PropTypes.object),
+  isSearching: PropTypes.bool,
+  searchError: PropTypes.object,
   isLoading: PropTypes.bool,
   folder: PropTypes.string,
   onAssign: PropTypes.func.isRequired,
   onBookAdded: PropTypes.func,
+  onSearchChange: PropTypes.func.isRequired,
+  onSearchClear: PropTypes.func.isRequired,
   onModalClose: PropTypes.func.isRequired
 };
 
 AssignUnmappedModalContent.defaultProps = {
   books: [],
   files: [],
-  isLoading: false
+  searchResults: [],
+  isLoading: false,
+  isSearching: false
 };
 
 export default AssignUnmappedModalContent;

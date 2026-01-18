@@ -78,6 +78,9 @@ class AddNewBookSearchResult extends Component {
 
   onBookAdded = ({ book, importExistingFiles, importPath }) => {
     if (!importExistingFiles || !importPath) {
+      if (this.props.onBookAdded) {
+        this.props.onBookAdded({ book });
+      }
       return;
     }
 
@@ -90,6 +93,10 @@ class AddNewBookSearchResult extends Component {
       interactiveImportAuthorId: authorId,
       interactiveImportTitle: title
     });
+
+    if (this.props.onBookAdded) {
+      this.props.onBookAdded({ book, importExistingFiles, importPath });
+    }
   };
 
   onMBLinkPress = (event) => {
@@ -271,7 +278,8 @@ AddNewBookSearchResult.propTypes = {
   images: PropTypes.arrayOf(PropTypes.object).isRequired,
   isExistingBook: PropTypes.bool.isRequired,
   isExistingAuthor: PropTypes.bool.isRequired,
-  isSmallScreen: PropTypes.bool.isRequired
+  isSmallScreen: PropTypes.bool.isRequired,
+  onBookAdded: PropTypes.func
 };
 
 export default AddNewBookSearchResult;

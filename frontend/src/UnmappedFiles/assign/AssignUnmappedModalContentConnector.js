@@ -1,7 +1,26 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
+import { clearSearchResults, getSearchResults } from 'Store/Actions/searchActions';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import AssignUnmappedModalContent from './AssignUnmappedModalContent';
+
+function createMapStateToProps() {
+  return createSelector(
+    (state) => state.search,
+    (searchState) => ({
+      searchResults: searchState.items,
+      isSearching: searchState.isFetching,
+      searchError: searchState.error
+    })
+  );
+}
+
+const mapDispatchToProps = {
+  getSearchResults,
+  clearSearchResults
+};
 
 class AssignUnmappedModalContentConnector extends Component {
 
@@ -17,6 +36,10 @@ class AssignUnmappedModalContentConnector extends Component {
 
   componentDidMount() {
     this.fetchBookPool();
+  }
+
+  componentWillUnmount() {
+    this.props.clearSearchResults();
   }
 
   fetchBookPool = () => {
@@ -45,6 +68,21 @@ class AssignUnmappedModalContentConnector extends Component {
     request.fail((xhr) => {
       this.setState({ error: xhr, isLoading: false });
     });
+  };
+
+  onSearchChange = (term) => {
+    const trimmed = term?.trim();
+
+    if (!trimmed) {
+      this.props.clearSearchResults();
+      return;
+    }
+
+    this.props.getSearchResults({ term: trimmed });
+  };
+
+  onSearchClear = () => {
+    this.props.clearSearchResults();
   };
 
   onAssign = (bookId) => {
@@ -98,15 +136,25 @@ class AssignUnmappedModalContentConnector extends Component {
 
   render() {
     const { books, isLoading, error } = this.state;
+    const {
+      searchResults,
+      isSearching,
+      searchError
+    } = this.props;
 
     return (
       <AssignUnmappedModalContent
         {...this.props}
         books={books}
+        searchResults={searchResults}
+        isSearching={isSearching}
+        searchError={searchError}
         isLoading={isLoading}
         error={error}
         onAssign={this.onAssign}
         onBookAdded={this.onBookAdded}
+        onSearchChange={this.onSearchChange}
+        onSearchClear={this.onSearchClear}
       />
     );
   }
@@ -114,11 +162,18 @@ class AssignUnmappedModalContentConnector extends Component {
 
 AssignUnmappedModalContentConnector.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object),
+  searchResults: PropTypes.arrayOf(PropTypes.object),
+  isSearching: PropTypes.bool,
+  searchError: PropTypes.object,
+  getSearchResults: PropTypes.func.isRequired,
+  clearSearchResults: PropTypes.func.isRequired,
   onModalClose: PropTypes.func.isRequired
 };
 
 AssignUnmappedModalContentConnector.defaultProps = {
-  files: []
+  files: [],
+  searchResults: [],
+  isSearching: false
 };
 
-export default AssignUnmappedModalContentConnector;
+export default connect(createMapStateToProps, mapDispatchToProps)(AssignUnmappedModalContentConnector);
