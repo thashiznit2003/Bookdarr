@@ -1,10 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Authentication;
 using NzbDrone.Core.AuthorStats;
 using NzbDrone.Core.Books;
+using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MediaFiles;
+using NzbDrone.Core.MetadataSource;
+using NzbDrone.Core.RootFolders;
+using Readarr.Api.V1.Author;
 using Readarr.Http;
 using Readarr.Http.REST;
 using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
@@ -19,18 +25,33 @@ namespace Readarr.Api.V1.Books
         private readonly IBookService _bookService;
         private readonly IBookPoolMapper _bookPoolMapper;
         private readonly IAuthorStatisticsService _authorStatisticsService;
+        private readonly IAuthorService _authorService;
+        private readonly IAuthorExtraMetadataProvider _authorExtraMetadataProvider;
+        private readonly IAuthorMetadataService _authorMetadataService;
+        private readonly IMapCoversToLocal _coverMapper;
+        private readonly IRootFolderService _rootFolderService;
 
         public UserLibraryController(IUserService userService,
                                      IUserLibraryService libraryService,
                                      IBookService bookService,
                                      IBookPoolMapper bookPoolMapper,
-                                     IAuthorStatisticsService authorStatisticsService)
+                                     IAuthorStatisticsService authorStatisticsService,
+                                     IAuthorService authorService,
+                                     IAuthorExtraMetadataProvider authorExtraMetadataProvider,
+                                     IAuthorMetadataService authorMetadataService,
+                                     IMapCoversToLocal coverMapper,
+                                     IRootFolderService rootFolderService)
         {
             _userService = userService;
             _libraryService = libraryService;
             _bookService = bookService;
             _bookPoolMapper = bookPoolMapper;
             _authorStatisticsService = authorStatisticsService;
+            _authorService = authorService;
+            _authorExtraMetadataProvider = authorExtraMetadataProvider;
+            _authorMetadataService = authorMetadataService;
+            _coverMapper = coverMapper;
+            _rootFolderService = rootFolderService;
         }
 
         [HttpGet]
@@ -69,6 +90,35 @@ namespace Readarr.Api.V1.Books
         {
             var user = GetCurrentUser();
             return _bookPoolMapper.GetPool(user.Id);
+        }
+
+        [HttpGet("pool/authors")]
+        public ActionResult<List<AuthorResource>> GetBookPoolAuthors()
+        {
+            var books = _bookService.GetAllBooks();
+            var authorIds = books.Select(book => book.AuthorId)
+                .Where(authorId => authorId != 0)
+                .Distinct()
+                .ToList();
+
+            if (!authorIds.Any())
+            {
+                return new List<AuthorResource>();
+            }
+
+            var authors = _authorService.GetAuthors(authorIds);
+            foreach (var author in authors)
+            {
+                EnsureAuthorExtras(author);
+            }
+
+            var authorResources = authors.ToResource();
+            MapCoversToLocal(authorResources.ToArray());
+            LinkNextPreviousBooks(authorResources.ToArray());
+            LinkAuthorStatistics(authorResources, _authorStatisticsService.AuthorStatistics().ToDictionary(x => x.AuthorId));
+            LinkRootFolderPath(authorResources.ToArray());
+
+            return authorResources;
         }
 
         [HttpGet("books")]
@@ -126,6 +176,118 @@ namespace Readarr.Api.V1.Books
                 HasAudiobook = _libraryService.UserBookHasMedia(userBook, BookFileMediaType.Audiobook),
                 PoolHasBook = _libraryService.IsBookAvailableInPool(book.Id)
             };
+        }
+
+        private void MapCoversToLocal(params AuthorResource[] authors)
+        {
+            foreach (var authorResource in authors)
+            {
+                _coverMapper.ConvertToLocalUrls(authorResource.Id, MediaCoverEntity.Author, authorResource.Images);
+            }
+        }
+
+        private void EnsureAuthorExtras(NzbDrone.Core.Books.Author author)
+        {
+            var metadata = author?.Metadata?.Value;
+            if (metadata == null)
+            {
+                return;
+            }
+
+            metadata.Images ??= new List<MediaCover>();
+            metadata.Links ??= new List<Links>();
+
+            var hasPoster = metadata.Images.Any(x => x.CoverType == MediaCoverTypes.Poster && x.Url.IsNotNullOrWhiteSpace());
+            var needsOverview = metadata.Overview.IsNullOrWhiteSpace();
+            var hasWikipediaLink = metadata.Links.Any(x =>
+                x.Url.IsNotNullOrWhiteSpace() &&
+                x.Url.Contains("wikipedia.org", StringComparison.OrdinalIgnoreCase));
+
+            if (hasPoster && !needsOverview && hasWikipediaLink)
+            {
+                return;
+            }
+
+            var extras = _authorExtraMetadataProvider.GetAuthorExtraMetadata(metadata.Name);
+            if (extras == null)
+            {
+                return;
+            }
+
+            var changed = false;
+
+            if (!hasPoster && extras.ImageUrl.IsNotNullOrWhiteSpace())
+            {
+                metadata.Images.Add(new MediaCover
+                {
+                    Url = extras.ImageUrl,
+                    CoverType = MediaCoverTypes.Poster
+                });
+                changed = true;
+            }
+
+            if (needsOverview && extras.Overview.IsNotNullOrWhiteSpace())
+            {
+                metadata.Overview = extras.Overview;
+                changed = true;
+            }
+
+            if (extras.Links != null)
+            {
+                foreach (var link in extras.Links)
+                {
+                    if (link?.Url.IsNullOrWhiteSpace() ?? true)
+                    {
+                        continue;
+                    }
+
+                    if (metadata.Links.Any(x => x.Url.Equals(link.Url, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        continue;
+                    }
+
+                    metadata.Links.Add(link);
+                    changed = true;
+                }
+            }
+
+            if (changed)
+            {
+                _authorMetadataService.Upsert(metadata);
+            }
+        }
+
+        private void LinkNextPreviousBooks(params AuthorResource[] authors)
+        {
+            var nextBooks = _bookService.GetNextBooksByAuthorMetadataId(authors.Select(x => x.AuthorMetadataId));
+            var lastBooks = _bookService.GetLastBooksByAuthorMetadataId(authors.Select(x => x.AuthorMetadataId));
+
+            foreach (var authorResource in authors)
+            {
+                authorResource.NextBook = nextBooks.FirstOrDefault(x => x.AuthorMetadataId == authorResource.AuthorMetadataId);
+                authorResource.LastBook = lastBooks.FirstOrDefault(x => x.AuthorMetadataId == authorResource.AuthorMetadataId);
+            }
+        }
+
+        private void LinkAuthorStatistics(List<AuthorResource> resources, Dictionary<int, AuthorStatistics> authorStatistics)
+        {
+            foreach (var author in resources)
+            {
+                if (authorStatistics.TryGetValue(author.Id, out var stats))
+                {
+                    author.Statistics = stats.ToResource();
+                }
+            }
+        }
+
+        private void LinkRootFolderPath(params AuthorResource[] authors)
+        {
+            var rootFolders = _rootFolderService.All();
+
+            foreach (var author in authors)
+            {
+                author.RootFolderPath = _rootFolderService.GetBestRootFolderPath(author.Path, rootFolders);
+            }
         }
 
         private User GetCurrentUser()

@@ -49,7 +49,17 @@ const links = [
   {
     iconName: icons.BOOK_READER,
     title: () => translate('BookPool'),
-    to: '/bookpool'
+    to: '/bookpool',
+    children: [
+      {
+        title: () => translate('Books'),
+        to: '/bookpool'
+      },
+      {
+        title: () => translate('Authors'),
+        to: '/bookpool/authors'
+      }
+    ]
   },
 
   {

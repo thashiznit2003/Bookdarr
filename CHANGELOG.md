@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.132
+- Summary: Add a Book Pool Authors page with full author tooling, backed by a pool-author API.
+- Why: Users need the same author organization UI for the shared Book Pool, not just their personal library.
+- Impact: New `/bookpool/authors` page uses the Authors UI to browse all pool authors; backend exposes pool-author resources with stats/covers; version bumped for cache-busting.
+- Files: `frontend/src/Book/Pool/BookPoolAuthorIndexConnector.js`, `frontend/src/Book/Pool/BookPoolAuthorIndexFooterConnector.js`, `frontend/src/App/AppRoutes.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/Store/Actions/bookPoolAuthorActions.js`, `frontend/src/Store/Selectors/createBookPoolAuthorClientSideCollectionItemsSelector.js`, `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-197.log`).
+
 ## 1.3.131
 - Summary: Prevent multi-part audiobook imports from collapsing to a single file when tags are missing.
 - Why: Manual/auto imports defaulted missing track numbers to part 1, so the import pipeline treated later audio files as duplicates.

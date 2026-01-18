@@ -9,6 +9,7 @@ import * as books from './bookActions';
 import * as bookFiles from './bookFileActions';
 import * as bookHistory from './bookHistoryActions';
 import * as bookIndex from './bookIndexActions';
+import * as bookPoolAuthors from './bookPoolAuthorActions';
 import * as bookStudio from './bookshelfActions';
 import * as calendar from './calendarActions';
 import * as captcha from './captchaActions';
@@ -45,6 +46,7 @@ export default [
   bookFiles,
   bookHistory,
   bookIndex,
+  bookPoolAuthors,
   books,
   bookStudio,
   calendar,

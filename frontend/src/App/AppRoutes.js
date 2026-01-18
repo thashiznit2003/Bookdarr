@@ -8,6 +8,7 @@ import AuthorDetailsPageConnector from 'Author/Details/AuthorDetailsPageConnecto
 import AuthorIndexConnector from 'Author/Index/AuthorIndexConnector';
 import BookDetailsPageConnector from 'Book/Details/BookDetailsPageConnector';
 import BookIndexConnector from 'Book/Index/BookIndexConnector';
+import BookPoolAuthorIndexConnector from 'Book/Pool/BookPoolAuthorIndexConnector';
 import BookPoolPage from 'Book/Pool/BookPoolPage';
 import NotFound from 'Components/NotFound';
 import Switch from 'Components/Router/Switch';
@@ -45,6 +46,7 @@ function AppRoutes(props) {
   } = props;
 
   const bookPoolPath = getPathWithUrlBase('/bookpool');
+  const bookPoolAuthorsPath = getPathWithUrlBase('/bookpool/authors');
 
   return (
     <Switch>
@@ -93,6 +95,13 @@ function AppRoutes(props) {
 
       <Route
         addUrlBase={false}
+        path={bookPoolAuthorsPath}
+        component={BookPoolAuthorIndexConnector}
+      />
+
+      <Route
+        addUrlBase={false}
+        exact={true}
         path={bookPoolPath}
         component={BookPoolPage}
       />

@@ -298,6 +298,7 @@ class AuthorIndex extends Component {
       deleteError,
       isMerging,
       mergeError,
+      footerComponent,
       onScroll,
       onSortSelect,
       onFilterSelect,
@@ -322,6 +323,7 @@ class AuthorIndex extends Component {
     const selectedAuthors = items.filter((author) => selectedAuthorIds.includes(author.id));
 
     const ViewComponent = getViewComponent(view);
+    const FooterComponent = footerComponent || AuthorIndexFooterConnector;
     const isLoaded = !!(!error && isPopulated && items.length && scroller);
     const hasNoAuthor = !totalItems;
 
@@ -474,7 +476,7 @@ class AuthorIndex extends Component {
                     {...otherProps}
                   />
 
-                  <AuthorIndexFooterConnector />
+                  <FooterComponent />
                 </div>
             }
 
@@ -558,6 +560,7 @@ AuthorIndex.propTypes = {
   isRefreshingAuthor: PropTypes.bool.isRequired,
   isOrganizingAuthor: PropTypes.bool.isRequired,
   isRetaggingAuthor: PropTypes.bool.isRequired,
+  footerComponent: PropTypes.elementType,
   isSmallScreen: PropTypes.bool.isRequired,
   isSaving: PropTypes.bool.isRequired,
   saveError: PropTypes.object,
