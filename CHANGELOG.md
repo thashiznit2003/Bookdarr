@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.107
+- Summary: Allow combining FLAC audiobook parts and transcode non-MP3 inputs instead of failing.
+- Why: The combine tool rejected FLAC sources, blocking users from merging common lossless downloads.
+- Impact: Validation now accepts MP3 or FLAC; non-MP3 inputs transcode (AAC for M4B, LAME for MP3) while MP3-only still copies. Version bumped for cache-busting.
+- Files: `src/NzbDrone.Core/MediaFiles/CombineAudiobookService.cs`, `src/Directory.Build.props`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-172.log`).
 ## 1.3.106
 - Summary: Wanted Missing Files now omits the Convert column and links search to book details; sidebar labels translated; version bumped for cache-busting.
 - Why: The Convert action doesn’t belong on Missing Files and searches should land on the book details search tab.

@@ -161,9 +161,9 @@ namespace NzbDrone.Core.MediaFiles
                 throw new InvalidOperationException("All audiobook files must be from the same edition.");
             }
 
-            if (orderedFiles.Any(f => !IsMp3(f.Path)))
+            if (orderedFiles.Any(f => !IsSupportedAudio(f.Path)))
             {
-                throw new InvalidOperationException("Only MP3 audiobook files can be combined.");
+                throw new InvalidOperationException("Only MP3 or FLAC audiobook files can be combined.");
             }
 
             EnsureSourceFilesExist(orderedFiles);
@@ -284,7 +284,7 @@ namespace NzbDrone.Core.MediaFiles
         {
             var totalSeconds = partInfos.Sum(p => p.Duration.TotalSeconds);
             var targetBitrate = GetTargetBitrate(partInfos, totalSeconds);
-            var args = BuildFfmpegArgs(concatListPath, metadataPath, includeChapters, outputPath, targetBitrate);
+            var args = BuildFfmpegArgs(concatListPath, metadataPath, includeChapters, outputPath, targetBitrate, partInfos.All(p => IsMp3(p.BookFile.Path)));
             var lastPercent = -1;
 
             Action<string> progressHandler = (line) =>
@@ -317,7 +317,7 @@ namespace NzbDrone.Core.MediaFiles
             }
         }
 
-        private string BuildFfmpegArgs(string concatListPath, string metadataPath, bool includeChapters, string outputPath, int targetBitrate)
+        private string BuildFfmpegArgs(string concatListPath, string metadataPath, bool includeChapters, string outputPath, int targetBitrate, bool allSourcesAreMp3)
         {
             var mode = _configService.CombineAudiobookMode;
             var builder = new StringBuilder();
@@ -334,13 +334,20 @@ namespace NzbDrone.Core.MediaFiles
 
             builder.Append("-map 0:a ");
 
-            if (mode == CombineAudiobookMode.Mp3ToMp3)
+            if (mode == CombineAudiobookMode.Mp3ToMp3 && allSourcesAreMp3)
             {
                 builder.Append("-c copy ");
             }
             else
             {
-                builder.Append($"-c:a aac -b:a {targetBitrate}k ");
+                if (mode == CombineAudiobookMode.Mp3ToMp3)
+                {
+                    builder.Append($"-c:a libmp3lame -b:a {targetBitrate}k ");
+                }
+                else
+                {
+                    builder.Append($"-c:a aac -b:a {targetBitrate}k ");
+                }
             }
 
             builder.Append($"\"{outputPath}\"");
@@ -516,6 +523,13 @@ namespace NzbDrone.Core.MediaFiles
         private bool IsMp3(string path)
         {
             return string.Equals(Path.GetExtension(path), ".mp3", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool IsSupportedAudio(string path)
+        {
+            var ext = Path.GetExtension(path);
+            return string.Equals(ext, ".mp3", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(ext, ".flac", StringComparison.OrdinalIgnoreCase);
         }
 
         private string EscapeConcatPath(string path)
