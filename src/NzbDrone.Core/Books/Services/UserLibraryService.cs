@@ -121,7 +121,7 @@ namespace NzbDrone.Core.Books
         public bool IsBookAvailableInPool(int bookId)
         {
             return _mediaFileRepository.GetFilesByBook(bookId)
-                .Any(file => file.SharedWithAll && (file.MediaType == BookFileMediaType.Ebook || file.MediaType == BookFileMediaType.Audiobook));
+                .Any(file => file.MediaType == BookFileMediaType.Ebook || file.MediaType == BookFileMediaType.Audiobook);
         }
 
         public LibraryStatus GetPoolStatus(int bookId, bool wantsEbook, bool wantsAudiobook)
@@ -140,7 +140,6 @@ namespace NzbDrone.Core.Books
         public bool PoolHasMedia(int bookId, BookFileMediaType mediaType)
         {
             return _mediaFileRepository.GetFilesByBook(bookId)
-                .Where(f => f.SharedWithAll)
                 .Any(f => f.MediaType == mediaType);
         }
 
@@ -162,7 +161,6 @@ namespace NzbDrone.Core.Books
         private LibraryStatus ResolveStatus(int bookId, bool wantsEbook, bool wantsAudiobook)
         {
             var files = _mediaFileRepository.GetFilesByBook(bookId)
-                .Where(f => f.SharedWithAll)
                 .ToList();
 
             var hasEbook = wantsEbook && files.Any(f => f.MediaType == BookFileMediaType.Ebook);

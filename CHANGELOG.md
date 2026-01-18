@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.102
+- Summary: Book Pool now reflects newly added files in the ebook/audiobook badges instead of requiring files to be marked “shared with all.”
+- Why: After importing files, Book Pool still showed missing statuses because the pool checks only shared files; typical imports aren’t marked shared.
+- Impact: Pool availability checks now look at all book files (ebook/audiobook) so the green/red badges update as soon as files exist; version bumped for cache-busting.
+- Files: `src/NzbDrone.Core/Books/Services/UserLibraryService.cs`, `src/Directory.Build.props`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-167.log`) so diagnostics capture the deploy.
+
 ## 1.3.101
 - Summary: Keep book details working after removing a title from your library by merging user-library fetches without dropping non-library books.
 - Why: The details “Remove from my Library” action would reload the user library, wipe the book from the client store, and the details route then 404’d; the button state also reverted.
