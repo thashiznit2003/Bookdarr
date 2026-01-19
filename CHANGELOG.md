@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.146
+- Summary: Fix resume progress saves and add page numbers to the ebook reader.
+- Why: Progress updates were rejected by PUT validation, and readers need a quick sense of location.
+- Impact: User playback progress now persists correctly; EPUB reader shows a page indicator based on generated locations.
+- Files: `src/Readarr.Api.V1/Books/UserBookProgressController.cs`, `frontend/src/BookFile/BookFileReaderModal.js`, `frontend/src/BookFile/BookFileReaderModal.css`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-02.log`).
+
 ## 1.3.145
 - Summary: Persist per-user reading/listening progress for ebook and audiobook playback.
 - Why: Users should be able to resume where they left off across sessions and devices.

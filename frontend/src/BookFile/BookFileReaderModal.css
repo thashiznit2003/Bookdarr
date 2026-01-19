@@ -24,6 +24,20 @@
   z-index: 200;
 }
 
+.pageIndicator {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 999px;
+  bottom: 14px;
+  color: #f1f1f1;
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  padding: 6px 12px;
+  pointer-events: none;
+  position: absolute;
+  right: 18px;
+  z-index: 150;
+}
+
 .readerNavButton {
   align-items: center;
   background: rgba(0, 0, 0, 0.55);

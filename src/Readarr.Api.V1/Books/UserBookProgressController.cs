@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Books.Services;
+using NzbDrone.Http.REST.Attributes;
 using Readarr.Http;
 using Readarr.Http.REST;
 using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
@@ -40,6 +41,7 @@ namespace Readarr.Api.V1.Books
         }
 
         [HttpPut]
+        [SkipValidation]
         public ActionResult<UserBookProgressResource> UpsertProgress([FromBody] UserBookProgressResource resource)
         {
             if (resource == null || resource.BookFileId <= 0)

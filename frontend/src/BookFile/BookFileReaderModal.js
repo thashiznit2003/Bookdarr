@@ -94,9 +94,13 @@ class BookFileReaderModal extends Component {
     this.latestLocation = null;
     this.latestProgress = null;
     this.lastSavedLocation = null;
+    this.locationsReady = false;
+    this.isGeneratingLocations = false;
     this.themesRegistered = false;
     this.state = {
-      loadError: false
+      loadError: false,
+      currentPage: null,
+      totalPages: null
     };
   }
 
@@ -117,6 +121,9 @@ class BookFileReaderModal extends Component {
       this.latestLocation = null;
       this.latestProgress = null;
       this.lastSavedLocation = null;
+      this.locationsReady = false;
+      this.isGeneratingLocations = false;
+      this.setState({ currentPage: null, totalPages: null });
 
       const request = this.loadProgress();
       if (request && request.always)
@@ -216,9 +223,16 @@ class BookFileReaderModal extends Component {
         this.book = window.ePub(epubUrl, { openAs: 'epub' });
         this.rendition = this.book.renderTo(container, { width: '100%', height: '100%' });
         this.applyReaderTheme();
-        if (this.book.ready && this.book.ready.catch)
+        if (this.book.ready && this.book.ready.then)
         {
-          this.book.ready.catch(this.handleReaderError);
+          this.book.ready
+            .then(() => {
+              if (this.isReaderActive)
+              {
+                this.prepareLocations();
+              }
+            })
+            .catch(this.handleReaderError);
         }
 
         if (this.book.on)
@@ -327,6 +341,8 @@ class BookFileReaderModal extends Component {
     {
       this.readerRef.current.innerHTML = '';
     }
+
+    this.setState({ currentPage: null, totalPages: null });
   }
 
   queueSave = () => {
@@ -463,7 +479,76 @@ class BookFileReaderModal extends Component {
 
     this.latestLocation = cfi;
     this.latestProgress = location.start.percentage;
+    this.updatePageNumbers(location);
     this.queueSave();
+  };
+
+  prepareLocations = () => {
+    if (!this.book || !this.book.locations || this.locationsReady || this.isGeneratingLocations)
+    {
+      return;
+    }
+
+    this.isGeneratingLocations = true;
+    const generation = this.book.locations.generate(1600);
+
+    if (generation && generation.then)
+    {
+      generation
+        .then(() => {
+          this.locationsReady = true;
+          this.isGeneratingLocations = false;
+          this.updatePageNumbers();
+        })
+        .catch(() => {
+          this.isGeneratingLocations = false;
+        });
+    }
+    else
+    {
+      this.isGeneratingLocations = false;
+    }
+  };
+
+  updatePageNumbers = (location) => {
+    if (!this.isReaderActive)
+    {
+      return;
+    }
+
+    const start = location && location.start ? location.start : null;
+    const displayed = start && start.displayed ? start.displayed : null;
+    if (displayed && displayed.page && displayed.total)
+    {
+      this.setPageNumbers(displayed.page, displayed.total);
+      return;
+    }
+
+    const cfi = start && start.cfi ? start.cfi : this.latestLocation;
+    if (!cfi || !this.book || !this.book.locations || !this.locationsReady)
+    {
+      return;
+    }
+
+    const total = this.book.locations.total || 0;
+    const locationIndex = this.book.locations.locationFromCfi(cfi);
+    if (!total || locationIndex == null || locationIndex < 0)
+    {
+      return;
+    }
+
+    this.setPageNumbers(locationIndex + 1, total);
+  };
+
+  setPageNumbers = (currentPage, totalPages) => {
+    const { currentPage: existingPage, totalPages: existingTotal } = this.state;
+
+    if (existingPage === currentPage && existingTotal === totalPages)
+    {
+      return;
+    }
+
+    this.setState({ currentPage, totalPages });
   };
 
   render() {
@@ -475,11 +560,12 @@ class BookFileReaderModal extends Component {
       title
     } = this.props;
 
-    const { loadError } = this.state;
+    const { loadError, currentPage, totalPages } = this.state;
     const isEpub = fileType === 'epub';
     const isPdf = fileType === 'pdf';
     const isUnsupported = fileType === 'unknown';
     const showNavigation = isEpub && !isUnsupported && !loadError;
+    const showPageNumbers = showNavigation && currentPage && totalPages;
 
     let readerContent = null;
 
@@ -525,8 +611,17 @@ class BookFileReaderModal extends Component {
             className={styles.body}
             scrollDirection={scrollDirections.NONE}
           >
-          {readerContent}
-        </ModalBody>
+            {readerContent}
+            {
+              showPageNumbers ?
+                (
+                  <div className={styles.pageIndicator}>
+                    {translate('EbookReaderPageNumber', { current: currentPage, total: totalPages })}
+                  </div>
+                ) :
+                null
+            }
+          </ModalBody>
 
           {
             showNavigation ?
