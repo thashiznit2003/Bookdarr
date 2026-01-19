@@ -82,7 +82,8 @@
 
   .tabList {
     display: flex;
-    overflow-x: auto;
+    flex-wrap: wrap;
+    overflow-x: visible;
   }
 
   .tab {

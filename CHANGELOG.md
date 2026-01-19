@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.163
+- Summary: Stop the book details tab bar from horizontally scrolling on mobile.
+- Why: The Files/Search tab row should stay static between the header and the file list.
+- Impact: The tab bar wraps on small screens instead of scrolling.
+- Files: `frontend/src/Book/Details/BookDetails.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-20.log`).
+
 ## 1.3.162
 - Summary: Fix book file table headers and simplify the mobile file list layout.
 - Why: Header order drifted from the row layout and mobile still showed unnecessary headings/columns.
