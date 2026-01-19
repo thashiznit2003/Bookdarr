@@ -68,6 +68,7 @@ class EditAuthorModalContent extends Component {
       isAddingAvailableBooks,
       showMetadataProfile,
       originalPath,
+      isAdmin,
       onInputChange,
       onAddAllBooksPress,
       onModalClose,
@@ -162,13 +163,16 @@ class EditAuthorModalContent extends Component {
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button
-            className={styles.deleteButton}
-            kind={kinds.DANGER}
-            onPress={onDeleteAuthorPress}
-          >
-            Delete
-          </Button>
+          {
+            isAdmin &&
+              <Button
+                className={styles.deleteButton}
+                kind={kinds.DANGER}
+                onPress={onDeleteAuthorPress}
+              >
+                Delete
+              </Button>
+          }
 
           <SpinnerButton
             className={styles.requestAllButton}
@@ -214,6 +218,7 @@ EditAuthorModalContent.propTypes = {
   isAvailableBooksPopulated: PropTypes.bool.isRequired,
   isAddingAvailableBooks: PropTypes.bool.isRequired,
   isSaving: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
   showMetadataProfile: PropTypes.bool.isRequired,
   isPathChanging: PropTypes.bool.isRequired,
   originalPath: PropTypes.string.isRequired,

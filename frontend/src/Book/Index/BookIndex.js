@@ -296,6 +296,7 @@ class BookIndex extends Component {
       saveError,
       isDeleting,
       deleteError,
+      isAdmin,
       onScroll,
       onSortSelect,
       onFilterSelect,
@@ -523,6 +524,7 @@ class BookIndex extends Component {
               saveError={saveError}
               isDeleting={isDeleting}
               deleteError={deleteError}
+              isAdmin={isAdmin}
               onSaveSelected={this.onSaveSelected}
             />
         }
@@ -586,6 +588,7 @@ BookIndex.propTypes = {
   saveError: PropTypes.object,
   isDeleting: PropTypes.bool.isRequired,
   deleteError: PropTypes.object,
+  isAdmin: PropTypes.bool.isRequired,
   onSortSelect: PropTypes.func.isRequired,
   onFilterSelect: PropTypes.func.isRequired,
   onViewSelect: PropTypes.func.isRequired,

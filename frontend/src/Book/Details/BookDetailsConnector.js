@@ -51,7 +51,9 @@ function createMapStateToProps() {
     createCommandsSelector(),
     createUISettingsSelector(),
     createDimensionsSelector(),
-    (titleSlug, bookFiles, books, editions, authors, commands, uiSettings, dimensions) => {
+    (state) => state.currentUser.item,
+    (state) => state.system.status.item?.isAdmin ?? false,
+    (titleSlug, bookFiles, books, editions, authors, commands, uiSettings, dimensions, currentUser, statusIsAdmin) => {
       const book = books.items.find((b) => b.titleSlug === titleSlug);
       if (!book) {
         return {
@@ -106,6 +108,8 @@ function createMapStateToProps() {
       const isFetching = isBookFilesFetching || editions.isFetching;
       const isPopulated = isBookFilesPopulated && editions.isPopulated;
 
+      const isAdmin = currentUser?.isAdmin ?? statusIsAdmin ?? false;
+
       return {
         ...book,
         shortDateFormat: uiSettings.shortDateFormat,
@@ -125,7 +129,8 @@ function createMapStateToProps() {
         isCombining,
         previousBook,
         nextBook,
-        isSmallScreen: dimensions.isSmallScreen
+        isSmallScreen: dimensions.isSmallScreen,
+        isAdmin
       };
     }
   );

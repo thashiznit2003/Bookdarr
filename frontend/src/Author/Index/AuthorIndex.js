@@ -298,6 +298,7 @@ class AuthorIndex extends Component {
       deleteError,
       isMerging,
       mergeError,
+      isAdmin,
       footerComponent,
       onScroll,
       onSortSelect,
@@ -509,6 +510,7 @@ class AuthorIndex extends Component {
               mergeError={mergeError}
               isOrganizingAuthor={isOrganizingAuthor}
               isRetaggingAuthor={isRetaggingAuthor}
+              isAdmin={isAdmin}
               showMetadataProfile={true}
               onSaveSelected={this.onSaveSelected}
               onOrganizeAuthorPress={this.onOrganizeAuthorPress}
@@ -568,6 +570,7 @@ AuthorIndex.propTypes = {
   deleteError: PropTypes.object,
   isMerging: PropTypes.bool.isRequired,
   mergeError: PropTypes.object,
+  isAdmin: PropTypes.bool.isRequired,
   onSortSelect: PropTypes.func.isRequired,
   onFilterSelect: PropTypes.func.isRequired,
   onViewSelect: PropTypes.func.isRequired,

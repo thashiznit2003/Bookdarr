@@ -27,15 +27,19 @@ function createMapStateToProps() {
     createAuthorSelector(),
     selectBookFiles,
     (state, { id }) => id,
-    (author = {}, bookFiles, bookId) => {
+    (state) => state.currentUser.item,
+    (state) => state.system.status.item?.isAdmin ?? false,
+    (author = {}, bookFiles, bookId, currentUser, statusIsAdmin) => {
       const files = bookFiles[bookId] ?? [];
       const bookFile = files[0];
+      const isAdmin = currentUser?.isAdmin ?? statusIsAdmin ?? false;
 
       return {
         authorName: author.authorName,
         authorSlug: author.titleSlug,
         bookFiles: files,
-        indexerFlags: bookFile ? bookFile.indexerFlags : 0
+        indexerFlags: bookFile ? bookFile.indexerFlags : 0,
+        isAdmin
       };
     }
   );

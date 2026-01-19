@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.143
+- Summary: Hide delete actions for non-admin users on books and authors.
+- Why: Non-admin accounts should only be able to remove items from their own library, not delete from the system.
+- Impact: Delete buttons/modals on book and author views, plus bulk delete footers, are now admin-only; version bumped for cache-busting.
+- Files: `frontend/src/Author/Details/AuthorDetails.js`, `frontend/src/Author/Details/AuthorDetailsConnector.js`, `frontend/src/Author/Details/BookRow.js`, `frontend/src/Author/Details/BookRowConnector.js`, `frontend/src/Author/Edit/EditAuthorModalContent.js`, `frontend/src/Author/Edit/EditAuthorModalContentConnector.js`, `frontend/src/Author/Editor/AuthorEditorFooter.js`, `frontend/src/Author/Index/AuthorIndex.js`, `frontend/src/Author/Index/AuthorIndexConnector.js`, `frontend/src/Book/Details/BookDetails.js`, `frontend/src/Book/Details/BookDetailsConnector.js`, `frontend/src/Book/Editor/BookEditorFooter.js`, `frontend/src/Book/Index/BookIndex.js`, `frontend/src/Book/Index/BookIndexConnector.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-208.log`).
+
 ## 1.3.142
 - Summary: Restore admin-only settings visibility for admins by using the current user role.
 - Why: Admin users were being treated as non-admin when the system status lacked an `isAdmin` flag.

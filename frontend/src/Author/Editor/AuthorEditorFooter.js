@@ -173,6 +173,7 @@ class AuthorEditorFooter extends Component {
       mergeError,
       isOrganizingAuthor,
       isRetaggingAuthor,
+      isAdmin,
       onOrganizeAuthorPress,
       onRetagAuthorPress
     } = this.props;
@@ -298,15 +299,18 @@ class AuthorEditorFooter extends Component {
                   {translate('MergeAuthors')}
                 </SpinnerButton>
 
-                <SpinnerButton
-                  className={styles.deleteSelectedButton}
-                  kind={kinds.DANGER}
-                  isSpinning={isDeleting}
-                  isDisabled={!selectedCount || isDeleting}
-                  onPress={this.onDeleteSelectedPress}
-                >
-                  {translate('Delete')}
-                </SpinnerButton>
+                {
+                  isAdmin &&
+                    <SpinnerButton
+                      className={styles.deleteSelectedButton}
+                      kind={kinds.DANGER}
+                      isSpinning={isDeleting}
+                      isDisabled={!selectedCount || isDeleting}
+                      onPress={this.onDeleteSelectedPress}
+                    >
+                      {translate('Delete')}
+                    </SpinnerButton>
+                }
 
               </div>
             </div>
@@ -320,11 +324,14 @@ class AuthorEditorFooter extends Component {
           onModalClose={this.onTagsModalClose}
         />
 
-        <DeleteAuthorModal
-          isOpen={isDeleteAuthorModalOpen}
-          authorIds={authorIds}
-          onModalClose={this.onDeleteAuthorModalClose}
-        />
+        {
+          isAdmin &&
+            <DeleteAuthorModal
+              isOpen={isDeleteAuthorModalOpen}
+              authorIds={authorIds}
+              onModalClose={this.onDeleteAuthorModalClose}
+            />
+        }
 
         <MergeAuthorModal
           isOpen={isMergeModalOpen}
@@ -359,6 +366,7 @@ AuthorEditorFooter.propTypes = {
   mergeError: PropTypes.object,
   isOrganizingAuthor: PropTypes.bool.isRequired,
   isRetaggingAuthor: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
   showMetadataProfile: PropTypes.bool.isRequired,
   onSaveSelected: PropTypes.func.isRequired,
   onOrganizeAuthorPress: PropTypes.func.isRequired,

@@ -201,6 +201,7 @@ class BookDetails extends Component {
       isRescanningFiles,
       isRefreshingMetadata,
       inMyLibrary,
+      isAdmin,
       onRefreshPress,
       onRefreshMetadataPress,
       onRescanFilesPress,
@@ -327,11 +328,14 @@ class BookDetails extends Component {
               onPress={this.onEditBookPress}
             />
 
-            <PageToolbarButton
-              label={translate('Delete')}
-              iconName={icons.DELETE}
-              onPress={this.onDeleteBookPress}
-            />
+            {
+              isAdmin &&
+                <PageToolbarButton
+                  label={translate('Delete')}
+                  iconName={icons.DELETE}
+                  onPress={this.onDeleteBookPress}
+                />
+            }
 
           </PageToolbarSection>
         </PageToolbar>
@@ -470,12 +474,15 @@ class BookDetails extends Component {
             onDeleteAuthorPress={this.onDeleteBookPress}
           />
 
-          <DeleteBookModal
-            isOpen={isDeleteBookModalOpen}
-            bookId={id}
-            authorSlug={author.titleSlug}
-            onModalClose={this.onDeleteBookModalClose}
-          />
+          {
+            isAdmin &&
+              <DeleteBookModal
+                isOpen={isDeleteBookModalOpen}
+                bookId={id}
+                authorSlug={author.titleSlug}
+                onModalClose={this.onDeleteBookModalClose}
+              />
+          }
 
           <CombineAudiobookModal
             isOpen={isCombineModalOpen}
@@ -537,6 +544,7 @@ BookDetails.propTypes = {
   isRescanningFiles: PropTypes.bool,
   isFetching: PropTypes.bool,
   isPopulated: PropTypes.bool,
+  isAdmin: PropTypes.bool.isRequired,
   bookFilesError: PropTypes.object,
   bookFiles: PropTypes.arrayOf(PropTypes.object),
   hasBookFiles: PropTypes.bool.isRequired,

@@ -78,6 +78,7 @@ class BookRow extends Component {
       titleSlug,
       bookFiles,
       indexerFlags,
+      isAdmin,
       isEditorActive,
       isSelected,
       onSelectedChange,
@@ -226,18 +227,23 @@ class BookRow extends Component {
                   bookTitle={title}
                   authorName={authorName}
                 >
-                  <IconButton
-                    name={icons.REMOVE}
-                    title={translate('Delete')}
-                    onPress={this.onDeleteBookPress}
-                  />
+                  {
+                    isAdmin &&
+                      <>
+                        <IconButton
+                          name={icons.REMOVE}
+                          title={translate('Delete')}
+                          onPress={this.onDeleteBookPress}
+                        />
 
-                  <DeleteBookModal
-                    isOpen={this.state.isDeleteBookModalOpen}
-                    bookId={id}
-                    authorSlug={authorSlug}
-                    onModalClose={this.onDeleteBookModalClose}
-                  />
+                        <DeleteBookModal
+                          isOpen={this.state.isDeleteBookModalOpen}
+                          bookId={id}
+                          authorSlug={authorSlug}
+                          onModalClose={this.onDeleteBookModalClose}
+                        />
+                      </>
+                  }
                 </BookSearchCellConnector>
               );
             }
@@ -264,6 +270,7 @@ BookRow.propTypes = {
   indexerFlags: PropTypes.number.isRequired,
   titleSlug: PropTypes.string.isRequired,
   bookFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  isAdmin: PropTypes.bool.isRequired,
   isEditorActive: PropTypes.bool.isRequired,
   isSelected: PropTypes.bool,
   onSelectedChange: PropTypes.func.isRequired,

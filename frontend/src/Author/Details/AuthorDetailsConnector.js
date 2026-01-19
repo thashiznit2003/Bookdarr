@@ -111,7 +111,9 @@ function createMapStateToProps() {
     createCommandsSelector(),
     createDimensionsSelector(),
     (state) => state.authorAvailableBooks,
-    (titleSlug, books, allBooks, series, bookFiles, allAuthors, commands, dimensions, authorAvailableBooks) => {
+    (state) => state.currentUser.item,
+    (state) => state.system.status.item?.isAdmin ?? false,
+    (titleSlug, books, allBooks, series, bookFiles, allAuthors, commands, dimensions, authorAvailableBooks, currentUser, statusIsAdmin) => {
       const sortedAuthor = _.orderBy(allAuthors, 'sortNameLastFirst');
       const authorIndex = _.findIndex(sortedAuthor, { titleSlug });
       const author = sortedAuthor[authorIndex];
@@ -181,6 +183,8 @@ function createMapStateToProps() {
         .filter((book) => book.authorId === author.id && book.inMyLibrary)
         .map((book) => book.id);
 
+      const isAdmin = currentUser?.isAdmin ?? statusIsAdmin ?? false;
+
       return {
         ...author,
         alternateTitles,
@@ -207,7 +211,8 @@ function createMapStateToProps() {
         libraryBookIds,
         previousAuthor,
         nextAuthor,
-        isSmallScreen: dimensions.isSmallScreen
+        isSmallScreen: dimensions.isSmallScreen,
+        isAdmin
       };
     }
   );

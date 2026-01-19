@@ -42,7 +42,8 @@ class BookEditorFooter extends Component {
     const {
       bookIds,
       selectedCount,
-      isDeleting
+      isDeleting,
+      isAdmin
     } = this.props;
 
     const {
@@ -59,24 +60,30 @@ class BookEditorFooter extends Component {
             />
 
             <div className={styles.buttons}>
-              <SpinnerButton
-                className={styles.deleteSelectedButton}
-                kind={kinds.DANGER}
-                isSpinning={isDeleting}
-                isDisabled={!selectedCount || isDeleting}
-                onPress={this.onDeleteSelectedPress}
-              >
-                Delete
-              </SpinnerButton>
+              {
+                isAdmin &&
+                  <SpinnerButton
+                    className={styles.deleteSelectedButton}
+                    kind={kinds.DANGER}
+                    isSpinning={isDeleting}
+                    isDisabled={!selectedCount || isDeleting}
+                    onPress={this.onDeleteSelectedPress}
+                  >
+                    Delete
+                  </SpinnerButton>
+              }
             </div>
           </div>
         </div>
 
-        <DeleteBookModal
-          isOpen={isDeleteBookModalOpen}
-          bookIds={bookIds}
-          onModalClose={this.onDeleteBookModalClose}
-        />
+        {
+          isAdmin &&
+            <DeleteBookModal
+              isOpen={isDeleteBookModalOpen}
+              bookIds={bookIds}
+              onModalClose={this.onDeleteBookModalClose}
+            />
+        }
 
       </PageContentFooter>
     );
@@ -87,6 +94,7 @@ BookEditorFooter.propTypes = {
   bookIds: PropTypes.arrayOf(PropTypes.number).isRequired,
   selectedCount: PropTypes.number.isRequired,
   isDeleting: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
   deleteError: PropTypes.object
 };
 

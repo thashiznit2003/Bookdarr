@@ -32,7 +32,9 @@ function createMapStateToProps() {
     (state) => state.settings.metadataProfiles,
     createAuthorSelector(),
     createIsPathChangingSelector(),
-    (authorsState, authorAvailableBooks, metadataProfiles, author, isPathChanging) => {
+    (state) => state.currentUser.item,
+    (state) => state.system.status.item?.isAdmin ?? false,
+    (authorsState, authorAvailableBooks, metadataProfiles, author, isPathChanging, currentUser, statusIsAdmin) => {
       const {
         isSaving,
         saveError,
@@ -48,6 +50,7 @@ function createMapStateToProps() {
 
       const settings = selectSettings(authorSettings, pendingChanges, saveError);
       const isCurrentAuthor = authorAvailableBooks?.authorId === author.id;
+      const isAdmin = currentUser?.isAdmin ?? statusIsAdmin ?? false;
 
       return {
         authorName: author.authorName,
@@ -60,6 +63,7 @@ function createMapStateToProps() {
         availableBooksCount: isCurrentAuthor ? authorAvailableBooks.items.length : 0,
         item: settings.settings,
         showMetadataProfile: metadataProfiles.items.length > 1,
+        isAdmin,
         ...settings
       };
     }

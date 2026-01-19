@@ -21,20 +21,26 @@ function createMapStateToProps() {
     createCommandExecutingSelector(commandNames.CUTOFF_UNMET_BOOK_SEARCH),
     createCommandExecutingSelector(commandNames.MISSING_BOOK_SEARCH),
     createDimensionsSelector(),
+    (state) => state.currentUser.item,
+    (state) => state.system.status.item?.isAdmin ?? false,
     (
       book,
       isRefreshingAuthorCommand,
       isRefreshingBookCommand,
       isCutoffBooksSearch,
       isMissingBooksSearch,
-      dimensionsState
+      dimensionsState,
+      currentUser,
+      statusIsAdmin
     ) => {
       const isRefreshingBook = isRefreshingBookCommand || isRefreshingAuthorCommand;
+      const isAdmin = currentUser?.isAdmin ?? statusIsAdmin ?? false;
       return {
         ...book,
         isRefreshingBook,
         isSearching: isCutoffBooksSearch || isMissingBooksSearch,
-        isSmallScreen: dimensionsState.isSmallScreen
+        isSmallScreen: dimensionsState.isSmallScreen,
+        isAdmin
       };
     }
   );
@@ -121,4 +127,3 @@ export default withScrollPosition(
   connect(createMapStateToProps, createMapDispatchToProps)(BookIndexConnector),
   'bookIndex'
 );
-

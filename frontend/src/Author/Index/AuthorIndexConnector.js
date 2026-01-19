@@ -22,21 +22,27 @@ function createMapStateToProps() {
     createCommandExecutingSelector(commandNames.RENAME_AUTHOR),
     createCommandExecutingSelector(commandNames.RETAG_AUTHOR),
     createDimensionsSelector(),
+    (state) => state.currentUser.item,
+    (state) => state.system.status.item?.isAdmin ?? false,
     (
       author,
       books,
       isRefreshingAuthor,
       isOrganizingAuthor,
       isRetaggingAuthor,
-      dimensionsState
+      dimensionsState,
+      currentUser,
+      statusIsAdmin
     ) => {
+      const isAdmin = currentUser?.isAdmin ?? statusIsAdmin ?? false;
       return {
         ...author,
         authorStats: buildLibraryAuthorStats(books),
         isRefreshingAuthor,
         isOrganizingAuthor,
         isRetaggingAuthor,
-        isSmallScreen: dimensionsState.isSmallScreen
+        isSmallScreen: dimensionsState.isSmallScreen,
+        isAdmin
       };
     }
   );

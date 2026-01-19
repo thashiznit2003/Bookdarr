@@ -231,6 +231,7 @@ class AuthorDetails extends Component {
       saveError,
       isDeleting,
       deleteError,
+      isAdmin,
       statistics = {}
     } = this.props;
 
@@ -332,11 +333,14 @@ class AuthorDetails extends Component {
               onPress={this.onEditAuthorPress}
             />
 
-            <PageToolbarButton
-              label={translate('Delete')}
-              iconName={icons.DELETE}
-              onPress={this.onDeleteAuthorPress}
-            />
+            {
+              isAdmin &&
+                <PageToolbarButton
+                  label={translate('Delete')}
+                  iconName={icons.DELETE}
+                  onPress={this.onDeleteAuthorPress}
+                />
+            }
 
             <PageToolbarSeparator />
 
@@ -531,11 +535,14 @@ class AuthorDetails extends Component {
             onDeleteAuthorPress={this.onDeleteAuthorPress}
           />
 
-          <DeleteAuthorModal
-            isOpen={isDeleteAuthorModalOpen}
-            authorId={id}
-            onModalClose={this.onDeleteAuthorModalClose}
-          />
+          {
+            isAdmin &&
+              <DeleteAuthorModal
+                isOpen={isDeleteAuthorModalOpen}
+                authorId={id}
+                onModalClose={this.onDeleteAuthorModalClose}
+              />
+          }
 
           <InteractiveImportModal
             isOpen={isInteractiveImportModalOpen}
@@ -557,6 +564,7 @@ class AuthorDetails extends Component {
               saveError={saveError}
               isDeleting={isDeleting}
               deleteError={deleteError}
+              isAdmin={isAdmin}
               onSaveSelected={this.onSaveSelected}
             />
         }
@@ -593,6 +601,7 @@ AuthorDetails.propTypes = {
   previousAuthor: PropTypes.object.isRequired,
   nextAuthor: PropTypes.object.isRequired,
   isSmallScreen: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
   onRefreshAuthorPress: PropTypes.func.isRequired,
   onRefreshImagePress: PropTypes.func.isRequired,
   onRefreshPress: PropTypes.func.isRequired,
