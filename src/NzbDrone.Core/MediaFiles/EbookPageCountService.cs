@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using NLog;
 using NzbDrone.Common.Extensions;
-using PdfSharp.Pdf.IO;
+using PdfSharpCore.Pdf.IO;
 using VersOne.Epub;
 using VersOne.Epub.Internal;
 using VersOne.Epub.Schema;
