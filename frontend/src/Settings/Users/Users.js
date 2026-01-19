@@ -70,7 +70,7 @@ function EditUserModal({
             <TextInput
               name="username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={({ value }) => setUsername(value)}
               autoFocus
             />
           </div>
@@ -81,7 +81,7 @@ function EditUserModal({
               name="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={({ value }) => setPassword(value)}
               placeholder="Leave blank to keep current password"
             />
             <div className={styles.note}>
@@ -94,7 +94,7 @@ function EditUserModal({
             <TextInput
               name="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={({ value }) => setEmail(value)}
             />
           </div>
         </ModalBody>
@@ -174,7 +174,7 @@ function AddUserModal({
             <TextInput
               name="username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={({ value }) => setUsername(value)}
               autoFocus
             />
           </div>
@@ -185,7 +185,7 @@ function AddUserModal({
               name="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={({ value }) => setPassword(value)}
             />
           </div>
 
@@ -194,7 +194,7 @@ function AddUserModal({
             <TextInput
               name="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={({ value }) => setEmail(value)}
             />
           </div>
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.136
+- Summary: Fix Add/Edit User modal text inputs so they accept typing.
+- Why: The TextInput component emits a value payload, but the Users modals were treating it like a native event.
+- Impact: Username/password/email fields now update state correctly when typing; version bumped for cache-busting.
+- Files: `frontend/src/Settings/Users/Users.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-201.log`).
+
 ## 1.3.135
 - Summary: Scope Library Author statistics to the user’s library instead of the global book pool.
 - Why: Library Authors was showing pool-wide counts for books/files/size even when the user library is a subset.
