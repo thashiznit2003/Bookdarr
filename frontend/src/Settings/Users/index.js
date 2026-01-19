@@ -6,11 +6,13 @@ import Users from './Users';
 
 function createMapStateToProps() {
   return createSelector(
+    (state) => state.currentUser.item,
     (state) => state.system.status.item?.isAdmin ?? false,
     (state) => state.settingsUsers,
     (state) => state.currentUser,
-    (isAdmin, usersState, currentUserState) => {
+    (currentUserItem, statusIsAdmin, usersState, currentUserState) => {
       const currentUser = currentUserState.item;
+      const isAdmin = currentUserItem?.isAdmin ?? statusIsAdmin ?? false;
       return {
         isAdmin,
         currentUser,

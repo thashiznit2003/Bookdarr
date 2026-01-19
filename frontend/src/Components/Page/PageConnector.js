@@ -157,14 +157,18 @@ function createMapStateToProps() {
     selectAppProps,
     createDimensionsSelector(),
     createSystemStatusSelector(),
+    (state) => state.currentUser.item,
     (
       enableColorImpairedMode,
       isPopulated,
       errors,
       app,
       dimensions,
-      systemStatus
+      systemStatus,
+      currentUser
     ) => {
+      const isAdmin = currentUser?.isAdmin ?? systemStatus?.isAdmin ?? false;
+
       return {
         ...app,
         ...errors,
@@ -173,7 +177,7 @@ function createMapStateToProps() {
         authenticationEnabled: systemStatus.authentication !== 'none',
         systemVersion: systemStatus.version,
         enableColorImpairedMode,
-        isAdmin: systemStatus.isAdmin
+        isAdmin
       };
     }
   );

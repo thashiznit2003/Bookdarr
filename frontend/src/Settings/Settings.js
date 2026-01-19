@@ -127,9 +127,10 @@ Settings.propTypes = {
 
 function createMapStateToProps() {
   return createSelector(
+    (state) => state.currentUser.item,
     (state) => state.system.status.item?.isAdmin ?? false,
-    (isAdmin) => ({
-      isAdmin
+    (currentUser, statusIsAdmin) => ({
+      isAdmin: currentUser?.isAdmin ?? statusIsAdmin ?? false
     })
   );
 }

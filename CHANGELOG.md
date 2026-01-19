@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.142
+- Summary: Restore admin-only settings visibility for admins by using the current user role.
+- Why: Admin users were being treated as non-admin when the system status lacked an `isAdmin` flag.
+- Impact: Sidebar/Settings filtering now uses the current user role (with a system-status fallback), so admins see all sections while non-admins stay restricted; version bumped for cache-busting.
+- Files: `frontend/src/Components/Page/PageConnector.js`, `frontend/src/Settings/Settings.js`, `frontend/src/Settings/Users/index.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-207.log`).
+
 ## 1.3.141
 - Summary: Hide admin-only sidebar/settings sections for non-admin users and scope Users to self-service.
 - Why: Non-admin accounts should only see relevant settings and manage their own profile without admin-only controls.
