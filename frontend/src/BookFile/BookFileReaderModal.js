@@ -516,7 +516,7 @@ class BookFileReaderModal extends Component {
     this.isGeneratingLocations = true;
     const generation = this.book.locations.generate(1600);
     const finalize = () => {
-      if (this.book && this.book.locations && this.book.locations.total > 0)
+      if (this.getLocationsTotal() > 0)
       {
         this.locationsReady = true;
         this.syncCurrentLocation();
@@ -554,7 +554,7 @@ class BookFileReaderModal extends Component {
       return;
     }
 
-    const total = this.book.locations.total || 0;
+    const total = this.getLocationsTotal();
     const locationIndex = this.book.locations.locationFromCfi(cfi);
     if (!total || locationIndex == null || locationIndex < 0)
     {
@@ -573,6 +573,30 @@ class BookFileReaderModal extends Component {
     }
 
     this.setState({ currentPage, totalPages });
+  };
+
+  getLocationsTotal = () => {
+    if (!this.book || !this.book.locations)
+    {
+      return 0;
+    }
+
+    if (typeof this.book.locations.length === 'function')
+    {
+      return this.book.locations.length();
+    }
+
+    if (typeof this.book.locations.total === 'number')
+    {
+      return this.book.locations.total;
+    }
+
+    if (typeof this.book.locations.length === 'number')
+    {
+      return this.book.locations.length;
+    }
+
+    return 0;
   };
 
   render() {

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.150
+- Summary: Use EPUB location length for stable page totals.
+- Why: The EPUB locations API exposes total pages via `length()`, not a `total` property, so totals were staying empty.
+- Impact: Page numbers now compute from the locations length across the whole book, showing a stable total.
+- Files: `frontend/src/BookFile/BookFileReaderModal.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-06.log`).
+
 ## 1.3.149
 - Summary: Stabilize EPUB page numbers by finalizing location generation.
 - Why: Page numbers still failed to render if location generation returned no promise or total pages stayed unset.
