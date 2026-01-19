@@ -85,6 +85,7 @@ class BookFileEditorTableContent extends Component {
       isPopulated,
       error,
       items,
+      columns,
       dispatchDeleteBookFile,
       isSmallScreen,
       ...otherProps
@@ -98,6 +99,15 @@ class BookFileEditorTableContent extends Component {
     } = this.state;
 
     const hasSelectedFiles = this.getSelectedIds().length > 0;
+    const columnOrder = ['path', 'size', 'dateAdded', 'quality', 'actions'];
+    const columnsByName = new Map((columns || []).map((column) => [column.name, column]));
+    const orderedColumns = columnOrder
+      .map((name) => columnsByName.get(name))
+      .filter(Boolean)
+      .map((column) => ({ ...column, isVisible: true }));
+    const tableColumns = isSmallScreen ?
+      orderedColumns.filter((column) => ['path', 'actions'].includes(column.name)) :
+      orderedColumns;
 
     return (
       <div>
@@ -127,9 +137,10 @@ class BookFileEditorTableContent extends Component {
               className={styles.filesTable}
             >
               <Table
-                selectAll={true}
+                selectAll={!isSmallScreen}
                 allSelected={allSelected}
                 allUnselected={allUnselected}
+                columns={tableColumns}
                 onSelectAllChange={this.onSelectAllChange}
                 {...otherProps}
               >
@@ -190,6 +201,7 @@ BookFileEditorTableContent.propTypes = {
   isPopulated: PropTypes.bool.isRequired,
   error: PropTypes.object,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   isSmallScreen: PropTypes.bool.isRequired,
   onDeletePress: PropTypes.func.isRequired,
   dispatchDeleteBookFile: PropTypes.func.isRequired

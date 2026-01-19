@@ -26,4 +26,8 @@
   .actions {
     display: none;
   }
+
+  .filesTable thead {
+    display: none;
+  }
 }

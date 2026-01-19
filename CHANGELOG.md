@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.162
+- Summary: Fix book file table headers and simplify the mobile file list layout.
+- Why: Header order drifted from the row layout and mobile still showed unnecessary headings/columns.
+- Impact: Desktop headers now match the file columns, while mobile hides the header row and extra columns so actions are immediately reachable.
+- Files: `frontend/src/BookFile/Editor/BookFileEditorTableContent.js`, `frontend/src/BookFile/Editor/BookFileEditorRow.js`, `frontend/src/BookFile/Editor/BookFileEditorTableContent.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-19.log`).
+
 ## 1.3.161
 - Summary: Streamline mobile book details and file lists while removing monitoring and quality controls.
 - Why: Mobile views needed compact metadata, clearer file actions, and no accidental navigation or delete controls.

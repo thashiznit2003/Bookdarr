@@ -49,36 +49,48 @@ function BookFileEditorRow(props) {
 
   return (
     <TableRow>
-      <TableSelectCell
-        id={id}
-        isSelected={isSelected}
-        onSelectedChange={onSelectedChange}
-      />
+      {
+        !isSmallScreen &&
+          <TableSelectCell
+            id={id}
+            isSelected={isSelected}
+            onSelectedChange={onSelectedChange}
+          />
+      }
       <TableRowCell
         className={styles.path}
       >
         {displayPath}
       </TableRowCell>
 
-      <TableRowCell
-        className={styles.size}
-      >
-        {formatBytes(size)}
-      </TableRowCell>
+      {
+        !isSmallScreen &&
+          <TableRowCell
+            className={styles.size}
+          >
+            {formatBytes(size)}
+          </TableRowCell>
+      }
 
-      <RelativeDateCellConnector
-        className={styles.dateAdded}
-        date={dateAdded}
-      />
+      {
+        !isSmallScreen &&
+          <RelativeDateCellConnector
+            className={styles.dateAdded}
+            date={dateAdded}
+          />
+      }
 
-      <TableRowCell
-        className={styles.quality}
-      >
-        <BookQuality
-          quality={quality}
-          isCutoffNotMet={qualityCutoffNotMet}
-        />
-      </TableRowCell>
+      {
+        !isSmallScreen &&
+          <TableRowCell
+            className={styles.quality}
+          >
+            <BookQuality
+              quality={quality}
+              isCutoffNotMet={qualityCutoffNotMet}
+            />
+          </TableRowCell>
+      }
 
       <BookFileActionsCell
         id={id}
