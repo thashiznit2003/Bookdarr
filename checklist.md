@@ -5,7 +5,6 @@
 - [ ] Build a request UI (Overseerr-like) on top of Bookdarr search.
 - [ ] Add a mobile-compatible web app experience (mobile reader/player UX).
 - [ ] Add a mobile app store app (iOS/iPadOS) with reader/player.
-- [ ] Remember audiobook/ebook playback position per user.
 - [ ] Harden authentication for public internet use, plus offline downloads for mobile.
 - [ ] Add send-to-device flows.
 - [x] Document metadata provider pros/cons in README and settings UI help.
@@ -22,3 +21,4 @@
 - [x] Add a manual book creation flow (Books page modal, optional metadata match later, manual file import tools).
 - [x] Add a create+match+import flow for existing local book files (create the book from Google Books and import files from a chosen path).
 - [x] Add multiple user support to Bookdarr (auth, permissions, per-user views).
+- [x] Remember audiobook/ebook playback position per user.
