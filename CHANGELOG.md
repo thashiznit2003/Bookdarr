@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.139
+- Summary: Fix user library author details file loading for library-only book files.
+- Why: The author details page requested files with the wrong query parameter for multiple book IDs, which caused a load failure.
+- Impact: Author details now requests book files using the proper `bookId` list, keeping files scoped to the user’s library without errors; version bumped for cache-busting.
+- Files: `frontend/src/Author/Details/AuthorDetailsConnector.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-204.log`).
+
 ## 1.3.138
 - Summary: Scope Library Author details files to the user’s library books only.
 - Why: Author details was listing pooled files for books the user had not added.

@@ -288,7 +288,7 @@ class AuthorDetailsConnector extends Component {
 
     this.props.fetchSeries({ authorId });
     if (libraryBookIds.length) {
-      this.props.fetchBookFiles({ bookIds: libraryBookIds });
+      this.props.fetchBookFiles({ bookId: libraryBookIds });
     } else {
       this.props.setBookFiles({ items: [] });
     }
