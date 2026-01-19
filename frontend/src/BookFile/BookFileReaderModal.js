@@ -9,6 +9,7 @@ import ModalHeader from 'Components/Modal/ModalHeader';
 import { scrollDirections } from 'Helpers/Props';
 import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
 import translate from 'Utilities/String/translate';
+import { fetchUserBookProgress, saveUserBookProgress } from './userBookProgress';
 import styles from './BookFileReaderModal.css';
 
 const JSZIP_SCRIPT_PATH = '/Content/Scripts/jszip.min.js';
@@ -88,6 +89,11 @@ class BookFileReaderModal extends Component {
     this.rendition = null;
     this.epubObjectUrl = null;
     this.isReaderActive = false;
+    this.saveTimeout = null;
+    this.resumeLocation = null;
+    this.latestLocation = null;
+    this.latestProgress = null;
+    this.lastSavedLocation = null;
     this.themesRegistered = false;
     this.state = {
       loadError: false
@@ -107,13 +113,51 @@ class BookFileReaderModal extends Component {
     if (isOpening || changedSource)
     {
       this.setState({ loadError: false });
-      this.initializeReader();
+      this.resumeLocation = null;
+      this.latestLocation = null;
+      this.latestProgress = null;
+      this.lastSavedLocation = null;
+
+      const request = this.loadProgress();
+      if (request && request.always)
+      {
+        request.always(() => this.initializeReader());
+      }
+      else
+      {
+        this.initializeReader();
+      }
     }
   }
 
   componentWillUnmount() {
     this.cleanupReader();
   }
+
+  loadProgress = () => {
+    const { bookFileId } = this.props;
+
+    if (!bookFileId)
+    {
+      return null;
+    }
+
+    return fetchUserBookProgress(bookFileId)
+      .done((data) => {
+        if (!data) {
+          return;
+        }
+
+        if (data.location) {
+          this.resumeLocation = data.location;
+        }
+      })
+      .fail((xhr) => {
+        if (!xhr || xhr.status !== 404) {
+          return;
+        }
+      });
+  };
 
   getReaderThemeName = () => {
     const rawTheme = window.Readarr && window.Readarr.theme ? `${window.Readarr.theme}` : '';
@@ -185,6 +229,7 @@ class BookFileReaderModal extends Component {
         if (this.rendition.on)
         {
           this.rendition.on('displayError', this.handleReaderError);
+          this.rendition.on('relocated', this.handleRelocated);
           this.rendition.on('rendered', () => {
             if (this.isReaderActive)
             {
@@ -193,10 +238,21 @@ class BookFileReaderModal extends Component {
           });
         }
 
-        const displayPromise = this.rendition.display();
+        const displayPromise = this.resumeLocation ?
+          this.rendition.display(this.resumeLocation) :
+          this.rendition.display();
+
         if (displayPromise && displayPromise.catch)
         {
-          displayPromise.catch(this.handleReaderError);
+          displayPromise.catch(() => {
+            if (this.resumeLocation && this.rendition && this.rendition.display)
+            {
+              this.rendition.display().catch(this.handleReaderError);
+              return;
+            }
+
+            this.handleReaderError();
+          });
         }
         if (displayPromise && displayPromise.then)
         {
@@ -246,6 +302,8 @@ class BookFileReaderModal extends Component {
   cleanupReader() {
     this.isReaderActive = false;
 
+    this.flushProgress();
+
     if (this.rendition && this.rendition.destroy)
     {
       this.rendition.destroy();
@@ -270,6 +328,53 @@ class BookFileReaderModal extends Component {
       this.readerRef.current.innerHTML = '';
     }
   }
+
+  queueSave = () => {
+    if (this.saveTimeout)
+    {
+      return;
+    }
+
+    this.saveTimeout = window.setTimeout(() => {
+      this.saveTimeout = null;
+      this.saveProgress(false);
+    }, 2000);
+  };
+
+  saveProgress = (force) => {
+    const { bookFileId, mediaType } = this.props;
+    const location = this.latestLocation;
+    const progress = this.latestProgress;
+
+    if (!bookFileId || !location)
+    {
+      return;
+    }
+
+    if (!force && this.lastSavedLocation === location)
+    {
+      return;
+    }
+
+    this.lastSavedLocation = location;
+
+    saveUserBookProgress({
+      bookFileId,
+      mediaType,
+      location,
+      progress: typeof progress === 'number' ? Math.min(100, progress * 100) : null
+    });
+  };
+
+  flushProgress = () => {
+    if (this.saveTimeout)
+    {
+      window.clearTimeout(this.saveTimeout);
+      this.saveTimeout = null;
+    }
+
+    this.saveProgress(true);
+  };
 
   registerReaderThemes = () => {
     if (!this.rendition || !this.rendition.themes || this.themesRegistered)
@@ -342,6 +447,23 @@ class BookFileReaderModal extends Component {
 
     this.isReaderActive = false;
     this.setState({ loadError: true });
+  };
+
+  handleRelocated = (location) => {
+    if (!location || !location.start)
+    {
+      return;
+    }
+
+    const cfi = location.start.cfi;
+    if (!cfi)
+    {
+      return;
+    }
+
+    this.latestLocation = cfi;
+    this.latestProgress = location.start.percentage;
+    this.queueSave();
   };
 
   render() {
@@ -449,7 +571,9 @@ BookFileReaderModal.propTypes = {
   onModalClose: PropTypes.func.isRequired,
   streamUrl: PropTypes.string.isRequired,
   fileType: PropTypes.oneOf(['epub', 'pdf', 'unknown']).isRequired,
-  title: PropTypes.string
+  title: PropTypes.string,
+  bookFileId: PropTypes.number.isRequired,
+  mediaType: PropTypes.number.isRequired
 };
 
 BookFileReaderModal.defaultProps = {

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.145
+- Summary: Persist per-user reading/listening progress for ebook and audiobook playback.
+- Why: Users should be able to resume where they left off across sessions and devices.
+- Impact: New user progress API + storage, with ebook (EPUB CFI) and audiobook time saved/restored on open; version bumped for cache-busting.
+- Files: `src/NzbDrone.Core/Books/Model/UserBookProgress.cs`, `src/NzbDrone.Core/Books/Repositories/UserBookProgressRepository.cs`, `src/NzbDrone.Core/Books/Services/UserBookProgressService.cs`, `src/NzbDrone.Core/Datastore/Migration/051_add_user_book_progress.cs`, `src/NzbDrone.Core/Datastore/TableMapping.cs`, `src/Readarr.Api.V1/Books/UserBookProgressController.cs`, `src/Readarr.Api.V1/Books/UserBookProgressResource.cs`, `frontend/src/BookFile/userBookProgress.js`, `frontend/src/BookFile/BookFileAudioModal.js`, `frontend/src/BookFile/BookFileReaderModal.js`, `frontend/src/BookFile/Editor/BookFileActionsCell.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-01.log`).
+
 ## 1.3.144
 - Summary: Enforce admin-only deletes for books and authors at the API layer.
 - Why: UI hides delete actions for non-admins, but API should also forbid destructive actions.

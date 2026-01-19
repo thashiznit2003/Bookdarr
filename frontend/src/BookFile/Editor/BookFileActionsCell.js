@@ -201,6 +201,8 @@ class BookFileActionsCell extends Component {
               isOpen={isAudioModalOpen}
               onModalClose={this.onAudioModalClose}
               streamUrl={streamUrl}
+              bookFileId={id}
+              mediaType={2}
             />
         }
         {
@@ -211,6 +213,8 @@ class BookFileActionsCell extends Component {
               streamUrl={streamUrl}
               fileType={fileType}
               title={path}
+              bookFileId={id}
+              mediaType={1}
             />
         }
         {
