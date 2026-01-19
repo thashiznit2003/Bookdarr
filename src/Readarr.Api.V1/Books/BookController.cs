@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Common.Disk;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Core.AuthorStats;
+using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Books.Events;
 using NzbDrone.Core.Configuration;
@@ -26,6 +27,7 @@ using NzbDrone.Core.Validation.Paths;
 using NzbDrone.Http.REST.Attributes;
 using NzbDrone.SignalR;
 using Readarr.Http;
+using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 
 namespace Readarr.Api.V1.Books
 {
@@ -49,6 +51,7 @@ namespace Readarr.Api.V1.Books
         private readonly ISearchForNewBook _bookSearchProxy;
         private readonly IDiskProvider _diskProvider;
         private readonly IPendingReleaseService _pendingReleaseService;
+        private readonly IUserService _userService;
 
         public BookController(IAuthorService authorService,
                           IBookService bookService,
@@ -65,6 +68,7 @@ namespace Readarr.Api.V1.Books
                           IUpgradableSpecification upgradableSpecification,
                           IDiskProvider diskProvider,
                           IPendingReleaseService pendingReleaseService,
+                          IUserService userService,
                           IBroadcastSignalRMessage signalRBroadcaster,
                           QualityProfileExistsValidator<BookResource> qualityProfileExistsValidator,
                           MetadataProfileExistsValidator<BookResource> metadataProfileExistsValidator)
@@ -81,6 +85,7 @@ namespace Readarr.Api.V1.Books
             _bookSearchProxy = bookSearchProxy;
             _diskProvider = diskProvider;
             _pendingReleaseService = pendingReleaseService;
+            _userService = userService;
 
             PostValidator.RuleFor(s => s.ForeignBookId).NotEmpty();
             PostValidator.RuleFor(s => s.Author.QualityProfileId).SetValidator(qualityProfileExistsValidator);
@@ -450,9 +455,29 @@ namespace Readarr.Api.V1.Books
         }
 
         [RestDeleteById]
-        public void DeleteBook(int id, bool deleteFiles = false, bool addImportListExclusion = false)
+        public IActionResult DeleteBook(int id, bool deleteFiles = false, bool addImportListExclusion = false)
         {
+            var currentUser = GetCurrentUser();
+            if (!currentUser.IsAdmin)
+            {
+                return Forbid();
+            }
+
             _bookService.DeleteBook(id, deleteFiles, addImportListExclusion);
+
+            return NoContent();
+        }
+
+        private User GetCurrentUser()
+        {
+            var user = _userService.FindUser(HttpContext?.User);
+
+            if (user == null)
+            {
+                throw new ModelNotFoundException(typeof(User), 0);
+            }
+
+            return user;
         }
 
         [HttpPut("monitor")]

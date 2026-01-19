@@ -4,6 +4,7 @@ using System.Linq;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Common.Extensions;
+using NzbDrone.Core.Authentication;
 using NzbDrone.Core.AuthorStats;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Books.Commands;
@@ -22,6 +23,7 @@ using NzbDrone.Http.REST.Attributes;
 using NzbDrone.SignalR;
 using Readarr.Http;
 using Readarr.Http.REST;
+using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 
 namespace Readarr.Api.V1.Author
 {
@@ -47,6 +49,7 @@ namespace Readarr.Api.V1.Author
         private readonly IMapCoversToLocal _coverMapper;
         private readonly IManageCommandQueue _commandQueueManager;
         private readonly IRootFolderService _rootFolderService;
+        private readonly IUserService _userService;
 
         public AuthorController(IBroadcastSignalRMessage signalRBroadcaster,
                             IAuthorService authorService,
@@ -59,6 +62,7 @@ namespace Readarr.Api.V1.Author
                             IMapCoversToLocal coverMapper,
                             IManageCommandQueue commandQueueManager,
                             IRootFolderService rootFolderService,
+                            IUserService userService,
                             RecycleBinValidator<AuthorResource> recycleBinValidator,
                             RootFolderValidator<AuthorResource> rootFolderValidator,
                             AuthorPathValidator<AuthorResource> authorPathValidator,
@@ -81,6 +85,7 @@ namespace Readarr.Api.V1.Author
             _coverMapper = coverMapper;
             _commandQueueManager = commandQueueManager;
             _rootFolderService = rootFolderService;
+            _userService = userService;
 
             Http.Validation.RuleBuilderExtensions.ValidId(SharedValidator.RuleFor(s => s.QualityProfileId));
             Http.Validation.RuleBuilderExtensions.ValidId(SharedValidator.RuleFor(s => s.MetadataProfileId));
@@ -191,9 +196,29 @@ namespace Readarr.Api.V1.Author
         }
 
         [RestDeleteById]
-        public void DeleteAuthor(int id, bool deleteFiles = false, bool addImportListExclusion = false)
+        public IActionResult DeleteAuthor(int id, bool deleteFiles = false, bool addImportListExclusion = false)
         {
+            var currentUser = GetCurrentUser();
+            if (!currentUser.IsAdmin)
+            {
+                return Forbid();
+            }
+
             _authorService.DeleteAuthor(id, deleteFiles, addImportListExclusion);
+
+            return NoContent();
+        }
+
+        private User GetCurrentUser()
+        {
+            var user = _userService.FindUser(HttpContext?.User);
+
+            if (user == null)
+            {
+                throw new ModelNotFoundException(typeof(User), 0);
+            }
+
+            return user;
         }
 
         [HttpPost("{id:int}/refresh-image")]

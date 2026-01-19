@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Common.Extensions;
+using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Books.Commands;
 using NzbDrone.Core.Messaging.Commands;
 using Readarr.Http;
+using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 
 namespace Readarr.Api.V1.Author
 {
@@ -14,11 +16,13 @@ namespace Readarr.Api.V1.Author
     {
         private readonly IAuthorService _authorService;
         private readonly IManageCommandQueue _commandQueueManager;
+        private readonly IUserService _userService;
 
-        public AuthorEditorController(IAuthorService authorService, IManageCommandQueue commandQueueManager)
+        public AuthorEditorController(IAuthorService authorService, IManageCommandQueue commandQueueManager, IUserService userService)
         {
             _authorService = authorService;
             _commandQueueManager = commandQueueManager;
+            _userService = userService;
         }
 
         [HttpPut]
@@ -92,14 +96,32 @@ namespace Readarr.Api.V1.Author
         }
 
         [HttpDelete]
-        public object DeleteAuthor([FromBody] AuthorEditorResource resource)
+        public IActionResult DeleteAuthor([FromBody] AuthorEditorResource resource)
         {
+            var currentUser = GetCurrentUser();
+            if (!currentUser.IsAdmin)
+            {
+                return Forbid();
+            }
+
             foreach (var authorId in resource.AuthorIds)
             {
                 _authorService.DeleteAuthor(authorId, false);
             }
 
-            return new { };
+            return NoContent();
+        }
+
+        private User GetCurrentUser()
+        {
+            var user = _userService.FindUser(HttpContext?.User);
+
+            if (user == null)
+            {
+                throw new ModelNotFoundException(typeof(User), 0);
+            }
+
+            return user;
         }
     }
 }

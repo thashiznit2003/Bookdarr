@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.144
+- Summary: Enforce admin-only deletes for books and authors at the API layer.
+- Why: UI hides delete actions for non-admins, but API should also forbid destructive actions.
+- Impact: Book/author delete endpoints (single + bulk) now return 403 for non-admin users; version bumped for cache-busting.
+- Files: `src/Readarr.Api.V1/Author/AuthorController.cs`, `src/Readarr.Api.V1/Author/AuthorEditorController.cs`, `src/Readarr.Api.V1/Books/BookController.cs`, `src/Readarr.Api.V1/Books/BookEditorController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-209.log`).
+
 ## 1.3.143
 - Summary: Hide delete actions for non-admin users on books and authors.
 - Why: Non-admin accounts should only be able to remove items from their own library, not delete from the system.

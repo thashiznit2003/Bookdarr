@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Messaging.Commands;
 using Readarr.Http;
+using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 
 namespace Readarr.Api.V1.Books
 {
@@ -10,11 +12,13 @@ namespace Readarr.Api.V1.Books
     {
         private readonly IBookService _bookService;
         private readonly IManageCommandQueue _commandQueueManager;
+        private readonly IUserService _userService;
 
-        public BookEditorController(IBookService bookService, IManageCommandQueue commandQueueManager)
+        public BookEditorController(IBookService bookService, IManageCommandQueue commandQueueManager, IUserService userService)
         {
             _bookService = bookService;
             _commandQueueManager = commandQueueManager;
+            _userService = userService;
         }
 
         [HttpPut]
@@ -35,12 +39,32 @@ namespace Readarr.Api.V1.Books
         }
 
         [HttpDelete]
-        public void DeleteBook([FromBody] BookEditorResource resource)
+        public IActionResult DeleteBook([FromBody] BookEditorResource resource)
         {
+            var currentUser = GetCurrentUser();
+            if (!currentUser.IsAdmin)
+            {
+                return Forbid();
+            }
+
             foreach (var bookId in resource.BookIds)
             {
                 _bookService.DeleteBook(bookId, resource.DeleteFiles ?? false, resource.AddImportListExclusion ?? false);
             }
+
+            return NoContent();
+        }
+
+        private User GetCurrentUser()
+        {
+            var user = _userService.FindUser(HttpContext?.User);
+
+            if (user == null)
+            {
+                throw new ModelNotFoundException(typeof(User), 0);
+            }
+
+            return user;
         }
     }
 }
