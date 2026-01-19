@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.158
+- Summary: Keep the mobile header above the sidebar overlay and dim underlying content.
+- Why: The hamburger and header controls should stay accessible, and the overlay should visually cover underlying pages.
+- Impact: The header remains tappable while the menu is open, and Book Pool corner buttons no longer float above the overlay.
+- Files: `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.css`, `frontend/src/Components/Page/Header/PageHeader.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-15.log`).
+
 ## 1.3.157
 - Summary: Render the mobile sidebar in a portal overlay and tame Book Pool corner buttons.
 - Why: The sidebar needed to scroll independently from the page, and Book Pool corner actions were leaking over other views.

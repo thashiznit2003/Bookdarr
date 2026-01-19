@@ -570,8 +570,8 @@ class PageSidebar extends Component {
       };
 
       sidebarStyle = {
-        top: `${headerHeight}px`,
-        height: `calc(100% - ${headerHeight}px)`
+        top: 0,
+        height: '100%'
       };
     }
 
@@ -653,8 +653,13 @@ class PageSidebar extends Component {
         return null;
       }
 
+      const overlayStyle = {
+        top: `${headerHeight}px`,
+        height: `calc(100% - ${headerHeight}px)`
+      };
+
       const overlay = (
-        <div className={styles.mobileOverlay}>
+        <div className={styles.mobileOverlay} style={overlayStyle}>
           {sidebarContent}
         </div>
       );
