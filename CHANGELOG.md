@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.157
+- Summary: Render the mobile sidebar in a portal overlay and tame Book Pool corner buttons.
+- Why: The sidebar needed to scroll independently from the page, and Book Pool corner actions were leaking over other views.
+- Impact: The hamburger menu now mounts in a portal with proper header offset, and Book Pool corner buttons stay within their cards.
+- Files: `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.css`, `frontend/src/Components/Page/Header/PageHeader.js`, `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-14.log`).
+
 ## 1.3.156
 - Summary: Ensure the mobile sidebar opens at the top with the Library link visible.
 - Why: The hamburger menu could open scrolled past the topmost items.

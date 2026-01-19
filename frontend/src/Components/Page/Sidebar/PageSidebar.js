@@ -320,6 +320,7 @@ class PageSidebar extends Component {
     this._touchStartY = null;
     this._sidebarRef = null;
     this._scrollerRef = null;
+    this._portalNode = document.getElementById('portal-root');
     this._hiddenTransform = this.getHiddenTransform(props.isSmallScreen);
 
     this.state = {
@@ -371,6 +372,20 @@ class PageSidebar extends Component {
 
   _setScrollerRef = (ref) => {
     this._scrollerRef = ref;
+  };
+
+  getHeaderHeight = () => {
+    if (!this.props.isSmallScreen) {
+      return HEADER_HEIGHT;
+    }
+
+    const header = document.querySelector('[data-page-header="true"]');
+    if (!header) {
+      return HEADER_HEIGHT;
+    }
+
+    const rect = header.getBoundingClientRect();
+    return Math.max(HEADER_HEIGHT, Math.round(rect.height));
   };
   getHiddenTransform = (isSmallScreen) => {
     if (isSmallScreen) {
@@ -547,20 +562,22 @@ class PageSidebar extends Component {
     let sidebarStyle = {};
 
     if (isSmallScreen) {
+      const headerHeight = this.getHeaderHeight();
+
       containerStyle = {
         transition,
         transform: `translateX(${transform}px)`
       };
 
       sidebarStyle = {
-        top: 0,
-        height: '100%'
+        top: `${headerHeight}px`,
+        height: `calc(100% - ${headerHeight}px)`
       };
     }
 
     const ScrollerComponent = isSmallScreen ? Scroller : OverlayScroller;
 
-    return (
+    const sidebarContent = (
       <div
         ref={this._setSidebarRef}
         className={classNames(
@@ -630,6 +647,26 @@ class PageSidebar extends Component {
         </ScrollerComponent>
       </div>
     );
+
+    if (isSmallScreen) {
+      if (!this.props.isSidebarVisible) {
+        return null;
+      }
+
+      const overlay = (
+        <div className={styles.mobileOverlay}>
+          {sidebarContent}
+        </div>
+      );
+
+      if (this._portalNode) {
+        return ReactDOM.createPortal(overlay, this._portalNode);
+      }
+
+      return overlay;
+    }
+
+    return sidebarContent;
   }
 }
 

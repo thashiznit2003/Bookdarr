@@ -52,7 +52,7 @@ class PageHeader extends Component {
     const appVersion = window.Readarr?.version;
 
     return (
-      <div className={styles.header}>
+      <div className={styles.header} data-page-header="true">
         <div className={styles.logoContainer}>
           <Link className={styles.logoLink} to={'/'}>
             <img
