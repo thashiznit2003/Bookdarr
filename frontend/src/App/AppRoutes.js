@@ -57,7 +57,7 @@ function AppRoutes(props) {
       <Route
         exact={true}
         path="/"
-        component={AuthorIndexConnector}
+        component={BookIndexConnector}
       />
 
       {

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.140
+- Summary: Make Library default to Books and reorder the Library sidebar links.
+- Why: The Library entry currently lands on Authors, and the list order is opposite of the desired flow.
+- Impact: Clicking Library (or landing on `/`) now shows Books first, with Books above Authors in the sidebar; version bumped for cache-busting.
+- Files: `frontend/src/App/AppRoutes.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-205.log`).
+
 ## 1.3.139
 - Summary: Fix user library author details file loading for library-only book files.
 - Why: The author details page requested files with the wrong query parameter for multiple book IDs, which caused a load failure.

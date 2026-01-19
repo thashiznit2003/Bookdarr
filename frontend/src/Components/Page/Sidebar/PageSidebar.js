@@ -24,16 +24,16 @@ const links = [
   {
     iconName: icons.AUTHOR_CONTINUING,
     title: () => translate('Library'),
-    to: '/',
+    to: '/books',
     alias: '/authors',
     children: [
       {
-        title: () => translate('Authors'),
-        to: '/authors'
-      },
-      {
         title: () => translate('Books'),
         to: '/books'
+      },
+      {
+        title: () => translate('Authors'),
+        to: '/authors'
       },
       {
         title: () => translate('AddNew'),
