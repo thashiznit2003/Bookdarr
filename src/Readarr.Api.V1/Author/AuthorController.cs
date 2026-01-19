@@ -10,6 +10,7 @@ using NzbDrone.Core.Books;
 using NzbDrone.Core.Books.Commands;
 using NzbDrone.Core.Books.Events;
 using NzbDrone.Core.Datastore.Events;
+using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.MediaFiles.Events;
@@ -23,7 +24,6 @@ using NzbDrone.Http.REST.Attributes;
 using NzbDrone.SignalR;
 using Readarr.Http;
 using Readarr.Http.REST;
-using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 
 namespace Readarr.Api.V1.Author
 {

@@ -5,9 +5,9 @@ using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Books.Commands;
+using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 using NzbDrone.Core.Messaging.Commands;
 using Readarr.Http;
-using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 
 namespace Readarr.Api.V1.Author
 {

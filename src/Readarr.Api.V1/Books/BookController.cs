@@ -6,12 +6,13 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Common.Disk;
 using NzbDrone.Common.Extensions;
-using NzbDrone.Core.AuthorStats;
 using NzbDrone.Core.Authentication;
+using NzbDrone.Core.AuthorStats;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Books.Events;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Datastore.Events;
+using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 using NzbDrone.Core.DecisionEngine.Specifications;
 using NzbDrone.Core.Download;
 using NzbDrone.Core.Download.Pending;
@@ -27,7 +28,6 @@ using NzbDrone.Core.Validation.Paths;
 using NzbDrone.Http.REST.Attributes;
 using NzbDrone.SignalR;
 using Readarr.Http;
-using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 
 namespace Readarr.Api.V1.Books
 {
