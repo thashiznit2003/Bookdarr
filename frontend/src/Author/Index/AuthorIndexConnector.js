@@ -11,17 +11,20 @@ import scrollPositions from 'Store/scrollPositions';
 import createAuthorClientSideCollectionItemsSelector from 'Store/Selectors/createAuthorClientSideCollectionItemsSelector';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
+import buildLibraryAuthorStats from 'Utilities/Author/buildLibraryAuthorStats';
 import AuthorIndex from './AuthorIndex';
 
 function createMapStateToProps() {
   return createSelector(
     createAuthorClientSideCollectionItemsSelector('authorIndex'),
+    (state) => state.books.items,
     createCommandExecutingSelector(commandNames.BULK_REFRESH_AUTHOR),
     createCommandExecutingSelector(commandNames.RENAME_AUTHOR),
     createCommandExecutingSelector(commandNames.RETAG_AUTHOR),
     createDimensionsSelector(),
     (
       author,
+      books,
       isRefreshingAuthor,
       isOrganizingAuthor,
       isRetaggingAuthor,
@@ -29,6 +32,7 @@ function createMapStateToProps() {
     ) => {
       return {
         ...author,
+        authorStats: buildLibraryAuthorStats(books),
         isRefreshingAuthor,
         isOrganizingAuthor,
         isRetaggingAuthor,

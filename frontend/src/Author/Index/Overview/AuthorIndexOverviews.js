@@ -148,6 +148,7 @@ class AuthorIndexOverviews extends Component {
       items,
       sortKey,
       overviewOptions,
+      authorStats,
       showRelativeDates,
       shortDateFormat,
       longDateFormat,
@@ -189,6 +190,7 @@ class AuthorIndexOverviews extends Component {
           timeFormat={timeFormat}
           isSmallScreen={isSmallScreen}
           authorId={author.id}
+          authorStats={authorStats}
           qualityProfileId={author.qualityProfileId}
           metadataProfileId={author.metadataProfileId}
           isSelected={selectedState[author.id]}
@@ -267,6 +269,7 @@ AuthorIndexOverviews.propTypes = {
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   sortKey: PropTypes.string,
   overviewOptions: PropTypes.object.isRequired,
+  authorStats: PropTypes.object,
   scrollTop: PropTypes.number.isRequired,
   jumpToCharacter: PropTypes.string,
   scroller: PropTypes.instanceOf(Element).isRequired,

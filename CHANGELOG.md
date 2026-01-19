@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.135
+- Summary: Scope Library Author statistics to the user’s library instead of the global book pool.
+- Why: Library Authors was showing pool-wide counts for books/files/size even when the user library is a subset.
+- Impact: Library author tiles, progress bars, and footer now calculate counts from in-library books only; Book Pool authors remain unchanged; version bumped for cache-busting.
+- Files: `frontend/src/Author/Index/AuthorIndexConnector.js`, `frontend/src/Author/Index/AuthorIndexItemConnector.js`, `frontend/src/Author/Index/AuthorIndexFooterConnector.js`, `frontend/src/Author/Index/Posters/AuthorIndexPosters.js`, `frontend/src/Author/Index/Overview/AuthorIndexOverviews.js`, `frontend/src/Author/Index/Table/AuthorIndexTable.js`, `frontend/src/Utilities/Author/buildLibraryAuthorStats.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-200.log`).
+
 ## 1.3.134
 - Summary: Remove monitored/unmonitored stats from the Authors footer.
 - Why: The monitoring counts are no longer meaningful after removing status indicators.

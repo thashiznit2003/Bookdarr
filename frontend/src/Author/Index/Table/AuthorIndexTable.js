@@ -52,7 +52,8 @@ class AuthorIndexTable extends Component {
       onSelectedChange,
       isEditorActive,
       showBanners,
-      showTitle
+      showTitle,
+      authorStats
     } = this.props;
 
     const author = items[rowIndex];
@@ -68,6 +69,7 @@ class AuthorIndexTable extends Component {
           style={style}
           columns={columns}
           authorId={author.id}
+          authorStats={authorStats}
           qualityProfileId={author.qualityProfileId}
           metadataProfileId={author.metadataProfileId}
           isSelected={selectedState[author.id]}
@@ -139,6 +141,7 @@ AuthorIndexTable.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   sortKey: PropTypes.string.isRequired,
   sortDirection: PropTypes.oneOf(sortDirections.all),
+  authorStats: PropTypes.object,
   showBanners: PropTypes.bool.isRequired,
   showTitle: PropTypes.string.isRequired,
   jumpToCharacter: PropTypes.string,

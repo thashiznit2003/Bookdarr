@@ -38,12 +38,14 @@ function createMapStateToProps() {
     createAuthorMetadataProfileSelector(),
     selectShowSearchAction(),
     createExecutingCommandsSelector(),
+    (state, props) => props.authorStats,
     (
       author,
       qualityProfile,
       metadataProfile,
       showSearchAction,
-      executingCommands
+      executingCommands,
+      authorStats
     ) => {
 
       // If an author is deleted this selector may fire before the parent
@@ -71,8 +73,12 @@ function createMapStateToProps() {
 
       const latestBook = _.maxBy(author.books, (book) => book.releaseDate);
 
+      const statsOverride = authorStats?.[author.id];
+      const statistics = statsOverride ? { ...author.statistics, ...statsOverride } : author.statistics;
+
       return {
         ...author,
+        statistics,
         qualityProfile,
         metadataProfile,
         latestBook,
@@ -135,6 +141,7 @@ class AuthorIndexItemConnector extends Component {
 
 AuthorIndexItemConnector.propTypes = {
   id: PropTypes.number,
+  authorStats: PropTypes.object,
   component: PropTypes.elementType.isRequired,
   dispatchExecuteCommand: PropTypes.func.isRequired
 };

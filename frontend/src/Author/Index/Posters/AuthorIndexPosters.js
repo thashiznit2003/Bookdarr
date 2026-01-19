@@ -195,6 +195,7 @@ class AuthorIndexPosters extends Component {
       items,
       sortKey,
       posterOptions,
+      authorStats,
       showRelativeDates,
       shortDateFormat,
       timeFormat,
@@ -244,6 +245,7 @@ class AuthorIndexPosters extends Component {
           timeFormat={timeFormat}
           style={style}
           authorId={author.id}
+          authorStats={authorStats}
           qualityProfileId={author.qualityProfileId}
           metadataProfileId={author.metadataProfileId}
           isSelected={selectedState[author.id]}
@@ -325,6 +327,7 @@ AuthorIndexPosters.propTypes = {
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   sortKey: PropTypes.string,
   posterOptions: PropTypes.object.isRequired,
+  authorStats: PropTypes.object,
   jumpToCharacter: PropTypes.string,
   scrollTop: PropTypes.number.isRequired,
   scroller: PropTypes.instanceOf(Element).isRequired,
