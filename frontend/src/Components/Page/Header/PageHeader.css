@@ -56,6 +56,14 @@
   flex-grow: 1;
 }
 
+.user {
+  margin-right: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
 .donate {
   composes: link from '~Components/Link/Link.css';
 
@@ -83,6 +91,10 @@
   }
 
   .donate {
+    display: none;
+  }
+
+  .user {
     display: none;
   }
 }

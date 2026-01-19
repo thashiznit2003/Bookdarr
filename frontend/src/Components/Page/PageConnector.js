@@ -6,6 +6,7 @@ import { createSelector } from 'reselect';
 import { fetchTranslations, saveDimensions, setIsSidebarVisible } from 'Store/Actions/appActions';
 import { fetchAuthor } from 'Store/Actions/authorActions';
 import { fetchUserLibraryBooks } from 'Store/Actions/bookActions';
+import { fetchCurrentUser } from 'Store/Actions/currentUserActions';
 import { fetchCustomFilters } from 'Store/Actions/customFilterActions';
 import {
   fetchImportLists,
@@ -182,6 +183,9 @@ function createMapDispatchToProps(dispatch, props) {
     dispatchFetchAuthor() {
       dispatch(fetchAuthor());
     },
+    dispatchFetchCurrentUser() {
+      dispatch(fetchCurrentUser());
+    },
     dispatchFetchUserLibraryBooks() {
       dispatch(fetchUserLibraryBooks());
     },
@@ -242,6 +246,7 @@ class PageConnector extends Component {
   componentDidMount() {
     if (!this.props.isPopulated) {
       this.props.dispatchFetchAuthor();
+      this.props.dispatchFetchCurrentUser();
       this.props.dispatchFetchUserLibraryBooks();
       this.props.dispatchFetchCustomFilters();
       this.props.dispatchFetchTags();
@@ -310,6 +315,7 @@ class PageConnector extends Component {
       isPopulated,
       hasError,
       dispatchFetchAuthor,
+      dispatchFetchCurrentUser,
       dispatchFetchUserLibraryBooks,
       dispatchFetchTags,
       dispatchFetchLanguages,
@@ -353,6 +359,7 @@ PageConnector.propTypes = {
   hasError: PropTypes.bool.isRequired,
   isSidebarVisible: PropTypes.bool.isRequired,
   dispatchFetchAuthor: PropTypes.func.isRequired,
+  dispatchFetchCurrentUser: PropTypes.func.isRequired,
   dispatchFetchUserLibraryBooks: PropTypes.func.isRequired,
   dispatchFetchCustomFilters: PropTypes.func.isRequired,
   dispatchFetchTags: PropTypes.func.isRequired,

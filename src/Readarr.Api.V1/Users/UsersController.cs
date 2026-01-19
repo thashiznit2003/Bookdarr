@@ -35,7 +35,7 @@ namespace Readarr.Api.V1.Users
             return resources;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public ActionResult<UserResource> Get(int id)
         {
             var currentUser = GetCurrentUser();
@@ -55,7 +55,14 @@ namespace Readarr.Api.V1.Users
             return Map(user);
         }
 
-        [HttpPut("{id}")]
+        [HttpGet("me")]
+        public ActionResult<UserResource> GetMe()
+        {
+            var currentUser = GetCurrentUser();
+            return Map(currentUser);
+        }
+
+        [HttpPut("{id:int}")]
         public ActionResult<UserResource> Update(int id, UserUpdateResource resource)
         {
             if (resource == null)

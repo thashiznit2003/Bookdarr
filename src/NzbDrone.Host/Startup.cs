@@ -17,6 +17,7 @@ using NzbDrone.Common.Http;
 using NzbDrone.Common.Instrumentation;
 using NzbDrone.Common.Processes;
 using NzbDrone.Common.Serializer;
+using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Datastore;
 using NzbDrone.Core.Http;
@@ -182,7 +183,10 @@ namespace NzbDrone.Host
                 });
 
                 // Require auth on everything except those marked [AllowAnonymous]
-                options.FallbackPolicy = new AuthorizationPolicyBuilder("API")
+                options.FallbackPolicy = new AuthorizationPolicyBuilder(
+                    "API",
+                    AuthenticationType.Basic.ToString(),
+                    AuthenticationType.Forms.ToString())
                 .RequireAuthenticatedUser()
                 .Build();
             });

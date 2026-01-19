@@ -7,6 +7,7 @@ import { icons } from 'Helpers/Props';
 import AuthorSearchInputConnector from './AuthorSearchInputConnector';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import PageHeaderActionsMenuConnector from './PageHeaderActionsMenuConnector';
+import PageHeaderUserConnector from './PageHeaderUserConnector';
 import styles from './PageHeader.css';
 
 class PageHeader extends Component {
@@ -81,6 +82,7 @@ class PageHeader extends Component {
         <AuthorSearchInputConnector />
 
         <div className={styles.right}>
+          <PageHeaderUserConnector />
           <PageHeaderActionsMenuConnector />
         </div>
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.137
+- Summary: Show the logged-in username in the header and fix per-user library isolation.
+- Why: The UI had no indication of who was logged in, and user library calls were always resolving to the admin user via API-key auth.
+- Impact: Header now displays the current username, a `/users/me` endpoint exposes the active user, and API auth accepts both API key and forms/basic sessions so user library data is truly per-user while the book pool stays shared; version bumped for cache-busting.
+- Files: `frontend/src/Components/Page/Header/PageHeader.js`, `frontend/src/Components/Page/Header/PageHeaderUserConnector.js`, `frontend/src/Components/Page/Header/PageHeaderUser.js`, `frontend/src/Components/Page/Header/PageHeader.css`, `frontend/src/Components/Page/Header/PageHeader.css.d.ts`, `frontend/src/Components/Page/PageConnector.js`, `frontend/src/Store/Actions/currentUserActions.js`, `frontend/src/Store/Actions/index.js`, `src/Readarr.Api.V1/Users/UsersController.cs`, `src/NzbDrone.Host/Startup.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-202.log`).
+
 ## 1.3.136
 - Summary: Fix Add/Edit User modal text inputs so they accept typing.
 - Why: The TextInput component emits a value payload, but the Users modals were treating it like a native event.
