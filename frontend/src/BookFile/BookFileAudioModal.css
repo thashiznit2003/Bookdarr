@@ -1,7 +1,18 @@
 .player {
+  position: relative;
   width: 100%;
 }
 
 .audio {
   width: 100%;
+}
+
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 2;
 }

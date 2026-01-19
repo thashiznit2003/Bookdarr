@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.168
+- Summary: Add loading spinners for audiobook and ebook playback/open actions.
+- Why: Large files can take time to load, and users need clear feedback to avoid retries.
+- Impact: Audiobook and ebook modals now show an overlay spinner while loading, and the Open in Books button shows a spinner during handoff.
+- Files: `frontend/src/BookFile/BookFileAudioModal.js`, `frontend/src/BookFile/BookFileAudioModal.css`, `frontend/src/BookFile/BookFileReaderModal.js`, `frontend/src/BookFile/BookFileReaderModal.css`, `frontend/src/BookFile/Editor/BookFileActionsCell.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-25.log`).
+
 ## 1.3.167
 - Summary: Right-align the search filter button in the book details tab bar on mobile.
 - Why: The filter control should be separated from the tabs and aligned to the right edge.

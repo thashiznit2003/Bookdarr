@@ -8,6 +8,7 @@ import FileDetailsModal from 'BookFile/FileDetailsModal';
 import * as commandNames from 'Commands/commandNames';
 import Button from 'Components/Link/Button';
 import IconButton from 'Components/Link/IconButton';
+import SpinnerButton from 'Components/Link/SpinnerButton';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import { icons, kinds, sizes } from 'Helpers/Props';
@@ -253,14 +254,14 @@ class BookFileActionsCell extends Component {
           }
           {
             showOpenInBooks &&
-              <Button
+              <SpinnerButton
                 size={sizes.SMALL}
                 onPress={() => this.onOpenInBooksPress(fileStreamUrl)}
                 className={styles.openInBooksButton}
-                isDisabled={isShareInProgress}
+                isSpinning={isShareInProgress}
               >
                 {isShareInProgress ? translate('Opening') : translate('OpenInBooks')}
-              </Button>
+              </SpinnerButton>
           }
           {
             path && canConvertEbook &&

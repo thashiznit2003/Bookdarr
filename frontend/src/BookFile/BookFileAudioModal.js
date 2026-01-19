@@ -6,6 +6,7 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
+import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import translate from 'Utilities/String/translate';
 import { fetchUserBookProgress, saveUserBookProgress } from './userBookProgress';
 import styles from './BookFileAudioModal.css';
@@ -19,6 +20,9 @@ class BookFileAudioModal extends Component {
     this.resumePosition = null;
     this.lastSavedPosition = null;
     this.isActive = false;
+    this.state = {
+      isLoading: false
+    };
   }
 
   componentDidUpdate(prevProps) {
@@ -30,12 +34,14 @@ class BookFileAudioModal extends Component {
       this.isActive = false;
       this.flushProgress();
       this.stopAudio();
+      this.setState({ isLoading: false });
     }
 
     if (isOpening || changedSource) {
       this.resumePosition = null;
       this.lastSavedPosition = null;
       this.isActive = true;
+      this.setState({ isLoading: true });
       this.loadProgress();
     }
   }
@@ -124,6 +130,7 @@ class BookFileAudioModal extends Component {
   handleLoadedMetadata = () => {
     const audio = this.audioRef.current;
     if (!audio || this.resumePosition == null) {
+      this.setState({ isLoading: false });
       return;
     }
 
@@ -133,6 +140,19 @@ class BookFileAudioModal extends Component {
     }
 
     audio.currentTime = this.resumePosition;
+    this.setState({ isLoading: false });
+  };
+
+  handleCanPlay = () => {
+    this.setState({ isLoading: false });
+  };
+
+  handleLoadStart = () => {
+    this.setState({ isLoading: true });
+  };
+
+  handleError = () => {
+    this.setState({ isLoading: false });
   };
 
   handleTimeUpdate = () => {
@@ -192,6 +212,7 @@ class BookFileAudioModal extends Component {
       isOpen,
       streamUrl
     } = this.props;
+    const { isLoading } = this.state;
 
     return (
       <Modal
@@ -207,6 +228,13 @@ class BookFileAudioModal extends Component {
 
           <ModalBody>
             <div className={styles.player}>
+              {
+                isLoading ?
+                  <div className={styles.loadingOverlay}>
+                    <LoadingIndicator />
+                  </div> :
+                  null
+              }
               <audio
                 ref={this.audioRef}
                 className={styles.audio}
@@ -214,7 +242,10 @@ class BookFileAudioModal extends Component {
                 preload="metadata"
                 src={streamUrl}
                 key={streamUrl}
+                onLoadStart={this.handleLoadStart}
                 onLoadedMetadata={this.handleLoadedMetadata}
+                onCanPlay={this.handleCanPlay}
+                onError={this.handleError}
                 onTimeUpdate={this.handleTimeUpdate}
                 onPause={this.handlePause}
                 onEnded={this.handleEnded}

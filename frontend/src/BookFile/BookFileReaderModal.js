@@ -6,6 +6,7 @@ import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
 import ModalHeader from 'Components/Modal/ModalHeader';
+import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import { scrollDirections } from 'Helpers/Props';
 import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
 import translate from 'Utilities/String/translate';
@@ -99,6 +100,7 @@ class BookFileReaderModal extends Component {
     this.themesRegistered = false;
     this.state = {
       loadError: false,
+      isLoading: false,
       currentPage: null,
       totalPages: null,
       fontSize: this.getInitialFontSize()
@@ -117,7 +119,8 @@ class BookFileReaderModal extends Component {
 
     if (isOpening || changedSource)
     {
-      this.setState({ loadError: false });
+      const shouldLoad = this.props.fileType !== 'unknown';
+      this.setState({ loadError: false, isLoading: shouldLoad });
       this.resumeLocation = null;
       this.latestLocation = null;
       this.latestProgress = null;
@@ -283,6 +286,7 @@ class BookFileReaderModal extends Component {
             if (this.isReaderActive)
             {
               this.syncCurrentLocation();
+              this.handleReaderReady();
             }
           });
         }
@@ -357,7 +361,7 @@ class BookFileReaderModal extends Component {
     }
 
     this.themesRegistered = false;
-    this.setState({ currentPage: null, totalPages: null });
+    this.setState({ currentPage: null, totalPages: null, isLoading: false });
   }
 
   queueSave = () => {
@@ -493,7 +497,14 @@ class BookFileReaderModal extends Component {
     }
 
     this.isReaderActive = false;
-    this.setState({ loadError: true });
+    this.setState({ loadError: true, isLoading: false });
+  };
+
+  handleReaderReady = () => {
+    if (this.state.isLoading)
+    {
+      this.setState({ isLoading: false });
+    }
   };
 
   handleRelocated = (location) => {
@@ -690,10 +701,14 @@ class BookFileReaderModal extends Component {
     const showNavigation = isEpub && !isUnsupported && !loadError;
     const showPageNumbers = showNavigation && currentPage && totalPages;
     const showFontControls = isEpub && !isUnsupported && !loadError;
+    const { isLoading } = this.state;
 
     let readerContent = null;
 
     if (isUnsupported) {
+      if (isLoading) {
+        this.handleReaderReady();
+      }
       readerContent = (
         <div className={styles.loadError}>
           {translate('EbookReaderUnsupportedFormat')}
@@ -715,6 +730,7 @@ class BookFileReaderModal extends Component {
           className={styles.pdf}
           src={streamUrl}
           title={title}
+          onLoad={this.handleReaderReady}
         />
       );
     }
@@ -736,6 +752,13 @@ class BookFileReaderModal extends Component {
             scrollDirection={scrollDirections.NONE}
           >
             {readerContent}
+            {
+              isLoading && !loadError ?
+                <div className={styles.loadingOverlay}>
+                  <LoadingIndicator />
+                </div> :
+                null
+            }
             {
               showPageNumbers ?
                 (
