@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.159
+- Summary: Fix the mobile sidebar overlay crash when opening the hamburger menu.
+- Why: A block-scoped header height value was referenced outside its scope, causing a render failure on mobile.
+- Impact: Tapping the hamburger menu no longer blanks the page, and the overlay renders consistently.
+- Files: `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-16.log`).
+
 ## 1.3.158
 - Summary: Keep the mobile header above the sidebar overlay and dim underlying content.
 - Why: The hamburger and header controls should stay accessible, and the overlay should visually cover underlying pages.

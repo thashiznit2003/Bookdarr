@@ -550,6 +550,7 @@ class PageSidebar extends Component {
       transition,
       transform
     } = this.state;
+    const headerHeight = isSmallScreen ? this.getHeaderHeight() : HEADER_HEIGHT;
 
     const urlBase = window.Readarr.urlBase;
     const pathname = urlBase ? location.pathname.substr(urlBase.length) || '/' : location.pathname;
@@ -562,8 +563,6 @@ class PageSidebar extends Component {
     let sidebarStyle = {};
 
     if (isSmallScreen) {
-      const headerHeight = this.getHeaderHeight();
-
       containerStyle = {
         transition,
         transform: `translateX(${transform}px)`
