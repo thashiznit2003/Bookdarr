@@ -29,6 +29,7 @@ class BookFileAudioModal extends Component {
     if (isClosing) {
       this.isActive = false;
       this.flushProgress();
+      this.stopAudio();
     }
 
     if (isOpening || changedSource) {
@@ -42,6 +43,7 @@ class BookFileAudioModal extends Component {
   componentWillUnmount() {
     this.isActive = false;
     this.flushProgress();
+    this.stopAudio();
   }
 
   loadProgress = () => {
@@ -145,8 +147,20 @@ class BookFileAudioModal extends Component {
     this.saveProgress(true);
   };
 
+  stopAudio = () => {
+    const audio = this.audioRef.current;
+    if (!audio) {
+      return;
+    }
+
+    audio.pause();
+    audio.removeAttribute('src');
+    audio.load();
+  };
+
   handleModalClose = () => {
     this.flushProgress();
+    this.stopAudio();
     this.props.onModalClose();
   };
 
@@ -199,6 +213,7 @@ class BookFileAudioModal extends Component {
                 controls={true}
                 preload="metadata"
                 src={streamUrl}
+                key={streamUrl}
                 onLoadedMetadata={this.handleLoadedMetadata}
                 onTimeUpdate={this.handleTimeUpdate}
                 onPause={this.handlePause}

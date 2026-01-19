@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.166
+- Summary: Reset audiobook playback elements when closing or switching sources.
+- Why: Audio elements needed explicit cleanup to avoid stalled playback when switching books.
+- Impact: Closing or switching audiobooks now pauses and unloads the audio element, and new plays create a fresh instance while retaining saved progress.
+- Files: `frontend/src/BookFile/BookFileAudioModal.js`, `frontend/src/BookFile/BookFileAudioDockedPlayer.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-23.log`).
+
 ## 1.3.165
 - Summary: Replace discography filters with ebook/audiobook type filters and default search sorting to peers.
 - Why: Book search filters should group ebook/audiobook types, and peers are the most useful default sort.

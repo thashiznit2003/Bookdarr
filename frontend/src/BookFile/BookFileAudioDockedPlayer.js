@@ -28,6 +28,7 @@ class BookFileAudioDockedPlayer extends Component {
     if (isClosing) {
       this.isActive = false;
       this.flushProgress();
+      this.stopAudio();
     }
 
     if (isOpening || changedSource) {
@@ -46,6 +47,7 @@ class BookFileAudioDockedPlayer extends Component {
   componentWillUnmount() {
     this.isActive = false;
     this.flushProgress();
+    this.stopAudio();
   }
 
   applyResumeFromProps = () => {
@@ -167,13 +169,20 @@ class BookFileAudioDockedPlayer extends Component {
   };
 
   handleClose = () => {
+    this.flushProgress();
+    this.stopAudio();
+    this.props.clearAudioPlayer();
+  };
+
+  stopAudio = () => {
     const audio = this.audioRef.current;
-    if (audio) {
-      audio.pause();
+    if (!audio) {
+      return;
     }
 
-    this.flushProgress();
-    this.props.clearAudioPlayer();
+    audio.pause();
+    audio.removeAttribute('src');
+    audio.load();
   };
 
   getDisplayTitle = () => {
@@ -205,6 +214,7 @@ class BookFileAudioDockedPlayer extends Component {
           controls={true}
           preload="metadata"
           src={streamUrl}
+          key={streamUrl}
           onLoadedMetadata={this.handleLoadedMetadata}
           onTimeUpdate={this.handleTimeUpdate}
           onPause={this.handlePause}
