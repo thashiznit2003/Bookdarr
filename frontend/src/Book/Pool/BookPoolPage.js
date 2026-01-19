@@ -41,8 +41,12 @@ const STATUS_LABELS = {
 
 const FILTERS = [
   { key: 'all', label: () => translate('BookPoolFilterAll') },
-  { key: 'available', label: () => translate('BookPoolFilterAvailable') },
-  { key: 'needsManual', label: () => translate('BookPoolFilterNeedsManual') }
+  { key: 'hasAudiobook', label: () => translate('BookPoolFilterHasAudiobook') },
+  { key: 'hasEbook', label: () => translate('BookPoolFilterHasEbook') },
+  { key: 'hasBoth', label: () => translate('BookPoolFilterHasBoth') },
+  { key: 'needsAudiobook', label: () => translate('BookPoolFilterNeedsAudiobook') },
+  { key: 'needsEbook', label: () => translate('BookPoolFilterNeedsEbook') },
+  { key: 'needsBoth', label: () => translate('BookPoolFilterNeedsBoth') }
 ];
 
 const SORT_OPTIONS = [
@@ -363,11 +367,26 @@ class BookPoolPage extends Component {
       return books;
     }
 
-    const normalizedFilter = (filterKey || '').toLowerCase();
-
     return books.filter((book) => {
-      const status = (book.status || '').toLowerCase();
-      return status === normalizedFilter;
+      const hasAudiobook = Boolean(book.hasAudiobook);
+      const hasEbook = Boolean(book.hasEbook);
+
+      switch (filterKey) {
+        case 'hasAudiobook':
+          return hasAudiobook;
+        case 'hasEbook':
+          return hasEbook;
+        case 'hasBoth':
+          return hasAudiobook && hasEbook;
+        case 'needsAudiobook':
+          return !hasAudiobook;
+        case 'needsEbook':
+          return !hasEbook;
+        case 'needsBoth':
+          return !hasAudiobook && !hasEbook;
+        default:
+          return true;
+      }
     });
   };
 
@@ -392,17 +411,42 @@ class BookPoolPage extends Component {
     const { books } = this.state;
     const counts = {
       all: 0,
-      available: 0,
-      needsmanual: 0,
-      pending: 0
+      hasAudiobook: 0,
+      hasEbook: 0,
+      hasBoth: 0,
+      needsAudiobook: 0,
+      needsEbook: 0,
+      needsBoth: 0
     };
 
     books.forEach((book) => {
-      const status = (book.status || '').toLowerCase();
+      const hasAudiobook = Boolean(book.hasAudiobook);
+      const hasEbook = Boolean(book.hasEbook);
+
       counts.all += 1;
 
-      if (Object.prototype.hasOwnProperty.call(counts, status)) {
-        counts[status] += 1;
+      if (hasAudiobook) {
+        counts.hasAudiobook += 1;
+      }
+
+      if (hasEbook) {
+        counts.hasEbook += 1;
+      }
+
+      if (hasAudiobook && hasEbook) {
+        counts.hasBoth += 1;
+      }
+
+      if (!hasAudiobook) {
+        counts.needsAudiobook += 1;
+      }
+
+      if (!hasEbook) {
+        counts.needsEbook += 1;
+      }
+
+      if (!hasAudiobook && !hasEbook) {
+        counts.needsBoth += 1;
       }
     });
 
@@ -575,8 +619,7 @@ class BookPoolPage extends Component {
     const sortedBooks = this.getSortedBooks(filteredBooks);
     const statusCounts = this.getStatusCounts();
     const filterOptions = FILTERS.map((filter) => {
-      const normalizedKey = filter.key.toLowerCase();
-      const count = statusCounts[normalizedKey] ?? 0;
+      const count = statusCounts[filter.key] ?? 0;
 
       return {
         key: filter.key,

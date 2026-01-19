@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.171
+- Summary: Expand Book Pool filters to cover audiobook/ebook availability and needs.
+- Why: Book Pool filtering needed richer options than the old Ready/Needs files presets.
+- Impact: Filter menu now offers Has/Needs options for audiobook, ebook, and both; counts reflect these buckets.
+- Files: `frontend/src/Book/Pool/BookPoolPage.js`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-28.log`).
+
 ## 1.3.170
 - Summary: Align the book details filter button on desktop, add Book Pool bulk delete for admins, and add a Possible Duplicates page under File Operations.
 - Why: Desktop filter alignment regressed, admins need to delete duplicate pool items in bulk, and duplicates need a dedicated review/merge workflow.
