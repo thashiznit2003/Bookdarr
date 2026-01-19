@@ -4,6 +4,7 @@ import keyboardShortcuts, { shortcuts } from 'Components/keyboardShortcuts';
 import IconButton from 'Components/Link/IconButton';
 import Link from 'Components/Link/Link';
 import { icons } from 'Helpers/Props';
+import BookFileAudioDockedPlayer from 'BookFile/BookFileAudioDockedPlayer';
 import AuthorSearchInputConnector from './AuthorSearchInputConnector';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import PageHeaderActionsMenuConnector from './PageHeaderActionsMenuConnector';
@@ -79,7 +80,10 @@ class PageHeader extends Component {
           />
         </div>
 
-        <AuthorSearchInputConnector />
+        <div className={styles.center}>
+          <AuthorSearchInputConnector />
+          <BookFileAudioDockedPlayer />
+        </div>
 
         <div className={styles.right}>
           <PageHeaderUserConnector />

@@ -32,6 +32,15 @@
   margin-right: 14px;
 }
 
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  gap: 12px;
+  min-width: 0;
+}
+
 .appInfo {
   display: flex;
   flex-direction: column;
@@ -53,7 +62,7 @@
 .right {
   display: flex;
   justify-content: flex-end;
-  flex-grow: 1;
+  margin-left: auto;
 }
 
 .user {

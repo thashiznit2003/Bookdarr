@@ -24,6 +24,25 @@
   z-index: 200;
 }
 
+.footerContent {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.fontControls {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.fontSizeValue {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
+
 .pageIndicator {
   background: rgba(0, 0, 0, 0.6);
   border-radius: 999px;

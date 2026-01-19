@@ -11,6 +11,7 @@ import ConfirmModal from 'Components/Modal/ConfirmModal';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import { icons, kinds } from 'Helpers/Props';
 import { executeCommand } from 'Store/Actions/commandActions';
+import { clearAudioPlayer, dockAudioPlayer } from 'Store/Actions/audioPlayerActions';
 import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
 import translate from 'Utilities/String/translate';
 import styles from './BookFileActionsCell.css';
@@ -48,6 +49,7 @@ class BookFileActionsCell extends Component {
   };
 
   onPlayPress = () => {
+    this.props.clearAudioPlayer();
     this.setState({ isAudioModalOpen: true });
   };
 
@@ -66,6 +68,10 @@ class BookFileActionsCell extends Component {
 
   onAudioModalClose = () => {
     this.setState({ isAudioModalOpen: false });
+  };
+
+  onDockPress = (payload) => {
+    this.props.dockAudioPlayer(payload);
   };
 
   onReaderModalClose = () => {
@@ -100,7 +106,8 @@ class BookFileActionsCell extends Component {
       id,
       path,
       quality,
-      mediaType
+      mediaType,
+      pageCount
     } = this.props;
 
     const {
@@ -200,9 +207,11 @@ class BookFileActionsCell extends Component {
             <BookFileAudioModal
               isOpen={isAudioModalOpen}
               onModalClose={this.onAudioModalClose}
+              onDock={this.onDockPress}
               streamUrl={streamUrl}
               bookFileId={id}
               mediaType={2}
+              title={path}
             />
         }
         {
@@ -215,6 +224,7 @@ class BookFileActionsCell extends Component {
               title={path}
               bookFileId={id}
               mediaType={1}
+              pageCount={pageCount}
             />
         }
         {
@@ -248,8 +258,11 @@ BookFileActionsCell.propTypes = {
   path: PropTypes.string,
   quality: PropTypes.object,
   mediaType: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  pageCount: PropTypes.number,
   deleteBookFile: PropTypes.func.isRequired,
-  executeCommand: PropTypes.func.isRequired
+  executeCommand: PropTypes.func.isRequired,
+  clearAudioPlayer: PropTypes.func.isRequired,
+  dockAudioPlayer: PropTypes.func.isRequired
 };
 
-export default connect(null, { executeCommand })(BookFileActionsCell);
+export default connect(null, { executeCommand, clearAudioPlayer, dockAudioPlayer })(BookFileActionsCell);

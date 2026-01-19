@@ -150,6 +150,29 @@ class BookFileAudioModal extends Component {
     this.props.onModalClose();
   };
 
+  handleDockPress = () => {
+    const { onDock, streamUrl, bookFileId, mediaType, title } = this.props;
+
+    if (!onDock) {
+      return;
+    }
+
+    const audio = this.audioRef.current;
+    const resumePosition = audio && isFinite(audio.currentTime) ? audio.currentTime : 0;
+    const shouldAutoplay = audio ? !audio.paused : false;
+
+    onDock({
+      streamUrl,
+      bookFileId,
+      mediaType,
+      title,
+      resumePosition,
+      shouldAutoplay
+    });
+
+    this.handleModalClose();
+  };
+
   render() {
     const {
       isOpen,
@@ -185,6 +208,15 @@ class BookFileAudioModal extends Component {
           </ModalBody>
 
           <ModalFooter>
+            {
+              this.props.onDock ?
+                (
+                  <Button onPress={this.handleDockPress}>
+                    {translate('DockAudiobookPlayer')}
+                  </Button>
+                ) :
+                null
+            }
             <Button onPress={this.handleModalClose}>
               {translate('Close')}
             </Button>
@@ -198,9 +230,16 @@ class BookFileAudioModal extends Component {
 BookFileAudioModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onModalClose: PropTypes.func.isRequired,
+  onDock: PropTypes.func,
   streamUrl: PropTypes.string.isRequired,
   bookFileId: PropTypes.number.isRequired,
-  mediaType: PropTypes.number.isRequired
+  mediaType: PropTypes.number.isRequired,
+  title: PropTypes.string
+};
+
+BookFileAudioModal.defaultProps = {
+  onDock: null,
+  title: null
 };
 
 export default BookFileAudioModal;

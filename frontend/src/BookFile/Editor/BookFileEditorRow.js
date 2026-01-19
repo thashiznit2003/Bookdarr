@@ -18,6 +18,7 @@ function BookFileEditorRow(props) {
     quality,
     qualityCutoffNotMet,
     mediaType,
+    pageCount,
     isSelected,
     onSelectedChange,
     deleteBookFile
@@ -61,6 +62,7 @@ function BookFileEditorRow(props) {
         path={path}
         quality={quality}
         mediaType={mediaType}
+        pageCount={pageCount}
         deleteBookFile={deleteBookFile}
       />
     </TableRow>
@@ -74,6 +76,7 @@ BookFileEditorRow.propTypes = {
   quality: PropTypes.object.isRequired,
   qualityCutoffNotMet: PropTypes.bool.isRequired,
   mediaType: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  pageCount: PropTypes.number,
   dateAdded: PropTypes.string.isRequired,
   isSelected: PropTypes.bool,
   onSelectedChange: PropTypes.func.isRequired,

@@ -100,11 +100,12 @@ class BookFileReaderModal extends Component {
     this.state = {
       loadError: false,
       currentPage: null,
-      totalPages: null
+      totalPages: null,
+      fontSize: this.getInitialFontSize()
     };
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const isOpening = this.props.isOpen && !prevProps.isOpen;
     const isClosing = !this.props.isOpen && prevProps.isOpen;
     const changedSource = this.props.isOpen && this.props.streamUrl !== prevProps.streamUrl;
@@ -135,6 +136,12 @@ class BookFileReaderModal extends Component {
       {
         this.initializeReader();
       }
+    }
+
+    if (prevState && prevState.fontSize !== this.state.fontSize)
+    {
+      this.persistFontSize();
+      this.applyFontSize();
     }
   }
 
@@ -224,6 +231,7 @@ class BookFileReaderModal extends Component {
         this.book = window.ePub(epubUrl, { openAs: 'epub' });
         this.rendition = this.book.renderTo(container, { width: '100%', height: '100%' });
         this.applyReaderTheme();
+        this.applyFontSize();
         if (this.book.ready && this.book.ready.then)
         {
           this.book.ready
@@ -446,6 +454,22 @@ class BookFileReaderModal extends Component {
     const selectedTheme = themeName === 'light' ? 'bookdarr-light' : 'bookdarr-dark';
 
     this.rendition.themes.select(selectedTheme);
+    this.applyFontSize();
+  };
+
+  applyFontSize = () => {
+    if (!this.rendition || !this.rendition.themes)
+    {
+      return;
+    }
+
+    const fontSize = this.state.fontSize;
+    if (!fontSize)
+    {
+      return;
+    }
+
+    this.rendition.themes.fontSize(`${fontSize}%`);
   };
 
   onPreviousPress = () => {
@@ -486,6 +510,7 @@ class BookFileReaderModal extends Component {
 
     this.latestLocation = cfi;
     this.latestProgress = location.start.percentage;
+    this.applyReaderTheme();
     this.updatePageNumbers(location);
     this.queueSave();
   };
@@ -547,8 +572,21 @@ class BookFileReaderModal extends Component {
       return;
     }
 
+    const { pageCount } = this.props;
     const start = location && location.start ? location.start : null;
     const cfi = start && start.cfi ? start.cfi : this.latestLocation;
+
+    const percentage = start && typeof start.percentage === 'number'
+      ? start.percentage
+      : this.latestProgress;
+
+    if (pageCount && typeof percentage === 'number')
+    {
+      const currentPage = Math.max(1, Math.min(pageCount, Math.ceil(percentage * pageCount)));
+      this.setPageNumbers(currentPage, pageCount);
+      return;
+    }
+
     if (!cfi || !this.book || !this.book.locations || !this.locationsReady)
     {
       return;
@@ -573,6 +611,43 @@ class BookFileReaderModal extends Component {
     }
 
     this.setState({ currentPage, totalPages });
+  };
+
+  getInitialFontSize = () => {
+    try
+    {
+      const stored = window.localStorage.getItem('bookdarrEbookFontSize');
+      const parsed = stored ? parseInt(stored, 10) : 0;
+      return parsed > 0 ? parsed : 100;
+    }
+    catch (error)
+    {
+      return 100;
+    }
+  };
+
+  persistFontSize = () => {
+    try
+    {
+      window.localStorage.setItem('bookdarrEbookFontSize', `${this.state.fontSize}`);
+    }
+    catch (error)
+    {
+    }
+  };
+
+  onDecreaseFontSize = () => {
+    this.setState((prevState) => {
+      const nextSize = Math.max(80, prevState.fontSize - 10);
+      return { fontSize: nextSize };
+    });
+  };
+
+  onIncreaseFontSize = () => {
+    this.setState((prevState) => {
+      const nextSize = Math.min(200, prevState.fontSize + 10);
+      return { fontSize: nextSize };
+    });
   };
 
   getLocationsTotal = () => {
@@ -608,12 +683,13 @@ class BookFileReaderModal extends Component {
       title
     } = this.props;
 
-    const { loadError, currentPage, totalPages } = this.state;
+    const { loadError, currentPage, totalPages, fontSize } = this.state;
     const isEpub = fileType === 'epub';
     const isPdf = fileType === 'pdf';
     const isUnsupported = fileType === 'unknown';
     const showNavigation = isEpub && !isUnsupported && !loadError;
     const showPageNumbers = showNavigation && currentPage && totalPages;
+    const showFontControls = isEpub && !isUnsupported && !loadError;
 
     let readerContent = null;
 
@@ -699,9 +775,36 @@ class BookFileReaderModal extends Component {
           }
 
           <ModalFooter>
-            <Button onPress={onModalClose}>
-              {translate('Close')}
-            </Button>
+            <div className={styles.footerContent}>
+              <div className={styles.fontControls}>
+                {
+                  showFontControls ?
+                    (
+                      <>
+                        <Button
+                          onPress={this.onDecreaseFontSize}
+                          title={translate('EbookReaderTextSmaller')}
+                          aria-label={translate('EbookReaderTextSmaller')}
+                        >
+                          A-
+                        </Button>
+                        <span className={styles.fontSizeValue}>{fontSize}%</span>
+                        <Button
+                          onPress={this.onIncreaseFontSize}
+                          title={translate('EbookReaderTextLarger')}
+                          aria-label={translate('EbookReaderTextLarger')}
+                        >
+                          A+
+                        </Button>
+                      </>
+                    ) :
+                    null
+                }
+              </div>
+              <Button onPress={onModalClose}>
+                {translate('Close')}
+              </Button>
+            </div>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -716,11 +819,13 @@ BookFileReaderModal.propTypes = {
   fileType: PropTypes.oneOf(['epub', 'pdf', 'unknown']).isRequired,
   title: PropTypes.string,
   bookFileId: PropTypes.number.isRequired,
-  mediaType: PropTypes.number.isRequired
+  mediaType: PropTypes.number.isRequired,
+  pageCount: PropTypes.number
 };
 
 BookFileReaderModal.defaultProps = {
-  title: ''
+  title: '',
+  pageCount: 0
 };
 
 export default BookFileReaderModal;

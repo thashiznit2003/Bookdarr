@@ -1,0 +1,39 @@
+.dockedPlayer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--themeDarkColor);
+  background-color: rgba(0, 0, 0, 0.45);
+  max-width: 620px;
+}
+
+.title {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--white);
+}
+
+.audio {
+  width: 320px;
+  max-width: 360px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+@media only screen and (max-width: $breakpointSmall) {
+  .title {
+    display: none;
+  }
+
+  .audio {
+    width: 220px;
+  }
+}

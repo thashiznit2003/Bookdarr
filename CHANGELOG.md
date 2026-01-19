@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.151
+- Summary: Add a docked audiobook player, persist ebook page counts on import, and add reader font controls.
+- Why: Users need uninterrupted audio across navigation, stable page totals without re-scans, and adjustable reading comfort.
+- Impact: Audiobooks can dock in the header with full controls, ebook imports capture page counts for page indicators, and the reader footer offers text size controls.
+- Files: `frontend/src/BookFile/BookFileAudioDockedPlayer.js`, `frontend/src/BookFile/BookFileAudioDockedPlayer.css`, `frontend/src/Components/Page/Header/PageHeader.js`, `frontend/src/BookFile/BookFileAudioModal.js`, `frontend/src/Store/Actions/audioPlayerActions.js`, `src/NzbDrone.Core/MediaFiles/EbookPageCountService.cs`, `src/NzbDrone.Core/MediaFiles/EbookPageCountHandler.cs`, `frontend/src/BookFile/BookFileReaderModal.js`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-07.log`).
+
 ## 1.3.150
 - Summary: Use EPUB location length for stable page totals.
 - Why: The EPUB locations API exposes total pages via `length()`, not a `total` property, so totals were staying empty.

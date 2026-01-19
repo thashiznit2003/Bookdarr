@@ -4,6 +4,7 @@ import * as authorAvailableBooks from './authorAvailableBooksActions';
 import * as authorDetails from './authorDetailsActions';
 import * as authorHistory from './authorHistoryActions';
 import * as authorIndex from './authorIndexActions';
+import * as audioPlayer from './audioPlayerActions';
 import * as blocklist from './blocklistActions';
 import * as books from './bookActions';
 import * as bookFiles from './bookFileActions';
@@ -43,6 +44,7 @@ export default [
   authorDetails,
   authorHistory,
   authorIndex,
+  audioPlayer,
   blocklist,
   bookFiles,
   bookHistory,
