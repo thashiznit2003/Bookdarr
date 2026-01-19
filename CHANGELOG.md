@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.153
+- Summary: Add iOS “Open in Books” actions, larger touch controls, and mobile sidebar fixes.
+- Why: Mobile users need a reliable handoff to Apple Books, safer tap targets, and a stable hamburger menu.
+- Impact: EPUB/M4B files can open in Apple Books on iOS, play/read buttons are touch-sized, delete is hidden on mobile, and sidebar scrolling is stable.
+- Files: `frontend/src/BookFile/Editor/BookFileActionsCell.js`, `frontend/src/BookFile/Editor/BookFileActionsCell.css`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.css`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-10.log`).
+
 ## 1.3.152
 - Summary: Add a mobile-friendly layout for headers, toolbars, detail pages, and the reader.
 - Why: The UI needs to be usable on phone screens without impacting the desktop experience.

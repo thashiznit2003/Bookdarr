@@ -886,6 +886,7 @@
   "PreviousPage": "Previous page",
   "NextPage": "Next page",
   "EbookReader": "Ebook Reader",
+  "OpenInBooks": "Open in Books",
   "EbookReaderPageNumber": "Page {current} of {total}",
   "EbookReaderTextSmaller": "Decrease text size",
   "EbookReaderTextLarger": "Increase text size",

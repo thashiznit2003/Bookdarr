@@ -331,7 +331,6 @@ class PageSidebar extends Component {
   componentDidMount() {
     if (this.props.isSmallScreen) {
       window.addEventListener('click', this.onWindowClick, { capture: true });
-      window.addEventListener('scroll', this.onWindowScroll);
       window.addEventListener('touchstart', this.onTouchStart);
       window.addEventListener('touchmove', this.onTouchMove);
       window.addEventListener('touchend', this.onTouchEnd);
@@ -358,7 +357,6 @@ class PageSidebar extends Component {
   componentWillUnmount() {
     if (this.props.isSmallScreen) {
       window.removeEventListener('click', this.onWindowClick, { capture: true });
-      window.removeEventListener('scroll', this.onWindowScroll);
       window.removeEventListener('touchstart', this.onTouchStart);
       window.removeEventListener('touchmove', this.onTouchMove);
       window.removeEventListener('touchend', this.onTouchEnd);
@@ -429,7 +427,7 @@ class PageSidebar extends Component {
   onTouchMove = (event) => {
     const touches = event.touches;
     const currentTouchX = touches[0].pageX;
-    // const currentTouchY = touches[0].pageY;
+    const currentTouchY = touches[0].pageY;
     // const isSidebarVisible = this.props.isSidebarVisible;
 
     if (!this._touchStartX) {
@@ -451,7 +449,14 @@ class PageSidebar extends Component {
     //   return;
     // }
 
-    if (Math.abs(this._touchStartX - currentTouchX) < 40) {
+    const deltaX = currentTouchX - this._touchStartX;
+    const deltaY = currentTouchY - this._touchStartY;
+
+    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+      return;
+    }
+
+    if (Math.abs(deltaX) < 40) {
       return;
     }
 
@@ -526,8 +531,8 @@ class PageSidebar extends Component {
       };
 
       sidebarStyle = {
-        top,
-        height
+        top: 0,
+        height: '100%'
       };
     }
 

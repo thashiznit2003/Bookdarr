@@ -4,3 +4,39 @@
   width: 120px;
   white-space: nowrap;
 }
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.actionButton {
+  composes: button from '~Components/Link/IconButton.css';
+}
+
+.touchActionButton {
+  composes: button from '~Components/Link/IconButton.css';
+
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.openInBooksButton {
+  composes: button from '~Components/Link/Button.css';
+
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+@media only screen and (max-width: $breakpointSmall) {
+  .TrackActionsCell {
+    width: auto;
+  }
+
+  .actions {
+    flex-wrap: wrap;
+  }
+}

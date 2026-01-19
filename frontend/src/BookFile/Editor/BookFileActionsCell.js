@@ -6,12 +6,14 @@ import BookFileEbookConvertModal from 'BookFile/BookFileEbookConvertModal';
 import BookFileReaderModal from 'BookFile/BookFileReaderModal';
 import FileDetailsModal from 'BookFile/FileDetailsModal';
 import * as commandNames from 'Commands/commandNames';
+import Button from 'Components/Link/Button';
 import IconButton from 'Components/Link/IconButton';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
-import { icons, kinds } from 'Helpers/Props';
+import { icons, kinds, sizes } from 'Helpers/Props';
 import { executeCommand } from 'Store/Actions/commandActions';
 import { clearAudioPlayer, dockAudioPlayer } from 'Store/Actions/audioPlayerActions';
+import { isIOS, isMobile } from 'Utilities/browser';
 import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
 import translate from 'Utilities/String/translate';
 import styles from './BookFileActionsCell.css';
@@ -97,6 +99,17 @@ class BookFileActionsCell extends Component {
     this.setState({ isConvertModalOpen: false });
   };
 
+  onOpenInBooksPress = (fileStreamUrl) => {
+    if (!fileStreamUrl) {
+      return;
+    }
+
+    const opened = window.open(fileStreamUrl, '_blank', 'noopener');
+    if (!opened) {
+      window.location.href = fileStreamUrl;
+    }
+  };
+
   //
   // Render
 
@@ -134,11 +147,23 @@ class BookFileActionsCell extends Component {
     const isKepub = pathLower.endsWith('.kepub');
     const isPdf = pathLower.endsWith('.pdf');
     const isEbookByExtension = isEpub || isPdf;
+    const isM4b = pathLower.endsWith('.m4b');
 
     const isAudio = isAudioByExtension || isAudioByMediaType || isAudioByQuality;
     const isEbook = isEbookByExtension || isEbookByMediaType || isEbookByQuality;
     const canConvertEbook = isEbook && !isEpub && !isKepub;
     let fileType = 'unknown';
+
+    const apiKey = window.Readarr && window.Readarr.apiKey;
+    const apiKeyQuery = apiKey ? `?apikey=${encodeURIComponent(apiKey)}` : '';
+    const fileStreamUrl = path ?
+      getPathWithUrlBase(`/api/v1/bookfile/${id}/stream${apiKeyQuery}`) :
+      null;
+
+    const isMobileDevice = isMobile();
+    const showOpenInBooks = isMobileDevice && isIOS() && fileStreamUrl && (isEpub || isM4b);
+    const actionClassName = isMobileDevice ? styles.touchActionButton : styles.actionButton;
+    const iconSize = isMobileDevice ? 16 : 12;
 
     if (isPdf)
     {
@@ -149,52 +174,68 @@ class BookFileActionsCell extends Component {
       fileType = 'epub';
     }
 
-    const apiKey = window.Readarr && window.Readarr.apiKey;
-    const apiKeyQuery = apiKey ? `?apikey=${encodeURIComponent(apiKey)}` : '';
-    const streamUrl = path ?
-      getPathWithUrlBase(`/api/v1/bookfile/${id}/stream${apiKeyQuery}`) :
-      null;
-
     return (
       <TableRowCell className={styles.TrackActionsCell}>
-        {
-          path &&
-            <IconButton
-              name={icons.INFO}
-              onPress={this.onDetailsPress}
-            />
-        }
-        {
-          path && isAudio &&
-            <IconButton
-              name={icons.PLAY}
-              title={translate('PlayAudio')}
-              onPress={this.onPlayPress}
-            />
-        }
-        {
-          path && isEbook &&
-            <IconButton
-              name={icons.BOOK_OPEN}
-              title={translate('ReadEbook')}
-              onPress={this.onReaderPress}
-            />
-        }
-        {
-          path && canConvertEbook &&
-            <IconButton
-              name={icons.UPDATE}
-              title={translate('ConvertEbook')}
-              onPress={this.onConvertPress}
-            />
-        }
-        {
-          path &&
-            <IconButton
-              name={icons.DELETE}
-              onPress={this.onDeleteFilePress}
-            />
-        }
+        <div className={styles.actions}>
+          {
+            path &&
+              <IconButton
+                name={icons.INFO}
+                className={actionClassName}
+                size={iconSize}
+                onPress={this.onDetailsPress}
+              />
+          }
+          {
+            path && isAudio &&
+              <IconButton
+                name={icons.PLAY}
+                className={actionClassName}
+                size={iconSize}
+                title={translate('PlayAudio')}
+                onPress={this.onPlayPress}
+              />
+          }
+          {
+            path && isEbook &&
+              <IconButton
+                name={icons.BOOK_OPEN}
+                className={actionClassName}
+                size={iconSize}
+                title={translate('ReadEbook')}
+                onPress={this.onReaderPress}
+              />
+          }
+          {
+            showOpenInBooks &&
+              <Button
+                size={sizes.SMALL}
+                onPress={() => this.onOpenInBooksPress(fileStreamUrl)}
+                className={styles.openInBooksButton}
+              >
+                {translate('OpenInBooks')}
+              </Button>
+          }
+          {
+            path && canConvertEbook &&
+              <IconButton
+                name={icons.UPDATE}
+                className={actionClassName}
+                size={iconSize}
+                title={translate('ConvertEbook')}
+                onPress={this.onConvertPress}
+              />
+          }
+          {
+            path && !isMobileDevice &&
+              <IconButton
+                name={icons.DELETE}
+                className={actionClassName}
+                size={iconSize}
+                onPress={this.onDeleteFilePress}
+              />
+          }
+        </div>
 
         <FileDetailsModal
           isOpen={isDetailsModalOpen}
@@ -203,23 +244,23 @@ class BookFileActionsCell extends Component {
         />
 
         {
-          streamUrl && isAudio &&
+          fileStreamUrl && isAudio &&
             <BookFileAudioModal
               isOpen={isAudioModalOpen}
               onModalClose={this.onAudioModalClose}
               onDock={this.onDockPress}
-              streamUrl={streamUrl}
+              streamUrl={fileStreamUrl}
               bookFileId={id}
               mediaType={2}
               title={path}
             />
         }
         {
-          streamUrl && isEbook &&
+          fileStreamUrl && isEbook &&
             <BookFileReaderModal
               isOpen={isReaderModalOpen}
               onModalClose={this.onReaderModalClose}
-              streamUrl={streamUrl}
+              streamUrl={fileStreamUrl}
               fileType={fileType}
               title={path}
               bookFileId={id}
