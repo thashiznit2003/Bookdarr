@@ -12,6 +12,8 @@ import createRemoveItemHandler from './Creators/createRemoveItemHandler';
 import createClearReducer from './Creators/Reducers/createClearReducer';
 import createSetClientSideCollectionSortReducer from './Creators/Reducers/createSetClientSideCollectionSortReducer';
 import createSetTableOptionReducer from './Creators/Reducers/createSetTableOptionReducer';
+import getSectionState from 'Utilities/State/getSectionState';
+import updateSectionState from 'Utilities/State/updateSectionState';
 
 //
 // Variables
@@ -98,6 +100,7 @@ export const UPDATE_BOOK_FILES = 'bookFiles/updateBookFiles';
 export const SET_BOOK_FILES_SORT = 'bookFiles/setBookFilesSort';
 export const SET_BOOK_FILES_TABLE_OPTION = 'bookFiles/setBookFilesTableOption';
 export const CLEAR_BOOK_FILES = 'bookFiles/clearBookFiles';
+export const SET_BOOK_FILES = 'bookFiles/setBookFiles';
 
 //
 // Action Creators
@@ -109,6 +112,7 @@ export const updateBookFiles = createThunk(UPDATE_BOOK_FILES);
 export const setBookFilesSort = createAction(SET_BOOK_FILES_SORT);
 export const setBookFilesTableOption = createAction(SET_BOOK_FILES_TABLE_OPTION);
 export const clearBookFiles = createAction(CLEAR_BOOK_FILES);
+export const setBookFiles = createAction(SET_BOOK_FILES);
 
 //
 // Helpers
@@ -269,6 +273,22 @@ export const reducers = createHandleActions({
     isPopulated: false,
     error: null,
     items: []
-  })
+  }),
+
+  [SET_BOOK_FILES]: (state, { payload }) => {
+    const newState = getSectionState(state, section);
+    const items = payload.items || [];
+
+    newState.items = items;
+    newState.itemMap = items.reduce((acc, item, index) => {
+      acc[item.id] = index;
+      return acc;
+    }, {});
+    newState.isFetching = false;
+    newState.isPopulated = true;
+    newState.error = null;
+
+    return updateSectionState(state, section, newState);
+  }
 
 }, defaultState, section);

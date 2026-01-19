@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.138
+- Summary: Scope Library Author details files to the user’s library books only.
+- Why: Author details was listing pooled files for books the user had not added.
+- Impact: Book files on the author details page now show only files tied to the user’s library books for that author; version bumped for cache-busting.
+- Files: `frontend/src/Author/Details/AuthorDetailsConnector.js`, `frontend/src/Store/Actions/bookFileActions.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-203.log`).
+
 ## 1.3.137
 - Summary: Show the logged-in username in the header and fix per-user library isolation.
 - Why: The UI had no indication of who was logged in, and user library calls were always resolving to the admin user via API-key auth.

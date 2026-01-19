@@ -7,7 +7,7 @@ import { createSelector } from 'reselect';
 import * as commandNames from 'Commands/commandNames';
 import { refreshAuthorImage } from 'Store/Actions/authorActions';
 import { fetchAuthorAvailableBooks } from 'Store/Actions/authorAvailableBooksActions';
-import { clearBookFiles, fetchBookFiles } from 'Store/Actions/bookFileActions';
+import { clearBookFiles, fetchBookFiles, setBookFiles } from 'Store/Actions/bookFileActions';
 import { saveBookEditor } from 'Store/Actions/bookIndexActions';
 import { executeCommand } from 'Store/Actions/commandActions';
 import { clearQueueDetails, fetchQueueDetails } from 'Store/Actions/queueActions';
@@ -104,13 +104,14 @@ function createMapStateToProps() {
   return createSelector(
     (state, { titleSlug }) => titleSlug,
     selectBooks,
+    (state) => state.books.items,
     selectSeries,
     selectBookFiles,
     createAllAuthorSelector(),
     createCommandsSelector(),
     createDimensionsSelector(),
     (state) => state.authorAvailableBooks,
-    (titleSlug, books, series, bookFiles, allAuthors, commands, dimensions, authorAvailableBooks) => {
+    (titleSlug, books, allBooks, series, bookFiles, allAuthors, commands, dimensions, authorAvailableBooks) => {
       const sortedAuthor = _.orderBy(allAuthors, 'sortNameLastFirst');
       const authorIndex = _.findIndex(sortedAuthor, { titleSlug });
       const author = sortedAuthor[authorIndex];
@@ -176,6 +177,10 @@ function createMapStateToProps() {
         return acc;
       }, []);
 
+      const libraryBookIds = allBooks
+        .filter((book) => book.authorId === author.id && book.inMyLibrary)
+        .map((book) => book.id);
+
       return {
         ...author,
         alternateTitles,
@@ -199,6 +204,7 @@ function createMapStateToProps() {
         hasSeries,
         series: seriesItems,
         hasBookFiles,
+        libraryBookIds,
         previousAuthor,
         nextAuthor,
         isSmallScreen: dimensions.isSmallScreen
@@ -213,6 +219,7 @@ const mapDispatchToProps = {
   saveBookEditor,
   fetchBookFiles,
   clearBookFiles,
+  setBookFiles,
   refreshAuthorImage,
   fetchQueueDetails,
   clearQueueDetails,
@@ -241,7 +248,8 @@ class AuthorDetailsConnector extends Component {
       isAuthorRefreshing,
       allAuthorRefreshing,
       isRenamingFiles,
-      isRenamingAuthor
+      isRenamingAuthor,
+      libraryBookIds
     } = this.props;
 
     if (
@@ -260,6 +268,10 @@ class AuthorDetailsConnector extends Component {
       this.unpopulate();
       this.populate();
     }
+
+    if (!_.isEqual(prevProps.libraryBookIds, libraryBookIds)) {
+      this.populate();
+    }
   }
 
   componentWillUnmount() {
@@ -272,9 +284,14 @@ class AuthorDetailsConnector extends Component {
 
   populate = () => {
     const authorId = this.props.id;
+    const libraryBookIds = this.props.libraryBookIds || [];
 
     this.props.fetchSeries({ authorId });
-    this.props.fetchBookFiles({ authorId });
+    if (libraryBookIds.length) {
+      this.props.fetchBookFiles({ bookIds: libraryBookIds });
+    } else {
+      this.props.setBookFiles({ items: [] });
+    }
     this.props.fetchQueueDetails({ authorId });
   };
 
@@ -349,11 +366,13 @@ AuthorDetailsConnector.propTypes = {
   isRefreshing: PropTypes.bool.isRequired,
   isRenamingFiles: PropTypes.bool.isRequired,
   isRenamingAuthor: PropTypes.bool.isRequired,
+  libraryBookIds: PropTypes.arrayOf(PropTypes.number),
   fetchSeries: PropTypes.func.isRequired,
   clearSeries: PropTypes.func.isRequired,
   saveBookEditor: PropTypes.func.isRequired,
   fetchBookFiles: PropTypes.func.isRequired,
   clearBookFiles: PropTypes.func.isRequired,
+  setBookFiles: PropTypes.func.isRequired,
   fetchQueueDetails: PropTypes.func.isRequired,
   clearQueueDetails: PropTypes.func.isRequired,
   clearReleases: PropTypes.func.isRequired,
