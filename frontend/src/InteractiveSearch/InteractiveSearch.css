@@ -13,3 +13,9 @@
   padding-bottom: 10px;
   padding-left: 2em;
 }
+
+@media only screen and (max-width: $breakpointSmall) {
+  .table thead {
+    display: none;
+  }
+}

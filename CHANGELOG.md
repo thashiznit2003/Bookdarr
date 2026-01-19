@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.164
+- Summary: Simplify the mobile interactive search table and tighten title presentation.
+- Why: Mobile search results needed fewer columns, readable sizing, and better touch scrolling for long titles.
+- Impact: Mobile hides nonessential columns and headers, keeps title/peers/download close with rejections at the far right, and allows horizontal scroll within the title cell only.
+- Files: `frontend/src/InteractiveSearch/InteractiveSearch.js`, `frontend/src/InteractiveSearch/InteractiveSearchConnector.js`, `frontend/src/InteractiveSearch/InteractiveSearchRow.js`, `frontend/src/InteractiveSearch/InteractiveSearchRow.css`, `frontend/src/InteractiveSearch/InteractiveSearch.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-21.log`).
+
 ## 1.3.163
 - Summary: Stop the book details tab bar from horizontally scrolling on mobile.
 - Why: The Files/Search tab row should stay static between the header and the file list.

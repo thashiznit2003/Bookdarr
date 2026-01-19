@@ -138,25 +138,32 @@ class InteractiveSearchRow extends Component {
       isGrabbed,
       longDateFormat,
       timeFormat,
-      grabError
+      grabError,
+      isSmallScreen
     } = this.props;
 
     return (
       <TableRow>
-        <TableRowCell className={styles.protocol}>
-          <ProtocolLabel
-            protocol={protocol}
-          />
-        </TableRowCell>
+        {
+          !isSmallScreen &&
+            <TableRowCell className={styles.protocol}>
+              <ProtocolLabel
+                protocol={protocol}
+              />
+            </TableRowCell>
+        }
 
-        <TableRowCell
-          className={styles.age}
-          title={formatDateTime(publishDate, longDateFormat, timeFormat, { includeSeconds: true })}
-        >
-          {formatAge(age, ageHours, ageMinutes)}
-        </TableRowCell>
+        {
+          !isSmallScreen &&
+            <TableRowCell
+              className={styles.age}
+              title={formatDateTime(publishDate, longDateFormat, timeFormat, { includeSeconds: true })}
+            >
+              {formatAge(age, ageHours, ageMinutes)}
+            </TableRowCell>
+        }
 
-        <TableRowCell>
+        <TableRowCell className={styles.titleCell}>
           <div className={styles.titleContent}>
             <Link to={infoUrl}>
               {title}
@@ -164,13 +171,19 @@ class InteractiveSearchRow extends Component {
           </div>
         </TableRowCell>
 
-        <TableRowCell className={styles.indexer}>
-          {indexer}
-        </TableRowCell>
+        {
+          !isSmallScreen &&
+            <TableRowCell className={styles.indexer}>
+              {indexer}
+            </TableRowCell>
+        }
 
-        <TableRowCell className={styles.size}>
-          {formatBytes(size)}
-        </TableRowCell>
+        {
+          !isSmallScreen &&
+            <TableRowCell className={styles.size}>
+              {formatBytes(size)}
+            </TableRowCell>
+        }
 
         <TableRowCell className={styles.peers}>
           {
@@ -182,33 +195,54 @@ class InteractiveSearchRow extends Component {
           }
         </TableRowCell>
 
-        <TableRowCell className={styles.quality}>
-          <BookQuality
-            quality={quality}
-            isLikely={qualityIsHeuristic}
-            showRevision={true}
-          />
-        </TableRowCell>
+        {
+          !isSmallScreen &&
+            <TableRowCell className={styles.quality}>
+              <BookQuality
+                quality={quality}
+                isLikely={qualityIsHeuristic}
+                showRevision={true}
+              />
+            </TableRowCell>
+        }
 
-        <TableRowCell className={styles.customFormatScore}>
-          <Tooltip
-            anchor={
-              formatCustomFormatScore(customFormatScore, customFormats.length)
-            }
-            tooltip={<BookFormats formats={customFormats} />}
-            position={tooltipPositions.LEFT}
-          />
-        </TableRowCell>
+        {
+          !isSmallScreen &&
+            <TableRowCell className={styles.customFormatScore}>
+              <Tooltip
+                anchor={
+                  formatCustomFormatScore(customFormatScore, customFormats.length)
+                }
+                tooltip={<BookFormats formats={customFormats} />}
+                position={tooltipPositions.LEFT}
+              />
+            </TableRowCell>
+        }
 
-        <TableRowCell className={styles.indexerFlags}>
-          {indexerFlags ? (
-            <Popover
-              anchor={<Icon name={icons.FLAG} kind={kinds.PRIMARY} />}
-              title={translate('IndexerFlags')}
-              body={<IndexerFlags indexerFlags={indexerFlags} />}
-              position={tooltipPositions.LEFT}
+        {
+          !isSmallScreen &&
+            <TableRowCell className={styles.indexerFlags}>
+              {indexerFlags ? (
+                <Popover
+                  anchor={<Icon name={icons.FLAG} kind={kinds.PRIMARY} />}
+                  title={translate('IndexerFlags')}
+                  body={<IndexerFlags indexerFlags={indexerFlags} />}
+                  position={tooltipPositions.LEFT}
+                />
+              ) : null}
+            </TableRowCell>
+        }
+
+        <TableRowCell className={styles.download}>
+          {
+            <SpinnerIconButton
+              name={getDownloadIcon(isGrabbing, isGrabbed, grabError)}
+              kind={getDownloadKind(isGrabbed, grabError, downloadAllowed)}
+              title={getDownloadTooltip(isGrabbing, isGrabbed, grabError)}
+              isSpinning={isGrabbing}
+              onPress={downloadAllowed ? this.onGrabPress : this.onConfirmGrabPress}
             />
-          ) : null}
+          }
         </TableRowCell>
 
         <TableRowCell className={styles.rejected}>
@@ -237,18 +271,6 @@ class InteractiveSearchRow extends Component {
                 }
                 position={tooltipPositions.LEFT}
               />
-          }
-        </TableRowCell>
-
-        <TableRowCell className={styles.download}>
-          {
-            <SpinnerIconButton
-              name={getDownloadIcon(isGrabbing, isGrabbed, grabError)}
-              kind={getDownloadKind(isGrabbed, grabError, downloadAllowed)}
-              title={getDownloadTooltip(isGrabbing, isGrabbed, grabError)}
-              isSpinning={isGrabbing}
-              onPress={downloadAllowed ? this.onGrabPress : this.onConfirmGrabPress}
-            />
           }
         </TableRowCell>
 
@@ -293,6 +315,7 @@ InteractiveSearchRow.propTypes = {
   longDateFormat: PropTypes.string.isRequired,
   timeFormat: PropTypes.string.isRequired,
   searchPayload: PropTypes.object.isRequired,
+  isSmallScreen: PropTypes.bool.isRequired,
   onGrabPress: PropTypes.func.isRequired
 };
 

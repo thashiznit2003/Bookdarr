@@ -8,6 +8,10 @@
   width: 80px;
 }
 
+.titleCell {
+  composes: cell;
+}
+
 .titleContent {
   display: flex;
   align-items: center;
@@ -58,4 +62,29 @@
   composes: cell;
 
   width: 75px;
+}
+
+@media only screen and (max-width: $breakpointSmall) {
+  .titleCell {
+    width: 25ch;
+    max-width: 25ch;
+  }
+
+  .titleContent {
+    font-size: 12px;
+    white-space: nowrap;
+    word-break: normal;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .titleContent a {
+    display: inline-block;
+  }
+
+  .peers,
+  .download,
+  .rejected {
+    width: 55px;
+  }
 }

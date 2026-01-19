@@ -10,48 +10,41 @@ import translate from 'Utilities/String/translate';
 import InteractiveSearchRow from './InteractiveSearchRow';
 import styles from './InteractiveSearch.css';
 
-const columns = [
+const baseColumns = [
   {
     name: 'protocol',
     label: 'Source',
-    isSortable: true,
-    isVisible: true
+    isSortable: true
   },
   {
     name: 'age',
     label: 'Age',
-    isSortable: true,
-    isVisible: true
+    isSortable: true
   },
   {
     name: 'title',
     label: 'Title',
-    isSortable: true,
-    isVisible: true
+    isSortable: true
   },
   {
     name: 'indexer',
     label: 'Indexer',
-    isSortable: true,
-    isVisible: true
+    isSortable: true
   },
   {
     name: 'size',
     label: 'Size',
-    isSortable: true,
-    isVisible: true
+    isSortable: true
   },
   {
     name: 'peers',
     label: 'Peers',
-    isSortable: true,
-    isVisible: true
+    isSortable: true
   },
   {
     name: 'qualityWeight',
     label: 'Quality',
-    isSortable: true,
-    isVisible: true
+    isSortable: true
   },
   {
     name: 'customFormatScore',
@@ -59,8 +52,7 @@ const columns = [
       name: icons.SCORE,
       title: () => translate('CustomFormatScore')
     }),
-    isSortable: true,
-    isVisible: true
+    isSortable: true
   },
   {
     name: 'indexerFlags',
@@ -68,8 +60,13 @@ const columns = [
       name: icons.FLAG,
       title: () => translate('IndexerFlags')
     }),
+    isSortable: true
+  },
+  {
+    name: 'releaseWeight',
+    label: React.createElement(Icon, { name: icons.DOWNLOAD }),
     isSortable: true,
-    isVisible: true
+    fixedSortDirection: sortDirections.ASCENDING
   },
   {
     name: 'rejections',
@@ -78,17 +75,19 @@ const columns = [
       title: 'Rejections'
     }),
     isSortable: true,
-    fixedSortDirection: sortDirections.ASCENDING,
-    isVisible: true
-  },
-  {
-    name: 'releaseWeight',
-    label: React.createElement(Icon, { name: icons.DOWNLOAD }),
-    isSortable: true,
-    fixedSortDirection: sortDirections.ASCENDING,
-    isVisible: true
+    fixedSortDirection: sortDirections.ASCENDING
   }
 ];
+
+function getColumns(isSmallScreen) {
+  const visibleColumns = isSmallScreen ?
+    ['title', 'peers', 'releaseWeight', 'rejections'] :
+    baseColumns.map((column) => column.name);
+
+  return baseColumns
+    .filter((column) => visibleColumns.includes(column.name))
+    .map((column) => ({ ...column, isVisible: true }));
+}
 
 function InteractiveSearch(props) {
   const {
@@ -102,9 +101,12 @@ function InteractiveSearch(props) {
     sortDirection,
     longDateFormat,
     timeFormat,
+    isSmallScreen,
     onSortPress,
     onGrabPress
   } = props;
+
+  const columns = getColumns(isSmallScreen);
 
   return (
     <div>
@@ -139,10 +141,12 @@ function InteractiveSearch(props) {
       {
         isPopulated && !!items.length ?
           <Table
+            className={styles.table}
             columns={columns}
             sortKey={sortKey}
             sortDirection={sortDirection}
             onSortPress={onSortPress}
+            horizontalScroll={!isSmallScreen}
           >
             <TableBody>
               {
@@ -154,6 +158,7 @@ function InteractiveSearch(props) {
                       searchPayload={searchPayload}
                       longDateFormat={longDateFormat}
                       timeFormat={timeFormat}
+                      isSmallScreen={isSmallScreen}
                       onGrabPress={onGrabPress}
                     />
                   );
@@ -187,6 +192,7 @@ InteractiveSearch.propTypes = {
   type: PropTypes.string.isRequired,
   longDateFormat: PropTypes.string.isRequired,
   timeFormat: PropTypes.string.isRequired,
+  isSmallScreen: PropTypes.bool.isRequired,
   onSortPress: PropTypes.func.isRequired,
   onGrabPress: PropTypes.func.isRequired
 };

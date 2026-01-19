@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import * as releaseActions from 'Store/Actions/releaseActions';
 import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
+import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import InteractiveSearch from './InteractiveSearch';
 
@@ -12,11 +13,13 @@ function createMapStateToProps(appState, { type }) {
     (state) => state.releases.items.length,
     createClientSideCollectionSelector('releases', `releases.${type}`),
     createUISettingsSelector(),
-    (totalReleasesCount, releases, uiSettings) => {
+    createDimensionsSelector(),
+    (totalReleasesCount, releases, uiSettings, dimensions) => {
       return {
         totalReleasesCount,
         longDateFormat: uiSettings.longDateFormat,
         timeFormat: uiSettings.timeFormat,
+        isSmallScreen: dimensions.isSmallScreen,
         ...releases
       };
     }
