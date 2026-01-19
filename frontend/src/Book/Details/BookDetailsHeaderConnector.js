@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { toggleBooksMonitored } from 'Store/Actions/bookActions';
 import createBookSelector from 'Store/Selectors/createBookSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
@@ -34,21 +33,7 @@ function createMapStateToProps() {
   );
 }
 
-const mapDispatchToProps = {
-  toggleBooksMonitored
-};
-
 class BookDetailsHeaderConnector extends Component {
-
-  //
-  // Listeners
-
-  onMonitorTogglePress = (monitored) => {
-    this.props.toggleBooksMonitored({
-      bookIds: [this.props.bookId],
-      monitored
-    });
-  };
 
   //
   // Render
@@ -57,7 +42,6 @@ class BookDetailsHeaderConnector extends Component {
     return (
       <BookDetailsHeader
         {...this.props}
-        onMonitorTogglePress={this.onMonitorTogglePress}
       />
     );
   }
@@ -65,8 +49,7 @@ class BookDetailsHeaderConnector extends Component {
 
 BookDetailsHeaderConnector.propTypes = {
   bookId: PropTypes.number,
-  toggleBooksMonitored: PropTypes.func.isRequired,
   author: PropTypes.object
 };
 
-export default connect(createMapStateToProps, mapDispatchToProps)(BookDetailsHeaderConnector);
+export default connect(createMapStateToProps)(BookDetailsHeaderConnector);

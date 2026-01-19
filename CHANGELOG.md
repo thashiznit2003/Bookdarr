@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.161
+- Summary: Streamline mobile book details and file lists while removing monitoring and quality controls.
+- Why: Mobile views needed compact metadata, clearer file actions, and no accidental navigation or delete controls.
+- Impact: Book details no longer swipe between titles, mobile headers show the cover with smaller text and a full overview modal, file rows collapse to Ebook/Audiobook labels with fewer columns, and the Select Quality control is removed (delete actions hidden on mobile).
+- Files: `frontend/src/Book/Details/BookDetails.js`, `frontend/src/Book/Details/BookDetailsHeader.js`, `frontend/src/Book/Details/BookDetailsHeader.css`, `frontend/src/Book/Details/BookDetailsHeaderConnector.js`, `frontend/src/BookFile/Editor/BookFileEditorRow.js`, `frontend/src/BookFile/Editor/BookFileEditorRow.css`, `frontend/src/BookFile/Editor/BookFileEditorTableContent.js`, `frontend/src/BookFile/Editor/BookFileEditorTableContent.css`, `frontend/src/BookFile/Editor/BookFileEditorTableContentConnector.js`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-18.log`).
+
 ## 1.3.160
 - Summary: Offset the mobile sidebar list below the header so top items stay visible.
 - Why: The header overlay was covering the first menu entries, hiding Library/Books/Authors.

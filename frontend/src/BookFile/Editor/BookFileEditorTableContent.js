@@ -1,8 +1,6 @@
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Alert from 'Components/Alert';
-import SelectInput from 'Components/Form/SelectInput';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
@@ -77,16 +75,6 @@ class BookFileEditorTableContent extends Component {
     this.setState({ isConfirmDeleteModalOpen: false });
   };
 
-  onQualityChange = ({ value }) => {
-    const selectedIds = this.getSelectedIds();
-
-    if (!selectedIds.length) {
-      return;
-    }
-
-    this.props.onQualityChange(selectedIds, parseInt(value));
-  };
-
   //
   // Render
 
@@ -97,8 +85,8 @@ class BookFileEditorTableContent extends Component {
       isPopulated,
       error,
       items,
-      qualities,
       dispatchDeleteBookFile,
+      isSmallScreen,
       ...otherProps
     } = this.props;
 
@@ -108,15 +96,6 @@ class BookFileEditorTableContent extends Component {
       selectedState,
       isConfirmDeleteModalOpen
     } = this.state;
-
-    const qualityOptions = _.reduceRight(qualities, (acc, quality) => {
-      acc.push({
-        key: quality.id,
-        value: quality.name
-      });
-
-      return acc;
-    }, [{ key: 'selectQuality', value: translate('SelectQuality'), isDisabled: true }]);
 
     const hasSelectedFiles = this.getSelectedIds().length > 0;
 
@@ -161,6 +140,7 @@ class BookFileEditorTableContent extends Component {
                         <BookFileEditorRow
                           key={item.id}
                           isSelected={selectedState[item.id]}
+                          isSmallScreen={isSmallScreen}
                           {...item}
                           onSelectedChange={this.onSelectedChange}
                           deleteBookFile={dispatchDeleteBookFile}
@@ -186,15 +166,6 @@ class BookFileEditorTableContent extends Component {
                 {translate('Delete')}
               </SpinnerButton>
 
-              <div className={styles.selectInput}>
-                <SelectInput
-                  name="quality"
-                  value="selectQuality"
-                  values={qualityOptions}
-                  isDisabled={!hasSelectedFiles}
-                  onChange={this.onQualityChange}
-                />
-              </div>
             </div>
           ) : null
         }
@@ -219,9 +190,8 @@ BookFileEditorTableContent.propTypes = {
   isPopulated: PropTypes.bool.isRequired,
   error: PropTypes.object,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
-  qualities: PropTypes.arrayOf(PropTypes.object).isRequired,
+  isSmallScreen: PropTypes.bool.isRequired,
   onDeletePress: PropTypes.func.isRequired,
-  onQualityChange: PropTypes.func.isRequired,
   dispatchDeleteBookFile: PropTypes.func.isRequired
 };
 

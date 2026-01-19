@@ -59,20 +59,6 @@
   line-height: 60px;
 }
 
-.toggleMonitoredContainer {
-  align-self: center;
-}
-
-.monitorToggleButton {
-  composes: toggleButton from '~Components/MonitorToggleButton.css';
-
-  width: 40px;
-
-  &:hover {
-    color: var(--iconButtonHoverLightColor);
-  }
-}
-
 .alternateTitlesIconContainer {
   align-self: flex-end;
   margin-left: 20px;
@@ -102,7 +88,6 @@
 }
 
 .sizeOnDisk,
-.qualityProfileName,
 .links,
 .tags {
   margin-left: 8px;
@@ -110,11 +95,50 @@
   font-size: 17px;
 }
 
+.detailsLabels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
 .overview {
   flex: 1 1 auto;
   margin-top: 4px;
   min-height: 0;
   font-size: $intermediateFontSize;
+}
+
+.overviewMore {
+  margin-left: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--linkColor);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.overviewModalContent {
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+}
+
+.overviewModalTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.overviewModalBody {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  line-height: 1.5;
+}
+
+.overviewModalFooter {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 @media only screen and (max-width: $breakpointSmall) {
@@ -129,6 +153,12 @@
     gap: 10px;
   }
 
+  .cover {
+    height: 180px;
+    margin-right: 0;
+    align-self: center;
+  }
+
   .titleRow {
     flex-direction: column;
     align-items: flex-start;
@@ -137,8 +167,8 @@
 
   .title {
     font-weight: 300;
-    font-size: 30px;
-    line-height: 30px;
+    font-size: 24px;
+    line-height: 28px;
   }
 
   .details {
@@ -146,15 +176,12 @@
   }
 
   .sizeOnDisk,
-  .qualityProfileName,
   .links,
   .tags {
     font-size: 14px;
   }
-}
 
-@media only screen and (max-width: $breakpointLarge) {
-  .cover {
+  .detailsLabels {
     display: none;
   }
 }

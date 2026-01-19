@@ -5,7 +5,6 @@ import CombineAudiobookModal from 'Book/Combine/CombineAudiobookModal';
 import DeleteBookModal from 'Book/Delete/DeleteBookModal';
 import EditBookModalConnector from 'Book/Edit/EditBookModalConnector';
 import BookFileEditorTable from 'BookFile/Editor/BookFileEditorTable';
-import IconButton from 'Components/Link/IconButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
@@ -13,7 +12,6 @@ import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
-import SwipeHeaderConnector from 'Components/Swipe/SwipeHeaderConnector';
 import { icons } from 'Helpers/Props';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
@@ -193,8 +191,6 @@ class BookDetails extends Component {
       bookFiles,
       hasBookFiles,
       author,
-      previousBook,
-      nextBook,
       isSearching,
       isCombining,
       combineCommand,
@@ -341,58 +337,11 @@ class BookDetails extends Component {
         </PageToolbar>
 
         <PageContentBody innerClassName={styles.innerContentBody}>
-          <SwipeHeaderConnector
-            className={styles.header}
-            nextLink={`/book/${nextBook.titleSlug}`}
-            nextComponent={(width) => (
-              <BookDetailsHeaderConnector
-                bookId={nextBook.id}
-                author={author}
-                width={width}
-              />
-            )}
-            prevLink={`/book/${previousBook.titleSlug}`}
-            prevComponent={(width) => (
-              <BookDetailsHeaderConnector
-                bookId={previousBook.id}
-                author={author}
-                width={width}
-              />
-            )}
-            currentComponent={(width) => (
-              <BookDetailsHeaderConnector
-                bookId={id}
-                author={author}
-                width={width}
-              />
-            )}
-          >
-            <div className={styles.bookNavigationButtons}>
-              <IconButton
-                className={styles.bookNavigationButton}
-                name={icons.ARROW_LEFT}
-                size={30}
-                title={translate('GoToInterp', [previousBook.title])}
-                to={`/book/${previousBook.titleSlug}`}
-              />
-
-              <IconButton
-                className={styles.bookUpButton}
-                name={icons.ARROW_UP}
-                size={30}
-                title={translate('GoToInterp', [author.authorName])}
-                to={`/author/${author.titleSlug}`}
-              />
-
-              <IconButton
-                className={styles.bookNavigationButton}
-                name={icons.ARROW_RIGHT}
-                size={30}
-                title={translate('GoToInterp', [nextBook.title])}
-                to={`/book/${nextBook.titleSlug}`}
-              />
-            </div>
-          </SwipeHeaderConnector>
+          <BookDetailsHeaderConnector
+            bookId={id}
+            author={author}
+            width="100%"
+          />
 
           <div className={styles.contentContainer}>
             {

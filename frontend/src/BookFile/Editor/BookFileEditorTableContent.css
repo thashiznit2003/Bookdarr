@@ -16,12 +16,14 @@
   margin: 10px;
 }
 
-.selectInput {
-  margin-left: 10px;
-}
-
 .blankpad {
   padding-top: 10px;
   padding-bottom: 10px;
   padding-left: 2em;
+}
+
+@media only screen and (max-width: $breakpointSmall) {
+  .actions {
+    display: none;
+  }
 }

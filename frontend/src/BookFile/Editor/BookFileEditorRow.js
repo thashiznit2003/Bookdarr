@@ -6,8 +6,28 @@ import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableSelectCell from 'Components/Table/Cells/TableSelectCell';
 import TableRow from 'Components/Table/TableRow';
 import formatBytes from 'Utilities/Number/formatBytes';
+import translate from 'Utilities/String/translate';
 import BookFileActionsCell from './BookFileActionsCell';
 import styles from './BookFileEditorRow.css';
+
+function getMediaLabel(path, mediaType) {
+  const mediaTypeValue = typeof mediaType === 'string' ? mediaType.toLowerCase().trim() : mediaType;
+  const pathLower = (path || '').toLowerCase();
+  const isAudioByMediaType = mediaTypeValue === 'audiobook' || mediaTypeValue === 2 || mediaTypeValue === '2';
+  const isEbookByMediaType = mediaTypeValue === 'ebook' || mediaTypeValue === 1 || mediaTypeValue === '1';
+  const isAudioByExtension = ['.mp3', '.m4b', '.m4a', '.aac', '.flac'].some((value) => pathLower.endsWith(value));
+  const isEbookByExtension = ['.epub', '.pdf', '.mobi', '.azw', '.azw3', '.kepub'].some((value) => pathLower.endsWith(value));
+
+  if (isAudioByMediaType || isAudioByExtension) {
+    return translate('Audiobook');
+  }
+
+  if (isEbookByMediaType || isEbookByExtension) {
+    return translate('Ebook');
+  }
+
+  return path;
+}
 
 function BookFileEditorRow(props) {
   const {
@@ -20,9 +40,12 @@ function BookFileEditorRow(props) {
     mediaType,
     pageCount,
     isSelected,
+    isSmallScreen,
     onSelectedChange,
     deleteBookFile
   } = props;
+
+  const displayPath = isSmallScreen ? getMediaLabel(path, mediaType) : path;
 
   return (
     <TableRow>
@@ -34,7 +57,7 @@ function BookFileEditorRow(props) {
       <TableRowCell
         className={styles.path}
       >
-        {path}
+        {displayPath}
       </TableRowCell>
 
       <TableRowCell
@@ -79,6 +102,7 @@ BookFileEditorRow.propTypes = {
   pageCount: PropTypes.number,
   dateAdded: PropTypes.string.isRequired,
   isSelected: PropTypes.bool,
+  isSmallScreen: PropTypes.bool.isRequired,
   onSelectedChange: PropTypes.func.isRequired,
   deleteBookFile: PropTypes.func.isRequired
 };

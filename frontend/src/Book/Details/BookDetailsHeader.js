@@ -7,14 +7,16 @@ import BookCover from 'Book/BookCover';
 import HeartRating from 'Components/HeartRating';
 import Icon from 'Components/Icon';
 import Label from 'Components/Label';
+import Button from 'Components/Link/Button';
 import Marquee from 'Components/Marquee';
 import Measure from 'Components/Measure';
-import MonitorToggleButton from 'Components/MonitorToggleButton';
+import Modal from 'Components/Modal/Modal';
 import Tooltip from 'Components/Tooltip/Tooltip';
 import { icons, kinds, sizes, tooltipPositions } from 'Helpers/Props';
 import fonts from 'Styles/Variables/fonts';
 import formatBytes from 'Utilities/Number/formatBytes';
 import stripHtml from 'Utilities/String/stripHtml';
+import translate from 'Utilities/String/translate';
 import BookDetailsLinks from './BookDetailsLinks';
 import styles from './BookDetailsHeader.css';
 
@@ -35,7 +37,8 @@ class BookDetailsHeader extends Component {
 
     this.state = {
       overviewHeight: 0,
-      titleWidth: 0
+      titleWidth: 0,
+      isOverviewModalOpen: false
     };
   }
 
@@ -50,6 +53,14 @@ class BookDetailsHeader extends Component {
     this.setState({ titleWidth: width });
   };
 
+  onOverviewMorePress = () => {
+    this.setState({ isOverviewModalOpen: true });
+  };
+
+  onOverviewModalClose = () => {
+    this.setState({ isOverviewModalOpen: false });
+  };
+
   //
   // Render
 
@@ -62,25 +73,25 @@ class BookDetailsHeader extends Component {
       pageCount,
       overview,
       statistics = {},
-      monitored,
       releaseDate,
       ratings,
       images,
       links,
-      isSaving,
       shortDateFormat,
       author,
-      isSmallScreen,
-      onMonitorTogglePress
+      isSmallScreen
     } = this.props;
 
     const {
       overviewHeight,
-      titleWidth
+      titleWidth,
+      isOverviewModalOpen
     } = this.state;
 
     const fanartUrl = getFanartUrl(author.images);
     const marqueeWidth = titleWidth - (isSmallScreen ? 85 : 160);
+    const overviewText = stripHtml(overview || '');
+    const showOverviewMore = isSmallScreen && overviewText;
 
     return (
       <div className={styles.header} style={{ width }}>
@@ -109,16 +120,6 @@ class BookDetailsHeader extends Component {
               onMeasure={this.onTitleMeasure}
             >
               <div className={styles.titleContainer}>
-                <div className={styles.toggleMonitoredContainer}>
-                  <MonitorToggleButton
-                    className={styles.monitorToggleButton}
-                    monitored={monitored}
-                    isSaving={isSaving}
-                    size={isSmallScreen ? 30 : 40}
-                    onPress={onMonitorTogglePress}
-                  />
-                </div>
-
                 <div className={styles.title} style={{ width: marqueeWidth }}>
                   <Marquee text={title} />
                 </div>
@@ -188,20 +189,6 @@ class BookDetailsHeader extends Component {
                 </span>
               </Label>
 
-              <Label
-                className={styles.detailsLabel}
-                size={sizes.LARGE}
-              >
-                <Icon
-                  name={monitored ? icons.MONITORED : icons.UNMONITORED}
-                  size={17}
-                />
-
-                <span className={styles.qualityProfileName}>
-                  {monitored ? 'Monitored' : 'Unmonitored'}
-                </span>
-              </Label>
-
               <Tooltip
                 anchor={
                   <Label
@@ -235,9 +222,45 @@ class BookDetailsHeader extends Component {
             >
               <TextTruncate
                 line={Math.floor(overviewHeight / (defaultFontSize * lineHeight))}
-                text={stripHtml(overview)}
+                truncateText="…"
+                text={overviewText}
+                textTruncateChild={
+                  showOverviewMore ? (
+                    <button
+                      type="button"
+                      className={styles.overviewMore}
+                      onClick={this.onOverviewMorePress}
+                    >
+                      {translate('More')}
+                    </button>
+                  ) : null
+                }
               />
             </Measure>
+
+            {
+              isSmallScreen && overviewText ?
+                <Modal
+                  isOpen={isOverviewModalOpen}
+                  size={sizes.MEDIUM}
+                  onModalClose={this.onOverviewModalClose}
+                >
+                  <div className={styles.overviewModalContent}>
+                    <div className={styles.overviewModalTitle}>
+                      {translate('Overview')}
+                    </div>
+                    <div className={styles.overviewModalBody}>
+                      {overviewText}
+                    </div>
+                    <div className={styles.overviewModalFooter}>
+                      <Button onPress={this.onOverviewModalClose}>
+                        {translate('Ok')}
+                      </Button>
+                    </div>
+                  </div>
+                </Modal> :
+                null
+            }
           </div>
         </div>
       </div>
@@ -247,7 +270,7 @@ class BookDetailsHeader extends Component {
 
 BookDetailsHeader.propTypes = {
   id: PropTypes.number.isRequired,
-  width: PropTypes.number.isRequired,
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   titleSlug: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   seriesTitle: PropTypes.string.isRequired,
@@ -258,16 +281,13 @@ BookDetailsHeader.propTypes = {
   ratings: PropTypes.object.isRequired,
   images: PropTypes.arrayOf(PropTypes.object).isRequired,
   links: PropTypes.arrayOf(PropTypes.object).isRequired,
-  monitored: PropTypes.bool.isRequired,
   shortDateFormat: PropTypes.string.isRequired,
-  isSaving: PropTypes.bool.isRequired,
   author: PropTypes.object,
-  isSmallScreen: PropTypes.bool.isRequired,
-  onMonitorTogglePress: PropTypes.func.isRequired
+  isSmallScreen: PropTypes.bool.isRequired
 };
 
 BookDetailsHeader.defaultProps = {
-  isSaving: false
+  width: '100%'
 };
 
 export default BookDetailsHeader;

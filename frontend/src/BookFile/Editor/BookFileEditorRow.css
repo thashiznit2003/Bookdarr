@@ -18,3 +18,16 @@
 
   width: 120px;
 }
+
+@media only screen and (max-width: $breakpointSmall) {
+  .path {
+    flex: 1 1 auto;
+    font-family: var(--defaultFontFamily);
+  }
+
+  .size,
+  .quality,
+  .dateAdded {
+    display: none;
+  }
+}
