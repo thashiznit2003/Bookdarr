@@ -515,14 +515,21 @@ class BookFileReaderModal extends Component {
 
     this.isGeneratingLocations = true;
     const generation = this.book.locations.generate(1600);
+    const finalize = () => {
+      if (this.book && this.book.locations && this.book.locations.total > 0)
+      {
+        this.locationsReady = true;
+        this.syncCurrentLocation();
+      }
+
+      this.isGeneratingLocations = false;
+    };
 
     if (generation && generation.then)
     {
       generation
         .then(() => {
-          this.locationsReady = true;
-          this.isGeneratingLocations = false;
-          this.updatePageNumbers();
+          finalize();
         })
         .catch(() => {
           this.isGeneratingLocations = false;
@@ -530,7 +537,7 @@ class BookFileReaderModal extends Component {
     }
     else
     {
-      this.isGeneratingLocations = false;
+      finalize();
     }
   };
 

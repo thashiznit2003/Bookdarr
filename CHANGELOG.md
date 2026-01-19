@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.149
+- Summary: Stabilize EPUB page numbers by finalizing location generation.
+- Why: Page numbers still failed to render if location generation returned no promise or total pages stayed unset.
+- Impact: Location generation now always finalizes and syncs current location once totals are available, so page counts appear reliably.
+- Files: `frontend/src/BookFile/BookFileReaderModal.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-05.log`).
+
 ## 1.3.148
 - Summary: Ensure EPUB page numbers appear after initial render.
 - Why: Page numbers were missing because the reader didn't re-check the current location after display.
