@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.154
+- Summary: Improve iOS “Open in Books” sharing and stabilize the mobile sidebar swipe handling.
+- Why: iOS share sheets can hand off directly to Apple Books, and swipe gestures were interfering with menu scrolling.
+- Impact: The Books button now uses Web Share when available (with fallback), and sidebar scrolling no longer gets hijacked by swipe-to-close.
+- Files: `frontend/src/BookFile/Editor/BookFileActionsCell.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-11.log`).
+
 ## 1.3.153
 - Summary: Add iOS “Open in Books” actions, larger touch controls, and mobile sidebar fixes.
 - Why: Mobile users need a reliable handoff to Apple Books, safer tap targets, and a stable hamburger menu.

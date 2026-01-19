@@ -414,7 +414,7 @@ class PageSidebar extends Component {
       return;
     }
 
-    if (isSidebarVisible && (touchStartX > 210 || touchStartX < 180)) {
+    if (isSidebarVisible) {
       return;
     } else if (!isSidebarVisible && touchStartX > 40) {
       return;
@@ -428,7 +428,7 @@ class PageSidebar extends Component {
     const touches = event.touches;
     const currentTouchX = touches[0].pageX;
     const currentTouchY = touches[0].pageY;
-    // const isSidebarVisible = this.props.isSidebarVisible;
+    const isSidebarVisible = this.props.isSidebarVisible;
 
     if (!this._touchStartX) {
       return;
@@ -448,6 +448,10 @@ class PageSidebar extends Component {
 
     //   return;
     // }
+
+    if (isSidebarVisible) {
+      return;
+    }
 
     const deltaX = currentTouchX - this._touchStartX;
     const deltaY = currentTouchY - this._touchStartY;
@@ -473,6 +477,12 @@ class PageSidebar extends Component {
     const currentTouch = touches[0].pageX;
 
     if (!this._touchStartX) {
+      return;
+    }
+
+    if (this.props.isSidebarVisible) {
+      this._touchStartX = null;
+      this._touchStartY = null;
       return;
     }
 

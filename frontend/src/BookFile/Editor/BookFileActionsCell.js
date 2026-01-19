@@ -31,7 +31,8 @@ class BookFileActionsCell extends Component {
       isConfirmDeleteModalOpen: false,
       isAudioModalOpen: false,
       isReaderModalOpen: false,
-      isConvertModalOpen: false
+      isConvertModalOpen: false,
+      isShareInProgress: false
     };
   }
 
@@ -99,15 +100,58 @@ class BookFileActionsCell extends Component {
     this.setState({ isConvertModalOpen: false });
   };
 
-  onOpenInBooksPress = (fileStreamUrl) => {
+  onOpenInBooksPress = async (fileStreamUrl) => {
     if (!fileStreamUrl) {
       return;
+    }
+
+    const fileName = this.getShareFileName();
+    const canShare = navigator.share && navigator.canShare;
+    const shouldFetchFile = canShare && typeof navigator.canShare === 'function';
+
+    if (navigator.share && !this.state.isShareInProgress) {
+      this.setState({ isShareInProgress: true });
+
+      try {
+        if (shouldFetchFile) {
+          const response = await fetch(fileStreamUrl, { credentials: 'same-origin' });
+          if (!response.ok) {
+            throw new Error('Failed to fetch file');
+          }
+
+          const blob = await response.blob();
+          const file = new File([blob], fileName, { type: blob.type || undefined });
+
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ title: fileName, files: [file] });
+            return;
+          }
+        }
+
+        await navigator.share({ title: fileName, url: fileStreamUrl });
+        return;
+      } catch (error) {
+        // Fall back to opening the file directly.
+      } finally {
+        this.setState({ isShareInProgress: false });
+      }
     }
 
     const opened = window.open(fileStreamUrl, '_blank', 'noopener');
     if (!opened) {
       window.location.href = fileStreamUrl;
     }
+  };
+
+  getShareFileName = () => {
+    const { path } = this.props;
+
+    if (!path) {
+      return 'Bookdarr';
+    }
+
+    const parts = path.split(/[/\\\\]/);
+    return parts[parts.length - 1] || 'Bookdarr';
   };
 
   //
@@ -128,7 +172,8 @@ class BookFileActionsCell extends Component {
       isConfirmDeleteModalOpen,
       isAudioModalOpen,
       isReaderModalOpen,
-      isConvertModalOpen
+      isConvertModalOpen,
+      isShareInProgress
     } = this.state;
 
     const pathLower = path ? path.toLowerCase() : '';
@@ -212,8 +257,9 @@ class BookFileActionsCell extends Component {
                 size={sizes.SMALL}
                 onPress={() => this.onOpenInBooksPress(fileStreamUrl)}
                 className={styles.openInBooksButton}
+                isDisabled={isShareInProgress}
               >
-                {translate('OpenInBooks')}
+                {isShareInProgress ? translate('Opening') : translate('OpenInBooks')}
               </Button>
           }
           {
