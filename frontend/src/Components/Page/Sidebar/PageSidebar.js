@@ -569,8 +569,8 @@ class PageSidebar extends Component {
       };
 
       sidebarStyle = {
-        top: 0,
-        height: '100%'
+        top: `${headerHeight}px`,
+        height: `calc(100% - ${headerHeight}px)`
       };
     }
 

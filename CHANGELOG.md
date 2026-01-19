@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.160
+- Summary: Offset the mobile sidebar list below the header so top items stay visible.
+- Why: The header overlay was covering the first menu entries, hiding Library/Books/Authors.
+- Impact: The sidebar now starts beneath the header and the full menu is accessible on mobile.
+- Files: `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-17.log`).
+
 ## 1.3.159
 - Summary: Fix the mobile sidebar overlay crash when opening the hamburger menu.
 - Why: A block-scoped header height value was referenced outside its scope, causing a render failure on mobile.
