@@ -33,7 +33,12 @@
     display: none;
   }
 
+  .dockedPlayer {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .audio {
-    width: 220px;
+    width: 100%;
   }
 }

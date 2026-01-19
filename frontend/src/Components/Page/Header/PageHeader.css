@@ -87,12 +87,23 @@
 }
 
 @media only screen and (max-width: $breakpointSmall) {
+  .header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
   .logoContainer {
     flex: 0 0 60px;
+    padding-left: 0;
+    order: 1;
   }
 
   .sidebarToggleContainer {
     display: flex;
+    margin-right: 0;
+    order: 0;
   }
 
   .appInfo {
@@ -105,5 +116,17 @@
 
   .user {
     display: none;
+  }
+
+  .right {
+    order: 2;
+  }
+
+  .center {
+    order: 3;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
   }
 }

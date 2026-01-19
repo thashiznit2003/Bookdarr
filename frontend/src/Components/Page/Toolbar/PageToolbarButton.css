@@ -33,3 +33,15 @@
   line-height: calc($extraSmallFontSize + 1px);
   white-space: nowrap;
 }
+
+@media only screen and (max-width: $breakpointSmall) {
+  .toolbarButton {
+    margin: 4px 6px;
+    min-width: 0;
+    padding: 6px 4px;
+  }
+
+  .labelContainer {
+    height: 28px;
+  }
+}

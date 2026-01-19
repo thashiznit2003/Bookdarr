@@ -11,6 +11,12 @@
 
 @media only screen and (max-width: $breakpointSmall) {
   .toolbar {
-    padding: 0 10px;
+    padding: 8px 10px;
+    height: auto;
+    min-height: $toolbarHeight;
+    flex-wrap: wrap;
+    gap: 8px;
+    line-height: normal;
+    overflow-x: auto;
   }
 }

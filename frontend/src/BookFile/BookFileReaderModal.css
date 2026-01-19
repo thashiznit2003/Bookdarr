@@ -105,3 +105,39 @@
   height: 100%;
   width: 100%;
 }
+
+@media only screen and (max-width: $breakpointSmall) {
+  .body {
+    height: 100%;
+  }
+
+  .readerNavButton {
+    height: 44px;
+    width: 44px;
+    font-size: 22px;
+  }
+
+  .readerNavButton[data-reader-nav="prev"] {
+    left: 10px;
+  }
+
+  .readerNavButton[data-reader-nav="next"] {
+    right: 10px;
+  }
+
+  .pageIndicator {
+    right: 12px;
+    bottom: 10px;
+    font-size: 11px;
+  }
+
+  .footerContent {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .fontControls {
+    justify-content: center;
+  }
+}

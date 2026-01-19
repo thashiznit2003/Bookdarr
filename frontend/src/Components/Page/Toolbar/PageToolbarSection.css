@@ -31,6 +31,17 @@
 }
 
 @media only screen and (max-width: $breakpointSmall) {
+  .sectionContainer {
+    flex: 1 1 100%;
+    overflow: visible;
+  }
+
+  .section {
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-start;
+  }
+
   .overflowMenuButton {
     &::after {
       margin-left: 0;

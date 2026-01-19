@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.152
+- Summary: Add a mobile-friendly layout for headers, toolbars, detail pages, and the reader.
+- Why: The UI needs to be usable on phone screens without impacting the desktop experience.
+- Impact: The header/search and toolbars wrap for touch, detail headers/tabs stack cleanly, and the reader controls scale for mobile Safari.
+- Files: `frontend/src/Components/Page/Header/PageHeader.css`, `frontend/src/Components/Page/Header/AuthorSearchInput.css`, `frontend/src/Components/Page/Toolbar/PageToolbar.css`, `frontend/src/Components/Page/Toolbar/PageToolbarSection.css`, `frontend/src/Components/Page/Toolbar/PageToolbarButton.css`, `frontend/src/Book/Details/BookDetailsHeader.css`, `frontend/src/Author/Details/AuthorDetailsHeader.css`, `frontend/src/Book/Details/BookDetails.css`, `frontend/src/Author/Details/AuthorDetails.css`, `frontend/src/BookFile/BookFileReaderModal.css`, `frontend/src/BookFile/BookFileAudioDockedPlayer.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-09.log`).
+
 ## 1.3.151
 - Summary: Add a docked audiobook player, persist ebook page counts on import, and add reader font controls.
 - Why: Users need uninterrupted audio across navigation, stable page totals without re-scans, and adjustable reading comfort.

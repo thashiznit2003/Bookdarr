@@ -73,7 +73,7 @@
 
 @media only screen and (max-width: $breakpointSmall) {
   .contentContainer {
-    padding: 20px 0;
+    padding: 16px 0;
   }
 
   .authorNavigationButtons {
@@ -86,5 +86,15 @@
 
   .authorNavigationButton {
     display: none;
+  }
+
+  .tabList {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .tab {
+    padding: 10px 14px;
+    flex: 0 0 auto;
   }
 }
