@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.167
+- Summary: Right-align the search filter button in the book details tab bar on mobile.
+- Why: The filter control should be separated from the tabs and aligned to the right edge.
+- Impact: The filter button now sits on the far right of the Files/Search row without centering.
+- Files: `frontend/src/Book/Details/BookDetails.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-24.log`).
+
 ## 1.3.166
 - Summary: Reset audiobook playback elements when closing or switching sources.
 - Why: Audio elements needed explicit cleanup to avoid stalled playback when switching books.

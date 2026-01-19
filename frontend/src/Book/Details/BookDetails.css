@@ -32,7 +32,9 @@
 }
 
 .filterIcon {
-  float: right;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
 }
 
 .bookNavigationButtons {
@@ -82,7 +84,7 @@
 
   .tabList {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     overflow-x: visible;
   }
 
