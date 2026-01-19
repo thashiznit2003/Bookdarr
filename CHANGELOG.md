@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.155
+- Summary: Make the mobile sidebar a full-screen overlay and remove swipe handling.
+- Why: The sidebar needed to scroll independently and remain stable on mobile.
+- Impact: The hamburger menu opens full-screen with reliable scrolling, and swipe gestures no longer hijack scroll.
+- Files: `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-12.log`).
+
 ## 1.3.154
 - Summary: Improve iOS “Open in Books” sharing and stabilize the mobile sidebar swipe handling.
 - Why: iOS share sheets can hand off directly to Apple Books, and swipe gestures were interfering with menu scrolling.

@@ -319,22 +319,19 @@ class PageSidebar extends Component {
     this._touchStartX = null;
     this._touchStartY = null;
     this._sidebarRef = null;
+    this._hiddenTransform = this.getHiddenTransform(props.isSmallScreen);
 
     this.state = {
       top: dimensions.headerHeight,
       height: `${window.innerHeight - HEADER_HEIGHT}px`,
       transition: null,
-      transform: props.isSidebarVisible ? 0 : SIDEBAR_WIDTH * -1
+      transform: props.isSidebarVisible ? 0 : this._hiddenTransform
     };
   }
 
   componentDidMount() {
     if (this.props.isSmallScreen) {
       window.addEventListener('click', this.onWindowClick, { capture: true });
-      window.addEventListener('touchstart', this.onTouchStart);
-      window.addEventListener('touchmove', this.onTouchMove);
-      window.addEventListener('touchend', this.onTouchEnd);
-      window.addEventListener('touchcancel', this.onTouchCancel);
     }
   }
 
@@ -357,10 +354,6 @@ class PageSidebar extends Component {
   componentWillUnmount() {
     if (this.props.isSmallScreen) {
       window.removeEventListener('click', this.onWindowClick, { capture: true });
-      window.removeEventListener('touchstart', this.onTouchStart);
-      window.removeEventListener('touchmove', this.onTouchMove);
-      window.removeEventListener('touchend', this.onTouchEnd);
-      window.removeEventListener('touchcancel', this.onTouchCancel);
     }
   }
 
@@ -371,10 +364,21 @@ class PageSidebar extends Component {
     this._sidebarRef = ref;
   };
 
+  getHiddenTransform = (isSmallScreen) => {
+    if (isSmallScreen) {
+      return window.innerWidth * -1;
+    }
+
+    return SIDEBAR_WIDTH * -1;
+  };
+
   _setSidebarTransform(isSidebarVisible, transition, callback) {
+    const hiddenTransform = this.getHiddenTransform(this.props.isSmallScreen);
+    this._hiddenTransform = hiddenTransform;
+
     this.setState({
       transition,
-      transform: isSidebarVisible ? 0 : SIDEBAR_WIDTH * -1
+      transform: isSidebarVisible ? 0 : hiddenTransform
     }, callback);
   }
 
@@ -464,7 +468,7 @@ class PageSidebar extends Component {
       return;
     }
 
-    const transform = Math.min(currentTouchX - SIDEBAR_WIDTH, 0);
+    const transform = Math.min(currentTouchX + this._hiddenTransform, 0);
 
     this.setState({
       transition: 'none',
