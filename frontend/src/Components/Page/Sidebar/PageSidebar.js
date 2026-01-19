@@ -319,6 +319,7 @@ class PageSidebar extends Component {
     this._touchStartX = null;
     this._touchStartY = null;
     this._sidebarRef = null;
+    this._scrollerRef = null;
     this._hiddenTransform = this.getHiddenTransform(props.isSmallScreen);
 
     this.state = {
@@ -344,6 +345,10 @@ class PageSidebar extends Component {
 
     if (prevProps.isSidebarVisible !== isSidebarVisible) {
       this._setSidebarTransform(isSidebarVisible);
+
+      if (isSidebarVisible && this._scrollerRef) {
+        this._scrollerRef.scrollTop = 0;
+      }
     } else if (transform === 0 && !isSidebarVisible) {
       this.props.onSidebarVisibleChange(true);
     } else if (transform === -SIDEBAR_WIDTH && isSidebarVisible) {
@@ -364,6 +369,9 @@ class PageSidebar extends Component {
     this._sidebarRef = ref;
   };
 
+  _setScrollerRef = (ref) => {
+    this._scrollerRef = ref;
+  };
   getHiddenTransform = (isSmallScreen) => {
     if (isSmallScreen) {
       return window.innerWidth * -1;
@@ -563,6 +571,7 @@ class PageSidebar extends Component {
         <ScrollerComponent
           className={styles.sidebar}
           style={sidebarStyle}
+          registerScroller={this._setScrollerRef}
         >
           <div>
             {

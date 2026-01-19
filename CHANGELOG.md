@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.156
+- Summary: Ensure the mobile sidebar opens at the top with the Library link visible.
+- Why: The hamburger menu could open scrolled past the topmost items.
+- Impact: Opening the sidebar now resets scroll to the top and includes header padding for tap access.
+- Files: `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-13.log`).
+
 ## 1.3.155
 - Summary: Make the mobile sidebar a full-screen overlay and remove swipe handling.
 - Why: The sidebar needed to scroll independently and remain stable on mobile.
