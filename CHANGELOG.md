@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.148
+- Summary: Ensure EPUB page numbers appear after initial render.
+- Why: Page numbers were missing because the reader didn't re-check the current location after display.
+- Impact: The reader syncs current location after display so page totals render consistently once locations are ready.
+- Files: `frontend/src/BookFile/BookFileReaderModal.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-04.log`).
+
 ## 1.3.147
 - Summary: Fix resume progress saves and stabilize ebook reader theming/page counts.
 - Why: Progress updates still weren't persisting, page numbers reset per chapter, and themes could drop when reopening a reader.

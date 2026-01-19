@@ -271,7 +271,12 @@ class BookFileReaderModal extends Component {
         }
         if (displayPromise && displayPromise.then)
         {
-          displayPromise.then(() => null);
+          displayPromise.then(() => {
+            if (this.isReaderActive)
+            {
+              this.syncCurrentLocation();
+            }
+          });
         }
 
         if (this.rendition.resize)
@@ -483,6 +488,23 @@ class BookFileReaderModal extends Component {
     this.latestProgress = location.start.percentage;
     this.updatePageNumbers(location);
     this.queueSave();
+  };
+
+  syncCurrentLocation = () => {
+    if (!this.rendition || !this.rendition.currentLocation)
+    {
+      return;
+    }
+
+    const location = this.rendition.currentLocation();
+    if (!location || !location.start || !location.start.cfi)
+    {
+      return;
+    }
+
+    this.latestLocation = location.start.cfi;
+    this.latestProgress = location.start.percentage;
+    this.updatePageNumbers(location);
   };
 
   prepareLocations = () => {
