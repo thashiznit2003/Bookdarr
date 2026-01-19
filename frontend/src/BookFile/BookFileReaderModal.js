@@ -121,6 +121,7 @@ class BookFileReaderModal extends Component {
       this.latestLocation = null;
       this.latestProgress = null;
       this.lastSavedLocation = null;
+      this.themesRegistered = false;
       this.locationsReady = false;
       this.isGeneratingLocations = false;
       this.setState({ currentPage: null, totalPages: null });
@@ -342,6 +343,7 @@ class BookFileReaderModal extends Component {
       this.readerRef.current.innerHTML = '';
     }
 
+    this.themesRegistered = false;
     this.setState({ currentPage: null, totalPages: null });
   }
 
@@ -517,13 +519,6 @@ class BookFileReaderModal extends Component {
     }
 
     const start = location && location.start ? location.start : null;
-    const displayed = start && start.displayed ? start.displayed : null;
-    if (displayed && displayed.page && displayed.total)
-    {
-      this.setPageNumbers(displayed.page, displayed.total);
-      return;
-    }
-
     const cfi = start && start.cfi ? start.cfi : this.latestLocation;
     if (!cfi || !this.book || !this.book.locations || !this.locationsReady)
     {

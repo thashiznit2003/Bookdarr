@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.147
+- Summary: Fix resume progress saves and stabilize ebook reader theming/page counts.
+- Why: Progress updates still weren't persisting, page numbers reset per chapter, and themes could drop when reopening a reader.
+- Impact: Progress saves now include an ID to satisfy PUT validation, EPUB pages use global locations for total counts, and reader themes reapply per session.
+- Files: `frontend/src/BookFile/userBookProgress.js`, `frontend/src/BookFile/BookFileReaderModal.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-03.log`).
+
 ## 1.3.146
 - Summary: Fix resume progress saves and add page numbers to the ebook reader.
 - Why: Progress updates were rejected by PUT validation, and readers need a quick sense of location.

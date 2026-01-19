@@ -9,10 +9,18 @@ export function fetchUserBookProgress(bookFileId) {
 }
 
 export function saveUserBookProgress(payload) {
+  const data = {
+    ...payload
+  };
+
+  if (!data.id && data.bookFileId) {
+    data.id = data.bookFileId;
+  }
+
   return createAjaxRequest({
     url: '/user/progress',
     method: 'PUT',
     dataType: 'json',
-    data: JSON.stringify(payload)
+    data: JSON.stringify(data)
   }).request;
 }
