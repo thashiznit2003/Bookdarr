@@ -43,7 +43,7 @@ const baseColumns = [
   },
   {
     name: 'qualityWeight',
-    label: 'Quality',
+    label: 'Type',
     isSortable: true
   },
   {

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.165
+- Summary: Replace discography filters with ebook/audiobook type filters and default search sorting to peers.
+- Why: Book search filters should group ebook/audiobook types, and peers are the most useful default sort.
+- Impact: The filter menu now offers Both/Ebook/Audiobook, the Quality column reads Type, and results default to highest peers first.
+- Files: `frontend/src/Store/Actions/releaseActions.js`, `frontend/src/InteractiveSearch/InteractiveSearch.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-22.log`).
+
 ## 1.3.164
 - Summary: Simplify the mobile interactive search table and tighten title presentation.
 - Why: Mobile search results needed fewer columns, readable sizing, and better touch scrolling for long titles.

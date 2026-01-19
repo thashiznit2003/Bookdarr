@@ -25,8 +25,8 @@ export const defaultState = {
   isPopulated: false,
   error: null,
   items: [],
-  sortKey: 'releaseWeight',
-  sortDirection: sortDirections.ASCENDING,
+  sortKey: 'peers',
+  sortDirection: sortDirections.DESCENDING,
   sortPredicates: {
     age: function(item, direction) {
       return item.ageMinutes;
@@ -52,27 +52,27 @@ export const defaultState = {
   filters: [
     {
       key: 'all',
-      label: 'All',
+      label: 'Both',
       filters: []
     },
     {
-      key: 'discography-pack',
-      label: 'Discography',
+      key: 'ebook',
+      label: 'Ebook',
       filters: [
         {
-          key: 'discography',
-          value: true,
+          key: 'quality',
+          value: [1, 2, 3, 4, 5],
           type: filterTypes.EQUAL
         }
       ]
     },
     {
-      key: 'not-discography-pack',
-      label: 'Not Discography',
+      key: 'audiobook',
+      label: 'Audiobook',
       filters: [
         {
-          key: 'discography',
-          value: false,
+          key: 'quality',
+          value: [10, 11, 12, 13, 14],
           type: filterTypes.EQUAL
         }
       ]
@@ -193,7 +193,7 @@ export const defaultState = {
     },
     {
       name: 'quality',
-      label: 'Quality',
+      label: 'Type',
       type: filterBuilderTypes.EXACT,
       valueType: filterBuilderValueTypes.QUALITY
     },
