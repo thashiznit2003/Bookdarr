@@ -12,16 +12,22 @@ function createMapStateToProps() {
   return createSelector(
     createClientSideCollectionSelector('bookFiles'),
     createDimensionsSelector(),
+    (state, props) => props.bookId,
     (
       bookFiles,
-      dimensions
+      dimensions,
+      bookId
     ) => {
       const {
         items,
         ...otherProps
       } = bookFiles;
+      const normalizedBookId = Number.isFinite(bookId) ? bookId : Number.parseInt(bookId, 10);
+      const filteredItems = Number.isFinite(normalizedBookId)
+        ? items.filter((item) => item.bookId === normalizedBookId)
+        : items;
       return {
-        items,
+        items: filteredItems,
         ...otherProps,
         isSmallScreen: dimensions.isSmallScreen,
         isDeleting: bookFiles.isDeleting,

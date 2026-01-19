@@ -52,6 +52,7 @@ namespace Readarr.Api.V1.Books
         private readonly IDiskProvider _diskProvider;
         private readonly IPendingReleaseService _pendingReleaseService;
         private readonly IUserService _userService;
+        private readonly IBookMergeService _bookMergeService;
 
         public BookController(IAuthorService authorService,
                           IBookService bookService,
@@ -69,6 +70,7 @@ namespace Readarr.Api.V1.Books
                           IDiskProvider diskProvider,
                           IPendingReleaseService pendingReleaseService,
                           IUserService userService,
+                          IBookMergeService bookMergeService,
                           IBroadcastSignalRMessage signalRBroadcaster,
                           QualityProfileExistsValidator<BookResource> qualityProfileExistsValidator,
                           MetadataProfileExistsValidator<BookResource> metadataProfileExistsValidator)
@@ -86,6 +88,7 @@ namespace Readarr.Api.V1.Books
             _diskProvider = diskProvider;
             _pendingReleaseService = pendingReleaseService;
             _userService = userService;
+            _bookMergeService = bookMergeService;
 
             PostValidator.RuleFor(s => s.ForeignBookId).NotEmpty();
             PostValidator.RuleFor(s => s.Author.QualityProfileId).SetValidator(qualityProfileExistsValidator);
@@ -276,6 +279,28 @@ namespace Readarr.Api.V1.Books
                 .OrderBy(result => result.BookTitle)
                 .ThenBy(result => result.Title)
                 .ToList();
+        }
+
+        [HttpPost("merge")]
+        public ActionResult<BookResource> MergeBooks([FromBody] MergeBooksResource resource)
+        {
+            // lgtm [cs/user-controlled-bypass] API controller enforces auth; null guard isn't an auth bypass.
+            if (resource == null)
+            {
+                return BadRequest();
+            }
+
+            if (resource.WinnerBookId == resource.LoserBookId)
+            {
+                return BadRequest("WinnerBookId and LoserBookId must be different.");
+            }
+
+            var winner = _bookService.GetBook(resource.WinnerBookId);
+            var loser = _bookService.GetBook(resource.LoserBookId);
+
+            var merged = _bookMergeService.MergeBooks(winner, loser);
+
+            return MapToResource(merged, true);
         }
 
         [HttpPost("{id:int}/select-edition")]

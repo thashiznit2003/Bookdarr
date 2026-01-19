@@ -101,6 +101,36 @@
   border-bottom-left-radius: 4px;
 }
 
+.selectToggle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  border-radius: 0 0 5px 0;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  z-index: 3;
+  cursor: pointer;
+}
+
+.selectToggleSelected {
+  background: var(--primaryColor);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.posterSelected {
+  border-color: var(--primaryColor);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35), 0 0 0 2px var(--primaryColor) inset;
+}
+
 .posterStatusRow {
   display: flex;
   gap: 6px;

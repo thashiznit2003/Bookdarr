@@ -9,6 +9,7 @@ namespace NzbDrone.Core.Books.Repositories
     {
         UserBook GetByUserAndBook(int userId, int bookId);
         List<UserBook> GetByUser(int userId);
+        List<UserBook> GetByBook(int bookId);
     }
 
     public class UserBookRepository : BasicRepository<UserBook>, IUserBookRepository
@@ -30,6 +31,12 @@ namespace NzbDrone.Core.Books.Repositories
         public List<UserBook> GetByUser(int userId)
         {
             var builder = Builder().Where<UserBook>(b => b.UserId == userId);
+            return Query(builder);
+        }
+
+        public List<UserBook> GetByBook(int bookId)
+        {
+            var builder = Builder().Where<UserBook>(b => b.BookId == bookId);
             return Query(builder);
         }
     }

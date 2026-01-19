@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.169
+- Summary: Keep book file lists scoped to the current book and add a Book Pool merge flow for duplicates.
+- Why: Book file updates were leaking into the wrong details page, and duplicate pool entries need a consolidation tool.
+- Impact: Book file tables now filter by book id; Book Pool adds a desktop-only merge selector with a winner/loser modal and a new `/book/merge` backend that merges editions plus user library links.
+- Files: `frontend/src/BookFile/Editor/BookFileEditorTableContentConnector.js`, `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Book/Pool/BookPoolPage.css`, `frontend/src/Book/Pool/Merge/MergeBookModal.js`, `frontend/src/Book/Pool/Merge/MergeBookModalContent.js`, `frontend/src/Book/Pool/Merge/MergeBookModalContent.css`, `src/Readarr.Api.V1/Books/BookController.cs`, `src/Readarr.Api.V1/Books/MergeBooksResource.cs`, `src/NzbDrone.Core/Books/Services/BookMergeService.cs`, `src/NzbDrone.Core/Books/Repositories/UserBookRepository.cs`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-26.log`).
+
 ## 1.3.168
 - Summary: Add loading spinners for audiobook and ebook playback/open actions.
 - Why: Large files can take time to load, and users need clear feedback to avoid retries.

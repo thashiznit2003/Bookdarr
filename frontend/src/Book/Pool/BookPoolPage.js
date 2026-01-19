@@ -6,6 +6,8 @@ import { createSelector } from 'reselect';
 import BookCover from 'Book/BookCover';
 import BookTitleLink from 'Book/BookTitleLink';
 import AddManualBookModal from 'Book/Index/ManualAdd/AddManualBookModal';
+import MergeBookModal from 'Book/Pool/Merge/MergeBookModal';
+import Icon from 'Components/Icon';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import FilterMenu from 'Components/Menu/FilterMenu';
 import MenuContent from 'Components/Menu/MenuContent';
@@ -28,6 +30,7 @@ import sortCollection from 'Utilities/Array/sortCollection';
 import { executeCommand } from 'Store/Actions/commandActions';
 import { fetchUserLibraryBooks } from 'Store/Actions/bookActions';
 import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
+import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import * as commandNames from 'Commands/commandNames';
 import styles from './BookPoolPage.css';
 
@@ -176,7 +179,11 @@ class BookPoolPage extends Component {
       sortKey: 'title',
       sortDirection: sortDirections.ASCENDING,
       isManualBookModalOpen: false,
-      isConfirmSearchModalOpen: false
+      isConfirmSearchModalOpen: false,
+      selectedBookIds: [],
+      isMergeModalOpen: false,
+      isMerging: false,
+      mergeError: null
     };
     this.poolRefreshTimeout = null;
   }
@@ -219,7 +226,17 @@ class BookPoolPage extends Component {
     });
 
     request.request.done((data) => {
-      this.setState({ books: data || [], isFetching: false });
+      this.setState((prevState) => {
+        const nextBooks = data || [];
+        const nextBookIds = new Set(nextBooks.map((book) => book.bookId));
+        const selectedBookIds = prevState.selectedBookIds.filter((id) => nextBookIds.has(id));
+
+        return {
+          books: nextBooks,
+          isFetching: false,
+          selectedBookIds
+        };
+      });
     });
 
     request.request.fail((xhr) => {
@@ -233,6 +250,39 @@ class BookPoolPage extends Component {
 
   onManualBookModalClose = () => {
     this.setState({ isManualBookModalOpen: false });
+  };
+
+  onMergeBooksPress = () => {
+    this.setState({ isMergeModalOpen: true, mergeError: null });
+  };
+
+  onMergeModalClose = () => {
+    this.setState({ isMergeModalOpen: false, mergeError: null });
+  };
+
+  onMergeConfirmed = (winnerBookId, loserBookId) => {
+    this.setState({ isMerging: true, mergeError: null });
+
+    const request = createAjaxRequest({
+      url: '/book/merge',
+      method: 'POST',
+      dataType: 'json',
+      data: JSON.stringify({ winnerBookId, loserBookId })
+    });
+
+    request.request.done(() => {
+      this.setState({
+        isMerging: false,
+        mergeError: null,
+        isMergeModalOpen: false,
+        selectedBookIds: []
+      });
+      this.onFetchPool();
+    });
+
+    request.request.fail((xhr) => {
+      this.setState({ isMerging: false, mergeError: xhr });
+    });
   };
 
   onSearchPress = () => {
@@ -336,6 +386,16 @@ class BookPoolPage extends Component {
         sortKey,
         sortDirection
       };
+    });
+  };
+
+  onToggleBookSelected = (bookId) => {
+    this.setState((prevState) => {
+      const selectedBookIds = prevState.selectedBookIds.includes(bookId)
+        ? prevState.selectedBookIds.filter((id) => id !== bookId)
+        : [...prevState.selectedBookIds, bookId];
+
+      return { selectedBookIds };
     });
   };
 
@@ -451,12 +511,17 @@ class BookPoolPage extends Component {
       sortKey,
       sortDirection,
       isManualBookModalOpen,
-      isConfirmSearchModalOpen
+      isConfirmSearchModalOpen,
+      selectedBookIds,
+      isMergeModalOpen,
+      isMerging,
+      mergeError
     } = this.state;
 
     const {
       isRefreshingBook,
-      isSearching
+      isSearching,
+      isSmallScreen
     } = this.props;
 
     const filteredBooks = this.getFilteredBooks();
@@ -476,6 +541,8 @@ class BookPoolPage extends Component {
       : translate('BookPoolEmptyFilter');
     const searchWarningCount = filteredBooks.length;
     const searchDisabled = isSearching || !filteredBooks.length;
+    const selectedResources = books.filter((resource) => selectedBookIds.includes(resource.bookId));
+    const canMerge = selectedBookIds.length === 2 && selectedResources.length === 2;
 
     return (
       <PageContent>
@@ -505,6 +572,20 @@ class BookPoolPage extends Component {
               isSpinning={isSearching}
               onPress={this.onSearchPress}
             />
+
+            {
+              !isSmallScreen &&
+                <>
+                  <PageToolbarSeparator />
+
+                  <PageToolbarButton
+                    label={translate('MergeBooks')}
+                    iconName={icons.CLONE}
+                    isDisabled={!canMerge || isMerging}
+                    onPress={this.onMergeBooksPress}
+                  />
+                </>
+            }
 
           </PageToolbarSection>
         <PageToolbarSection
@@ -566,6 +647,9 @@ class BookPoolPage extends Component {
                       resource={decoratedResource}
                       onAdd={this.onAddToLibrary}
                       isAdding={adding[item.bookId]}
+                      isSelected={selectedBookIds.includes(item.bookId)}
+                      showSelection={!isSmallScreen}
+                      onToggleSelect={this.onToggleBookSelected}
                     />
                     );
                   })}
@@ -579,6 +663,15 @@ class BookPoolPage extends Component {
         <AddManualBookModal
           isOpen={isManualBookModalOpen}
           onModalClose={this.onManualBookModalClose}
+        />
+
+        <MergeBookModal
+          isOpen={isMergeModalOpen}
+          books={selectedResources}
+          isMerging={isMerging}
+          mergeError={mergeError}
+          onMergeConfirmed={this.onMergeConfirmed}
+          onModalClose={this.onMergeModalClose}
         />
 
         <ConfirmModal
@@ -607,7 +700,10 @@ class BookPoolPage extends Component {
 function BookPoolPoster({
   resource,
   onAdd,
-  isAdding
+  isAdding,
+  isSelected,
+  onToggleSelect,
+  showSelection
 }) {
   const {
     book,
@@ -651,9 +747,29 @@ function BookPoolPoster({
     cursor: isAdding ? 'default' : 'pointer'
   };
 
+  const onSelectPress = useCallback((event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof onToggleSelect === 'function') {
+      onToggleSelect(resource.bookId);
+    }
+  }, [onToggleSelect, resource]);
+
   return (
-    <div className={classNames(styles.posterCard, needsAttention && styles.posterAttention)}>
+    <div className={classNames(styles.posterCard, needsAttention && styles.posterAttention, isSelected && styles.posterSelected)}>
       <div className={styles.posterWrapper}>
+        {
+          showSelection &&
+            <button
+              className={classNames(styles.selectToggle, isSelected && styles.selectToggleSelected)}
+              type="button"
+              aria-pressed={isSelected}
+              aria-label={translate('Select')}
+              onClick={onSelectPress}
+            >
+              <Icon name={isSelected ? icons.CHECK : icons.CIRCLE_OUTLINE} />
+            </button>
+        }
         <button
           className={classNames(styles.addButton, inMyLibrary && styles.removeButton)}
           type="button"
@@ -737,11 +853,15 @@ BookPoolPoster.propTypes = {
   }).isRequired,
   onAdd: PropTypes.func.isRequired,
   isAdding: PropTypes.bool,
+  isSelected: PropTypes.bool,
+  onToggleSelect: PropTypes.func,
+  showSelection: PropTypes.bool
 };
 
 BookPoolPage.propTypes = {
   isRefreshingBook: PropTypes.bool.isRequired,
   isSearching: PropTypes.bool.isRequired,
+  isSmallScreen: PropTypes.bool.isRequired,
   onRefreshBooks: PropTypes.func.isRequired,
   onSearchBooks: PropTypes.func.isRequired,
   dispatchFetchUserLibraryBooks: PropTypes.func
@@ -753,18 +873,21 @@ function createMapStateToProps() {
     createCommandExecutingSelector(commandNames.BULK_REFRESH_BOOK),
     createCommandExecutingSelector(commandNames.CUTOFF_UNMET_BOOK_SEARCH),
     createCommandExecutingSelector(commandNames.MISSING_BOOK_SEARCH),
+    createDimensionsSelector(),
     (
       isRefreshingAuthorCommand,
       isRefreshingBookCommand,
       isCutoffBooksSearch,
-      isMissingBooksSearch
+      isMissingBooksSearch,
+      dimensions
     ) => {
       const isRefreshingBook = isRefreshingBookCommand || isRefreshingAuthorCommand;
       const isSearching = isCutoffBooksSearch || isMissingBooksSearch;
 
       return {
         isRefreshingBook,
-        isSearching
+        isSearching,
+        isSmallScreen: dimensions.isSmallScreen
       };
     }
   );
