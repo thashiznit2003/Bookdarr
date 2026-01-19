@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.134
+- Summary: Remove monitored/unmonitored stats from the Authors footer.
+- Why: The monitoring counts are no longer meaningful after removing status indicators.
+- Impact: Author footer now lists author/book/file totals and sizes only; version bumped for cache-busting.
+- Files: `frontend/src/Author/Index/AuthorIndexFooter.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-199.log`).
+
 ## 1.3.133
 - Summary: Remove author status color indicators and monitored/unmonitored labels across Authors views.
 - Why: Monitoring/status color cues are no longer needed and add visual noise in both library and Book Pool author pages.

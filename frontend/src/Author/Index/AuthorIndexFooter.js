@@ -18,7 +18,6 @@ class AuthorIndexFooter extends PureComponent {
     let bookFiles = 0;
     let ended = 0;
     let continuing = 0;
-    let monitored = 0;
     let totalFileSize = 0;
 
     author.forEach((s) => {
@@ -37,10 +36,6 @@ class AuthorIndexFooter extends PureComponent {
         ended++;
       } else {
         continuing++;
-      }
-
-      if (s.monitored) {
-        monitored++;
       }
 
       totalFileSize += sizeOnDisk;
@@ -63,18 +58,6 @@ class AuthorIndexFooter extends PureComponent {
             <DescriptionListItem
               title={translate('Continuing')}
               data={continuing}
-            />
-          </DescriptionList>
-
-          <DescriptionList>
-            <DescriptionListItem
-              title={translate('Monitored')}
-              data={monitored}
-            />
-
-            <DescriptionListItem
-              title={translate('Unmonitored')}
-              data={count - monitored}
             />
           </DescriptionList>
 
