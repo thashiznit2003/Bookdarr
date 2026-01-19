@@ -1,4 +1,7 @@
+import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 import Link from 'Components/Link/Link';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
@@ -6,7 +9,92 @@ import translate from 'Utilities/String/translate';
 import SettingsToolbarConnector from './SettingsToolbarConnector';
 import styles from './Settings.css';
 
-function Settings() {
+function Settings({ isAdmin }) {
+  const sections = [
+    {
+      to: '/settings/general',
+      title: translate('General'),
+      summary: translate('GeneralSettingsSummary'),
+      adminOnly: true
+    },
+    {
+      to: '/settings/mediamanagement',
+      title: translate('MediaManagement'),
+      summary: translate('MediaManagementSettingsSummary'),
+      adminOnly: true
+    },
+    {
+      to: '/settings/profiles',
+      title: translate('Profiles'),
+      summary: translate('ProfilesSettingsSummary'),
+      adminOnly: true
+    },
+    {
+      to: '/settings/quality',
+      title: translate('Quality'),
+      summary: translate('QualitySettingsSummary'),
+      adminOnly: true
+    },
+    {
+      to: '/settings/customformats',
+      title: 'Custom Formats',
+      summary: 'Custom Formats and Settings',
+      adminOnly: true
+    },
+    {
+      to: '/settings/indexers',
+      title: translate('Indexers'),
+      summary: translate('IndexersSettingsSummary'),
+      adminOnly: true
+    },
+    {
+      to: '/settings/downloadclients',
+      title: translate('DownloadClients'),
+      summary: translate('DownloadClientsSettingsSummary'),
+      adminOnly: true
+    },
+    {
+      to: '/settings/importlists',
+      title: translate('Lists'),
+      summary: translate('ListsSettingsSummary')
+    },
+    {
+      to: '/settings/connect',
+      title: translate('Connect'),
+      summary: translate('ConnectSettingsSummary')
+    },
+    {
+      to: '/settings/metadata',
+      title: translate('Metadata'),
+      summary: translate('MetadataSettingsSummary'),
+      adminOnly: true
+    },
+    {
+      to: '/settings/tags',
+      title: translate('Tags'),
+      summary: translate('TagsSettingsSummary'),
+      adminOnly: true
+    },
+    {
+      to: '/settings/ui',
+      title: translate('Ui'),
+      summary: translate('UISettingsSummary')
+    },
+    {
+      to: '/settings/development',
+      title: translate('Development'),
+      summary: 'Development settings',
+      adminOnly: true
+    },
+    {
+      to: '/settings/users',
+      title: 'Users',
+      summary: isAdmin ? 'Manage Bookdarr users.' : 'Manage your Bookdarr account.'
+    }
+  ];
+
+  const visibleSections = isAdmin ? sections : sections.filter((section) => !section.adminOnly);
+
   return (
     <PageContent title={translate('Settings')}>
       <SettingsToolbarConnector
@@ -14,165 +102,36 @@ function Settings() {
       />
 
       <PageContentBody>
-        <Link
-          className={styles.link}
-          to="/settings/general"
-        >
-          {translate('General')}
-        </Link>
+        {visibleSections.map((section) => (
+          <React.Fragment key={section.to}>
+            <Link
+              className={styles.link}
+              to={section.to}
+            >
+              {section.title}
+            </Link>
 
-        <div className={styles.summary}>
-          {translate('GeneralSettingsSummary')}
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/mediamanagement"
-        >
-          {translate('MediaManagement')}
-        </Link>
-
-        <div className={styles.summary}>
-          {translate('MediaManagementSettingsSummary')}
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/profiles"
-        >
-          {translate('Profiles')}
-        </Link>
-
-        <div className={styles.summary}>
-          {translate('ProfilesSettingsSummary')}
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/quality"
-        >
-          {translate('Quality')}
-        </Link>
-
-        <div className={styles.summary}>
-          {translate('QualitySettingsSummary')}
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/customformats"
-        >
-          Custom Formats
-        </Link>
-
-        <div className={styles.summary}>
-          Custom Formats and Settings
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/indexers"
-        >
-          {translate('Indexers')}
-        </Link>
-
-        <div className={styles.summary}>
-          {translate('IndexersSettingsSummary')}
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/downloadclients"
-        >
-          {translate('DownloadClients')}
-        </Link>
-
-        <div className={styles.summary}>
-          {translate('DownloadClientsSettingsSummary')}
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/importlists"
-        >
-          {translate('Lists')}
-        </Link>
-
-        <div className={styles.summary}>
-          {translate('ListsSettingsSummary')}
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/connect"
-        >
-          {translate('Connect')}
-        </Link>
-
-        <div className={styles.summary}>
-          {translate('ConnectSettingsSummary')}
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/metadata"
-        >
-          {translate('Metadata')}
-        </Link>
-
-        <div className={styles.summary}>
-          {translate('MetadataSettingsSummary')}
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/tags"
-        >
-          {translate('Tags')}
-        </Link>
-
-        <div className={styles.summary}>
-          {translate('TagsSettingsSummary')}
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/ui"
-        >
-          {translate('Ui')}
-        </Link>
-
-        <div className={styles.summary}>
-          {translate('UISettingsSummary')}
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/development"
-        >
-          {translate('Development')}
-        </Link>
-
-        <div className={styles.summary}>
-          Development settings
-        </div>
-
-        <Link
-          className={styles.link}
-          to="/settings/users"
-        >
-          Users
-        </Link>
-
-        <div className={styles.summary}>
-          Manage Bookdarr users (admin only)
-        </div>
+            <div className={styles.summary}>
+              {section.summary}
+            </div>
+          </React.Fragment>
+        ))}
       </PageContentBody>
     </PageContent>
   );
 }
 
 Settings.propTypes = {
+  isAdmin: PropTypes.bool.isRequired
 };
 
-export default Settings;
+function createMapStateToProps() {
+  return createSelector(
+    (state) => state.system.status.item?.isAdmin ?? false,
+    (isAdmin) => ({
+      isAdmin
+    })
+  );
+}
+
+export default connect(createMapStateToProps)(Settings);

@@ -249,6 +249,7 @@ function Users({
   users,
   isFetching,
   error,
+  isAdmin,
   onDelete,
   onToggleActive,
   onRefresh,
@@ -268,24 +269,27 @@ function Users({
   ]), []);
 
   useEffect(() => {
-    onRefresh();
+    onRefresh(isAdmin);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <PageContent title={translate('Users')}>
-      <PageToolbar>
-        <PageToolbarSection>
-          <PageToolbarButton
-            label={translate('AddUser')}
-            iconName={icons.ADD}
-            onPress={() => setIsAddModalOpen(true)}
-          />
+        <PageToolbar>
+          <PageToolbarSection>
+          {
+            isAdmin &&
+              <PageToolbarButton
+                label={translate('AddUser')}
+                iconName={icons.ADD}
+                onPress={() => setIsAddModalOpen(true)}
+              />
+          }
           <PageToolbarButton
             label={translate('Refresh')}
             iconName={icons.REFRESH}
             isSpinning={isFetching}
-            onPress={onRefresh}
+            onPress={() => onRefresh(isAdmin)}
           />
         </PageToolbarSection>
       </PageToolbar>
@@ -303,7 +307,11 @@ function Users({
         </div>
 
         <div className={styles.helpText}>
-          Use Add User to create accounts. Toggle active, edit, or delete users in the table.
+          {
+            isAdmin ?
+              'Use Add User to create accounts. Toggle active, edit, or delete users in the table.' :
+              'Update your account details using the Edit button.'
+          }
         </div>
 
         <Table
@@ -334,20 +342,25 @@ function Users({
                     >
                       {translate('Edit')}
                     </Button>
-                    <Button
-                      kind={user.isActive ? 'danger' : 'success'}
-                      onPress={() => onToggleActive(user)}
-                    >
-                      {user.isActive ? translate('Deactivate') : translate('Activate')}
-                    </Button>
-                    {!user.isAdmin && (
-                      <Button
-                        kind="danger"
-                        onPress={() => onDelete(user)}
-                      >
-                        {translate('Delete')}
-                      </Button>
-                    )}
+                    {
+                      isAdmin &&
+                        <Button
+                          kind={user.isActive ? 'danger' : 'success'}
+                          onPress={() => onToggleActive(user)}
+                        >
+                          {user.isActive ? translate('Deactivate') : translate('Activate')}
+                        </Button>
+                    }
+                    {
+                      isAdmin && !user.isAdmin && (
+                        <Button
+                          kind="danger"
+                          onPress={() => onDelete(user)}
+                        >
+                          {translate('Delete')}
+                        </Button>
+                      )
+                    }
                   </div>
                 </TableRowCell>
               </TableRow>
@@ -355,12 +368,15 @@ function Users({
           </TableBody>
         </Table>
 
-        <AddUserModal
-          isOpen={isAddModalOpen}
-          isSaving={isFetching}
-          onModalClose={() => setIsAddModalOpen(false)}
-          onSubmit={onCreate}
-        />
+        {
+          isAdmin &&
+            <AddUserModal
+              isOpen={isAddModalOpen}
+              isSaving={isFetching}
+              onModalClose={() => setIsAddModalOpen(false)}
+              onSubmit={onCreate}
+            />
+        }
 
         <EditUserModal
           user={editingUser}
@@ -378,6 +394,7 @@ Users.propTypes = {
   users: PropTypes.arrayOf(PropTypes.object).isRequired,
   isFetching: PropTypes.bool.isRequired,
   error: PropTypes.object,
+  isAdmin: PropTypes.bool.isRequired,
   onDelete: PropTypes.func.isRequired,
   onToggleActive: PropTypes.func.isRequired,
   onRefresh: PropTypes.func.isRequired,

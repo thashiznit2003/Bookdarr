@@ -172,7 +172,8 @@ function createMapStateToProps() {
         isSmallScreen: dimensions.isSmallScreen,
         authenticationEnabled: systemStatus.authentication !== 'none',
         systemVersion: systemStatus.version,
-        enableColorImpairedMode
+        enableColorImpairedMode,
+        isAdmin: systemStatus.isAdmin
       };
     }
   );

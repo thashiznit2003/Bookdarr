@@ -203,10 +203,57 @@ const links = [
   }
 ];
 
-function getActiveParent(pathname) {
-  let activeParent = links[0].to;
+const settingsHiddenForNonAdmin = new Set([
+  '/settings/general',
+  '/settings/mediamanagement',
+  '/settings/profiles',
+  '/settings/quality',
+  '/settings/customformats',
+  '/settings/indexers',
+  '/settings/downloadclients',
+  '/settings/metadata',
+  '/settings/tags',
+  '/settings/development'
+]);
 
-  links.forEach((link) => {
+const systemHiddenForNonAdmin = new Set([
+  '/system/tasks',
+  '/system/backup',
+  '/system/events',
+  '/system/logs/files'
+]);
+
+function getVisibleLinks(isAdmin) {
+  if (isAdmin) {
+    return links;
+  }
+
+  return links.reduce((acc, link) => {
+    if (link.to === '/system/diagnostics') {
+      return acc;
+    }
+
+    const nextLink = {
+      ...link
+    };
+
+    if (nextLink.to === '/settings' && nextLink.children) {
+      nextLink.children = nextLink.children.filter((child) => !settingsHiddenForNonAdmin.has(child.to));
+    }
+
+    if (nextLink.to === '/system/status' && nextLink.children) {
+      nextLink.children = nextLink.children.filter((child) => !systemHiddenForNonAdmin.has(child.to));
+    }
+
+    acc.push(nextLink);
+    return acc;
+  }, []);
+}
+
+function getActiveParent(pathname, visibleLinks) {
+  let activeParent = visibleLinks[0]?.to || '/';
+
+  visibleLinks.forEach((link) => {
     if (link.to && link.to === pathname) {
       activeParent = link.to;
 
@@ -451,7 +498,8 @@ class PageSidebar extends Component {
   render() {
     const {
       location,
-      isSmallScreen
+      isSmallScreen,
+      isAdmin
     } = this.props;
 
     const {
@@ -463,7 +511,10 @@ class PageSidebar extends Component {
 
     const urlBase = window.Readarr.urlBase;
     const pathname = urlBase ? location.pathname.substr(urlBase.length) || '/' : location.pathname;
-    const activeParent = getActiveParent(pathname);
+    const visibleLinks = getVisibleLinks(isAdmin).filter((link) => {
+      return !link.developOnly || window.Readarr.branch === 'develop';
+    });
+    const activeParent = getActiveParent(pathname, visibleLinks);
 
     let containerStyle = {};
     let sidebarStyle = {};
@@ -496,9 +547,7 @@ class PageSidebar extends Component {
         >
           <div>
             {
-              links.filter((link) => {
-                return !link.developOnly || window.Readarr.branch === 'develop';
-              }).map((link) => {
+              visibleLinks.map((link) => {
                 const childWithStatusComponent = _.find(link.children, (child) => {
                   return !!child.statusComponent;
                 });
@@ -560,6 +609,7 @@ PageSidebar.propTypes = {
   location: locationShape.isRequired,
   isSmallScreen: PropTypes.bool.isRequired,
   isSidebarVisible: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
   onSidebarVisibleChange: PropTypes.func.isRequired
 };
 

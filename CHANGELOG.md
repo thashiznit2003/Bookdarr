@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.141
+- Summary: Hide admin-only sidebar/settings sections for non-admin users and scope Users to self-service.
+- Why: Non-admin accounts should only see relevant settings and manage their own profile without admin-only controls.
+- Impact: Sidebar and Settings overview filter admin-only sections (including Diagnostics and System admin tools); Users shows only the current user with edit-only actions; version bumped for cache-busting.
+- Files: `frontend/src/Components/Page/Page.js`, `frontend/src/Components/Page/PageConnector.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/Settings/Settings.js`, `frontend/src/Settings/Users/Users.js`, `frontend/src/Settings/Users/index.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-206.log`).
+
 ## 1.3.140
 - Summary: Make Library default to Books and reorder the Library sidebar links.
 - Why: The Library entry currently lands on Authors, and the list order is opposite of the desired flow.

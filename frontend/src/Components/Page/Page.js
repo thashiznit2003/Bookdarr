@@ -66,6 +66,7 @@ class Page extends Component {
       isSidebarVisible,
       enableColorImpairedMode,
       authenticationEnabled,
+      isAdmin,
       onSidebarToggle,
       onSidebarVisibleChange
     } = this.props;
@@ -84,6 +85,7 @@ class Page extends Component {
               location={location}
               isSmallScreen={isSmallScreen}
               isSidebarVisible={isSidebarVisible}
+              isAdmin={isAdmin}
               onSidebarVisibleChange={onSidebarVisibleChange}
             />
 
@@ -113,6 +115,7 @@ Page.propTypes = {
   isDisconnected: PropTypes.bool.isRequired,
   enableColorImpairedMode: PropTypes.bool.isRequired,
   authenticationEnabled: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
   onResize: PropTypes.func.isRequired,
   onSidebarToggle: PropTypes.func.isRequired,
   onSidebarVisibleChange: PropTypes.func.isRequired
