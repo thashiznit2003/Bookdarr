@@ -2,7 +2,6 @@
 
 
 - [ ] Publish Docker images to Docker Hub (`thashiznit2003/bookdarr`) with release tagging and compose instructions.
-- [ ] Build a request UI (Overseerr-like) on top of Bookdarr search.
 - [ ] Add a mobile-compatible web app experience (mobile reader/player UX).
 - [ ] Add a mobile app store app (iOS/iPadOS) with reader/player.
 - [ ] Harden authentication for public internet use, plus offline downloads for mobile.
