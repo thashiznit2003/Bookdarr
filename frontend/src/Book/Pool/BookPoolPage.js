@@ -20,7 +20,6 @@ import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
 import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
-import Tooltip from 'Components/Tooltip/Tooltip';
 import { align, icons, kinds, sortDirections } from 'Helpers/Props';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import getErrorMessage from 'Utilities/Object/getErrorMessage';
@@ -183,7 +182,9 @@ class BookPoolPage extends Component {
       selectedBookIds: [],
       isMergeModalOpen: false,
       isMerging: false,
-      mergeError: null
+      mergeError: null,
+      isDeleteConfirmOpen: false,
+      isDeleting: false
     };
     this.poolRefreshTimeout = null;
   }
@@ -258,6 +259,49 @@ class BookPoolPage extends Component {
 
   onMergeModalClose = () => {
     this.setState({ isMergeModalOpen: false, mergeError: null });
+  };
+
+  onDeleteBooksPress = () => {
+    this.setState({ isDeleteConfirmOpen: true });
+  };
+
+  onDeleteConfirmClose = () => {
+    this.setState({ isDeleteConfirmOpen: false });
+  };
+
+  onDeleteConfirm = () => {
+    const { selectedBookIds } = this.state;
+
+    if (!selectedBookIds.length) {
+      this.setState({ isDeleteConfirmOpen: false });
+      return;
+    }
+
+    this.setState({ isDeleting: true });
+
+    const request = createAjaxRequest({
+      url: '/book/editor',
+      method: 'DELETE',
+      dataType: 'json',
+      data: JSON.stringify({
+        bookIds: selectedBookIds,
+        deleteFiles: false,
+        addImportListExclusion: true
+      })
+    });
+
+    request.request.done(() => {
+      this.setState({
+        isDeleting: false,
+        isDeleteConfirmOpen: false,
+        selectedBookIds: []
+      });
+      this.onFetchPool();
+    });
+
+    request.request.fail((xhr) => {
+      this.setState({ isDeleting: false });
+    });
   };
 
   onMergeConfirmed = (winnerBookId, loserBookId) => {
@@ -515,13 +559,16 @@ class BookPoolPage extends Component {
       selectedBookIds,
       isMergeModalOpen,
       isMerging,
-      mergeError
+      mergeError,
+      isDeleteConfirmOpen,
+      isDeleting
     } = this.state;
 
     const {
       isRefreshingBook,
       isSearching,
-      isSmallScreen
+      isSmallScreen,
+      isAdmin
     } = this.props;
 
     const filteredBooks = this.getFilteredBooks();
@@ -541,6 +588,7 @@ class BookPoolPage extends Component {
       : translate('BookPoolEmptyFilter');
     const searchWarningCount = filteredBooks.length;
     const searchDisabled = isSearching || !filteredBooks.length;
+    const deleteCount = selectedBookIds.length;
     const selectedResources = books.filter((resource) => selectedBookIds.includes(resource.bookId));
     const canMerge = selectedBookIds.length === 2 && selectedResources.length === 2;
 
@@ -583,6 +631,20 @@ class BookPoolPage extends Component {
                     iconName={icons.CLONE}
                     isDisabled={!canMerge || isMerging}
                     onPress={this.onMergeBooksPress}
+                  />
+                </>
+            }
+
+            {
+              isAdmin && !isSmallScreen &&
+                <>
+                  <PageToolbarSeparator />
+
+                  <PageToolbarButton
+                    label={translate('DeleteSelected')}
+                    iconName={icons.DELETE}
+                    isDisabled={!selectedBookIds.length || isDeleting}
+                    onPress={this.onDeleteBooksPress}
                   />
                 </>
             }
@@ -691,6 +753,25 @@ class BookPoolPage extends Component {
           confirmLabel={translate('Search')}
           onConfirm={this.onSearchConfirmed}
           onCancel={this.onConfirmSearchModalClose}
+        />
+
+        <ConfirmModal
+          isOpen={isDeleteConfirmOpen}
+          kind={kinds.DANGER}
+          title={translate('DeleteSelected')}
+          message={
+            <div>
+              <div>
+                {`Delete ${deleteCount} selected book${deleteCount === 1 ? '' : 's'} from Book Pool?`}
+              </div>
+              <div>
+                Files will remain on disk unless you remove them separately.
+              </div>
+            </div>
+          }
+          confirmLabel={translate('Delete')}
+          onConfirm={this.onDeleteConfirm}
+          onCancel={this.onDeleteConfirmClose}
         />
       </PageContent>
     );
@@ -862,6 +943,7 @@ BookPoolPage.propTypes = {
   isRefreshingBook: PropTypes.bool.isRequired,
   isSearching: PropTypes.bool.isRequired,
   isSmallScreen: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
   onRefreshBooks: PropTypes.func.isRequired,
   onSearchBooks: PropTypes.func.isRequired,
   dispatchFetchUserLibraryBooks: PropTypes.func
@@ -874,20 +956,26 @@ function createMapStateToProps() {
     createCommandExecutingSelector(commandNames.CUTOFF_UNMET_BOOK_SEARCH),
     createCommandExecutingSelector(commandNames.MISSING_BOOK_SEARCH),
     createDimensionsSelector(),
+    (state) => state.currentUser.item,
+    (state) => state.system.status.item?.isAdmin ?? false,
     (
       isRefreshingAuthorCommand,
       isRefreshingBookCommand,
       isCutoffBooksSearch,
       isMissingBooksSearch,
-      dimensions
+      dimensions,
+      currentUser,
+      statusIsAdmin
     ) => {
       const isRefreshingBook = isRefreshingBookCommand || isRefreshingAuthorCommand;
       const isSearching = isCutoffBooksSearch || isMissingBooksSearch;
+      const isAdmin = currentUser?.isAdmin ?? statusIsAdmin ?? false;
 
       return {
         isRefreshingBook,
         isSearching,
-        isSmallScreen: dimensions.isSmallScreen
+        isSmallScreen: dimensions.isSmallScreen,
+        isAdmin
       };
     }
   );

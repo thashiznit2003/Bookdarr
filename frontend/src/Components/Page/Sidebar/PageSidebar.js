@@ -95,6 +95,10 @@ const links = [
       {
         title: () => translate('FileUpgrades'),
         to: '/wanted/file-upgrades'
+      },
+      {
+        title: () => translate('PossibleDuplicates'),
+        to: '/wanted/possible-duplicates'
       }
     ]
   },

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.170
+- Summary: Align the book details filter button on desktop, add Book Pool bulk delete for admins, and add a Possible Duplicates page under File Operations.
+- Why: Desktop filter alignment regressed, admins need to delete duplicate pool items in bulk, and duplicates need a dedicated review/merge workflow.
+- Impact: Book details filter stays right-aligned, Book Pool shows an admin-only bulk delete confirmation, the sidebar now labels File Operations and includes Possible Duplicates with merge support.
+- Files: `frontend/src/Book/Details/BookDetails.css`, `frontend/src/Book/Pool/BookPoolPage.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/App/AppRoutes.js`, `frontend/src/Wanted/PossibleDuplicates/PossibleDuplicatesPage.js`, `frontend/src/Wanted/PossibleDuplicates/PossibleDuplicatesPage.css`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-27.log`).
+
 ## 1.3.169
 - Summary: Keep book file lists scoped to the current book and add a Book Pool merge flow for duplicates.
 - Why: Book file updates were leaking into the wrong details page, and duplicate pool entries need a consolidation tool.
