@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.3
+- Summary: Install SQLite runtime libraries in the production Docker image.
+- Why: The container failed to start because libsqlite3 was missing on Alpine.
+- Impact: Bookdarr now boots successfully in the Docker image and migrations can run.
+- Files: `docker/Dockerfile`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.3`, push, then run the SSH update with the next log number (`update-41.log`).
+
 ## 2.0.2
 - Summary: Fix Docker UI build by copying the root tsconfig into the build context.
 - Why: The release workflow failed because webpack could not find `/src/tsconfig.json` inside the UI build stage.
