@@ -38,7 +38,7 @@ RUN apk add --no-cache \
     unpaper \
   && addgroup -S bookdarr \
   && adduser -S -G bookdarr bookdarr \
-  && python3 -m pip install --no-cache-dir kindleunpack
+  && python3 -m pip install --no-cache-dir --break-system-packages kindleunpack
 
 COPY --from=backend-build /src/_output/net10.0/${RID}/publish ./bin
 COPY --from=backend-build /src/_output/Readarr.Update/net10.0/${RID}/publish ./Readarr.Update

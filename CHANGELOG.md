@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.5
+- Summary: Allow KindleUnpack installation in the Docker image by opting into PEP 668 override.
+- Why: Alpine blocks system-wide pip installs without `--break-system-packages`, which broke the release build.
+- Impact: Docker releases can install KindleUnpack and complete the publish step.
+- Files: `docker/Dockerfile`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.5`, push, then run the SSH update with the next log number (`update-43.log`).
+
 ## 2.0.4
 - Summary: Add bundled media tooling (ffmpeg, OCR/PDF utilities, KindleUnpack) to the Docker image.
 - Why: Bookdarr relies on external converters for audiobook combine and ebook conversions, and they must ship inside the container.
