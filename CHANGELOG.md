@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.6
+- Summary: Install KindleUnpack from its upstream Git repo in the Docker image.
+- Why: The PyPI package is not available in CI, causing Docker builds to fail.
+- Impact: Docker releases can install KindleUnpack successfully while keeping the conversion toolchain bundled.
+- Files: `docker/Dockerfile`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.6`, push, then run the SSH update with the next log number (`update-44.log`).
+
 ## 2.0.5
 - Summary: Allow KindleUnpack installation in the Docker image by opting into PEP 668 override.
 - Why: Alpine blocks system-wide pip installs without `--break-system-packages`, which broke the release build.
