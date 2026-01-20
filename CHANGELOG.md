@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.7
+- Summary: Bundle KindleUnpack by cloning the upstream repo and wiring a CLI wrapper in the Docker image.
+- Why: The upstream repo is not packaged for pip, so the Docker build needs a direct clone and wrapper script.
+- Impact: Docker releases can build with KindleUnpack available on PATH as `kindleunpack`.
+- Files: `docker/Dockerfile`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.7`, push, then run the SSH update with the next log number (`update-45.log`).
+
 ## 2.0.6
 - Summary: Install KindleUnpack from its upstream Git repo in the Docker image.
 - Why: The PyPI package is not available in CI, causing Docker builds to fail.

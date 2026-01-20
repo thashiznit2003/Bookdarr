@@ -39,8 +39,13 @@ RUN apk add --no-cache \
     unpaper \
   && addgroup -S bookdarr \
   && adduser -S -G bookdarr bookdarr \
-  && python3 -m pip install --no-cache-dir --break-system-packages \
-      git+https://github.com/kevinhendricks/KindleUnpack.git
+  && git clone --depth 1 https://github.com/kevinhendricks/KindleUnpack.git /opt/kindleunpack \
+  && rm -rf /opt/kindleunpack/.git \
+  && printf '%s\n' \
+      '#!/bin/sh' \
+      'PYTHONPATH=/opt/kindleunpack exec python3 -m lib.kindleunpack "$@"' \
+      > /usr/local/bin/kindleunpack \
+  && chmod +x /usr/local/bin/kindleunpack
 
 COPY --from=backend-build /src/_output/net10.0/${RID}/publish ./bin
 COPY --from=backend-build /src/_output/Readarr.Update/net10.0/${RID}/publish ./Readarr.Update
