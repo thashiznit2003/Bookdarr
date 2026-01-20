@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import CheckInput from 'Components/Form/CheckInput';
 import Icon from 'Components/Icon';
 import Link from 'Components/Link/Link';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
@@ -56,7 +57,10 @@ class ImportListExclusion extends Component {
     const {
       id,
       authorName,
-      foreignId
+      foreignId,
+      isSelecting,
+      isSelected,
+      onSelectedChange
     } = this.props;
 
     return (
@@ -65,16 +69,27 @@ class ImportListExclusion extends Component {
           styles.importListExclusion
         )}
       >
+        {isSelecting && (
+          <div className={styles.select}>
+            <CheckInput
+              name={`importListExclusion-${id}`}
+              value={isSelected}
+              onChange={({ value }) => onSelectedChange({ id, value })}
+            />
+          </div>
+        )}
         <div className={styles.foreignId}>{foreignId}</div>
         <div className={styles.name}>{authorName}</div>
 
-        <div className={styles.actions}>
-          <Link
-            onPress={this.onEditImportListExclusionPress}
-          >
-            <Icon name={icons.EDIT} />
-          </Link>
-        </div>
+        {!isSelecting && (
+          <div className={styles.actions}>
+            <Link
+              onPress={this.onEditImportListExclusionPress}
+            >
+              <Icon name={icons.EDIT} />
+            </Link>
+          </div>
+        )}
 
         <EditImportListExclusionModalConnector
           id={id}
@@ -101,7 +116,10 @@ ImportListExclusion.propTypes = {
   id: PropTypes.number.isRequired,
   authorName: PropTypes.string.isRequired,
   foreignId: PropTypes.string.isRequired,
-  onConfirmDeleteImportListExclusion: PropTypes.func.isRequired
+  onConfirmDeleteImportListExclusion: PropTypes.func.isRequired,
+  isSelecting: PropTypes.bool,
+  isSelected: PropTypes.bool,
+  onSelectedChange: PropTypes.func
 };
 
 ImportListExclusion.defaultProps = {

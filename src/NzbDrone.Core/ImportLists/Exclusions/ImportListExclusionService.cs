@@ -10,6 +10,7 @@ namespace NzbDrone.Core.ImportLists.Exclusions
         ImportListExclusion Add(ImportListExclusion importListExclusion);
         List<ImportListExclusion> All();
         void Delete(int id);
+        void Delete(List<int> ids);
         void Delete(string foreignId);
         ImportListExclusion Get(int id);
         ImportListExclusion FindByForeignId(string foreignId);
@@ -41,6 +42,16 @@ namespace NzbDrone.Core.ImportLists.Exclusions
         public void Delete(int id)
         {
             _repo.Delete(id);
+        }
+
+        public void Delete(List<int> ids)
+        {
+            if (ids == null || ids.Count == 0)
+            {
+                return;
+            }
+
+            _repo.DeleteMany(ids);
         }
 
         public void Delete(string foreignId)

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { deleteImportListExclusion, fetchImportListExclusions } from 'Store/Actions/settingsActions';
+import { deleteImportListExclusion, deleteImportListExclusions, fetchImportListExclusions } from 'Store/Actions/settingsActions';
 import ImportListExclusions from './ImportListExclusions';
 
 function createMapStateToProps() {
@@ -18,7 +18,8 @@ function createMapStateToProps() {
 
 const mapDispatchToProps = {
   fetchImportListExclusions,
-  deleteImportListExclusion
+  deleteImportListExclusion,
+  deleteImportListExclusions
 };
 
 class ImportListExclusionsConnector extends Component {
@@ -53,7 +54,8 @@ class ImportListExclusionsConnector extends Component {
 
 ImportListExclusionsConnector.propTypes = {
   fetchImportListExclusions: PropTypes.func.isRequired,
-  deleteImportListExclusion: PropTypes.func.isRequired
+  deleteImportListExclusion: PropTypes.func.isRequired,
+  deleteImportListExclusions: PropTypes.func.isRequired
 };
 
 export default connect(createMapStateToProps, mapDispatchToProps)(ImportListExclusionsConnector);

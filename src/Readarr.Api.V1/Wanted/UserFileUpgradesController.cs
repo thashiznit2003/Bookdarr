@@ -47,15 +47,19 @@ namespace Readarr.Api.V1.Wanted
             }
 
             var bookIds = userBooks.Select(x => x.BookId).Distinct().ToList();
-            var books = _bookService.GetBooks(bookIds);
+            var books = _bookService.GetBooks(bookIds, allowMissing: true);
 
             var results = new List<UserFileUpgradeResource>();
 
             foreach (var book in books)
             {
                 var bookFiles = _mediaFileRepository.GetFilesByBook(book.Id);
-                var ebookFiles = bookFiles.Where(f => f.MediaType == BookFileMediaType.Ebook).ToList();
-                var audioFiles = bookFiles.Where(f => f.MediaType == BookFileMediaType.Audiobook).ToList();
+                var ebookFiles = bookFiles
+                    .Where(f => MediaFileExtensions.GetEffectiveMediaType(f) == BookFileMediaType.Ebook)
+                    .ToList();
+                var audioFiles = bookFiles
+                    .Where(f => MediaFileExtensions.GetEffectiveMediaType(f) == BookFileMediaType.Audiobook)
+                    .ToList();
 
                 var needsEpub = ebookFiles.Any() && !ebookFiles.Any(IsEpubFile);
                 var needsM4b = audioFiles.Any() && !audioFiles.Any(IsM4bFile);

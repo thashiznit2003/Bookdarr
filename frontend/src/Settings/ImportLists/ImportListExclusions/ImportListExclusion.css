@@ -7,6 +7,12 @@
   line-height: 30px;
 }
 
+.select {
+  display: flex;
+  align-items: center;
+  flex: 0 0 30px;
+}
+
 .name {
   @add-mixin truncate;
 

@@ -46,15 +46,15 @@ namespace Readarr.Api.V1.Wanted
             }
 
             var bookIds = userBooks.Select(x => x.BookId).Distinct().ToList();
-            var books = _bookService.GetBooks(bookIds);
+            var books = _bookService.GetBooks(bookIds, allowMissing: true);
 
             var results = new List<UserMissingFilesResource>();
 
             foreach (var book in books)
             {
                 var bookFiles = _mediaFileRepository.GetFilesByBook(book.Id);
-                var hasEbook = bookFiles.Any(f => f.MediaType == BookFileMediaType.Ebook);
-                var hasAudiobook = bookFiles.Any(f => f.MediaType == BookFileMediaType.Audiobook);
+                var hasEbook = bookFiles.Any(f => MediaFileExtensions.GetEffectiveMediaType(f) == BookFileMediaType.Ebook);
+                var hasAudiobook = bookFiles.Any(f => MediaFileExtensions.GetEffectiveMediaType(f) == BookFileMediaType.Audiobook);
 
                 var missingEbook = !hasEbook;
                 var missingAudiobook = !hasAudiobook;

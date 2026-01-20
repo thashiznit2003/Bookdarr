@@ -65,7 +65,9 @@ function createMapDispatchToProps(dispatch, props) {
 
     onRescanFilesPress() {
       dispatch(executeCommand({
-        name: commandNames.RESCAN_FOLDERS
+        name: commandNames.RESCAN_FOLDERS,
+        filter: 'none',
+        addNewAuthors: false
       }));
     },
 

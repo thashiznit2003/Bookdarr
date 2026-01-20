@@ -55,5 +55,13 @@ namespace Readarr.Api.V1.ImportLists
         {
             _importListExclusionService.Delete(id);
         }
+
+        [HttpDelete("bulk")]
+        public object DeleteImportListExclusionResources([FromBody] ImportListExclusionBulkResource resource)
+        {
+            _importListExclusionService.Delete(resource?.Ids ?? new List<int>());
+
+            return new { };
+        }
     }
 }

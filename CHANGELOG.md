@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.179
+- Summary: Fix user missing/upgrades loading, add bulk import list exclusion deletes, and make Unmapped rescan more thorough.
+- Why: Missing Files/File Upgrades were erroring after merged deletions; exclusions needed a multi-select delete flow; Unmapped rescan should capture all disk files.
+- Impact: Missing/Upgrades endpoints allow missing books and use extension-based media types; Import List Exclusions now support selection + bulk delete; Unmapped rescan runs with no filtering to surface unmatched files.
+- Files: `src/Readarr.Api.V1/Wanted/UserMissingFilesController.cs`, `src/Readarr.Api.V1/Wanted/UserFileUpgradesController.cs`, `src/NzbDrone.Core/ImportLists/Exclusions/ImportListExclusionService.cs`, `src/Readarr.Api.V1/ImportLists/ImportListExclusionController.cs`, `src/Readarr.Api.V1/ImportLists/ImportListExclusionBulkResource.cs`, `frontend/src/Store/Actions/Settings/importListExclusions.js`, `frontend/src/Settings/ImportLists/ImportListExclusions/ImportListExclusions.js`, `frontend/src/Settings/ImportLists/ImportListExclusions/ImportListExclusion.js`, `frontend/src/Settings/ImportLists/ImportListExclusions/ImportListExclusions.css`, `frontend/src/Settings/ImportLists/ImportListExclusions/ImportListExclusion.css`, `frontend/src/UnmappedFiles/UnmappedFilesTableConnector.js`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-36.log`).
+
 ## 1.3.178
 - Summary: Add a rescan button on Unmapped Files and move it under File Operations.
 - Why: Users need a manual scan trigger to surface files without a book, and Unmapped Files fits with other file actions.

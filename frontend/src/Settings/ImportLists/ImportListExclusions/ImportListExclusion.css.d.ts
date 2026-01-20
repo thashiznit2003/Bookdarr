@@ -5,6 +5,7 @@ interface CssExports {
   'foreignId': string;
   'importListExclusion': string;
   'name': string;
+  'select': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

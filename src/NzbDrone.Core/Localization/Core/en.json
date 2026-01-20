@@ -113,6 +113,7 @@
   "AutomaticallySwitchEdition": "Automatically Switch Edition/Monitoring",
   "AvailableBooks": "Available Books",
   "SelectAvailableBooks": "Select Available Books",
+  "ExclusionSelect": "Exclusion Select",
   "DoneSelecting": "Done Selecting",
   "RemoveAvailableBookConfirmTitle": "Remove available book?",
   "RemoveAvailableBookConfirmMessage": "Remove \"{0}\" from available books? It will stay hidden until you remove it from Import List Exclusions.",

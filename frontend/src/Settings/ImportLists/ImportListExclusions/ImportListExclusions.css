@@ -4,6 +4,16 @@
   font-weight: bold;
 }
 
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.select {
+  flex: 0 0 30px;
+}
+
 .name {
   flex: 0 1 600px;
 }
