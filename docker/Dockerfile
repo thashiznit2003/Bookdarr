@@ -21,9 +21,24 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
 ARG RID
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 WORKDIR /app/readarr
-RUN apk add --no-cache icu-libs tzdata libstdc++ sqlite-libs \
+RUN apk add --no-cache \
+    ffmpeg \
+    ghostscript \
+    icu-libs \
+    libstdc++ \
+    ocrmypdf \
+    poppler-utils \
+    py3-pip \
+    python3 \
+    qpdf \
+    sqlite-libs \
+    tesseract-ocr \
+    tesseract-ocr-data-eng \
+    tzdata \
+    unpaper \
   && addgroup -S bookdarr \
-  && adduser -S -G bookdarr bookdarr
+  && adduser -S -G bookdarr bookdarr \
+  && python3 -m pip install --no-cache-dir kindleunpack
 
 COPY --from=backend-build /src/_output/net10.0/${RID}/publish ./bin
 COPY --from=backend-build /src/_output/Readarr.Update/net10.0/${RID}/publish ./Readarr.Update

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.4
+- Summary: Add bundled media tooling (ffmpeg, OCR/PDF utilities, KindleUnpack) to the Docker image.
+- Why: Bookdarr relies on external converters for audiobook combine and ebook conversions, and they must ship inside the container.
+- Impact: The production image now includes ffmpeg, ocrmypdf, poppler-utils (pdfimages), tesseract OCR, ghostscript, qpdf, unpaper, and KindleUnpack.
+- Files: `docker/Dockerfile`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.4`, push, then run the SSH update with the next log number (`update-42.log`).
+
 ## 2.0.3
 - Summary: Install SQLite runtime libraries in the production Docker image.
 - Why: The container failed to start because libsqlite3 was missing on Alpine.
