@@ -1,0 +1,16 @@
+.git
+.github
+_artifacts
+_cache
+_output
+_temp
+_tests
+Logs
+node_modules
+logs.zip
+**/*.log
+**/*.suo
+**/*.user
+**/*.cache
+**/bin
+**/obj

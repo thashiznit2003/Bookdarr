@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.180
+- Summary: Add a Docker release workflow, production Dockerfile, and published-image defaults for compose.
+- Why: We need a reproducible production build pipeline and clear deployment defaults to ship Bookdarr as a Docker image.
+- Impact: GitHub tags now publish images to GHCR (and Docker Hub when secrets exist), Docker builds are multi-stage with a runtime entrypoint, compose defaults to the published image with overrides, and docs/checklist reflect the release flow.
+- Files: `.github/workflows/release.yml`, `.dockerignore`, `docker/Dockerfile`, `docker/entrypoint.sh`, `docker-compose.yml`, `scripts/install-bookdarr.sh`, `README.md`, `docs/HANDOFF.md`, `checklist.md`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-38.log`).
+
 ## 1.3.179
 - Summary: Fix user missing/upgrades loading, add bulk import list exclusion deletes, and make Unmapped rescan more thorough.
 - Why: Missing Files/File Upgrades were erroring after merged deletions; exclusions needed a multi-select delete flow; Unmapped rescan should capture all disk files.

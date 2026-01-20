@@ -40,7 +40,7 @@ Use this file to onboard a new Codex chat.
 ## Command Continuity
 - If a command was interrupted, rerun it before continuing.
 - Keep the latest instructions/commands in this section so every agent knows what to execute next (e.g., the current SSH update command, diagnostics push steps, version bump, StyleCop build, etc.).
-- After pushing to GitHub, immediately run the SSH update workflow (`ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-176.log'`) so the Ubuntu VM mirrors the latest version and the diagnostics bundle is generated.
+- After pushing to GitHub, immediately run the SSH update workflow (`ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-37.log'`) so the Ubuntu VM mirrors the latest version and the diagnostics bundle is generated.
 
 ## Diagnostics Workflow
 
@@ -67,7 +67,7 @@ Use this file to onboard a new Codex chat.
 - Search page shows a Google Books free-tier disclaimer.
 
 ## Open Work / Next Steps
-- Docker Hub publish pipeline (GitHub Action + secrets).
+- Verify Docker Hub credentials (`DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`) for the release workflow.
 - Overseerr-like request page.
 - Users: backend update endpoint exists (username/email/password + isActive, admin or self) with reset-token scaffolding; frontend has Add/Edit modals and activate/deactivate/delete. Still needed: per-user libraries/book scoping (user_id ownership + auth scoping), self-service password reset via email sender, and confirmation of per-user library isolation.
 - Library stability: after clearing the user library, `/api/v1/user/library/books` has thrown “Expected query to return N rows but returned M” and the UI then showed only downloading books. Latest attempt (v1.3.111, tag snapshot-20260118-0647, update-176) makes `GetBooks` tolerate missing IDs and uses that in the user-library endpoint. If it recurs, pull the latest diagnostics and recheck the user-library fetch path/DB integrity.

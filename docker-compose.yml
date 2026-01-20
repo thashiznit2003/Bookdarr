@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   bookdarr:
-    image: bookdarr:local
+    image: ${BOOKDARR_IMAGE:-thashiznit2003/bookdarr:latest}
     container_name: bookdarr
     ports:
       - "8787:8787"
@@ -12,5 +12,6 @@ services:
       - TZ=UTC
     volumes:
       - /opt/bookdarr/config:/config
+      - /opt/bookdarr/books:/books
       - /qb1/downloads:/downloads
     restart: unless-stopped

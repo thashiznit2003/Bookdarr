@@ -12,8 +12,9 @@ audiobook files for the same book in a single instance.
 ## Getting Started
 
 The container listens on port 8787 and expects a volume mounted at `/config`.
-Docker images will be published under `thashiznit2003/bookdarr`. Until then,
-build locally from source.
+Docker images are published under `thashiznit2003/bookdarr` (Docker Hub) and
+`ghcr.io/thashiznit2003/bookdarr` (GHCR). Use the bundled compose file or pull
+directly from your preferred registry.
 
 For download client integration, mount your host download folder to
 `/downloads` inside the container (example: `-v /qb1/downloads:/downloads`).
@@ -62,14 +63,16 @@ you can focus on the books that still require attention.
 
 This uses Docker to build from source and logs output to `/opt/bookdarr/install.log`.
 By default it only builds the image; redeploy your Portainer stack to start the container.
+If you want to use the locally built image with compose, set
+`BOOKDARR_IMAGE=bookdarr:local` in your Portainer stack or `.env` file.
 
     sudo mkdir -p /opt/bookdarr && sudo curl -L https://raw.githubusercontent.com/thashiznit2003/Bookdarr/develop/scripts/install-bookdarr.sh -o /opt/bookdarr/install-bookdarr.sh && sudo chmod +x /opt/bookdarr/install-bookdarr.sh && sudo /opt/bookdarr/install-bookdarr.sh
 
 ### Docker Compose / Portainer Stack
 
 Use `docker-compose.yml` for Portainer stacks or local compose deployments.
-It assumes a locally built image (`bookdarr:local`) and mounts `/downloads`
-inside the container for your download client.
+It defaults to the published image on Docker Hub. Set `BOOKDARR_IMAGE` if you
+prefer GHCR (`ghcr.io/thashiznit2003/bookdarr:latest`) or a local build.
 
 To start or redeploy:
 

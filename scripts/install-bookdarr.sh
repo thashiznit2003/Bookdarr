@@ -5,6 +5,7 @@ REPO="${REPO:-thashiznit2003/Bookdarr}"
 BRANCH="${BRANCH:-develop}"
 INSTALL_DIR="${INSTALL_DIR:-/opt/bookdarr}"
 CONFIG_DIR="${CONFIG_DIR:-/opt/bookdarr/config}"
+BOOKS_DIR="${BOOKS_DIR:-/opt/bookdarr/books}"
 IMAGE_TAG="${IMAGE_TAG:-bookdarr:local}"
 CONTAINER_NAME="${CONTAINER_NAME:-bookdarr}"
 RID="${RID:-linux-musl-x64}"
@@ -26,7 +27,7 @@ on_error() {
 
 trap 'on_error ${LINENO} "${BASH_COMMAND}"' ERR
 
-mkdir -p "$INSTALL_DIR" "$CONFIG_DIR"
+mkdir -p "$INSTALL_DIR" "$CONFIG_DIR" "$BOOKS_DIR"
 touch "$LOG_FILE"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
@@ -50,6 +51,7 @@ fi
 log "Preparing install directory"
 find "$INSTALL_DIR" -mindepth 1 -maxdepth 1 \
   ! -name "config" \
+  ! -name "books" \
   ! -name "$(basename "$LOG_FILE")" \
   -exec rm -rf {} +
 
@@ -62,11 +64,11 @@ docker run --rm -v "${INSTALL_DIR}:/src" -w /src node:20-bullseye \
   bash -lc "corepack enable && corepack prepare yarn@1.22.19 --activate && yarn install --frozen-lockfile --network-timeout 120000 && NODE_ENV=production yarn build --env production=true"
 
 log "Building server (.NET)"
-docker run --rm -v "${INSTALL_DIR}:/src" -w /src mcr.microsoft.com/dotnet/sdk:6.0 \
+docker run --rm -v "${INSTALL_DIR}:/src" -w /src mcr.microsoft.com/dotnet/sdk:10.0 \
   bash -lc "dotnet msbuild -restore src/Readarr.sln -p:Configuration=Release -p:Platform=Posix -p:RuntimeIdentifiers=${RID} -t:PublishAllRids"
 
 log "Building Docker image"
-DOCKER_BUILDKIT=1 docker build -t "$IMAGE_TAG" -f "$INSTALL_DIR/docker/Dockerfile" "$INSTALL_DIR"
+DOCKER_BUILDKIT=1 docker build -t "$IMAGE_TAG" -f "$INSTALL_DIR/docker/Dockerfile" --build-arg RID="${RID}" "$INSTALL_DIR"
 
 if [ "${START_CONTAINER}" = "true" ]; then
   if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}\$"; then
@@ -75,7 +77,10 @@ if [ "${START_CONTAINER}" = "true" ]; then
   fi
 
   log "Starting container ${CONTAINER_NAME}"
-  docker run -d --name "$CONTAINER_NAME" -p 8787:8787 -v "${CONFIG_DIR}:/config" "$IMAGE_TAG"
+  docker run -d --name "$CONTAINER_NAME" -p 8787:8787 \
+    -v "${CONFIG_DIR}:/config" \
+    -v "${BOOKS_DIR}:/books" \
+    "$IMAGE_TAG"
   log "Install complete. Open http://<vm-ip>:8787"
 else
   log "Build complete. Redeploy your Portainer stack to start the container."
