@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.1
+- Summary: Fix the Docker release workflow secret checks and re-trigger Docker Hub publishing.
+- Why: GitHub Actions rejected the workflow because secret checks were evaluated in an unsupported context, preventing any jobs from running.
+- Impact: The release workflow now uses job env vars for Docker Hub gating; a new tag will publish images to Docker Hub and GHCR.
+- Files: `.github/workflows/release.yml`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.1`, push, then run the SSH update with the next log number (`update-39.log`).
+
 ## 2.0.0
 - Summary: Release Bookdarr 2.0.0 with Docker Hub publishing enabled.
 - Why: We need a tagged release to trigger the new Docker Hub pipeline and mark the production-ready cut.
