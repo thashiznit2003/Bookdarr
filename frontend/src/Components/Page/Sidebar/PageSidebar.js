@@ -38,10 +38,6 @@ const links = [
       {
         title: () => translate('AddNew'),
         to: '/add/search'
-      },
-      {
-        title: () => translate('UnmappedFiles'),
-        to: '/unmapped'
       }
     ]
   },
@@ -91,6 +87,10 @@ const links = [
       {
         title: () => translate('MissingFiles'),
         to: '/wanted/missing-files'
+      },
+      {
+        title: () => translate('UnmappedFiles'),
+        to: '/unmapped'
       },
       {
         title: () => translate('FileUpgrades'),

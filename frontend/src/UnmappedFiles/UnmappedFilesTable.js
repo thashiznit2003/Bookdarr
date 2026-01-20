@@ -214,6 +214,7 @@ class UnmappedFilesTable extends Component {
       onTableOptionChange,
       onSortPress,
       isScanningFolders,
+      onRescanFilesPress,
       onAddMissingAuthorsPress,
       deleteUnmappedFiles,
       ...otherProps
@@ -236,6 +237,12 @@ class UnmappedFilesTable extends Component {
       <PageContent title={translate('UnmappedFiles')}>
         <PageToolbar>
           <PageToolbarSection>
+            <PageToolbarButton
+              label={translate('RescanBookFiles')}
+              iconName={icons.RESCAN}
+              isSpinning={isScanningFolders}
+              onPress={onRescanFilesPress}
+            />
             <PageToolbarButton
               label={translate('AddMissing')}
               iconName={icons.ADD_MISSING_AUTHORS}
@@ -348,6 +355,7 @@ UnmappedFilesTable.propTypes = {
   deleteUnmappedFiles: PropTypes.func.isRequired,
   fetchUnmappedFiles: PropTypes.func.isRequired,
   isScanningFolders: PropTypes.bool.isRequired,
+  onRescanFilesPress: PropTypes.func.isRequired,
   onAddMissingAuthorsPress: PropTypes.func.isRequired
 };
 

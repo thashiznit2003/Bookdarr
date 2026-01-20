@@ -63,6 +63,12 @@ function createMapDispatchToProps(dispatch, props) {
       dispatch(deleteBookFiles({ bookFileIds }));
     },
 
+    onRescanFilesPress() {
+      dispatch(executeCommand({
+        name: commandNames.RESCAN_FOLDERS
+      }));
+    },
+
     onAddMissingAuthorsPress() {
       dispatch(executeCommand({
         name: commandNames.RESCAN_FOLDERS,
@@ -113,7 +119,8 @@ UnmappedFilesTableConnector.propTypes = {
   onTableOptionChange: PropTypes.func.isRequired,
   fetchUnmappedFiles: PropTypes.func.isRequired,
   deleteUnmappedFile: PropTypes.func.isRequired,
-  deleteUnmappedFiles: PropTypes.func.isRequired
+  deleteUnmappedFiles: PropTypes.func.isRequired,
+  onRescanFilesPress: PropTypes.func.isRequired
 };
 
 export default withCurrentPage(

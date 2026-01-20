@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.178
+- Summary: Add a rescan button on Unmapped Files and move it under File Operations.
+- Why: Users need a manual scan trigger to surface files without a book, and Unmapped Files fits with other file actions.
+- Impact: Unmapped Files now has a Rescan Files button that runs a folder scan; the sidebar lists Unmapped Files under File Operations.
+- Files: `frontend/src/UnmappedFiles/UnmappedFilesTable.js`, `frontend/src/UnmappedFiles/UnmappedFilesTableConnector.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-35.log`).
+
 ## 1.3.177
 - Summary: Treat unknown book file media types as ebook/audiobook based on file extensions.
 - Why: Some existing files have MediaType set to Unknown, which made books appear missing after merges even though files were present.
