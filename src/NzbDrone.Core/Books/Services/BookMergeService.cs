@@ -174,8 +174,8 @@ namespace NzbDrone.Core.Books
 
         private LibraryStatus ResolveStatus(List<BookFile> files, bool wantsEbook, bool wantsAudiobook)
         {
-            var hasEbook = wantsEbook && files.Any(file => file.MediaType == BookFileMediaType.Ebook);
-            var hasAudiobook = wantsAudiobook && files.Any(file => file.MediaType == BookFileMediaType.Audiobook);
+            var hasEbook = wantsEbook && files.Any(file => MediaFileExtensions.GetEffectiveMediaType(file) == BookFileMediaType.Ebook);
+            var hasAudiobook = wantsAudiobook && files.Any(file => MediaFileExtensions.GetEffectiveMediaType(file) == BookFileMediaType.Audiobook);
 
             if (wantsEbook && wantsAudiobook)
             {

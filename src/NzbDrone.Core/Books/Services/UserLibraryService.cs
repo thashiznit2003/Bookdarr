@@ -121,7 +121,11 @@ namespace NzbDrone.Core.Books
         public bool IsBookAvailableInPool(int bookId)
         {
             return _mediaFileRepository.GetFilesByBook(bookId)
-                .Any(file => file.MediaType == BookFileMediaType.Ebook || file.MediaType == BookFileMediaType.Audiobook);
+                .Any(file =>
+                {
+                    var mediaType = MediaFileExtensions.GetEffectiveMediaType(file);
+                    return mediaType == BookFileMediaType.Ebook || mediaType == BookFileMediaType.Audiobook;
+                });
         }
 
         public LibraryStatus GetPoolStatus(int bookId, bool wantsEbook, bool wantsAudiobook)
@@ -140,7 +144,7 @@ namespace NzbDrone.Core.Books
         public bool PoolHasMedia(int bookId, BookFileMediaType mediaType)
         {
             return _mediaFileRepository.GetFilesByBook(bookId)
-                .Any(f => f.MediaType == mediaType);
+                .Any(f => MediaFileExtensions.GetEffectiveMediaType(f) == mediaType);
         }
 
         public bool UserBookHasMedia(UserBook userBook, BookFileMediaType mediaType)
@@ -155,7 +159,7 @@ namespace NzbDrone.Core.Books
             }
 
             var files = _mediaFileRepository.Get(fileIds);
-            return files.Any(f => f.MediaType == mediaType);
+            return files.Any(f => MediaFileExtensions.GetEffectiveMediaType(f) == mediaType);
         }
 
         private LibraryStatus ResolveStatus(int bookId, bool wantsEbook, bool wantsAudiobook)
@@ -163,8 +167,8 @@ namespace NzbDrone.Core.Books
             var files = _mediaFileRepository.GetFilesByBook(bookId)
                 .ToList();
 
-            var hasEbook = wantsEbook && files.Any(f => f.MediaType == BookFileMediaType.Ebook);
-            var hasAudiobook = wantsAudiobook && files.Any(f => f.MediaType == BookFileMediaType.Audiobook);
+            var hasEbook = wantsEbook && files.Any(f => MediaFileExtensions.GetEffectiveMediaType(f) == BookFileMediaType.Ebook);
+            var hasAudiobook = wantsAudiobook && files.Any(f => MediaFileExtensions.GetEffectiveMediaType(f) == BookFileMediaType.Audiobook);
 
             if (wantsEbook && wantsAudiobook)
             {
@@ -192,7 +196,7 @@ namespace NzbDrone.Core.Books
 
             if (wantsEbook)
             {
-                var ebookFile = sharedFiles.FirstOrDefault(f => f.MediaType == BookFileMediaType.Ebook);
+                var ebookFile = sharedFiles.FirstOrDefault(f => MediaFileExtensions.GetEffectiveMediaType(f) == BookFileMediaType.Ebook);
                 if (ebookFile != null)
                 {
                     AddUserBookFile(userBook.Id, ebookFile, UserBookFileRole.Primary);
@@ -201,7 +205,7 @@ namespace NzbDrone.Core.Books
 
             if (wantsAudiobook)
             {
-                var audiobookFile = sharedFiles.FirstOrDefault(f => f.MediaType == BookFileMediaType.Audiobook);
+                var audiobookFile = sharedFiles.FirstOrDefault(f => MediaFileExtensions.GetEffectiveMediaType(f) == BookFileMediaType.Audiobook);
                 if (audiobookFile != null)
                 {
                     AddUserBookFile(userBook.Id, audiobookFile, UserBookFileRole.Primary);

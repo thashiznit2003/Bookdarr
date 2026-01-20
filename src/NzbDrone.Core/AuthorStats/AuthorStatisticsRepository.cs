@@ -48,13 +48,17 @@ namespace NzbDrone.Core.AuthorStats
         private SqlBuilder Builder()
         {
             var trueIndicator = _database.DatabaseType == DatabaseType.PostgreSQL ? "true" : "1";
+            var ebookPathMatch = BuildPathMatch(MediaFileExtensions.TextExtensions);
+            var audiobookPathMatch = BuildPathMatch(MediaFileExtensions.AudioExtensions);
+            var ebookExpression = $@"""BookFiles"".""MediaType"" = {(int)BookFileMediaType.Ebook} OR (""BookFiles"".""MediaType"" = {(int)BookFileMediaType.Unknown} AND ({ebookPathMatch}))";
+            var audiobookExpression = $@"""BookFiles"".""MediaType"" = {(int)BookFileMediaType.Audiobook} OR (""BookFiles"".""MediaType"" = {(int)BookFileMediaType.Unknown} AND ({audiobookPathMatch}))";
 
             return new SqlBuilder(_database.DatabaseType)
             .Select($@"""Authors"".""Id"" AS ""AuthorId"",
                      ""Books"".""Id"" AS ""BookId"",
                      SUM(COALESCE(""BookFiles"".""Size"", 0)) AS ""SizeOnDisk"",
-                     SUM(CASE WHEN ""BookFiles"".""MediaType"" = {(int)BookFileMediaType.Ebook} THEN 1 ELSE 0 END) AS ""EbookFileCount"",
-                     SUM(CASE WHEN ""BookFiles"".""MediaType"" = {(int)BookFileMediaType.Audiobook} THEN 1 ELSE 0 END) AS ""AudiobookFileCount"",
+                     SUM(CASE WHEN {ebookExpression} THEN 1 ELSE 0 END) AS ""EbookFileCount"",
+                     SUM(CASE WHEN {audiobookExpression} THEN 1 ELSE 0 END) AS ""AudiobookFileCount"",
                      1 AS ""TotalBookCount"",
                      CASE WHEN MIN(""BookFiles"".""Id"") IS NULL THEN 0 ELSE 1 END AS ""AvailableBookCount"",
                      CASE WHEN (""Books"".""Monitored"" = {trueIndicator} AND (""Books"".""ReleaseDate"" < @currentDate) OR ""Books"".""ReleaseDate"" IS NULL) OR MIN(""BookFiles"".""Id"") IS NOT NULL THEN 1 ELSE 0 END AS ""BookCount"",
@@ -65,6 +69,15 @@ namespace NzbDrone.Core.AuthorStats
             .GroupBy<Author>(x => x.Id)
             .GroupBy<Book>(x => x.Id)
             .AddParameters(new Dictionary<string, object> { { "currentDate", DateTime.UtcNow } });
+        }
+
+        private static string BuildPathMatch(IEnumerable<string> extensions)
+        {
+            return string.Join(" OR ", extensions.Select(extension =>
+            {
+                var lowerExtension = extension.ToLowerInvariant();
+                return $@"LOWER(""BookFiles"".""Path"") LIKE '%{lowerExtension}'";
+            }));
         }
     }
 }

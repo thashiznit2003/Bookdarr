@@ -72,6 +72,21 @@ namespace NzbDrone.Core.MediaFiles
             return GetMediaTypeForExtension(Path.GetExtension(path));
         }
 
+        public static BookFileMediaType GetEffectiveMediaType(BookFile bookFile)
+        {
+            if (bookFile == null)
+            {
+                return BookFileMediaType.Unknown;
+            }
+
+            if (bookFile.MediaType != BookFileMediaType.Unknown)
+            {
+                return bookFile.MediaType;
+            }
+
+            return GetMediaTypeForPath(bookFile.Path);
+        }
+
         public static BookFileMediaType GetMediaTypeForQuality(Quality quality)
         {
             if (quality == null)

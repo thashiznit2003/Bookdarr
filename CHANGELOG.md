@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.177
+- Summary: Treat unknown book file media types as ebook/audiobook based on file extensions.
+- Why: Some existing files have MediaType set to Unknown, which made books appear missing after merges even though files were present.
+- Impact: Stats and library checks now fall back to file extensions for unknown media types, so existing files count correctly and missing indicators clear.
+- Files: `src/NzbDrone.Core/AuthorStats/AuthorStatisticsRepository.cs`, `src/NzbDrone.Core/MediaFiles/MediaFileExtensions.cs`, `src/NzbDrone.Core/Books/Services/UserLibraryService.cs`, `src/NzbDrone.Core/Books/Services/BookMergeService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-34.log`).
+
 ## 1.3.176
 - Summary: Count book files across all editions when computing book statistics.
 - Why: After merging duplicates, files can live on unmonitored editions, which caused false missing indicators in the library.
