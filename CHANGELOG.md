@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.175
+- Summary: Stop Basic auth from spamming Events for requests without Authorization headers.
+- Why: Missing headers should defer to other auth schemes instead of logging failures.
+- Impact: Basic auth now returns NoResult when the header is missing or not Basic; only actual credential failures log. Event noise drops for UI/API calls.
+- Files: `src/Readarr.Http/Authentication/BasicAuthenticationHandler.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-32.log`).
+
 ## 1.3.174
 - Summary: Add task state controls (enable/disable/delete) with a save flow and warning banner.
 - Why: Users need to pause or remove scheduled jobs, especially the monitored download tasks, to diagnose duplicates.

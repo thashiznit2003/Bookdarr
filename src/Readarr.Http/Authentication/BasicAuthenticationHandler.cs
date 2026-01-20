@@ -30,7 +30,7 @@ namespace Readarr.Http.Authentication
         {
             if (!Request.Headers.ContainsKey("Authorization"))
             {
-                return Task.FromResult(AuthenticateResult.Fail("Authorization header missing."));
+                return Task.FromResult(AuthenticateResult.NoResult());
             }
 
             // Get authorization key
@@ -39,7 +39,7 @@ namespace Readarr.Http.Authentication
 
             if (!authHeaderRegex.IsMatch(authorizationHeader))
             {
-                return Task.FromResult(AuthenticateResult.Fail("Authorization code not formatted properly."));
+                return Task.FromResult(AuthenticateResult.NoResult());
             }
 
             var authBase64 = Encoding.UTF8.GetString(Convert.FromBase64String(authHeaderRegex.Replace(authorizationHeader, "$1")));
