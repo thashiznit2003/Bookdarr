@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.174
+- Summary: Add task state controls (enable/disable/delete) with a save flow and warning banner.
+- Why: Users need to pause or remove scheduled jobs, especially the monitored download tasks, to diagnose duplicates.
+- Impact: System → Tasks now shows a Schedule dropdown per task, persists enabled/disabled/deleted states, and displays a toolbar warning + save action; backend stores task states and respects them on startup.
+- Files: `frontend/src/System/Tasks/Tasks.js`, `frontend/src/System/Tasks/Tasks.css`, `frontend/src/System/Tasks/Scheduled/ScheduledTasks.js`, `frontend/src/System/Tasks/Scheduled/ScheduledTaskRow.js`, `frontend/src/System/Tasks/Scheduled/ScheduledTaskRow.css`, `frontend/src/System/Tasks/Scheduled/ScheduledTaskRowConnector.js`, `src/Readarr.Api.V1/System/Tasks/TaskController.cs`, `src/Readarr.Api.V1/System/Tasks/TaskResource.cs`, `src/Readarr.Api.V1/System/Tasks/TaskStateResource.cs`, `src/NzbDrone.Core/Jobs/TaskManager.cs`, `src/NzbDrone.Core/Jobs/TaskState.cs`, `src/NzbDrone.Core/Jobs/ScheduledTaskDefinition.cs`, `src/NzbDrone.Core/Configuration/ConfigFileProvider.cs`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-31.log`).
+
 ## 1.3.173
 - Summary: Rename app log files from readarr.* to bookdarr.*.
 - Why: Log filenames should match the Bookdarr branding.

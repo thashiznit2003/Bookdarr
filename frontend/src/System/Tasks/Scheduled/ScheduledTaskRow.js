@@ -1,6 +1,7 @@
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import SelectInput from 'Components/Form/SelectInput';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
@@ -8,6 +9,7 @@ import { icons } from 'Helpers/Props';
 import formatDate from 'Utilities/Date/formatDate';
 import formatDateTime from 'Utilities/Date/formatDateTime';
 import formatTimeSpan from 'Utilities/Date/formatTimeSpan';
+import translate from 'Utilities/String/translate';
 import styles from './ScheduledTaskRow.css';
 
 function getFormattedDates(props) {
@@ -87,6 +89,15 @@ class ScheduledTaskRow extends Component {
   //
   // Render
 
+  onStateChange = ({ value }) => {
+    const {
+      id,
+      onTaskStateChange
+    } = this.props;
+
+    onTaskStateChange(id, value);
+  };
+
   render() {
     const {
       name,
@@ -97,6 +108,9 @@ class ScheduledTaskRow extends Component {
       nextExecution,
       isQueued,
       isExecuting,
+      isCritical,
+      pendingState,
+      state: taskState,
       longDateFormat,
       timeFormat,
       onExecutePress
@@ -112,6 +126,12 @@ class ScheduledTaskRow extends Component {
     const hasNextExecutionTime = !isDisabled && !executeNow;
     const duration = moment.duration(interval, 'minutes').humanize().replace(/an?(?=\s)/, '1');
     const hasLastStartTime = moment(lastStartTime).isAfter('2010-01-01');
+    const selectedState = pendingState ?? taskState ?? 'enabled';
+    const stateOptions = [
+      { key: 'enabled', value: translate('TaskStateEnabled') },
+      { key: 'disabled', value: translate('TaskStateDisabled') },
+      { key: 'deleted', value: translate('TaskStateDeleted') }
+    ];
 
     return (
       <TableRow>
@@ -169,6 +189,19 @@ class ScheduledTaskRow extends Component {
             </TableRowCell>
         }
 
+        <TableRowCell className={styles.state}>
+          {
+            isCritical ?
+              <span>{translate('TaskStateCritical')}</span> :
+              <SelectInput
+                name={`taskState-${name}`}
+                value={selectedState}
+                values={stateOptions}
+                onChange={this.onStateChange}
+              />
+          }
+        </TableRowCell>
+
         <TableRowCell
           className={styles.actions}
         >
@@ -193,11 +226,15 @@ ScheduledTaskRow.propTypes = {
   nextExecution: PropTypes.string.isRequired,
   isQueued: PropTypes.bool.isRequired,
   isExecuting: PropTypes.bool.isRequired,
+  isCritical: PropTypes.bool.isRequired,
+  state: PropTypes.string,
+  pendingState: PropTypes.string,
   showRelativeDates: PropTypes.bool.isRequired,
   shortDateFormat: PropTypes.string.isRequired,
   longDateFormat: PropTypes.string.isRequired,
   timeFormat: PropTypes.string.isRequired,
-  onExecutePress: PropTypes.func.isRequired
+  onExecutePress: PropTypes.func.isRequired,
+  onTaskStateChange: PropTypes.func.isRequired
 };
 
 export default ScheduledTaskRow;

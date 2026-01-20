@@ -86,7 +86,9 @@ class ScheduledTaskRowConnector extends Component {
 ScheduledTaskRowConnector.propTypes = {
   id: PropTypes.number.isRequired,
   isExecuting: PropTypes.bool.isRequired,
-  dispatchFetchTask: PropTypes.func.isRequired
+  dispatchFetchTask: PropTypes.func.isRequired,
+  pendingState: PropTypes.string,
+  onTaskStateChange: PropTypes.func.isRequired
 };
 
 export default connect(createMapStateToProps, createMapDispatchToProps)(ScheduledTaskRowConnector);

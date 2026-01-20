@@ -34,6 +34,11 @@ const columns = [
     isVisible: true
   },
   {
+    name: 'taskState',
+    label: () => translate('TaskState'),
+    isVisible: true
+  },
+  {
     name: 'actions',
     isVisible: true
   }
@@ -43,7 +48,9 @@ function ScheduledTasks(props) {
   const {
     isFetching,
     isPopulated,
-    items
+    items,
+    pendingTaskStates,
+    onTaskStateChange
   } = props;
 
   return (
@@ -64,6 +71,8 @@ function ScheduledTasks(props) {
                   return (
                     <ScheduledTaskRowConnector
                       key={item.id}
+                      pendingState={pendingTaskStates[item.id]}
+                      onTaskStateChange={onTaskStateChange}
                       {...item}
                     />
                   );
@@ -79,7 +88,9 @@ function ScheduledTasks(props) {
 ScheduledTasks.propTypes = {
   isFetching: PropTypes.bool.isRequired,
   isPopulated: PropTypes.bool.isRequired,
-  items: PropTypes.array.isRequired
+  items: PropTypes.array.isRequired,
+  pendingTaskStates: PropTypes.object.isRequired,
+  onTaskStateChange: PropTypes.func.isRequired
 };
 
 export default ScheduledTasks;

@@ -44,20 +44,65 @@ namespace Readarr.Api.V1.System.Tasks
             return ConvertToResource(task);
         }
 
-        private static TaskResource ConvertToResource(ScheduledTask scheduledTask)
+        private TaskResource ConvertToResource(ScheduledTask scheduledTask)
         {
             var taskName = scheduledTask.TypeName.Split('.').Last().Replace("Command", "");
+            var definition = _taskManager.GetDefinitions().SingleOrDefault(def => def.TaskName == taskName);
+            var taskState = _taskManager.GetTaskState(taskName);
 
             return new TaskResource
             {
                 Id = scheduledTask.Id,
                 Name = taskName.SplitCamelCase(),
                 TaskName = taskName,
+                State = taskState.ToString().ToLower(),
+                IsCritical = definition?.IsCritical ?? false,
                 Interval = scheduledTask.Interval,
                 LastExecution = scheduledTask.LastExecution,
                 LastStartTime = scheduledTask.LastStartTime,
                 NextExecution = scheduledTask.LastExecution.AddMinutes(scheduledTask.Interval)
             };
+        }
+
+        [HttpPut("{id:int}/state")]
+        public ActionResult<TaskResource> UpdateTaskState(int id, [FromBody] TaskStateResource resource)
+        {
+            if (resource == null || resource.State.IsNullOrWhiteSpace())
+            {
+                return BadRequest("Task state is required.");
+            }
+
+            var task = _taskManager.GetAll()
+                                   .SingleOrDefault(t => t.Id == id);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            var taskName = task.TypeName.Split('.').Last().Replace("Command", "");
+            var definition = _taskManager.GetDefinitions().SingleOrDefault(def => def.TaskName == taskName);
+
+            if (definition == null)
+            {
+                return NotFound();
+            }
+
+            if (definition.IsCritical)
+            {
+                return BadRequest("Critical tasks cannot be modified.");
+            }
+
+            if (!System.Enum.TryParse(resource.State, true, out TaskState state))
+            {
+                return BadRequest("Invalid task state.");
+            }
+
+            _taskManager.SetTaskState(taskName, state);
+
+            var updated = _taskManager.GetAll().SingleOrDefault(t => t.Id == id) ?? task;
+
+            return Accepted(ConvertToResource(updated));
         }
 
         [NonAction]

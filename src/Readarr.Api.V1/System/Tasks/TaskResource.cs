@@ -7,6 +7,8 @@ namespace Readarr.Api.V1.System.Tasks
     {
         public string Name { get; set; }
         public string TaskName { get; set; }
+        public string State { get; set; }
+        public bool IsCritical { get; set; }
         public int Interval { get; set; }
         public DateTime LastExecution { get; set; }
         public DateTime LastStartTime { get; set; }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using NzbDrone.Common.Cache;
+using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Backup;
 using NzbDrone.Core.Books.Commands;
 using NzbDrone.Core.Configuration;
@@ -24,19 +25,24 @@ namespace NzbDrone.Core.Jobs
         IList<ScheduledTask> GetPending();
         List<ScheduledTask> GetAll();
         DateTime GetNextExecution(Type type);
+        List<ScheduledTaskDefinition> GetDefinitions();
+        TaskState GetTaskState(string taskName);
+        ScheduledTask SetTaskState(string taskName, TaskState state);
     }
 
     public class TaskManager : ITaskManager, IHandle<ApplicationStartedEvent>, IHandle<CommandExecutedEvent>, IHandleAsync<ConfigSavedEvent>
     {
         private readonly IScheduledTaskRepository _scheduledTaskRepository;
         private readonly IConfigService _configService;
+        private readonly IConfigFileProvider _configFileProvider;
         private readonly Logger _logger;
         private readonly ICached<ScheduledTask> _cache;
 
-        public TaskManager(IScheduledTaskRepository scheduledTaskRepository, IConfigService configService, ICacheManager cacheManager, Logger logger)
+        public TaskManager(IScheduledTaskRepository scheduledTaskRepository, IConfigService configService, IConfigFileProvider configFileProvider, ICacheManager cacheManager, Logger logger)
         {
             _scheduledTaskRepository = scheduledTaskRepository;
             _configService = configService;
+            _configFileProvider = configFileProvider;
             _cache = cacheManager.GetCache<ScheduledTask>(GetType());
             _logger = logger;
         }
@@ -60,65 +66,90 @@ namespace NzbDrone.Core.Jobs
             return scheduledTask.LastExecution.AddMinutes(scheduledTask.Interval);
         }
 
+        public List<ScheduledTaskDefinition> GetDefinitions()
+        {
+            return new List<ScheduledTaskDefinition>
+                {
+                    new ScheduledTaskDefinition(typeof(RefreshMonitoredDownloadsCommand), 1, false, CommandPriority.High),
+                    new ScheduledTaskDefinition(typeof(MessagingCleanupCommand), 5),
+                    new ScheduledTaskDefinition(typeof(ApplicationUpdateCheckCommand), 6 * 60),
+                    new ScheduledTaskDefinition(typeof(CheckHealthCommand), 6 * 60),
+                    new ScheduledTaskDefinition(typeof(RefreshAuthorCommand), 24 * 60),
+                    new ScheduledTaskDefinition(typeof(RescanFoldersCommand), 24 * 60),
+                    new ScheduledTaskDefinition(typeof(HousekeepingCommand), 24 * 60),
+                    new ScheduledTaskDefinition(typeof(BackupCommand), GetBackupInterval()),
+                    new ScheduledTaskDefinition(typeof(ImportListSyncCommand), 5)
+                };
+        }
+
+        public TaskState GetTaskState(string taskName)
+        {
+            var (disabledTasks, deletedTasks) = GetTaskStateLists();
+
+            if (deletedTasks.Contains(taskName))
+            {
+                return TaskState.Deleted;
+            }
+
+            if (disabledTasks.Contains(taskName))
+            {
+                return TaskState.Disabled;
+            }
+
+            return TaskState.Enabled;
+        }
+
+        public ScheduledTask SetTaskState(string taskName, TaskState state)
+        {
+            var definitions = GetDefinitions();
+            var definition = definitions.SingleOrDefault(def => def.TaskName.Equals(taskName, StringComparison.InvariantCultureIgnoreCase));
+
+            if (definition == null)
+            {
+                throw new InvalidOperationException($"Unknown task '{taskName}'");
+            }
+
+            var (disabledTasks, deletedTasks) = GetTaskStateLists();
+
+            switch (state)
+            {
+                case TaskState.Enabled:
+                    disabledTasks.Remove(taskName);
+                    deletedTasks.Remove(taskName);
+                    break;
+                case TaskState.Disabled:
+                    disabledTasks.Add(taskName);
+                    deletedTasks.Remove(taskName);
+                    break;
+                case TaskState.Deleted:
+                    deletedTasks.Add(taskName);
+                    disabledTasks.Remove(taskName);
+                    break;
+            }
+
+            _configFileProvider.SaveConfigDictionary(new Dictionary<string, object>
+            {
+                { "DisabledTasks", SerializeTaskList(disabledTasks) },
+                { "DeletedTasks", SerializeTaskList(deletedTasks) }
+            });
+
+            var interval = state == TaskState.Enabled ? definition.Interval : 0;
+            UpdateTaskInterval(definition.CommandType, interval);
+
+            return _cache.Find(definition.TypeName);
+        }
+
         public void Handle(ApplicationStartedEvent message)
         {
-            var defaultTasks = new List<ScheduledTask>
-                {
-                    new ScheduledTask
-                    {
-                        Interval = 1,
-                        TypeName = typeof(RefreshMonitoredDownloadsCommand).FullName,
-                        Priority = CommandPriority.High
-                    },
+            var definitions = GetDefinitions();
+            var defaultTasks = definitions.Select(definition => new ScheduledTask
+            {
+                Interval = definition.Interval,
+                TypeName = definition.TypeName,
+                Priority = definition.Priority
+            }).ToList();
 
-                    new ScheduledTask
-                    {
-                        Interval = 5,
-                        TypeName = typeof(MessagingCleanupCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 6 * 60,
-                        TypeName = typeof(ApplicationUpdateCheckCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 6 * 60,
-                        TypeName = typeof(CheckHealthCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 24 * 60,
-                        TypeName = typeof(RefreshAuthorCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 24 * 60,
-                        TypeName = typeof(RescanFoldersCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 24 * 60,
-                        TypeName = typeof(HousekeepingCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = GetBackupInterval(),
-                        TypeName = typeof(BackupCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 5,
-                        TypeName = typeof(ImportListSyncCommand).FullName
-                    }
-                };
+            ApplyTaskStateOverrides(defaultTasks, definitions);
 
             var currentTasks = _scheduledTaskRepository.All().ToList();
 
@@ -185,12 +216,76 @@ namespace NzbDrone.Core.Jobs
 
         public void HandleAsync(ConfigSavedEvent message)
         {
-            var backup = _scheduledTaskRepository.GetDefinition(typeof(BackupCommand));
-            backup.Interval = GetBackupInterval();
+            var backupDefinition = GetDefinitions().Single(def => def.CommandType == typeof(BackupCommand));
+            var backupInterval = GetTaskState(backupDefinition.TaskName) == TaskState.Enabled ? backupDefinition.Interval : 0;
 
-            _scheduledTaskRepository.UpdateMany(new List<ScheduledTask> { backup });
+            UpdateTaskInterval(backupDefinition.CommandType, backupInterval);
+        }
 
-            _cache.Find(backup.TypeName).Interval = backup.Interval;
+        private void UpdateTaskInterval(Type commandType, int interval)
+        {
+            var scheduledTask = _scheduledTaskRepository.GetDefinition(commandType);
+
+            var update = new ScheduledTask
+            {
+                Id = scheduledTask.Id,
+                Interval = interval
+            };
+
+            _scheduledTaskRepository.SetFields(update, task => task.Interval);
+
+            var cached = _cache.Find(scheduledTask.TypeName);
+            if (cached != null)
+            {
+                cached.Interval = interval;
+            }
+        }
+
+        private void ApplyTaskStateOverrides(IList<ScheduledTask> tasks, IList<ScheduledTaskDefinition> definitions)
+        {
+            var (disabledTasks, deletedTasks) = GetTaskStateLists();
+
+            foreach (var task in tasks)
+            {
+                var definition = definitions.SingleOrDefault(def => def.TypeName == task.TypeName);
+                var taskName = definition?.TaskName ?? task.TypeName.Split('.').Last().Replace("Command", string.Empty);
+
+                if (disabledTasks.Contains(taskName) || deletedTasks.Contains(taskName))
+                {
+                    task.Interval = 0;
+                }
+            }
+        }
+
+        private (HashSet<string> disabledTasks, HashSet<string> deletedTasks) GetTaskStateLists()
+        {
+            var disabledTasks = ParseTaskList(_configFileProvider.DisabledTasks);
+            var deletedTasks = ParseTaskList(_configFileProvider.DeletedTasks);
+
+            return (disabledTasks, deletedTasks);
+        }
+
+        private HashSet<string> ParseTaskList(string raw)
+        {
+            if (raw.IsNullOrWhiteSpace())
+            {
+                return new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+            }
+
+            return raw.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                      .Select(entry => entry.Trim())
+                      .Where(entry => entry.IsNotNullOrWhiteSpace())
+                      .ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+        }
+
+        private string SerializeTaskList(HashSet<string> tasks)
+        {
+            if (tasks == null || tasks.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return string.Join(",", tasks.OrderBy(task => task));
         }
     }
 }

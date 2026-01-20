@@ -5,6 +5,7 @@ using NLog;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Common.TPL;
 using NzbDrone.Core.Configuration;
+using NzbDrone.Core.Jobs;
 using NzbDrone.Core.MediaFiles.Events;
 using NzbDrone.Core.Messaging.Commands;
 using NzbDrone.Core.Messaging.Events;
@@ -23,6 +24,7 @@ namespace NzbDrone.Core.Download.TrackedDownloads
         private readonly IEventAggregator _eventAggregator;
         private readonly IManageCommandQueue _manageCommandQueue;
         private readonly IConfigService _configService;
+        private readonly ITaskManager _taskManager;
         private readonly IFailedDownloadService _failedDownloadService;
         private readonly ICompletedDownloadService _completedDownloadService;
         private readonly ITrackedDownloadService _trackedDownloadService;
@@ -34,6 +36,7 @@ namespace NzbDrone.Core.Download.TrackedDownloads
                                          IEventAggregator eventAggregator,
                                          IManageCommandQueue manageCommandQueue,
                                          IConfigService configService,
+                                         ITaskManager taskManager,
                                          IFailedDownloadService failedDownloadService,
                                          ICompletedDownloadService completedDownloadService,
                                          ITrackedDownloadService trackedDownloadService,
@@ -44,6 +47,7 @@ namespace NzbDrone.Core.Download.TrackedDownloads
             _eventAggregator = eventAggregator;
             _manageCommandQueue = manageCommandQueue;
             _configService = configService;
+            _taskManager = taskManager;
             _failedDownloadService = failedDownloadService;
             _completedDownloadService = completedDownloadService;
             _trackedDownloadService = trackedDownloadService;
@@ -54,11 +58,23 @@ namespace NzbDrone.Core.Download.TrackedDownloads
 
         private void QueueRefresh()
         {
+            if (!IsRefreshTaskEnabled())
+            {
+                _logger.Debug("Skipping Refresh Monitored Downloads because the task is disabled.");
+                return;
+            }
+
             _manageCommandQueue.Push(new RefreshMonitoredDownloadsCommand(), CommandPriority.High);
         }
 
         private void Refresh()
         {
+            if (!IsRefreshTaskEnabled())
+            {
+                _logger.Debug("Skipping Refresh Monitored Downloads because the task is disabled.");
+                return;
+            }
+
             _refreshDebounce.Pause();
             try
             {
@@ -183,6 +199,11 @@ namespace NzbDrone.Core.Download.TrackedDownloads
             var trackedDownloads = _trackedDownloadService.GetTrackedDownloads().Where(t => t.IsTrackable && DownloadIsTrackable(t)).ToList();
 
             _eventAggregator.PublishEvent(new TrackedDownloadRefreshedEvent(trackedDownloads));
+        }
+
+        private bool IsRefreshTaskEnabled()
+        {
+            return _taskManager.GetTaskState("RefreshMonitoredDownloads") == TaskState.Enabled;
         }
     }
 }
