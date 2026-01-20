@@ -86,7 +86,9 @@ namespace Readarr.Api.V1.System
                 PackageVersion = _deploymentInfoProvider.PackageVersion,
                 PackageAuthor = _deploymentInfoProvider.PackageAuthor,
                 PackageUpdateMechanism = _deploymentInfoProvider.PackageUpdateMechanism,
-                PackageUpdateMechanismMessage = _deploymentInfoProvider.PackageUpdateMechanismMessage
+                PackageUpdateMechanismMessage = _deploymentInfoProvider.PackageUpdateMechanismMessage,
+                EnableDiagnostics = _configFileProvider.EnableDiagnostics,
+                EnableDevelopmentMenu = _configFileProvider.EnableDevelopmentMenu
             };
         }
 

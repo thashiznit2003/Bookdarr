@@ -37,5 +37,7 @@ namespace Readarr.Api.V1.System
         public string PackageAuthor { get; set; }
         public UpdateMechanism PackageUpdateMechanism { get; set; }
         public string PackageUpdateMechanismMessage { get; set; }
+        public bool EnableDiagnostics { get; set; }
+        public bool EnableDevelopmentMenu { get; set; }
     }
 }

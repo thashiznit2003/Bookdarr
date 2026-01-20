@@ -8,3 +8,12 @@
   font-size: 12px;
   color: var(--disabledColor);
 }
+
+.instructionsTitle {
+  font-weight: bold;
+}
+
+.instructionsList {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}

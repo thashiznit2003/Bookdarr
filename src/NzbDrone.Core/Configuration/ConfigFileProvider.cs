@@ -64,6 +64,8 @@ namespace NzbDrone.Core.Configuration
         string DiagnosticsToken { get; }
         string DiagnosticsGitUserName { get; }
         string DiagnosticsGitUserEmail { get; }
+        bool EnableDiagnostics { get; }
+        bool EnableDevelopmentMenu { get; }
     }
 
     public class ConfigFileProvider : IConfigFileProvider
@@ -291,6 +293,10 @@ namespace NzbDrone.Core.Configuration
         public string DiagnosticsGitUserName => GetValue("DiagnosticsGitUserName", string.Empty, persist: false);
 
         public string DiagnosticsGitUserEmail => GetValue("DiagnosticsGitUserEmail", string.Empty, persist: false);
+
+        public bool EnableDiagnostics => GetValueBoolean("EnableDiagnostics", true);
+
+        public bool EnableDevelopmentMenu => GetValueBoolean("EnableDevelopmentMenu", true);
 
         public int GetValueInt(string key, int defaultValue, bool persist = true)
         {

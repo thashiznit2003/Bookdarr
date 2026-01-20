@@ -9,7 +9,7 @@ import translate from 'Utilities/String/translate';
 import SettingsToolbarConnector from './SettingsToolbarConnector';
 import styles from './Settings.css';
 
-function Settings({ isAdmin }) {
+function Settings({ isAdmin, enableDevelopmentMenu }) {
   const sections = [
     {
       to: '/settings/general',
@@ -84,7 +84,8 @@ function Settings({ isAdmin }) {
       to: '/settings/development',
       title: translate('Development'),
       summary: 'Development settings',
-      adminOnly: true
+      adminOnly: true,
+      isHidden: !enableDevelopmentMenu
     },
     {
       to: '/settings/users',
@@ -93,7 +94,8 @@ function Settings({ isAdmin }) {
     }
   ];
 
-  const visibleSections = isAdmin ? sections : sections.filter((section) => !section.adminOnly);
+  const visibleSections = (isAdmin ? sections : sections.filter((section) => !section.adminOnly))
+    .filter((section) => !section.isHidden);
 
   return (
     <PageContent title={translate('Settings')}>
@@ -122,15 +124,17 @@ function Settings({ isAdmin }) {
 }
 
 Settings.propTypes = {
-  isAdmin: PropTypes.bool.isRequired
+  isAdmin: PropTypes.bool.isRequired,
+  enableDevelopmentMenu: PropTypes.bool.isRequired
 };
 
 function createMapStateToProps() {
   return createSelector(
     (state) => state.currentUser.item,
-    (state) => state.system.status.item?.isAdmin ?? false,
-    (currentUser, statusIsAdmin) => ({
-      isAdmin: currentUser?.isAdmin ?? statusIsAdmin ?? false
+    (state) => state.system.status.item,
+    (currentUser, systemStatus) => ({
+      isAdmin: currentUser?.isAdmin ?? systemStatus?.isAdmin ?? false,
+      enableDevelopmentMenu: systemStatus?.enableDevelopmentMenu ?? true
     })
   );
 }

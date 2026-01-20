@@ -177,6 +177,8 @@ function createMapStateToProps() {
         authenticationEnabled: systemStatus.authentication !== 'none',
         systemVersion: systemStatus.version,
         enableColorImpairedMode,
+        enableDiagnostics: systemStatus?.enableDiagnostics ?? true,
+        enableDevelopmentMenu: systemStatus?.enableDevelopmentMenu ?? true,
         isAdmin
       };
     }

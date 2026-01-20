@@ -4,6 +4,8 @@ interface SystemStatus {
   authentication: string;
   branch: string;
   buildTime: string;
+  enableDevelopmentMenu: boolean;
+  enableDiagnostics: boolean;
   instanceName: string;
   isAdmin: boolean;
   isDebug: boolean;

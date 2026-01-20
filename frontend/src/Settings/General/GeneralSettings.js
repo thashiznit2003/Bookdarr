@@ -10,6 +10,7 @@ import PageContentBody from 'Components/Page/PageContentBody';
 import { kinds } from 'Helpers/Props';
 import SettingsToolbarConnector from 'Settings/SettingsToolbarConnector';
 import translate from 'Utilities/String/translate';
+import AdvancedSettings from './AdvancedSettings';
 import BackupSettings from './BackupSettings';
 import HostSettings from './HostSettings';
 import LoggingSettings from './LoggingSettings';
@@ -165,6 +166,11 @@ class GeneralSettings extends Component {
 
                 <BackupSettings
                   advancedSettings={advancedSettings}
+                  settings={settings}
+                  onInputChange={onInputChange}
+                />
+
+                <AdvancedSettings
                   settings={settings}
                   onInputChange={onInputChange}
                 />

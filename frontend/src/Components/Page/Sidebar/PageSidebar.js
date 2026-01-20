@@ -227,12 +227,31 @@ const systemHiddenForNonAdmin = new Set([
   '/system/logs/files'
 ]);
 
-function getVisibleLinks(isAdmin) {
+function applyConfigFilters(linkList, enableDiagnostics, enableDevelopmentMenu) {
+  return linkList.reduce((acc, link) => {
+    if (!enableDiagnostics && link.to === '/system/diagnostics') {
+      return acc;
+    }
+
+    const nextLink = {
+      ...link
+    };
+
+    if (!enableDevelopmentMenu && nextLink.to === '/settings' && nextLink.children) {
+      nextLink.children = nextLink.children.filter((child) => child.to !== '/settings/development');
+    }
+
+    acc.push(nextLink);
+    return acc;
+  }, []);
+}
+
+function getVisibleLinks(isAdmin, enableDiagnostics, enableDevelopmentMenu) {
   if (isAdmin) {
-    return links;
+    return applyConfigFilters(links, enableDiagnostics, enableDevelopmentMenu);
   }
 
-  return links.reduce((acc, link) => {
+  const filteredLinks = links.reduce((acc, link) => {
     if (link.to === '/system/diagnostics') {
       return acc;
     }
@@ -252,6 +271,8 @@ function getVisibleLinks(isAdmin) {
     acc.push(nextLink);
     return acc;
   }, []);
+
+  return applyConfigFilters(filteredLinks, enableDiagnostics, enableDevelopmentMenu);
 }
 
 function getActiveParent(pathname, visibleLinks) {
@@ -545,7 +566,9 @@ class PageSidebar extends Component {
     const {
       location,
       isSmallScreen,
-      isAdmin
+      isAdmin,
+      enableDiagnostics,
+      enableDevelopmentMenu
     } = this.props;
 
     const {
@@ -558,7 +581,7 @@ class PageSidebar extends Component {
 
     const urlBase = window.Readarr.urlBase;
     const pathname = urlBase ? location.pathname.substr(urlBase.length) || '/' : location.pathname;
-    const visibleLinks = getVisibleLinks(isAdmin).filter((link) => {
+    const visibleLinks = getVisibleLinks(isAdmin, enableDiagnostics, enableDevelopmentMenu).filter((link) => {
       return !link.developOnly || window.Readarr.branch === 'develop';
     });
     const activeParent = getActiveParent(pathname, visibleLinks);
@@ -646,7 +669,10 @@ class PageSidebar extends Component {
 
           <MessagesConnector />
           <ThrottleNotification />
-          <SidebarDiagnosticsStatus />
+          {
+            enableDiagnostics && isAdmin &&
+              <SidebarDiagnosticsStatus />
+          }
         </ScrollerComponent>
       </div>
     );
@@ -683,6 +709,8 @@ PageSidebar.propTypes = {
   isSmallScreen: PropTypes.bool.isRequired,
   isSidebarVisible: PropTypes.bool.isRequired,
   isAdmin: PropTypes.bool.isRequired,
+  enableDiagnostics: PropTypes.bool.isRequired,
+  enableDevelopmentMenu: PropTypes.bool.isRequired,
   onSidebarVisibleChange: PropTypes.func.isRequired
 };
 

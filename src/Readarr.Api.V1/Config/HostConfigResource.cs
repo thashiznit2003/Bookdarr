@@ -44,6 +44,8 @@ namespace Readarr.Api.V1.Config
         public int BackupInterval { get; set; }
         public int BackupRetention { get; set; }
         public bool TrustCgnatIpAddresses { get; set; }
+        public bool EnableDiagnostics { get; set; }
+        public bool EnableDevelopmentMenu { get; set; }
     }
 
     public static class HostConfigResourceMapper
@@ -86,7 +88,9 @@ namespace Readarr.Api.V1.Config
                 BackupFolder = configService.BackupFolder,
                 BackupInterval = configService.BackupInterval,
                 BackupRetention = configService.BackupRetention,
-                ApplicationUrl = configService.ApplicationUrl
+                ApplicationUrl = configService.ApplicationUrl,
+                EnableDiagnostics = model.EnableDiagnostics,
+                EnableDevelopmentMenu = model.EnableDevelopmentMenu
             };
         }
     }

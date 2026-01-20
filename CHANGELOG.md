@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.172
+- Summary: Add Diagnostics configuration inputs and new Advanced toggles for Diagnostics/Development menus.
+- Why: Diagnostics settings should be user-configurable, and menu visibility should be controllable from General settings.
+- Impact: Diagnostics now supports repo/token/git identity setup with guidance; General settings adds Advanced menu toggles; system status exposes the menu flags for the sidebar.
+- Files: `frontend/src/System/Diagnostics/Diagnostics.js`, `frontend/src/System/Diagnostics/Diagnostics.css`, `frontend/src/Settings/General/AdvancedSettings.js`, `frontend/src/Settings/General/GeneralSettings.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/Components/Page/Page.js`, `frontend/src/Components/Page/PageConnector.js`, `frontend/src/Settings/Settings.js`, `frontend/src/typings/SystemStatus.ts`, `src/Readarr.Api.V1/Diagnostics/DiagnosticsConfigResource.cs`, `src/Readarr.Api.V1/Diagnostics/DiagnosticsConfigController.cs`, `src/Readarr.Api.V1/Config/HostConfigResource.cs`, `src/Readarr.Api.V1/System/SystemResource.cs`, `src/Readarr.Api.V1/System/SystemController.cs`, `src/NzbDrone.Core/Configuration/ConfigFileProvider.cs`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-29.log`).
+
 ## 1.3.171
 - Summary: Expand Book Pool filters to cover audiobook/ebook availability and needs.
 - Why: Book Pool filtering needed richer options than the old Ready/Needs files presets.
