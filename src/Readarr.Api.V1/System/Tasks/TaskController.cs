@@ -93,7 +93,7 @@ namespace Readarr.Api.V1.System.Tasks
                 return BadRequest("Critical tasks cannot be modified.");
             }
 
-            if (!System.Enum.TryParse(resource.State, true, out TaskState state))
+            if (!global::System.Enum.TryParse(resource.State, true, out TaskState state))
             {
                 return BadRequest("Invalid task state.");
             }
