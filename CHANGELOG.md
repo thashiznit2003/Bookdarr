@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.0
+- Summary: Release Bookdarr 2.0.0 with Docker Hub publishing enabled.
+- Why: We need a tagged release to trigger the new Docker Hub pipeline and mark the production-ready cut.
+- Impact: Assembly version bumped to 2.0.0 and release tags now publish images to Docker Hub/GHCR.
+- Files: `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.0`, push, then run the SSH update with the next log number (`update-38.log`).
+
 ## 1.3.180
 - Summary: Add a Docker release workflow, production Dockerfile, and published-image defaults for compose.
 - Why: We need a reproducible production build pipeline and clear deployment defaults to ship Bookdarr as a Docker image.
