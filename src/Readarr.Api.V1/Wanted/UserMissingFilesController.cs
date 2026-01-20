@@ -94,7 +94,7 @@ namespace Readarr.Api.V1.Wanted
 
             if (user == null)
             {
-                throw new ModelNotFoundException(typeof(User), 0);
+                throw new UnauthorizedException("User is not authenticated.");
             }
 
             return user;

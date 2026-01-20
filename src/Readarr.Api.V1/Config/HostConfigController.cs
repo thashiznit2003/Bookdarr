@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -43,8 +44,7 @@ namespace Readarr.Api.V1.Config
 
             SharedValidator.RuleFor(c => c.Username).NotEmpty().When(c => c.AuthenticationMethod == AuthenticationType.Basic ||
                                                                           c.AuthenticationMethod == AuthenticationType.Forms);
-            SharedValidator.RuleFor(c => c.Password).NotEmpty().When(c => c.AuthenticationMethod == AuthenticationType.Basic ||
-                                                                          c.AuthenticationMethod == AuthenticationType.Forms);
+            SharedValidator.RuleFor(c => c.Password).NotEmpty().When(IsPasswordRequired);
 
             SharedValidator.RuleFor(c => c.PasswordConfirmation)
                 .Must((resource, p) => IsMatchingPassword(resource)).WithMessage("Must match Password");
@@ -81,21 +81,47 @@ namespace Readarr.Api.V1.Config
             }
         }
 
-        private bool IsMatchingPassword(HostConfigResource resource)
+        private bool IsPasswordRequired(HostConfigResource resource)
         {
-            var user = _userService.FindUser();
+            if (resource == null)
+            {
+                return false;
+            }
 
-            if (user != null && user.Password == resource.Password)
+            if (resource.AuthenticationMethod != AuthenticationType.Basic &&
+                resource.AuthenticationMethod != AuthenticationType.Forms)
+            {
+                return false;
+            }
+
+            if (resource.Password.IsNotNullOrWhiteSpace())
             {
                 return true;
             }
 
-            if (resource.Password == resource.PasswordConfirmation)
+            var user = _userService.FindUser();
+            if (user == null)
+            {
+                return true;
+            }
+
+            if (resource.Username.IsNotNullOrWhiteSpace() &&
+                !resource.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
 
             return false;
+        }
+
+        private bool IsMatchingPassword(HostConfigResource resource)
+        {
+            if (resource?.Password.IsNullOrWhiteSpace() != false)
+            {
+                return true;
+            }
+
+            return resource.Password == resource.PasswordConfirmation;
         }
 
         protected override HostConfigResource GetResourceById(int id)
@@ -112,7 +138,7 @@ namespace Readarr.Api.V1.Config
             var user = _userService.FindUser();
 
             resource.Username = user?.Username ?? string.Empty;
-            resource.Password = user?.Password ?? string.Empty;
+            resource.Password = string.Empty;
             resource.PasswordConfirmation = string.Empty;
 
             return resource;
@@ -128,9 +154,14 @@ namespace Readarr.Api.V1.Config
             _configFileProvider.SaveConfigDictionary(dictionary);
             _configService.SaveConfigDictionary(dictionary);
 
-            if (resource.Username.IsNotNullOrWhiteSpace() && resource.Password.IsNotNullOrWhiteSpace())
+            if (resource.Username.IsNotNullOrWhiteSpace())
             {
-                _userService.Upsert(resource.Username, resource.Password);
+                var hasPassword = resource.Password.IsNotNullOrWhiteSpace();
+
+                if (hasPassword || _userService.FindUser() == null)
+                {
+                    _userService.Upsert(resource.Username, resource.Password);
+                }
             }
 
             return Accepted(resource.Id);

@@ -6,7 +6,7 @@ using NzbDrone.Common.Extensions;
 using NzbDrone.Core;
 using NzbDrone.Core.Authentication;
 using Readarr.Http;
-using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
+using Readarr.Http.REST;
 using RestBadRequestException = Readarr.Http.REST.BadRequestException;
 
 namespace Readarr.Api.V1.Users
@@ -179,7 +179,7 @@ namespace Readarr.Api.V1.Users
 
             if (user == null)
             {
-                throw new ModelNotFoundException(typeof(User), 0);
+                throw new UnauthorizedException("User is not authenticated.");
             }
 
             return user;

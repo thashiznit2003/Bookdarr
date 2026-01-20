@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.8
+- Summary: Fix first-run auth and unauthenticated user handling to avoid “user id 0” errors.
+- Why: The API returned 404s when no user was resolved, and host config returned hashed passwords that could be re-saved and break logins.
+- Impact: `/users/me` and user-library endpoints now return 401 when unauthenticated, host config no longer exposes hashed passwords, and password validation only requires re-entry when needed.
+- Files: `src/Readarr.Api.V1/*`, `src/Readarr.Http/REST/UnauthorizedException.cs`, `src/Readarr.Api.V1/Config/HostConfigController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.8`, push, then run the SSH update with the next log number (`update-46.log`).
+
 ## 2.0.7
 - Summary: Bundle KindleUnpack by cloning the upstream repo and wiring a CLI wrapper in the Docker image.
 - Why: The upstream repo is not packaged for pip, so the Docker build needs a direct clone and wrapper script.

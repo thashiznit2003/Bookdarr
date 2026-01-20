@@ -13,7 +13,6 @@ using NzbDrone.Core.RootFolders;
 using Readarr.Api.V1.Author;
 using Readarr.Http;
 using Readarr.Http.REST;
-using ModelNotFoundException = NzbDrone.Core.Datastore.ModelNotFoundException;
 
 namespace Readarr.Api.V1.Books
 {
@@ -296,7 +295,7 @@ namespace Readarr.Api.V1.Books
 
             if (user == null)
             {
-                throw new ModelNotFoundException(typeof(User), 0);
+                throw new UnauthorizedException("User is not authenticated.");
             }
 
             return user;
