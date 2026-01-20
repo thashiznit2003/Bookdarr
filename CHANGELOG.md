@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.173
+- Summary: Rename app log files from readarr.* to bookdarr.*.
+- Why: Log filenames should match the Bookdarr branding.
+- Impact: New logs write to `bookdarr.txt`, `bookdarr.debug.txt`, and `bookdarr.trace.txt`; existing log cleanup still works; test fixtures updated.
+- Files: `src/NzbDrone.Common/Instrumentation/NzbDroneLogger.cs`, `src/NzbDrone.Test.Common/NzbDroneRunner.cs`, `src/NzbDrone.Integration.Test/HttpLogFixture.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-30.log`).
+
 ## 1.3.172
 - Summary: Add Diagnostics configuration inputs and new Advanced toggles for Diagnostics/Development menus.
 - Why: Diagnostics settings should be user-configurable, and menu visibility should be controllable from General settings.

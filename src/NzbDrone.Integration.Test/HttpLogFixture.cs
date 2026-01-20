@@ -17,7 +17,7 @@ namespace NzbDrone.Integration.Test
 
             var resultGet = Author.All();
 
-            var logFile = "readarr.trace.txt";
+            var logFile = "bookdarr.trace.txt";
             var logLines = Logs.GetLogFileLines(logFile);
 
             var result = Author.InvalidPost(new Readarr.Api.V1.Author.AuthorResource());
