@@ -4,6 +4,7 @@ ARG RID=linux-musl-x64
 FROM node:20-bullseye AS ui-build
 WORKDIR /src
 COPY package.json yarn.lock ./
+COPY tsconfig.json ./
 COPY frontend ./frontend
 RUN corepack enable && corepack prepare yarn@1.22.19 --activate
 RUN yarn install --frozen-lockfile --network-timeout 120000

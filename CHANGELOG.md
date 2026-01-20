@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.2
+- Summary: Fix Docker UI build by copying the root tsconfig into the build context.
+- Why: The release workflow failed because webpack could not find `/src/tsconfig.json` inside the UI build stage.
+- Impact: Docker image builds now succeed in CI, allowing GHCR/Docker Hub publishes to complete.
+- Files: `docker/Dockerfile`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.2`, push, then run the SSH update with the next log number (`update-40.log`).
+
 ## 2.0.1
 - Summary: Fix the Docker release workflow secret checks and re-trigger Docker Hub publishing.
 - Why: GitHub Actions rejected the workflow because secret checks were evaluated in an unsupported context, preventing any jobs from running.
