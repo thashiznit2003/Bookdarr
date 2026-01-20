@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.176
+- Summary: Count book files across all editions when computing book statistics.
+- Why: After merging duplicates, files can live on unmonitored editions, which caused false missing indicators in the library.
+- Impact: Missing/available indicators now reflect any attached ebook/audiobook files regardless of edition monitoring, so merged books with files stop showing red/missing states.
+- Files: `src/NzbDrone.Core/AuthorStats/AuthorStatisticsRepository.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM`, push, then run the SSH update with the next log number (`update-33.log`).
+
 ## 1.3.175
 - Summary: Stop Basic auth from spamming Events for requests without Authorization headers.
 - Why: Missing headers should defer to other auth schemes instead of logging failures.

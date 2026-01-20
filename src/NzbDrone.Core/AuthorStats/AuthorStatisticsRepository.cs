@@ -62,7 +62,6 @@ namespace NzbDrone.Core.AuthorStats
             .Join<Edition, Book>((e, b) => e.BookId == b.Id)
             .Join<Book, Author>((book, author) => book.AuthorMetadataId == author.AuthorMetadataId)
             .LeftJoin<Edition, BookFile>((t, f) => t.Id == f.EditionId)
-            .Where<Edition>(x => x.Monitored == true)
             .GroupBy<Author>(x => x.Id)
             .GroupBy<Book>(x => x.Id)
             .AddParameters(new Dictionary<string, object> { { "currentDate", DateTime.UtcNow } });
