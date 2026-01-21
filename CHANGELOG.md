@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.10
+- Summary: Add an Anna's Archive Direct download client that uses slow downloads with optional Stacks fallback.
+- Why: Slow downloads are the only free option, and Stacks is not reliable for every title.
+- Impact: New download client resolves slow download links, downloads into a configured folder, and can fall back to a configured Stacks client after a timeout.
+- Files: `src/NzbDrone.Core/Download/Clients/AnnasArchiveDirect/*`, `src/Directory.Build.props`, `CHANGELOG.md`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.10`, push, then run the SSH update with the next log number (`update-02.log`).
+
 ## 2.0.9
 - Summary: Add Stacks protocol support with an Anna's Archive indexer and configurable Stacks download client.
 - Why: Bookdarr needs a non-torrent/non-usenet path to search Anna's Archive and queue downloads via Stacks.
