@@ -28,6 +28,14 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
     {
         private static readonly Regex SlowDownloadRegex = new Regex("href\\s*=\\s*[\"'](?<url>[^\"']*slow_download[^\"']*)[\"']",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex DownloadNowRegex = new Regex("<a[^>]+href\\s*=\\s*[\"'](?<url>[^\"']+)[\"'][^>]*>\\s*(?:<[^>]+>\\s*)*Download\\s*Now\\s*(?:<[^>]+>\\s*)*</a>",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
+        private static readonly Regex DataDownloadUrlRegex = new Regex("data-download-url\\s*=\\s*[\"'](?<url>[^\"']+)[\"']",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex DirectFileUrlRegex = new Regex("(?<url>https?://[^\"'\\s>]+\\.(?:epub|pdf|mobi|azw3|azw4|azw|kfx|djvu|fb2|txt|rtf|docx?|lit|prc|cbz|cbr|zip|rar|7z)(?:[^\"'\\s>]*)?)",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex MetaRefreshRegex = new Regex("http-equiv\\s*=\\s*[\"']refresh[\"'][^>]*content\\s*=\\s*[\"'][^\"']*url=(?<url>[^\"'>]+)",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly Regex Md5Regex = new Regex("(?<md5>[a-f0-9]{32})", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly Regex ContentDispositionFileNameRegex = new Regex("filename\\*=(?<value>[^;]+)|filename=(?<fallback>[^;]+)",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -80,7 +88,7 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
             {
                 var downloadUrl = await ResolveSlowDownloadUrl(infoUrl);
                 var timeout = TimeSpan.FromSeconds((int)Settings.DownloadTimeout);
-                var filePath = await DownloadSlowFile(remoteBook, downloadUrl, timeout);
+                var filePath = await DownloadSlowFile(remoteBook, downloadUrl, timeout, infoUrl);
 
                 return GetDownloadClientId(filePath);
             }
@@ -241,18 +249,22 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
                 throw new DownloadClientException("Anna's Archive response did not contain HTML content.");
             }
 
-            var match = SlowDownloadRegex.Match(response.Content);
-            if (!match.Success)
+            var downloadUrl = ExtractPreferredDownloadUrl(response.Content, response.Request.Url);
+            if (downloadUrl.IsNotNullOrWhiteSpace())
+            {
+                return downloadUrl;
+            }
+
+            downloadUrl = ExtractSlowDownloadUrl(response.Content, response.Request.Url);
+            if (downloadUrl.IsNullOrWhiteSpace())
             {
                 throw new DownloadClientException("Unable to locate the slow download link on Anna's Archive.");
             }
 
-            var rawUrl = WebUtility.HtmlDecode(match.Groups["url"].Value).Trim();
-
-            return MakeAbsoluteUrl(response.Request.Url, rawUrl);
+            return downloadUrl;
         }
 
-        private async Task<string> DownloadSlowFile(RemoteBook remoteBook, string downloadUrl, TimeSpan timeout)
+        private async Task<string> DownloadSlowFile(RemoteBook remoteBook, string downloadUrl, TimeSpan timeout, string refererUrl)
         {
             if (downloadUrl.IsNullOrWhiteSpace())
             {
@@ -270,7 +282,7 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
 
             try
             {
-                var response = await DownloadFileWithTimeout(downloadUrl, tempFilePath, timeout);
+                var response = await DownloadFileWithTimeout(downloadUrl, tempFilePath, timeout, refererUrl, 0);
                 var resolvedFileName = GetFileNameFromResponse(response) ?? baseFileName;
                 var finalFilePath = GetUniquePath(Path.Combine(Settings.DownloadFolder, resolvedFileName));
 
@@ -292,22 +304,48 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
             }
         }
 
-        private async Task<HttpResponse> DownloadFileWithTimeout(string url, string filePath, TimeSpan timeout)
+        private async Task<HttpResponse> DownloadFileWithTimeout(string url, string filePath, TimeSpan timeout, string refererUrl, int depth)
         {
-            await using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+            HttpResponse response;
 
-            var request = new HttpRequest(url)
+            await using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
             {
-                AllowAutoRedirect = true,
-                RequestTimeout = timeout,
-                ResponseStream = fileStream
-            };
+                var request = new HttpRequest(url)
+                {
+                    AllowAutoRedirect = true,
+                    RequestTimeout = timeout,
+                    ResponseStream = fileStream
+                };
 
-            var response = await _httpClient.GetAsync(request);
+                if (refererUrl.IsNotNullOrWhiteSpace())
+                {
+                    request.Headers.Add("Referer", refererUrl);
+                }
+
+                response = await _httpClient.GetAsync(request);
+            }
 
             if (response.Headers.ContentType != null &&
                 response.Headers.ContentType.Contains("text/html", StringComparison.InvariantCultureIgnoreCase))
             {
+                var html = File.ReadAllText(filePath);
+                var downloadUrl = ExtractPreferredDownloadUrl(html, response.Request.Url);
+
+                if (downloadUrl.IsNotNullOrWhiteSpace() && depth < 1)
+                {
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                    }
+
+                    if (downloadUrl.Equals(url, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        throw new DownloadClientException("Anna's Archive redirected to a loop instead of a file.");
+                    }
+
+                    return await DownloadFileWithTimeout(downloadUrl, filePath, timeout, response.Request.Url.FullUri, depth + 1);
+                }
+
                 throw new DownloadClientException("Anna's Archive returned HTML instead of a file.");
             }
 
@@ -616,6 +654,69 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
 
             var baseAbsolute = new Uri(baseUri.FullUri);
             return new Uri(baseAbsolute, url).ToString();
+        }
+
+        private static string ExtractPreferredDownloadUrl(string html, HttpUri baseUri)
+        {
+            if (html.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            var downloadUrl = ExtractDownloadUrl(DownloadNowRegex, html, baseUri);
+            if (downloadUrl.IsNotNullOrWhiteSpace())
+            {
+                return downloadUrl;
+            }
+
+            downloadUrl = ExtractDownloadUrl(DataDownloadUrlRegex, html, baseUri);
+            if (downloadUrl.IsNotNullOrWhiteSpace())
+            {
+                return downloadUrl;
+            }
+
+            var directMatch = DirectFileUrlRegex.Match(html);
+            if (directMatch.Success)
+            {
+                return WebUtility.HtmlDecode(directMatch.Groups["url"].Value).Trim();
+            }
+
+            downloadUrl = ExtractDownloadUrl(MetaRefreshRegex, html, baseUri);
+            if (downloadUrl.IsNotNullOrWhiteSpace())
+            {
+                return downloadUrl;
+            }
+
+            return null;
+        }
+
+        private static string ExtractDownloadUrl(Regex regex, string html, HttpUri baseUri)
+        {
+            var match = regex.Match(html);
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            var rawUrl = WebUtility.HtmlDecode(match.Groups["url"].Value).Trim();
+            return MakeAbsoluteUrl(baseUri, rawUrl);
+        }
+
+        private static string ExtractSlowDownloadUrl(string html, HttpUri baseUri)
+        {
+            if (html.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            var match = SlowDownloadRegex.Match(html);
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            var rawUrl = WebUtility.HtmlDecode(match.Groups["url"].Value).Trim();
+            return MakeAbsoluteUrl(baseUri, rawUrl);
         }
 
         private static string GetStacksRequestId(RemoteBook remoteBook)

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.12
+- Summary: Follow Anna's Archive "Download Now" links when slow downloads return HTML.
+- Why: Slow download pages can require a second-step "Download Now" button, causing direct grabs to fail and turn red.
+- Impact: The direct client now extracts preferred download URLs from HTML and retries once with a referer before falling back to Stacks.
+- Files: `src/NzbDrone.Core/Download/Clients/AnnasArchiveDirect/AnnasArchiveDirect.cs`, `src/Directory.Build.props`, `CHANGELOG.md`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.12`, push, then run the SSH update with the next log number (`update-04.log`).
+
 ## 2.0.11
 - Summary: Add a Direct protocol so Anna's Archive direct downloads no longer use the Stacks protocol.
 - Why: Direct downloads were being blocked by Stacks gating and mislabelled in the UI.
