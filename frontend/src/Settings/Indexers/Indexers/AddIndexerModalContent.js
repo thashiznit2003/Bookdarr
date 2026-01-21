@@ -25,6 +25,7 @@ class AddIndexerModalContent extends Component {
       schemaError,
       usenetIndexers,
       torrentIndexers,
+      stacksIndexers,
       onIndexerSelect,
       onModalClose
     } = this.props;
@@ -94,6 +95,23 @@ class AddIndexerModalContent extends Component {
                     }
                   </div>
                 </FieldSet>
+
+                <FieldSet legend={translate('Stacks')}>
+                  <div className={styles.indexers}>
+                    {
+                      stacksIndexers.map((indexer) => {
+                        return (
+                          <AddIndexerItem
+                            key={indexer.implementation}
+                            implementation={indexer.implementation}
+                            {...indexer}
+                            onIndexerSelect={onIndexerSelect}
+                          />
+                        );
+                      })
+                    }
+                  </div>
+                </FieldSet>
               </div>
           }
         </ModalBody>
@@ -115,6 +133,7 @@ AddIndexerModalContent.propTypes = {
   schemaError: PropTypes.object,
   usenetIndexers: PropTypes.arrayOf(PropTypes.object).isRequired,
   torrentIndexers: PropTypes.arrayOf(PropTypes.object).isRequired,
+  stacksIndexers: PropTypes.arrayOf(PropTypes.object).isRequired,
   onIndexerSelect: PropTypes.func.isRequired,
   onModalClose: PropTypes.func.isRequired
 };

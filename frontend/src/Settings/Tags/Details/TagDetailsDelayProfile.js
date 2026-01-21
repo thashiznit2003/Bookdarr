@@ -7,8 +7,10 @@ function TagDetailsDelayProfile(props) {
     preferredProtocol,
     enableUsenet,
     enableTorrent,
+    enableStacks,
     usenetDelay,
-    torrentDelay
+    torrentDelay,
+    stacksDelay
   } = props;
 
   return (
@@ -32,6 +34,14 @@ function TagDetailsDelayProfile(props) {
             'Torrents disabled'
         }
       </div>
+
+      <div>
+        {
+          enableStacks ?
+            `Stacks Delay: ${stacksDelay}` :
+            'Stacks disabled'
+        }
+      </div>
     </div>
   );
 }
@@ -40,8 +50,10 @@ TagDetailsDelayProfile.propTypes = {
   preferredProtocol: PropTypes.string.isRequired,
   enableUsenet: PropTypes.bool.isRequired,
   enableTorrent: PropTypes.bool.isRequired,
+  enableStacks: PropTypes.bool.isRequired,
   usenetDelay: PropTypes.number.isRequired,
-  torrentDelay: PropTypes.number.isRequired
+  torrentDelay: PropTypes.number.isRequired,
+  stacksDelay: PropTypes.number.isRequired
 };
 
 export default TagDetailsDelayProfile;

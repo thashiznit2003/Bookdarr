@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.9
+- Summary: Add Stacks protocol support with an Anna's Archive indexer and configurable Stacks download client.
+- Why: Bookdarr needs a non-torrent/non-usenet path to search Anna's Archive and queue downloads via Stacks.
+- Impact: New Stacks protocol, download client, and Anna's Archive indexer with domain fallback; delay profiles and UI now expose Stacks alongside Usenet/Torrent.
+- Files: `src/NzbDrone.Core/Download/Clients/Stacks/*`, `src/NzbDrone.Core/Indexers/AnnasArchive/*`, `src/NzbDrone.Core/Profiles/Delay/DelayProfile.cs`, `src/NzbDrone.Core/DecisionEngine/Specifications/ProtocolSpecification.cs`, `src/NzbDrone.Core/Datastore/Migration/052_add_stacks_protocol_to_delay_profiles.cs`, `src/Readarr.Api.V1/Profiles/Delay/DelayProfileResource.cs`, `frontend/src/Settings/Profiles/Delay/*`, `frontend/src/Settings/DownloadClients/DownloadClients/AddDownloadClientModalContent.js`, `frontend/src/Settings/Indexers/Indexers/AddIndexerModalContent.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.9`, push, then run the SSH update with the next log number (`update-01.log`).
+
 ## 2.0.8
 - Summary: Fix first-run auth and unauthenticated user handling to avoid “user id 0” errors.
 - Why: The API returned 404s when no user was resolved, and host config returned hashed passwords that could be re-saved and break logins.

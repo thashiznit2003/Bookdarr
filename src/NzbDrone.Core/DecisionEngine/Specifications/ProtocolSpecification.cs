@@ -37,6 +37,12 @@ namespace NzbDrone.Core.DecisionEngine.Specifications
                 return Decision.Reject("Torrent is not enabled for this author");
             }
 
+            if (subject.Release.DownloadProtocol == DownloadProtocol.Stacks && !delayProfile.EnableStacks)
+            {
+                _logger.Debug("[{0}] Stacks is not enabled for this author", subject.Release.Title);
+                return Decision.Reject("Stacks is not enabled for this author");
+            }
+
             return Decision.Accept();
         }
     }

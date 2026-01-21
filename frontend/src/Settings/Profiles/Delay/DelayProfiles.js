@@ -175,6 +175,9 @@ function DelayProfiles(props) {
           <div className={styles.column}>
             {translate('TorrentDelay')}
           </div>
+          <div className={styles.column}>
+            {translate('StacksDelay')}
+          </div>
           <div className={styles.tags}>
             {translate('Tags')}
           </div>

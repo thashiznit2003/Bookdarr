@@ -38,8 +38,10 @@ function EditDelayProfileModalContent(props) {
   const {
     enableUsenet,
     enableTorrent,
+    enableStacks,
     usenetDelay,
     torrentDelay,
+    stacksDelay,
     bypassIfHighestQuality,
     bypassIfAboveCustomFormatScore,
     minimumCustomFormatScore,
@@ -115,6 +117,25 @@ function EditDelayProfileModalContent(props) {
                       unit="minutes"
                       {...torrentDelay}
                       helpText={translate('TorrentDelayHelpText')}
+                      onChange={onInputChange}
+                    />
+                  </FormGroup> :
+                  null
+              }
+
+              {
+                enableStacks.value ?
+                  <FormGroup>
+                    <FormLabel>
+                      {translate('StacksDelay')}
+                    </FormLabel>
+
+                    <FormInputGroup
+                      type={inputTypes.NUMBER}
+                      name="stacksDelay"
+                      unit="minutes"
+                      {...stacksDelay}
+                      helpText={translate('StacksDelayHelpText')}
                       onChange={onInputChange}
                     />
                   </FormGroup> :
@@ -217,8 +238,10 @@ function EditDelayProfileModalContent(props) {
 const delayProfileShape = {
   enableUsenet: PropTypes.shape(boolSettingShape).isRequired,
   enableTorrent: PropTypes.shape(boolSettingShape).isRequired,
+  enableStacks: PropTypes.shape(boolSettingShape).isRequired,
   usenetDelay: PropTypes.shape(numberSettingShape).isRequired,
   torrentDelay: PropTypes.shape(numberSettingShape).isRequired,
+  stacksDelay: PropTypes.shape(numberSettingShape).isRequired,
   bypassIfHighestQuality: PropTypes.shape(boolSettingShape).isRequired,
   bypassIfAboveCustomFormatScore: PropTypes.shape(boolSettingShape).isRequired,
   minimumCustomFormatScore: PropTypes.shape(numberSettingShape).isRequired,

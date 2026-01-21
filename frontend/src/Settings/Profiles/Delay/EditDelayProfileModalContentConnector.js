@@ -10,9 +10,11 @@ import EditDelayProfileModalContent from './EditDelayProfileModalContent';
 const newDelayProfile = {
   enableUsenet: true,
   enableTorrent: true,
+  enableStacks: false,
   preferredProtocol: 'usenet',
   usenetDelay: 0,
   torrentDelay: 0,
+  stacksDelay: 0,
   bypassIfHighestQuality: false,
   bypassIfAboveCustomFormatScore: false,
   minimumCustomFormatScore: 0,
@@ -22,8 +24,10 @@ const newDelayProfile = {
 const protocolOptions = [
   { key: 'preferUsenet', value: 'Prefer Usenet' },
   { key: 'preferTorrent', value: 'Prefer Torrent' },
+  { key: 'preferStacks', value: 'Prefer Stacks' },
   { key: 'onlyUsenet', value: 'Only Usenet' },
-  { key: 'onlyTorrent', value: 'Only Torrent' }
+  { key: 'onlyTorrent', value: 'Only Torrent' },
+  { key: 'onlyStacks', value: 'Only Stacks' }
 ];
 
 function createDelayProfileSelector() {
@@ -62,21 +66,24 @@ function createMapStateToProps() {
     (delayProfile) => {
       const enableUsenet = delayProfile.item.enableUsenet.value;
       const enableTorrent = delayProfile.item.enableTorrent.value;
+      const enableStacks = delayProfile.item.enableStacks.value;
       const preferredProtocol = delayProfile.item.preferredProtocol.value;
       let protocol = 'preferUsenet';
 
-      if (preferredProtocol === 'usenet') {
-        protocol = 'preferUsenet';
-      } else {
+      const enabledProtocols = [enableUsenet, enableTorrent, enableStacks].filter(Boolean).length;
+
+      if (enabledProtocols === 1) {
+        if (enableUsenet) {
+          protocol = 'onlyUsenet';
+        } else if (enableTorrent) {
+          protocol = 'onlyTorrent';
+        } else {
+          protocol = 'onlyStacks';
+        }
+      } else if (preferredProtocol === 'torrent') {
         protocol = 'preferTorrent';
-      }
-
-      if (!enableUsenet) {
-        protocol = 'onlyTorrent';
-      }
-
-      if (!enableTorrent) {
-        protocol = 'onlyUsenet';
+      } else if (preferredProtocol === 'stacks') {
+        protocol = 'preferStacks';
       }
 
       return {
@@ -134,15 +141,29 @@ class EditDelayProfileModalContentConnector extends Component {
         this.props.setDelayProfileValue({ name: 'enableTorrent', value: true });
         this.props.setDelayProfileValue({ name: 'preferredProtocol', value: 'torrent' });
         break;
+      case 'preferStacks':
+        this.props.setDelayProfileValue({ name: 'enableUsenet', value: true });
+        this.props.setDelayProfileValue({ name: 'enableTorrent', value: true });
+        this.props.setDelayProfileValue({ name: 'enableStacks', value: true });
+        this.props.setDelayProfileValue({ name: 'preferredProtocol', value: 'stacks' });
+        break;
       case 'onlyUsenet':
         this.props.setDelayProfileValue({ name: 'enableUsenet', value: true });
         this.props.setDelayProfileValue({ name: 'enableTorrent', value: false });
+        this.props.setDelayProfileValue({ name: 'enableStacks', value: false });
         this.props.setDelayProfileValue({ name: 'preferredProtocol', value: 'usenet' });
         break;
       case 'onlyTorrent':
         this.props.setDelayProfileValue({ name: 'enableUsenet', value: false });
         this.props.setDelayProfileValue({ name: 'enableTorrent', value: true });
+        this.props.setDelayProfileValue({ name: 'enableStacks', value: false });
         this.props.setDelayProfileValue({ name: 'preferredProtocol', value: 'torrent' });
+        break;
+      case 'onlyStacks':
+        this.props.setDelayProfileValue({ name: 'enableUsenet', value: false });
+        this.props.setDelayProfileValue({ name: 'enableTorrent', value: false });
+        this.props.setDelayProfileValue({ name: 'enableStacks', value: true });
+        this.props.setDelayProfileValue({ name: 'preferredProtocol', value: 'stacks' });
         break;
       default:
         throw Error(`Unknown protocol option: ${value}`);

@@ -67,8 +67,10 @@ function TagDetailsModalContent(props) {
                     preferredProtocol,
                     enableUsenet,
                     enableTorrent,
+                    enableStacks,
                     usenetDelay,
-                    torrentDelay
+                    torrentDelay,
+                    stacksDelay
                   } = item;
 
                   return (
@@ -77,8 +79,10 @@ function TagDetailsModalContent(props) {
                       preferredProtocol={preferredProtocol}
                       enableUsenet={enableUsenet}
                       enableTorrent={enableTorrent}
+                      enableStacks={enableStacks}
                       usenetDelay={usenetDelay}
                       torrentDelay={torrentDelay}
+                      stacksDelay={stacksDelay}
                     />
                   );
                 })

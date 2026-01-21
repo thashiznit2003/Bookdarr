@@ -9926,6 +9926,9 @@
           "enableTorrent": {
             "type": "boolean"
           },
+          "enableStacks": {
+            "type": "boolean"
+          },
           "preferredProtocol": {
             "$ref": "#/components/schemas/DownloadProtocol"
           },
@@ -9934,6 +9937,10 @@
             "format": "int32"
           },
           "torrentDelay": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stacksDelay": {
             "type": "integer",
             "format": "int32"
           },
@@ -10155,7 +10162,8 @@
         "enum": [
           "unknown",
           "usenet",
-          "torrent"
+          "torrent",
+          "stacks"
         ],
         "type": "string"
       },

@@ -56,6 +56,13 @@ namespace NzbDrone.Core.Blocklisting
                     .Any(b => SameTorrent(b, torrentInfo));
             }
 
+            if (release.DownloadProtocol == DownloadProtocol.Stacks)
+            {
+                return _blocklistRepository.BlocklistedByTitle(authorId, release.Title)
+                    .Where(b => b.Protocol == DownloadProtocol.Stacks)
+                    .Any();
+            }
+
             return _blocklistRepository.BlocklistedByTitle(authorId, release.Title)
                 .Where(b => b.Protocol == DownloadProtocol.Usenet)
                 .Any(b => SameNzb(b, release));

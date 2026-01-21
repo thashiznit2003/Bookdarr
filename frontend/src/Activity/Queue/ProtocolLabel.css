@@ -11,3 +11,10 @@
   border-color: var(--usenetColor);
   background-color: var(--usenetColor);
 }
+
+.stacks {
+  composes: label from '~Components/Label.css';
+
+  border-color: var(--stacksColor);
+  background-color: var(--stacksColor);
+}

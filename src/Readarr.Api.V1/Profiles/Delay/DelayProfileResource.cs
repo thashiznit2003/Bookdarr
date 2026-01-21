@@ -10,9 +10,11 @@ namespace Readarr.Api.V1.Profiles.Delay
     {
         public bool EnableUsenet { get; set; }
         public bool EnableTorrent { get; set; }
+        public bool EnableStacks { get; set; }
         public DownloadProtocol PreferredProtocol { get; set; }
         public int UsenetDelay { get; set; }
         public int TorrentDelay { get; set; }
+        public int StacksDelay { get; set; }
         public bool BypassIfHighestQuality { get; set; }
         public bool BypassIfAboveCustomFormatScore { get; set; }
         public int MinimumCustomFormatScore { get; set; }
@@ -35,9 +37,11 @@ namespace Readarr.Api.V1.Profiles.Delay
 
                 EnableUsenet = model.EnableUsenet,
                 EnableTorrent = model.EnableTorrent,
+                EnableStacks = model.EnableStacks,
                 PreferredProtocol = model.PreferredProtocol,
                 UsenetDelay = model.UsenetDelay,
                 TorrentDelay = model.TorrentDelay,
+                StacksDelay = model.StacksDelay,
                 BypassIfHighestQuality = model.BypassIfHighestQuality,
                 BypassIfAboveCustomFormatScore = model.BypassIfAboveCustomFormatScore,
                 MinimumCustomFormatScore = model.MinimumCustomFormatScore,
@@ -59,9 +63,11 @@ namespace Readarr.Api.V1.Profiles.Delay
 
                 EnableUsenet = resource.EnableUsenet,
                 EnableTorrent = resource.EnableTorrent,
+                EnableStacks = resource.EnableStacks,
                 PreferredProtocol = resource.PreferredProtocol,
                 UsenetDelay = resource.UsenetDelay,
                 TorrentDelay = resource.TorrentDelay,
+                StacksDelay = resource.StacksDelay,
                 BypassIfHighestQuality = resource.BypassIfHighestQuality,
                 BypassIfAboveCustomFormatScore = resource.BypassIfAboveCustomFormatScore,
                 MinimumCustomFormatScore = resource.MinimumCustomFormatScore,

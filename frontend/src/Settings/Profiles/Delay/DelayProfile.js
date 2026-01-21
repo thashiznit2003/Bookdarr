@@ -33,9 +33,11 @@ function DelayProfile(props) {
     id,
     enableUsenet,
     enableTorrent,
+    enableStacks,
     preferredProtocol,
     usenetDelay,
     torrentDelay,
+    stacksDelay,
     tags,
     tagList,
     isDragging,
@@ -46,12 +48,16 @@ function DelayProfile(props) {
   const [isEditDelayProfileModalOpen, setEditDelayProfileModalOpen] = useState(false);
   const [isDeleteDelayProfileModalOpen, setDeleteDelayProfileModalOpen] = useState(false);
 
-  let preferred = titleCase(preferredProtocol);
+  const enabledProtocols = [
+    enableUsenet && 'Usenet',
+    enableTorrent && 'Torrent',
+    enableStacks && 'Stacks'
+  ].filter(Boolean);
 
-  if (!enableUsenet) {
-    preferred = 'Only Torrent';
-  } else if (!enableTorrent) {
-    preferred = 'Only Usenet';
+  let preferred = `Prefer ${titleCase(preferredProtocol)}`;
+
+  if (enabledProtocols.length === 1) {
+    preferred = `Only ${enabledProtocols[0]}`;
   }
 
   const onEditDelayProfilePress = () => setEditDelayProfileModalOpen(true);
@@ -73,6 +79,7 @@ function DelayProfile(props) {
       <div className={styles.column}>{preferred}</div>
       <div className={styles.column}>{getDelay(enableUsenet, usenetDelay)}</div>
       <div className={styles.column}>{getDelay(enableTorrent, torrentDelay)}</div>
+      <div className={styles.column}>{getDelay(enableStacks, stacksDelay)}</div>
 
       <TagList
         tags={tags}
@@ -125,9 +132,11 @@ DelayProfile.propTypes = {
   id: PropTypes.number.isRequired,
   enableUsenet: PropTypes.bool.isRequired,
   enableTorrent: PropTypes.bool.isRequired,
+  enableStacks: PropTypes.bool.isRequired,
   preferredProtocol: PropTypes.string.isRequired,
   usenetDelay: PropTypes.number.isRequired,
   torrentDelay: PropTypes.number.isRequired,
+  stacksDelay: PropTypes.number.isRequired,
   tags: PropTypes.arrayOf(PropTypes.number).isRequired,
   tagList: PropTypes.arrayOf(PropTypes.object).isRequired,
   isDragging: PropTypes.bool.isRequired,

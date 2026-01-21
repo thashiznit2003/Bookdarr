@@ -47,6 +47,7 @@ namespace NzbDrone.Core.Download
 
             var usenetFailed = false;
             var torrentFailed = false;
+            var stacksFailed = false;
 
             foreach (var report in prioritizedDecisions)
             {
@@ -65,7 +66,8 @@ namespace NzbDrone.Core.Download
                 }
 
                 if ((downloadProtocol == DownloadProtocol.Usenet && usenetFailed) ||
-                    (downloadProtocol == DownloadProtocol.Torrent && torrentFailed))
+                    (downloadProtocol == DownloadProtocol.Torrent && torrentFailed) ||
+                    (downloadProtocol == DownloadProtocol.Stacks && stacksFailed))
                 {
                     PreparePending(pendingAddQueue, grabbed, pending, report, PendingReleaseReason.DownloadClientUnavailable);
                     continue;
@@ -104,6 +106,10 @@ namespace NzbDrone.Core.Download
                             else if (downloadProtocol == DownloadProtocol.Torrent)
                             {
                                 torrentFailed = true;
+                            }
+                            else if (downloadProtocol == DownloadProtocol.Stacks)
+                            {
+                                stacksFailed = true;
                             }
 
                             break;
