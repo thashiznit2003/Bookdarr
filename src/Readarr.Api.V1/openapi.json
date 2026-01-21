@@ -10163,7 +10163,8 @@
           "unknown",
           "usenet",
           "torrent",
-          "stacks"
+          "stacks",
+          "direct"
         ],
         "type": "string"
       },

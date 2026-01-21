@@ -17,7 +17,7 @@ namespace NzbDrone.Core.Indexers.AnnasArchive
     public class AnnasArchive : HttpIndexerBase<AnnasArchiveSettings>
     {
         public override string Name => "Anna's Archive";
-        public override DownloadProtocol Protocol => DownloadProtocol.Stacks;
+        public override DownloadProtocol Protocol => DownloadProtocol.Direct;
 
         public AnnasArchive(IHttpClient httpClient, IIndexerStatusService indexerStatusService, IConfigService configService, IParsingService parsingService, Logger logger)
             : base(httpClient, indexerStatusService, configService, parsingService, logger)

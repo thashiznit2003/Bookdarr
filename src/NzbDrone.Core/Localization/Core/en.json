@@ -1217,6 +1217,7 @@
   "Today": "Today",
   "Tomorrow": "Tomorrow",
   "TooManyBooks": "Missing or too many books? Modify or create a new",
+  "Direct": "Direct",
   "Stacks": "Stacks",
   "StacksDelay": "Stacks Delay",
   "StacksDelayHelpText": "Delay in minutes to wait before grabbing a release from Stacks",

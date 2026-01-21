@@ -19,6 +19,7 @@ function createMapStateToProps() {
 
       const usenetDownloadClients = _.filter(schema, { protocol: 'usenet' });
       const torrentDownloadClients = _.filter(schema, { protocol: 'torrent' });
+      const directDownloadClients = _.filter(schema, { protocol: 'direct' });
       const stacksDownloadClients = _.filter(schema, { protocol: 'stacks' });
 
       return {
@@ -27,6 +28,7 @@ function createMapStateToProps() {
         schemaError,
         usenetDownloadClients,
         torrentDownloadClients,
+        directDownloadClients,
         stacksDownloadClients
       };
     }

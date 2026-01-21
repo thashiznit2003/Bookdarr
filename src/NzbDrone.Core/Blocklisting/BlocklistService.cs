@@ -63,6 +63,13 @@ namespace NzbDrone.Core.Blocklisting
                     .Any();
             }
 
+            if (release.DownloadProtocol == DownloadProtocol.Direct)
+            {
+                return _blocklistRepository.BlocklistedByTitle(authorId, release.Title)
+                    .Where(b => b.Protocol == DownloadProtocol.Direct)
+                    .Any();
+            }
+
             return _blocklistRepository.BlocklistedByTitle(authorId, release.Title)
                 .Where(b => b.Protocol == DownloadProtocol.Usenet)
                 .Any(b => SameNzb(b, release));

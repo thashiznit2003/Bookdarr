@@ -58,7 +58,7 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
 
         public override string Name => "Anna's Archive Direct";
 
-        public override DownloadProtocol Protocol => DownloadProtocol.Stacks;
+        public override DownloadProtocol Protocol => DownloadProtocol.Direct;
 
         public override async Task<string> Download(RemoteBook remoteBook, IIndexer indexer)
         {

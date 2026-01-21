@@ -5,6 +5,7 @@
         Unknown = 0,
         Usenet = 1,
         Torrent = 2,
-        Stacks = 3
+        Stacks = 3,
+        Direct = 4
     }
 }

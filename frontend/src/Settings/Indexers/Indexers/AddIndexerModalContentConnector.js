@@ -19,6 +19,7 @@ function createMapStateToProps() {
 
       const usenetIndexers = _.filter(schema, { protocol: 'usenet' });
       const torrentIndexers = _.filter(schema, { protocol: 'torrent' });
+      const directIndexers = _.filter(schema, { protocol: 'direct' });
       const stacksIndexers = _.filter(schema, { protocol: 'stacks' });
 
       return {
@@ -27,6 +28,7 @@ function createMapStateToProps() {
         schemaError,
         usenetIndexers,
         torrentIndexers,
+        directIndexers,
         stacksIndexers
       };
     }

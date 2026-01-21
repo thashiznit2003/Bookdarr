@@ -1,11 +1,13 @@
 # Changelog
 
+## 2.0.11
+- Summary: Add a Direct protocol so Anna's Archive direct downloads no longer use the Stacks protocol.
+- Why: Direct downloads were being blocked by Stacks gating and mislabelled in the UI.
+- Impact: Anna's Archive indexer + direct client now use Direct, the UI shows a Direct source label, and Stacks is only used for fallback.
+- Files: `src/NzbDrone.Core/Indexers/DownloadProtocol.cs`, `src/NzbDrone.Core/Indexers/AnnasArchive/AnnasArchive.cs`, `src/NzbDrone.Core/Download/Clients/AnnasArchiveDirect/AnnasArchiveDirect.cs`, `src/NzbDrone.Core/Blocklisting/BlocklistService.cs`, `src/NzbDrone.Core/Download/ProcessDownloadDecisions.cs`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Readarr.Api.V1/openapi.json`, `frontend/src/Settings/DownloadClients/DownloadClients/AddDownloadClientModalContent*`, `frontend/src/Settings/Indexers/Indexers/AddIndexerModalContent*`, `frontend/src/Activity/Queue/ProtocolLabel.css`, `frontend/src/Components/Filter/Builder/ProtocolFilterBuilderRowValue.js`, `frontend/src/Styles/Themes/*.js`, `src/Directory.Build.props`, `CHANGELOG.md`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.11`, push, then run the SSH update with the next log number (`update-03.log`).
+
 ## 2.0.10
-- Summary: Add an Anna's Archive Direct download client that uses slow downloads with optional Stacks fallback.
-- Why: Slow downloads are the only free option, and Stacks is not reliable for every title.
-- Impact: New download client resolves slow download links, downloads into a configured folder, and can fall back to a configured Stacks client after a timeout.
-- Files: `src/NzbDrone.Core/Download/Clients/AnnasArchiveDirect/*`, `src/Directory.Build.props`, `CHANGELOG.md`, `docs/HANDOFF.md`
-- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.10`, push, then run the SSH update with the next log number (`update-02.log`).
 
 ## 2.0.9
 - Summary: Add Stacks protocol support with an Anna's Archive indexer and configurable Stacks download client.
