@@ -256,6 +256,11 @@ namespace NzbDrone.Core.Download
                 return magnetLink;
             }
 
+            if (magnetLink.StartsWith("magnet:", StringComparison.OrdinalIgnoreCase))
+            {
+                return magnetLink;
+            }
+
             if (!magnetLink.Contains("%"))
             {
                 return magnetLink;

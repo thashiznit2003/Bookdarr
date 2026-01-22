@@ -79,7 +79,20 @@ namespace NzbDrone.Core.Download.Clients.QBittorrent
             var moveToTop = (isRecentBook && Settings.RecentTvPriority == (int)QBittorrentPriority.First) || (!isRecentBook && Settings.OlderTvPriority == (int)QBittorrentPriority.First);
             var forceStart = (QBittorrentState)Settings.InitialState == QBittorrentState.ForceStart;
 
-            Proxy.AddTorrentFromUrl(magnetLink, addHasSetShareLimits && setShareLimits ? remoteBook.SeedConfiguration : null, Settings);
+            try
+            {
+                Proxy.AddTorrentFromUrl(magnetLink, addHasSetShareLimits && setShareLimits ? remoteBook.SeedConfiguration : null, Settings);
+            }
+            catch (DownloadClientException ex)
+            {
+                if (IsTorrentAlreadyLoaded(hash))
+                {
+                    _logger.Warn(ex, "qBittorrent reported an add failure, but the torrent already exists: {0}", hash);
+                    return hash;
+                }
+
+                throw;
+            }
 
             if ((!addHasSetShareLimits && setShareLimits) || moveToTop || forceStart)
             {
@@ -138,7 +151,20 @@ namespace NzbDrone.Core.Download.Clients.QBittorrent
             var moveToTop = (isRecentBook && Settings.RecentTvPriority == (int)QBittorrentPriority.First) || (!isRecentBook && Settings.OlderTvPriority == (int)QBittorrentPriority.First);
             var forceStart = (QBittorrentState)Settings.InitialState == QBittorrentState.ForceStart;
 
-            Proxy.AddTorrentFromFile(filename, fileContent, addHasSetShareLimits ? remoteBook.SeedConfiguration : null, Settings);
+            try
+            {
+                Proxy.AddTorrentFromFile(filename, fileContent, addHasSetShareLimits ? remoteBook.SeedConfiguration : null, Settings);
+            }
+            catch (DownloadClientException ex)
+            {
+                if (IsTorrentAlreadyLoaded(hash))
+                {
+                    _logger.Warn(ex, "qBittorrent reported an add failure, but the torrent already exists: {0}", hash);
+                    return hash;
+                }
+
+                throw;
+            }
 
             if ((!addHasSetShareLimits && setShareLimits) || moveToTop || forceStart)
             {
@@ -185,6 +211,18 @@ namespace NzbDrone.Core.Download.Clients.QBittorrent
             }
 
             return hash;
+        }
+
+        private bool IsTorrentAlreadyLoaded(string hash)
+        {
+            try
+            {
+                return Proxy.IsTorrentLoaded(hash.ToLower(), Settings);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         protected bool WaitForTorrent(string hash)

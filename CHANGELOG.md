@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.16
+- Summary: Avoid decoding already-valid magnet links and treat qBittorrent add failures as success when the torrent already exists.
+- Why: Magnet redirects were being decoded even when already valid, and qBittorrent may report "Fails." for duplicates, causing red download buttons.
+- Impact: Magnet redirects keep their encoded trackers, and duplicate adds no longer hard-fail if the torrent is already present.
+- Files: `src/NzbDrone.Core/Download/TorrentClientBase.cs`, `src/NzbDrone.Core/Download/Clients/QBittorrent/QBittorrent.cs`, `src/Directory.Build.props`, `CHANGELOG.md`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.16`, push, then run the SSH update with the next log number (`update-08.log`).
+
 ## 2.0.15
 - Summary: Decode percent-encoded magnet redirects before passing them to torrent clients.
 - Why: Some indexers redirect torrent URLs to URL-encoded magnets, which qBittorrent rejects with "Fails".
