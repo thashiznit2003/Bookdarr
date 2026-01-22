@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.13
+- Summary: Normalize Anna's Archive slow download URLs to avoid `file:///slow_download` failures.
+- Why: Diagnostics show the direct client attempting to fetch `file:///slow_download/...`, which the HTTP client rejects.
+- Impact: Slow download links are normalized against the referer domain before fetching, preventing the red download error.
+- Files: `src/NzbDrone.Core/Download/Clients/AnnasArchiveDirect/AnnasArchiveDirect.cs`, `src/Directory.Build.props`, `CHANGELOG.md`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.13`, push, then run the SSH update with the next log number (`update-05.log`).
+
 ## 2.0.12
 - Summary: Follow Anna's Archive "Download Now" links when slow downloads return HTML.
 - Why: Slow download pages can require a second-step "Download Now" button, causing direct grabs to fail and turn red.

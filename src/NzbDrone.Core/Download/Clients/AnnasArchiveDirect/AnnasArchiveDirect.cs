@@ -250,12 +250,14 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
             }
 
             var downloadUrl = ExtractPreferredDownloadUrl(response.Content, response.Request.Url);
+            downloadUrl = NormalizeDownloadUrl(downloadUrl, response.Request.Url.FullUri);
             if (downloadUrl.IsNotNullOrWhiteSpace())
             {
                 return downloadUrl;
             }
 
             downloadUrl = ExtractSlowDownloadUrl(response.Content, response.Request.Url);
+            downloadUrl = NormalizeDownloadUrl(downloadUrl, response.Request.Url.FullUri);
             if (downloadUrl.IsNullOrWhiteSpace())
             {
                 throw new DownloadClientException("Unable to locate the slow download link on Anna's Archive.");
@@ -270,6 +272,8 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
             {
                 throw new DownloadClientException("Slow download URL was empty.");
             }
+
+            downloadUrl = NormalizeDownloadUrl(downloadUrl, refererUrl);
 
             _diskProvider.EnsureFolder(Settings.DownloadFolder);
 
@@ -330,6 +334,7 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
             {
                 var html = File.ReadAllText(filePath);
                 var downloadUrl = ExtractPreferredDownloadUrl(html, response.Request.Url);
+                downloadUrl = NormalizeDownloadUrl(downloadUrl, response.Request.Url.FullUri);
 
                 if (downloadUrl.IsNotNullOrWhiteSpace() && depth < 1)
                 {
@@ -717,6 +722,40 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
 
             var rawUrl = WebUtility.HtmlDecode(match.Groups["url"].Value).Trim();
             return MakeAbsoluteUrl(baseUri, rawUrl);
+        }
+
+        private static string NormalizeDownloadUrl(string downloadUrl, string refererUrl)
+        {
+            if (downloadUrl.IsNullOrWhiteSpace())
+            {
+                return downloadUrl;
+            }
+
+            if (Uri.TryCreate(downloadUrl, UriKind.Absolute, out var absolute))
+            {
+                if (absolute.Scheme.Equals("http", StringComparison.InvariantCultureIgnoreCase) ||
+                    absolute.Scheme.Equals("https", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return absolute.ToString();
+                }
+
+                if (absolute.Scheme.Equals("file", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    downloadUrl = absolute.AbsolutePath + absolute.Query;
+                }
+            }
+
+            if (refererUrl.IsNullOrWhiteSpace())
+            {
+                return downloadUrl;
+            }
+
+            if (!Uri.TryCreate(refererUrl, UriKind.Absolute, out var referer))
+            {
+                return downloadUrl;
+            }
+
+            return new Uri(referer, downloadUrl).ToString();
         }
 
         private static string GetStacksRequestId(RemoteBook remoteBook)
