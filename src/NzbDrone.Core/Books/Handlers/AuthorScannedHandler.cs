@@ -30,6 +30,8 @@ namespace NzbDrone.Core.Books
 
         private void HandleScanEvents(Author author)
         {
+            var shouldSearchForNewBooks = author.AddOptions?.SearchForMissingBooks == true;
+
             if (author.AddOptions != null)
             {
                 _logger.Info("[{0}] was recently added, performing post-add actions", author.Name);
@@ -44,7 +46,10 @@ namespace NzbDrone.Core.Books
                 _authorService.RemoveAddOptions(author);
             }
 
-            _bookAddedService.SearchForRecentlyAdded(author.Id);
+            if (shouldSearchForNewBooks)
+            {
+                _bookAddedService.SearchForRecentlyAdded(author.Id);
+            }
         }
 
         public void Handle(AuthorScannedEvent message)

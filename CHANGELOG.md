@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.17
+- Summary: Stop automatic multi-book searches after author add unless the user explicitly requested a missing-book search.
+- Why: Diagnostics show new authors triggering BookSearchService for many books even when the add flow did not request searches.
+- Impact: Author adds only kick off searches when "Search for missing books" is enabled, preventing surprise bulk grabs.
+- Files: `src/NzbDrone.Core/Books/Handlers/AuthorScannedHandler.cs`, `src/Directory.Build.props`, `CHANGELOG.md`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.17`, push, then run the SSH update with the next log number (`update-09.log`).
+
 ## 2.0.16
 - Summary: Avoid decoding already-valid magnet links and treat qBittorrent add failures as success when the torrent already exists.
 - Why: Magnet redirects were being decoded even when already valid, and qBittorrent may report "Fails." for duplicates, causing red download buttons.
