@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.18
+- Summary: Force a one-time download refresh after a grab even if the scheduled task is disabled.
+- Why: Diagnostics show “Refresh Monitored Downloads” disabled, preventing Activity updates and imports for direct grabs.
+- Impact: Manual grabs now enqueue a forced refresh to track/import the download, while the scheduled task can remain disabled.
+- Files: `src/NzbDrone.Core/Download/RefreshMonitoredDownloadsCommand.cs`, `src/NzbDrone.Core/Download/TrackedDownloads/DownloadMonitoringService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.18`, push, then run the SSH update with the next log number (`update-10.log`).
+
 ## 2.0.17
 - Summary: Stop automatic multi-book searches after author add unless the user explicitly requested a missing-book search.
 - Why: Diagnostics show new authors triggering BookSearchService for many books even when the add flow did not request searches.

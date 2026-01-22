@@ -30,6 +30,7 @@ namespace NzbDrone.Core.Download.TrackedDownloads
         private readonly ITrackedDownloadService _trackedDownloadService;
         private readonly Logger _logger;
         private readonly Debouncer _refreshDebounce;
+        private volatile bool _forceRefreshPending;
 
         public DownloadMonitoringService(IDownloadClientStatusService downloadClientStatusService,
                                          IDownloadClientFactory downloadClientFactory,
@@ -58,18 +59,26 @@ namespace NzbDrone.Core.Download.TrackedDownloads
 
         private void QueueRefresh()
         {
-            if (!IsRefreshTaskEnabled())
+            var force = _forceRefreshPending;
+            _forceRefreshPending = false;
+
+            if (!force && !IsRefreshTaskEnabled())
             {
                 _logger.Debug("Skipping Refresh Monitored Downloads because the task is disabled.");
                 return;
             }
 
-            _manageCommandQueue.Push(new RefreshMonitoredDownloadsCommand(), CommandPriority.High);
+            if (force && !IsRefreshTaskEnabled())
+            {
+                _logger.Debug("Refresh Monitored Downloads is disabled, forcing a one-time refresh for a grabbed download.");
+            }
+
+            _manageCommandQueue.Push(new RefreshMonitoredDownloadsCommand { Force = force }, CommandPriority.High);
         }
 
-        private void Refresh()
+        private void Refresh(bool force)
         {
-            if (!IsRefreshTaskEnabled())
+            if (!force && !IsRefreshTaskEnabled())
             {
                 _logger.Debug("Skipping Refresh Monitored Downloads because the task is disabled.");
                 return;
@@ -168,17 +177,18 @@ namespace NzbDrone.Core.Download.TrackedDownloads
 
         public void Execute(RefreshMonitoredDownloadsCommand message)
         {
-            Refresh();
+            Refresh(message.Force);
         }
 
         public void Execute(CheckForFinishedDownloadCommand message)
         {
             _logger.Warn("A third party app used the deprecated CheckForFinishedDownload command, it should be updated RefreshMonitoredDownloads instead");
-            Refresh();
+            Refresh(false);
         }
 
         public void Handle(BookGrabbedEvent message)
         {
+            _forceRefreshPending = true;
             _refreshDebounce.Execute();
         }
 
