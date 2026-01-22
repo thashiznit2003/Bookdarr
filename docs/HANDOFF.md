@@ -24,7 +24,7 @@ Use this file to onboard a new Codex chat.
 - Increment the assembly/app version (`src/Directory.Build.props`) before every Git push so the repo always reflects a higher release.
 - When giving install commands, use sudo and chain with `&&`.
 - Always put commands or code the user should run in fenced code blocks.
-- Update commands should `tee` to `/opt/bookdarr-dev/Logs/update-0XX.log`, next up is `update-05.log`.
+- Update commands should `tee` to `/opt/bookdarr-dev/Logs/update-0XX.log`, next up is `update-06.log`.
 - Update script now pushes a diagnostics bundle before exit for every update and immediately on failures, including the latest update log file (toggle with `DIAGNOSTICS_PUSH=false`).
 - Avoid adding repeated `apt-get update` steps in install/build flows.
 - Changelog entries must be handoff-friendly (Summary/Why/Impact/Files/Next).
@@ -40,7 +40,7 @@ Use this file to onboard a new Codex chat.
 ## Command Continuity
 - If a command was interrupted, rerun it before continuing.
 - Keep the latest instructions/commands in this section so every agent knows what to execute next (e.g., the current SSH update command, diagnostics push steps, version bump, StyleCop build, etc.).
-- After pushing to GitHub, immediately run the SSH update workflow (`ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-05.log'`) so the Ubuntu VM mirrors the latest version and the diagnostics bundle is generated.
+- After pushing to GitHub, immediately run the SSH update workflow (`ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-06.log'`) so the Ubuntu VM mirrors the latest version and the diagnostics bundle is generated.
 
 ## Diagnostics Workflow
 
@@ -155,7 +155,7 @@ Use this file to onboard a new Codex chat.
 - Update flow on the VM (logs for diagnostics):
 
 ```
-sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-05.log
+sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-06.log
 ```
 - Manual dev run: `sudo -u joe /opt/bookdarr-dev/scripts/dev-run.sh` (foreground) or `sudo -u joe nohup /opt/bookdarr-dev/scripts/dev-run.sh >/opt/bookdarr-dev/run.log 2>&1 &` (background).
 - Dev instance serves at `http://<vm-ip>:8787` and reports status at `/api/v1/system/status`.

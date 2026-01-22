@@ -11,6 +11,7 @@ using NzbDrone.Common.Cache;
 using NzbDrone.Common.Disk;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Http;
+using NzbDrone.Common.Serializer;
 using NzbDrone.Core.Annotations;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Download.Clients.Stacks;
@@ -310,10 +311,18 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
 
         private async Task<HttpResponse> DownloadFileWithTimeout(string url, string filePath, TimeSpan timeout, string refererUrl, int depth)
         {
+            return await DownloadFileWithTimeout(url, filePath, timeout, refererUrl, depth, null);
+        }
+
+        private async Task<HttpResponse> DownloadFileWithTimeout(string url, string filePath, TimeSpan timeout, string refererUrl, int depth, FlareSolverrSolution flareSolverrSolution)
+        {
+            var usingFlareSolverr = flareSolverrSolution != null;
             HttpResponse response;
 
-            await using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+            try
             {
+                await using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+
                 var request = new HttpRequest(url)
                 {
                     AllowAutoRedirect = true,
@@ -326,13 +335,40 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
                     request.Headers.Add("Referer", refererUrl);
                 }
 
+                ApplyFlareSolverrSolution(request, flareSolverrSolution);
+
                 response = await _httpClient.GetAsync(request);
+            }
+            catch (HttpException ex) when (!usingFlareSolverr && ShouldRetryWithFlareSolverr(ex.Response))
+            {
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
+                _logger.Warn("DDoS-Guard challenge detected for {0}, retrying via FlareSolverr.", url);
+                var solution = await GetFlareSolverrSolution(url, refererUrl);
+
+                return await DownloadFileWithTimeout(url, filePath, timeout, refererUrl, depth, solution);
             }
 
             if (response.Headers.ContentType != null &&
                 response.Headers.ContentType.Contains("text/html", StringComparison.InvariantCultureIgnoreCase))
             {
                 var html = File.ReadAllText(filePath);
+                if (!usingFlareSolverr && Settings.UseFlareSolverr && IsDdosGuardHtml(html))
+                {
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                    }
+
+                    _logger.Warn("DDoS-Guard challenge HTML detected for {0}, retrying via FlareSolverr.", url);
+                    var solution = await GetFlareSolverrSolution(url, refererUrl);
+
+                    return await DownloadFileWithTimeout(url, filePath, timeout, refererUrl, depth, solution);
+                }
+
                 var downloadUrl = ExtractPreferredDownloadUrl(html, response.Request.Url);
                 downloadUrl = NormalizeDownloadUrl(downloadUrl, response.Request.Url.FullUri);
 
@@ -348,7 +384,7 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
                         throw new DownloadClientException("Anna's Archive redirected to a loop instead of a file.");
                     }
 
-                    return await DownloadFileWithTimeout(downloadUrl, filePath, timeout, response.Request.Url.FullUri, depth + 1);
+                    return await DownloadFileWithTimeout(downloadUrl, filePath, timeout, response.Request.Url.FullUri, depth + 1, flareSolverrSolution);
                 }
 
                 throw new DownloadClientException("Anna's Archive returned HTML instead of a file.");
@@ -756,6 +792,155 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
             }
 
             return new Uri(referer, downloadUrl).ToString();
+        }
+
+        private bool ShouldRetryWithFlareSolverr(HttpResponse response)
+        {
+            if (!Settings.UseFlareSolverr || response == null)
+            {
+                return false;
+            }
+
+            if (response.StatusCode != HttpStatusCode.Forbidden && response.StatusCode != HttpStatusCode.ServiceUnavailable)
+            {
+                return false;
+            }
+
+            return IsDdosGuardHtml(response.Content);
+        }
+
+        private static bool IsDdosGuardHtml(string html)
+        {
+            if (html.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            return html.Contains("ddos-guard", StringComparison.InvariantCultureIgnoreCase) ||
+                html.Contains("check.ddos-guard", StringComparison.InvariantCultureIgnoreCase) ||
+                html.Contains("DDoS-Guard", StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private async Task<FlareSolverrSolution> GetFlareSolverrSolution(string url, string refererUrl)
+        {
+            if (!Settings.UseFlareSolverr)
+            {
+                return null;
+            }
+
+            var flareSolverrUrl = Settings.FlareSolverrUrl?.TrimEnd('/');
+            if (flareSolverrUrl.IsNullOrWhiteSpace())
+            {
+                throw new DownloadClientException("FlareSolverr URL must be set when FlareSolverr is enabled.");
+            }
+
+            var maxTimeoutMs = Math.Max(Settings.FlareSolverrTimeoutSeconds, 10) * 1000;
+            var requestPayload = new FlareSolverrRequest
+            {
+                Cmd = "request.get",
+                Url = url,
+                MaxTimeout = maxTimeoutMs
+            };
+
+            if (refererUrl.IsNotNullOrWhiteSpace())
+            {
+                requestPayload.Headers = new Dictionary<string, string>
+                {
+                    { "Referer", refererUrl }
+                };
+            }
+
+            var request = new HttpRequest($"{flareSolverrUrl}/v1")
+            {
+                RequestTimeout = TimeSpan.FromMilliseconds(maxTimeoutMs + 10000)
+            };
+
+            request.Headers.ContentType = "application/json";
+            request.SetContent(STJson.ToJson(requestPayload));
+
+            var response = await _httpClient.PostAsync(request);
+            var flareSolverrResponse = STJson.Deserialize<FlareSolverrResponse>(response.Content);
+
+            if (flareSolverrResponse == null)
+            {
+                throw new DownloadClientException("FlareSolverr returned an empty response.");
+            }
+
+            if (!string.Equals(flareSolverrResponse.Status, "ok", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var message = flareSolverrResponse.Message.IsNullOrWhiteSpace()
+                    ? "FlareSolverr returned an error."
+                    : flareSolverrResponse.Message;
+
+                throw new DownloadClientException(message);
+            }
+
+            if (flareSolverrResponse.Solution == null)
+            {
+                throw new DownloadClientException("FlareSolverr did not return a solution.");
+            }
+
+            return flareSolverrResponse.Solution;
+        }
+
+        private static void ApplyFlareSolverrSolution(HttpRequest request, FlareSolverrSolution solution)
+        {
+            if (request == null || solution == null)
+            {
+                return;
+            }
+
+            if (solution.UserAgent.IsNotNullOrWhiteSpace())
+            {
+                request.Headers.Set("User-Agent", solution.UserAgent);
+            }
+
+            if (solution.Cookies == null)
+            {
+                return;
+            }
+
+            foreach (var cookie in solution.Cookies)
+            {
+                if (cookie?.Name.IsNullOrWhiteSpace() ?? true)
+                {
+                    continue;
+                }
+
+                request.Cookies[cookie.Name] = cookie.Value ?? string.Empty;
+            }
+        }
+
+        private class FlareSolverrRequest
+        {
+            public string Cmd { get; set; }
+            public string Url { get; set; }
+            public int MaxTimeout { get; set; }
+            public Dictionary<string, string> Headers { get; set; }
+        }
+
+        private class FlareSolverrResponse
+        {
+            public string Status { get; set; }
+            public string Message { get; set; }
+            public FlareSolverrSolution Solution { get; set; }
+        }
+
+        private class FlareSolverrSolution
+        {
+            public string Url { get; set; }
+            public int Status { get; set; }
+            public string Response { get; set; }
+            public List<FlareSolverrCookie> Cookies { get; set; }
+            public string UserAgent { get; set; }
+        }
+
+        private class FlareSolverrCookie
+        {
+            public string Name { get; set; }
+            public string Value { get; set; }
+            public string Domain { get; set; }
+            public string Path { get; set; }
         }
 
         private static string GetStacksRequestId(RemoteBook remoteBook)

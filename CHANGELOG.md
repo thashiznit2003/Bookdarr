@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.14
+- Summary: Add FlareSolverr support for Anna's Archive direct downloads.
+- Why: DDoS-Guard blocks slow download URLs, returning 403 HTML challenges and forcing red download failures.
+- Impact: The direct client can now retry slow downloads through FlareSolverr when a DDoS-Guard challenge is detected.
+- Files: `src/NzbDrone.Core/Download/Clients/AnnasArchiveDirect/AnnasArchiveDirect.cs`, `src/NzbDrone.Core/Download/Clients/AnnasArchiveDirect/AnnasArchiveDirectSettings.cs`, `src/Directory.Build.props`, `CHANGELOG.md`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.14`, push, then run the SSH update with the next log number (`update-06.log`).
+
 ## 2.0.13
 - Summary: Normalize Anna's Archive slow download URLs to avoid `file:///slow_download` failures.
 - Why: Diagnostics show the direct client attempting to fetch `file:///slow_download/...`, which the HTTP client rejects.
