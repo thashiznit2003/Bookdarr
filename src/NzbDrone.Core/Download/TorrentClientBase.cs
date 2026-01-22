@@ -151,9 +151,11 @@ namespace NzbDrone.Core.Download
 
                     if (locationHeader != null)
                     {
-                        if (locationHeader.StartsWith("magnet:"))
+                        var normalizedLocation = NormalizeMagnetLink(locationHeader);
+
+                        if (normalizedLocation.StartsWith("magnet:", StringComparison.OrdinalIgnoreCase))
                         {
-                            return DownloadFromMagnetUrl(remoteBook, indexer, locationHeader);
+                            return DownloadFromMagnetUrl(remoteBook, indexer, normalizedLocation);
                         }
 
                         request.Url += new HttpUri(locationHeader);
@@ -214,16 +216,17 @@ namespace NzbDrone.Core.Download
 
         private string DownloadFromMagnetUrl(RemoteBook remoteBook, IIndexer indexer, string magnetUrl)
         {
+            var normalizedMagnet = NormalizeMagnetLink(magnetUrl);
             string hash = null;
             string actualHash = null;
 
             try
             {
-                hash = MagnetLink.Parse(magnetUrl).InfoHash.ToHex();
+                hash = MagnetLink.Parse(normalizedMagnet).InfoHash.ToHex();
             }
             catch (FormatException ex)
             {
-                _logger.Error(ex, "Failed to parse magnetlink for release '{0}': '{1}'", remoteBook.Release.Title, magnetUrl);
+                _logger.Error(ex, "Failed to parse magnetlink for release '{0}': '{1}'", remoteBook.Release.Title, normalizedMagnet);
 
                 return null;
             }
@@ -232,7 +235,7 @@ namespace NzbDrone.Core.Download
             {
                 EnsureReleaseIsNotBlocklisted(remoteBook, indexer, hash);
 
-                actualHash = AddFromMagnetLink(remoteBook, hash, magnetUrl);
+                actualHash = AddFromMagnetLink(remoteBook, hash, normalizedMagnet);
             }
 
             if (actualHash.IsNotNullOrWhiteSpace() && hash != actualHash)
@@ -244,6 +247,35 @@ namespace NzbDrone.Core.Download
             }
 
             return actualHash;
+        }
+
+        private string NormalizeMagnetLink(string magnetLink)
+        {
+            if (magnetLink.IsNullOrWhiteSpace())
+            {
+                return magnetLink;
+            }
+
+            if (!magnetLink.Contains("%"))
+            {
+                return magnetLink;
+            }
+
+            try
+            {
+                var decoded = Uri.UnescapeDataString(magnetLink);
+
+                if (decoded.StartsWith("magnet:", StringComparison.OrdinalIgnoreCase))
+                {
+                    return decoded;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug(ex, "Failed to decode magnet redirect, using raw value.");
+            }
+
+            return magnetLink;
         }
 
         private void EnsureReleaseIsNotBlocklisted(RemoteBook remoteBook, IIndexer indexer, string hash)

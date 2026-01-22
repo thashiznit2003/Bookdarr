@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.15
+- Summary: Decode percent-encoded magnet redirects before passing them to torrent clients.
+- Why: Some indexers redirect torrent URLs to URL-encoded magnets, which qBittorrent rejects with "Fails".
+- Impact: Redirected magnets are normalized before parsing and adding, preventing red download failures when grabs use magnet redirects.
+- Files: `src/NzbDrone.Core/Download/TorrentClientBase.cs`, `src/Directory.Build.props`, `CHANGELOG.md`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.15`, push, then run the SSH update with the next log number (`update-07.log`).
+
 ## 2.0.14
 - Summary: Add FlareSolverr support for Anna's Archive direct downloads.
 - Why: DDoS-Guard blocks slow download URLs, returning 403 HTML challenges and forcing red download failures.
