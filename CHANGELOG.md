@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.0
+- Summary: Production hardening for Docker runtime users, plus quality heuristics and loading UX updates.
+- Why: Containers need to honor `PUID/PGID` reliably and search results should not remain Unknown when sizes clearly suggest audiobooks or ebooks.
+- Impact: Docker entrypoint drops privileges to the requested UID/GID with optional `/books` and `/downloads` ownership fixes; unknown search results now apply a fallback size heuristic; loading screen messages expanded.
+- Files: `docker/entrypoint.sh`, `docker-compose.yml`, `src/NzbDrone.Core/DecisionEngine/DownloadDecisionMaker.cs`, `src/NzbDrone.Core.Test/DecisionEngineTests/DownloadDecisionMakerFixture.cs`, `frontend/src/Components/Loading/LoadingMessage.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.0`, push, then run the SSH update with the next log number.
+
 ## 2.0.20
 - Summary: Fix Database Commands build errors (missing comparer/imports and StyleCop ordering).
 - Why: The first VM update failed because the API controller referenced missing types and violated StyleCop ordering rules.
