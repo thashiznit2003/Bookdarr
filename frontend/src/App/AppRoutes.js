@@ -40,6 +40,7 @@ import getPathWithUrlBase from 'Utilities/getPathWithUrlBase';
 import UserMissingConnector from 'Wanted/UserMissing/UserMissingConnector';
 import UserUpgradesConnector from 'Wanted/UserUpgrades/UserUpgradesConnector';
 import PossibleDuplicatesPage from 'Wanted/PossibleDuplicates/PossibleDuplicatesPage';
+import DatabaseCommandsPage from 'Wanted/DatabaseCommands/DatabaseCommandsPage';
 
 function AppRoutes(props) {
   const {
@@ -158,6 +159,11 @@ function AppRoutes(props) {
       <Route
         path="/wanted/possible-duplicates"
         component={PossibleDuplicatesPage}
+      />
+
+      <Route
+        path="/wanted/database-commands"
+        component={DatabaseCommandsPage}
       />
 
       {/*

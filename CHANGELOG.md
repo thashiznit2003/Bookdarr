@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.19
+- Summary: Add a Database Commands page for repairing orphaned file links, missing file paths, and duplicate BookFile entries.
+- Why: Users need safe, UI-driven fixes for file/edition/book mismatches without direct DB surgery.
+- Impact: Admins can scan/clear invalid file links, find missing disk paths, and remove duplicate BookFile rows with logged output in File Operations.
+- Files: `frontend/src/Wanted/DatabaseCommands/DatabaseCommandsPage.js`, `frontend/src/Wanted/DatabaseCommands/DatabaseCommandsPage.css`, `frontend/src/App/AppRoutes.js`, `frontend/src/Components/Page/Sidebar/PageSidebar.js`, `frontend/src/Store/Actions/interactiveImportActions.js`, `frontend/src/InteractiveImport/Book/SelectBookModalContentConnector.js`, `src/Readarr.Api.V1/Database/DatabaseCommandsController.cs`, `src/Readarr.Api.V1/Database/DatabaseCommandResource.cs`, `src/NzbDrone.Core/MediaFiles/MediaFileRepository.cs`, `src/NzbDrone.Core/MediaFiles/InvalidBookFileLink.cs`, `src/NzbDrone.Core/MediaFiles/BookFileSummary.cs`, `src/NzbDrone.Core/MediaFiles/MediaFileService.cs`, `src/NzbDrone.Core/MediaFiles/BookImport/Manual/ManualImportService.cs`, `src/NzbDrone.Core/Books/Services/BookService.cs`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.19`, push, then run the SSH update with the next log number (`update-10.log`).
+
 ## 2.0.18
 - Summary: Force a one-time download refresh after a grab even if the scheduled task is disabled.
 - Why: Diagnostics show “Refresh Monitored Downloads” disabled, preventing Activity updates and imports for direct grabs.

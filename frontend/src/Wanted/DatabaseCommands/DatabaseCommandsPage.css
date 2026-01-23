@@ -1,0 +1,41 @@
+.pageBody {
+  padding: 20px;
+}
+
+.summary {
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.count {
+  margin-left: 6px;
+  color: #b0b0b0;
+}
+
+.logPanel {
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  background: #1b1b1b;
+  padding: 12px;
+}
+
+.logHeader {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #b0b0b0;
+  margin-bottom: 8px;
+}
+
+.logOutput {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  color: #e0e0e0;
+}
+
+.errorMessage {
+  color: #e74c3c;
+  margin-bottom: 10px;
+}

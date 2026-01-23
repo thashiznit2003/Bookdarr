@@ -99,6 +99,10 @@ const links = [
       {
         title: () => translate('PossibleDuplicates'),
         to: '/wanted/possible-duplicates'
+      },
+      {
+        title: () => translate('DatabaseCommands'),
+        to: '/wanted/database-commands'
       }
     ]
   },
@@ -227,6 +231,10 @@ const systemHiddenForNonAdmin = new Set([
   '/system/logs/files'
 ]);
 
+const fileOperationsHiddenForNonAdmin = new Set([
+  '/wanted/database-commands'
+]);
+
 function applyConfigFilters(linkList, enableDiagnostics, enableDevelopmentMenu) {
   return linkList.reduce((acc, link) => {
     if (!enableDiagnostics && link.to === '/system/diagnostics') {
@@ -266,6 +274,10 @@ function getVisibleLinks(isAdmin, enableDiagnostics, enableDevelopmentMenu) {
 
     if (nextLink.to === '/system/status' && nextLink.children) {
       nextLink.children = nextLink.children.filter((child) => !systemHiddenForNonAdmin.has(child.to));
+    }
+
+    if (nextLink.to === '/wanted/missing-files' && nextLink.children) {
+      nextLink.children = nextLink.children.filter((child) => !fileOperationsHiddenForNonAdmin.has(child.to));
     }
 
     acc.push(nextLink);

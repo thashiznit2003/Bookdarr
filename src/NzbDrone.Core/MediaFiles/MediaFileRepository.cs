@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Dapper;
 using NzbDrone.Common;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Datastore;
@@ -20,6 +21,11 @@ namespace NzbDrone.Core.MediaFiles
         BookFile GetFileWithPath(string path);
         void DeleteFilesByBook(int bookId);
         void UnlinkFilesByBook(int bookId);
+        void DeleteFilesByEditionIds(List<int> editionIds);
+        void UnlinkFilesByEditionIds(List<int> editionIds);
+        List<InvalidBookFileLink> GetInvalidBookFileLinks();
+        List<InvalidBookFileLink> ClearInvalidBookFileLinks();
+        List<BookFileSummary> GetBookFileSummaries();
     }
 
     public class MediaFileRepository : BasicRepository<BookFile>, IMediaFileRepository
@@ -100,6 +106,89 @@ namespace NzbDrone.Core.MediaFiles
             var files = GetFilesByBook(bookId);
             files.ForEach(x => x.EditionId = 0);
             SetFields(files, f => f.EditionId);
+        }
+
+        public void DeleteFilesByEditionIds(List<int> editionIds)
+        {
+            if (editionIds == null || editionIds.Count == 0)
+            {
+                return;
+            }
+
+            Delete(x => editionIds.Contains(x.EditionId));
+        }
+
+        public void UnlinkFilesByEditionIds(List<int> editionIds)
+        {
+            if (editionIds == null || editionIds.Count == 0)
+            {
+                return;
+            }
+
+            var files = _database.Query<BookFile>(new SqlBuilder(_database.DatabaseType)
+                .Select(typeof(BookFile))
+                .Where<BookFile>(x => editionIds.Contains(x.EditionId))).ToList();
+
+            files.ForEach(x => x.EditionId = 0);
+            SetFields(files, f => f.EditionId);
+        }
+
+        public List<InvalidBookFileLink> GetInvalidBookFileLinks()
+        {
+            using var mapper = _database.OpenConnection();
+
+            var sql = @"SELECT bf.""Id"" AS ""BookFileId"",
+                               bf.""Path"" AS ""Path"",
+                               bf.""EditionId"" AS ""EditionId"",
+                               b.""Id"" AS ""BookId"",
+                               CASE
+                                 WHEN e.""Id"" IS NULL THEN 'Edition not found'
+                                 WHEN b.""Id"" IS NULL THEN 'Book not found'
+                                 ELSE 'Unknown'
+                               END AS ""Reason""
+                        FROM ""BookFiles"" bf
+                        LEFT JOIN ""Editions"" e ON bf.""EditionId"" = e.""Id""
+                        LEFT JOIN ""Books"" b ON e.""BookId"" = b.""Id""
+                        WHERE bf.""EditionId"" != 0
+                          AND (e.""Id"" IS NULL OR b.""Id"" IS NULL)
+                        ORDER BY bf.""Path"";";
+
+            return mapper.Query<InvalidBookFileLink>(sql).ToList();
+        }
+
+        public List<InvalidBookFileLink> ClearInvalidBookFileLinks()
+        {
+            var invalidLinks = GetInvalidBookFileLinks();
+
+            if (!invalidLinks.Any())
+            {
+                return invalidLinks;
+            }
+
+            using var mapper = _database.OpenConnection();
+            var ids = invalidLinks.Select(x => x.BookFileId).Distinct().ToList();
+
+            mapper.Execute(@"UPDATE ""BookFiles""
+                             SET ""EditionId"" = 0
+                             WHERE ""Id"" IN @ids",
+                new { ids });
+
+            return invalidLinks;
+        }
+
+        public List<BookFileSummary> GetBookFileSummaries()
+        {
+            using var mapper = _database.OpenConnection();
+
+            var sql = @"SELECT ""Id"" AS ""BookFileId"",
+                               ""Path"" AS ""Path"",
+                               ""EditionId"" AS ""EditionId"",
+                               ""DateAdded"" AS ""DateAdded""
+                        FROM ""BookFiles""
+                        WHERE ""Path"" IS NOT NULL
+                        ORDER BY ""Path"";";
+
+            return mapper.Query<BookFileSummary>(sql).ToList();
         }
 
         public List<BookFile> GetFilesWithBasePath(string path)

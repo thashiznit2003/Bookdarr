@@ -85,6 +85,7 @@ namespace NzbDrone.Core.Books
         {
             var book = _bookRepository.Get(bookId);
             book.Author.LazyLoad();
+            book.Editions?.LazyLoad();
             _bookRepository.Delete(bookId);
             _eventAggregator.PublishEvent(new BookDeletedEvent(book, deleteFiles, addImportListExclusion));
         }

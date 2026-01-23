@@ -351,6 +351,23 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Manual
                         edition = tuple.Item2.Editions.Value.SingleOrDefault(x => x.ForeignEditionId == file.ForeignEditionId);
                     }
 
+                    if (edition == null || edition.BookId != book.Id)
+                    {
+                        var bookEditions = _editionService.GetEditionsByBook(book.Id);
+                        var defaultEdition = bookEditions.SingleOrDefault(x => x.Monitored) ?? bookEditions.FirstOrDefault();
+
+                        if (edition != null && edition.BookId != book.Id)
+                        {
+                            _logger.Warn("Edition mismatch for import file '{0}'. Expected book {1} but found edition {2}, using {3}.",
+                                file.Path,
+                                book.Id,
+                                edition.ForeignEditionId,
+                                defaultEdition?.ForeignEditionId ?? "none");
+                        }
+
+                        edition = defaultEdition;
+                    }
+
                     var fileRootFolder = _rootFolderService.GetBestRootFolder(file.Path);
                     var fileInfo = _diskProvider.GetFileInfo(file.Path);
                     var fileTrackInfo = _metadataTagService.ReadTags(fileInfo) ?? new ParsedTrackInfo();

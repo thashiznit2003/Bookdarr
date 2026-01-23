@@ -222,13 +222,29 @@ namespace NzbDrone.Core.MediaFiles
 
         public void HandleAsync(BookDeletedEvent message)
         {
+            var editionIds = message.Book?.Editions?.Value?.Select(x => x.Id).ToList() ?? new List<int>();
+
             if (message.DeleteFiles)
             {
-                _mediaFileRepository.DeleteFilesByBook(message.Book.Id);
+                if (editionIds.Any())
+                {
+                    _mediaFileRepository.DeleteFilesByEditionIds(editionIds);
+                }
+                else
+                {
+                    _mediaFileRepository.DeleteFilesByBook(message.Book.Id);
+                }
             }
             else
             {
-                _mediaFileRepository.UnlinkFilesByBook(message.Book.Id);
+                if (editionIds.Any())
+                {
+                    _mediaFileRepository.UnlinkFilesByEditionIds(editionIds);
+                }
+                else
+                {
+                    _mediaFileRepository.UnlinkFilesByBook(message.Book.Id);
+                }
             }
         }
 
