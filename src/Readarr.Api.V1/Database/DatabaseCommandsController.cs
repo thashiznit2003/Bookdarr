@@ -77,18 +77,7 @@ namespace Readarr.Api.V1.Database
         {
             EnsureAdmin();
 
-            var summaries = _mediaFileRepository.GetBookFileSummaries();
-            var missing = summaries
-                .Where(item => item.Path.IsNotNullOrWhiteSpace())
-                .Where(item => IsMissingOnDisk(item.Path))
-                .Select(item => new DatabaseCommandIssueResource
-                {
-                    BookFileId = item.BookFileId,
-                    Path = item.Path,
-                    EditionId = item.EditionId,
-                    Reason = "File path not found on disk."
-                })
-                .ToList();
+            var missing = GetMissingFilePathIssues();
 
             var logs = BuildLogs("MissingFilePaths", missing.Select(issue => issue.Path).ToList());
 
@@ -104,6 +93,63 @@ namespace Readarr.Api.V1.Database
             };
         }
 
+        [HttpPost("clear-missing-file-paths")]
+        public ActionResult<DatabaseCommandResultResource> ClearMissingFilePaths()
+        {
+            EnsureAdmin();
+
+            var missing = GetMissingFilePathIssues();
+
+            if (missing.Any())
+            {
+                _mediaFileRepository.DeleteMany(missing.Select(issue => issue.BookFileId));
+            }
+
+            var logs = BuildLogs("ClearMissingFilePaths", missing.Select(issue => issue.Path).ToList());
+
+            return new DatabaseCommandResultResource
+            {
+                Action = "clear-missing-file-paths",
+                Message = missing.Any()
+                    ? $"Removed {missing.Count} file entr{(missing.Count == 1 ? "y" : "ies")} with missing paths."
+                    : "No missing file paths to remove.",
+                Count = missing.Count,
+                Items = missing,
+                Logs = logs
+            };
+        }
+
+        [HttpGet("duplicate-file-paths")]
+        public ActionResult<DatabaseCommandResultResource> GetDuplicateFilePaths()
+        {
+            EnsureAdmin();
+
+            var summaries = _mediaFileRepository.GetBookFileSummaries()
+                .Where(item => item.Path.IsNotNullOrWhiteSpace())
+                .ToList();
+
+            var decisions = BuildDuplicateFileDecisions(summaries);
+            var duplicates = decisions.SelectMany(decision => decision.Remove).ToList();
+            var logs = BuildDuplicateLogs("FindDuplicateFilePaths", decisions);
+
+            return new DatabaseCommandResultResource
+            {
+                Action = "find-duplicate-file-paths",
+                Message = duplicates.Any()
+                    ? $"Found {duplicates.Count} duplicate file entr{(duplicates.Count == 1 ? "y" : "ies")}."
+                    : "No duplicate file entries found.",
+                Count = duplicates.Count,
+                Items = duplicates.Select(item => new DatabaseCommandIssueResource
+                {
+                    BookFileId = item.BookFileId,
+                    Path = item.Path,
+                    EditionId = item.EditionId,
+                    Reason = "Duplicate file path detected."
+                }).ToList(),
+                Logs = logs
+            };
+        }
+
         [HttpPost("remove-duplicate-file-paths")]
         public ActionResult<DatabaseCommandResultResource> RemoveDuplicateFilePaths()
         {
@@ -113,38 +159,19 @@ namespace Readarr.Api.V1.Database
                 .Where(item => item.Path.IsNotNullOrWhiteSpace())
                 .ToList();
 
-            var duplicateGroups = summaries
-                .GroupBy(item => item.Path, PathEqualityComparer.Instance)
-                .Where(group => group.Count() > 1)
-                .ToList();
-
-            var removed = new List<BookFileSummary>();
-            var logs = new List<string>();
-            var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss 'UTC'");
-
-            logs.Add($"{timestamp} - RemoveDuplicates started.");
-
-            foreach (var group in duplicateGroups)
-            {
-                var ordered = group
-                    .OrderByDescending(item => item.EditionId > 0)
-                    .ThenByDescending(item => item.DateAdded)
-                    .ThenByDescending(item => item.BookFileId)
-                    .ToList();
-
-                var keep = ordered.First();
-                var toRemove = ordered.Skip(1).ToList();
-
-                removed.AddRange(toRemove);
-                logs.Add($"{timestamp} - {group.Key}: kept {keep.BookFileId}, removed {string.Join(", ", toRemove.Select(item => item.BookFileId))}");
-            }
+            var decisions = BuildDuplicateFileDecisions(summaries);
+            var removed = decisions.SelectMany(decision => decision.Remove).ToList();
+            var logs = BuildDuplicateLogs("RemoveDuplicateFilePaths", decisions);
 
             if (removed.Any())
             {
                 _mediaFileRepository.DeleteMany(removed.Select(item => item.BookFileId));
+                logs.Add($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss 'UTC'} - RemoveDuplicateFilePaths completed. Removed {removed.Count} entry(ies).");
             }
-
-            logs.Add($"{timestamp} - RemoveDuplicates completed. Removed {removed.Count} entry(ies).");
+            else
+            {
+                logs.Add($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss 'UTC'} - RemoveDuplicateFilePaths completed. No entries removed.");
+            }
 
             return new DatabaseCommandResultResource
             {
@@ -211,6 +238,75 @@ namespace Readarr.Api.V1.Database
             _logger.Info("Database command {0} completed. Issues: {1}", action, paths.Count);
 
             return logs;
+        }
+
+        private List<string> BuildDuplicateLogs(string action, List<DuplicateFileDecision> decisions)
+        {
+            var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss 'UTC'");
+            var duplicateCount = decisions.Sum(decision => decision.Remove.Count);
+            var logs = new List<string>
+            {
+                $"{timestamp} - {action} started.",
+                $"{timestamp} - {duplicateCount} duplicate entry(ies) detected."
+            };
+
+            if (decisions.Any())
+            {
+                logs.AddRange(decisions.Select(decision =>
+                    $"{timestamp} - {decision.Path}: kept {decision.Keep.BookFileId}, duplicates {string.Join(", ", decision.Remove.Select(item => item.BookFileId))}"));
+            }
+
+            _logger.Info("Database command {0} completed. Duplicates: {1}", action, duplicateCount);
+
+            return logs;
+        }
+
+        private List<DatabaseCommandIssueResource> GetMissingFilePathIssues()
+        {
+            var summaries = _mediaFileRepository.GetBookFileSummaries();
+
+            return summaries
+                .Where(item => item.Path.IsNotNullOrWhiteSpace())
+                .Where(item => IsMissingOnDisk(item.Path))
+                .Select(item => new DatabaseCommandIssueResource
+                {
+                    BookFileId = item.BookFileId,
+                    Path = item.Path,
+                    EditionId = item.EditionId,
+                    Reason = "File path not found on disk."
+                })
+                .ToList();
+        }
+
+        private List<DuplicateFileDecision> BuildDuplicateFileDecisions(List<BookFileSummary> summaries)
+        {
+            var duplicateGroups = summaries
+                .GroupBy(item => item.Path, PathEqualityComparer.Instance)
+                .Where(group => group.Count() > 1)
+                .ToList();
+
+            return duplicateGroups.Select(group =>
+            {
+                var ordered = group
+                    .OrderByDescending(item => item.EditionId > 0)
+                    .ThenByDescending(item => item.DateAdded)
+                    .ThenByDescending(item => item.BookFileId)
+                    .ToList();
+
+                return new DuplicateFileDecision
+                {
+                    Path = group.Key,
+                    Keep = ordered.First(),
+                    Remove = ordered.Skip(1).ToList()
+                };
+            }).ToList();
+        }
+
+        private class DuplicateFileDecision
+        {
+            public string Path { get; set; }
+            public BookFileSummary Keep { get; set; }
+            public List<BookFileSummary> Remove { get; set; }
         }
 
         private bool IsMissingOnDisk(string path)
