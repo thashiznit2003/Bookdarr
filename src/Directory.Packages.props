@@ -19,7 +19,7 @@
     <PackageVersion Include="ImpromptuInterface" Version="7.0.1" />
     <PackageVersion Include="LazyCache" Version="2.4.0" />
     <PackageVersion Include="Mailkit" Version="4.8.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="2.1.7" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
