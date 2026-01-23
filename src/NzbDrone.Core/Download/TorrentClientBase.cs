@@ -147,7 +147,7 @@ namespace NzbDrone.Core.Download
                 {
                     var locationHeader = response.Headers.GetSingleValue("Location");
 
-                    _logger.Trace("Torrent request is being redirected to: {0}", locationHeader);
+                    _logger.Trace("Torrent request is being redirected to: {0}", locationHeader.SanitizeForLog());
 
                     if (locationHeader != null)
                     {
@@ -168,30 +168,39 @@ namespace NzbDrone.Core.Download
 
                 torrentFile = response.ResponseData;
 
-                _logger.Debug("Downloading torrent for release '{0}' finished ({1} bytes from {2})", remoteBook.Release.Title, torrentFile.Length, torrentUrl);
+                _logger.Debug("Downloading torrent for release '{0}' finished ({1} bytes from {2})",
+                    remoteBook.Release.Title.SanitizeForLog(),
+                    torrentFile.Length,
+                    torrentUrl.SanitizeForLog());
             }
             catch (HttpException ex)
             {
                 if (ex.Response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    _logger.Error(ex, "Downloading torrent file for book '{0}' failed since it no longer exists ({1})", remoteBook.Release.Title, torrentUrl);
+                    _logger.Error(ex, "Downloading torrent file for book '{0}' failed since it no longer exists ({1})",
+                        remoteBook.Release.Title.SanitizeForLog(),
+                        torrentUrl.SanitizeForLog());
                     throw new ReleaseUnavailableException(remoteBook.Release, "Downloading torrent failed", ex);
                 }
 
                 if ((int)ex.Response.StatusCode == 429)
                 {
-                    _logger.Error("API Grab Limit reached for {0}", torrentUrl);
+                    _logger.Error("API Grab Limit reached for {0}", torrentUrl.SanitizeForLog());
                 }
                 else
                 {
-                    _logger.Error(ex, "Downloading torrent file for release '{0}' failed ({1})", remoteBook.Release.Title, torrentUrl);
+                    _logger.Error(ex, "Downloading torrent file for release '{0}' failed ({1})",
+                        remoteBook.Release.Title.SanitizeForLog(),
+                        torrentUrl.SanitizeForLog());
                 }
 
                 throw new ReleaseDownloadException(remoteBook.Release, "Downloading torrent failed", ex);
             }
             catch (WebException ex)
             {
-                _logger.Error(ex, "Downloading torrent file for release '{0}' failed ({1})", remoteBook.Release.Title, torrentUrl);
+                _logger.Error(ex, "Downloading torrent file for release '{0}' failed ({1})",
+                    remoteBook.Release.Title.SanitizeForLog(),
+                    torrentUrl.SanitizeForLog());
 
                 throw new ReleaseDownloadException(remoteBook.Release, "Downloading torrent failed", ex);
             }
@@ -208,7 +217,7 @@ namespace NzbDrone.Core.Download
                 _logger.Debug(
                     "{0} did not return the expected InfoHash for '{1}', Bookdarr could potentially lose track of the download in progress.",
                     Definition.Implementation,
-                    remoteBook.Release.DownloadUrl);
+                    remoteBook.Release.DownloadUrl.SanitizeForLog());
             }
 
             return actualHash;
@@ -226,7 +235,9 @@ namespace NzbDrone.Core.Download
             }
             catch (FormatException ex)
             {
-                _logger.Error(ex, "Failed to parse magnetlink for release '{0}': '{1}'", remoteBook.Release.Title, normalizedMagnet);
+                _logger.Error(ex, "Failed to parse magnetlink for release '{0}': '{1}'",
+                    remoteBook.Release.Title.SanitizeForLog(),
+                    normalizedMagnet.SanitizeForLog());
 
                 return null;
             }
@@ -243,7 +254,7 @@ namespace NzbDrone.Core.Download
                 _logger.Debug(
                     "{0} did not return the expected InfoHash for '{1}', Bookdarr could potentially lose track of the download in progress.",
                     Definition.Implementation,
-                    remoteBook.Release.DownloadUrl);
+                    remoteBook.Release.DownloadUrl.SanitizeForLog());
             }
 
             return actualHash;

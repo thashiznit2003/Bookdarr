@@ -1,4 +1,5 @@
 using NLog;
+using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Indexers;
 using NzbDrone.Core.IndexerSearch.Definitions;
 using NzbDrone.Core.Parser.Model;
@@ -27,19 +28,19 @@ namespace NzbDrone.Core.DecisionEngine.Specifications
 
             if (subject.Release.DownloadProtocol == DownloadProtocol.Usenet && !delayProfile.EnableUsenet)
             {
-                _logger.Debug("[{0}] Usenet is not enabled for this author", subject.Release.Title);
+                _logger.Debug("[{0}] Usenet is not enabled for this author", subject.Release.Title.SanitizeForLog());
                 return Decision.Reject("Usenet is not enabled for this author");
             }
 
             if (subject.Release.DownloadProtocol == DownloadProtocol.Torrent && !delayProfile.EnableTorrent)
             {
-                _logger.Debug("[{0}] Torrent is not enabled for this author", subject.Release.Title);
+                _logger.Debug("[{0}] Torrent is not enabled for this author", subject.Release.Title.SanitizeForLog());
                 return Decision.Reject("Torrent is not enabled for this author");
             }
 
             if (subject.Release.DownloadProtocol == DownloadProtocol.Stacks && !delayProfile.EnableStacks)
             {
-                _logger.Debug("[{0}] Stacks is not enabled for this author", subject.Release.Title);
+                _logger.Debug("[{0}] Stacks is not enabled for this author", subject.Release.Title.SanitizeForLog());
                 return Decision.Reject("Stacks is not enabled for this author");
             }
 

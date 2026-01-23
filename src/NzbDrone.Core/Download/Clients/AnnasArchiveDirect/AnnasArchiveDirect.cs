@@ -346,7 +346,7 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
                     File.Delete(filePath);
                 }
 
-                _logger.Warn("DDoS-Guard challenge detected for {0}, retrying via FlareSolverr.", url);
+                _logger.Warn("DDoS-Guard challenge detected for {0}, retrying via FlareSolverr.", url.SanitizeForLog());
                 var solution = await GetFlareSolverrSolution(url, refererUrl);
 
                 return await DownloadFileWithTimeout(url, filePath, timeout, refererUrl, depth, solution);
@@ -363,7 +363,7 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
                         File.Delete(filePath);
                     }
 
-                    _logger.Warn("DDoS-Guard challenge HTML detected for {0}, retrying via FlareSolverr.", url);
+                    _logger.Warn("DDoS-Guard challenge HTML detected for {0}, retrying via FlareSolverr.", url.SanitizeForLog());
                     var solution = await GetFlareSolverrSolution(url, refererUrl);
 
                     return await DownloadFileWithTimeout(url, filePath, timeout, refererUrl, depth, solution);
@@ -483,7 +483,7 @@ namespace NzbDrone.Core.Download.Clients.AnnasArchiveDirect
             var removed = _stacksProxy.RemoveFromQueue(stacksSettings, item.DownloadId);
             if (!removed)
             {
-                _logger.Debug("Failed to remove {0} from Stacks queue", item.DownloadId);
+                _logger.Debug("Failed to remove {0} from Stacks queue", item.DownloadId.SanitizeForLog());
             }
 
             return true;

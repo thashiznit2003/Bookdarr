@@ -134,6 +134,16 @@ namespace NzbDrone.Common.Extensions
             return "\"" + text + "\"";
         }
 
+        public static string SanitizeForLog(this string text)
+        {
+            if (text == null)
+            {
+                return null;
+            }
+
+            return text.Replace("\r", "\\r").Replace("\n", "\\n");
+        }
+
         public static byte[] HexToByteArray(this string input)
         {
             return Enumerable.Range(0, input.Length)
