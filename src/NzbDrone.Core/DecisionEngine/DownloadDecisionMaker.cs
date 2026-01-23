@@ -311,7 +311,7 @@ namespace NzbDrone.Core.DecisionEngine
                                .OrderBy(s => s)
                                .ToList();
 
-            if (sizes.Count < 4)
+            if (sizes.Count < 2)
             {
                 return null;
             }
@@ -338,7 +338,7 @@ namespace NzbDrone.Core.DecisionEngine
             var leftCount = best.index + 1;
             var rightCount = sizes.Count - leftCount;
 
-            if (leftCount < 2 || rightCount < 2)
+            if (leftCount < 1 || rightCount < 1)
             {
                 return null;
             }

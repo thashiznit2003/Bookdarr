@@ -76,6 +76,17 @@ export const defaultState = {
           type: filterTypes.EQUAL
         }
       ]
+    },
+    {
+      key: 'hideIgnoredTerms',
+      label: 'Hide Must Not Contain',
+      filters: [
+        {
+          key: 'releaseProfileIgnored',
+          value: true,
+          type: filterTypes.EQUAL
+        }
+      ]
     }
   ],
 
@@ -149,6 +160,15 @@ export const defaultState = {
         default:
           return false;
       }
+    },
+
+    releaseProfileIgnored: function(item) {
+      const rejections = item.rejections || [];
+      const hasIgnoredTerm = rejections.some((rejection) => {
+        return typeof rejection === 'string' && rejection.toLowerCase().includes('contains these ignored terms');
+      });
+
+      return !hasIgnoredTerm;
     }
   },
 

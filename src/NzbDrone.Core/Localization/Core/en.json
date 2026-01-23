@@ -565,7 +565,7 @@
   "IgnoreDownloads": "Ignore Downloads",
   "IgnoreDownloadsHint": "Stops {appName} from processing these downloads further",
   "IgnoredAddresses": "Ignored Addresses",
-  "IgnoredHelpText": "The release will be rejected if it contains one or more of terms (case insensitive)",
+  "IgnoredHelpText": "The release will be rejected if it contains one or more of terms (case insensitive). When the search filter is applied, results containing these terms will be hidden and may remove desired results.",
   "IgnoredMetaHelpText": "Books will be ignored if they contains one or more of terms (case insensitive)",
   "IgnoredPlaceHolder": "Add new restriction",
   "IllRestartLater": "I'll restart later",
