@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   bookdarr:
-    image: ${BOOKDARR_IMAGE:-ghcr.io/thashiznit2003/bookdarr:2.1.0}
+    image: thashiznit2003/bookdarr:2.1.0
     container_name: bookdarr
     ports:
       - "8787:8787"

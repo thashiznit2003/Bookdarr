@@ -61,7 +61,7 @@ sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-de
    - Any GitHub Actions workflows (if present): update `setup-dotnet` to `10.0.101`.
 
 6. Update Docker files (for later use):
-   - `docker/*` and `docker-compose.yml` should reference .NET 10 base images when Docker migration happens.
+   - `docker/*` and the compose files should reference .NET 10 base images when Docker migration happens.
    - This is optional now, but should be part of the upgrade branch before Docker rollout.
 
 7. Full build (StyleCop check):
