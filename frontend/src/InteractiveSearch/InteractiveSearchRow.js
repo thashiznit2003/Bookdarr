@@ -66,7 +66,8 @@ class InteractiveSearchRow extends Component {
     super(props, context);
 
     this.state = {
-      isConfirmGrabModalOpen: false
+      isConfirmGrabModalOpen: false,
+      isAnnaArchiveModalOpen: false
     };
   }
 
@@ -111,6 +112,24 @@ class InteractiveSearchRow extends Component {
     this.setState({ isConfirmGrabModalOpen: false });
   };
 
+  onAnnaArchivePress = () => {
+    this.setState({ isAnnaArchiveModalOpen: true });
+  };
+
+  onAnnaArchiveOpen = () => {
+    const { infoUrl } = this.props;
+
+    if (infoUrl) {
+      window.open(infoUrl, '_blank', 'noopener');
+    }
+
+    this.setState({ isAnnaArchiveModalOpen: false });
+  };
+
+  onAnnaArchiveClose = () => {
+    this.setState({ isAnnaArchiveModalOpen: false });
+  };
+
   //
   // Render
 
@@ -141,6 +160,17 @@ class InteractiveSearchRow extends Component {
       grabError,
       isSmallScreen
     } = this.props;
+
+    const isAnnasArchive = /anna's archive/i.test(indexer) ||
+      (infoUrl && infoUrl.toLowerCase().includes('annas-archive'));
+
+    const downloadTooltip = isAnnasArchive
+      ? translate('AnnasArchiveManualDownloadTooltip')
+      : getDownloadTooltip(isGrabbing, isGrabbed, grabError);
+
+    const downloadHandler = isAnnasArchive
+      ? this.onAnnaArchivePress
+      : (downloadAllowed ? this.onGrabPress : this.onConfirmGrabPress);
 
     return (
       <TableRow>
@@ -238,9 +268,9 @@ class InteractiveSearchRow extends Component {
             <SpinnerIconButton
               name={getDownloadIcon(isGrabbing, isGrabbed, grabError)}
               kind={getDownloadKind(isGrabbed, grabError, downloadAllowed)}
-              title={getDownloadTooltip(isGrabbing, isGrabbed, grabError)}
+              title={downloadTooltip}
               isSpinning={isGrabbing}
-              onPress={downloadAllowed ? this.onGrabPress : this.onConfirmGrabPress}
+              onPress={downloadHandler}
             />
           }
         </TableRowCell>
@@ -282,6 +312,36 @@ class InteractiveSearchRow extends Component {
           confirmLabel={translate('Grab')}
           onConfirm={this.onGrabConfirm}
           onCancel={this.onGrabCancel}
+        />
+
+        <ConfirmModal
+          isOpen={this.state.isAnnaArchiveModalOpen}
+          kind={kinds.PRIMARY}
+          title={translate('AnnasArchiveManualDownloadTitle')}
+          message={
+            <div className={styles.annaModalBody}>
+              <div>{translate('AnnasArchiveManualDownloadIntro')}</div>
+              <div className={styles.annaLinkRow}>
+                <span className={styles.annaLinkLabel}>{translate('AnnasArchiveManualDownloadLinkLabel')}</span>
+                <Link to={infoUrl}>{infoUrl}</Link>
+              </div>
+              <ol className={styles.annaSteps}>
+                <li>{translate('AnnasArchiveManualDownloadStep1')}</li>
+                <li>{translate('AnnasArchiveManualDownloadStep2')}</li>
+                <li>{translate('AnnasArchiveManualDownloadStep3')}</li>
+                <li>{translate('AnnasArchiveManualDownloadStep4')}</li>
+                <li>{translate('AnnasArchiveManualDownloadStep5')}</li>
+                <li>{translate('AnnasArchiveManualDownloadStep6')}</li>
+                <li>{translate('AnnasArchiveManualDownloadStep7')}</li>
+                <li>{translate('AnnasArchiveManualDownloadStep8')}</li>
+              </ol>
+              <div className={styles.annaNote}>{translate('AnnasArchiveManualDownloadNote')}</div>
+            </div>
+          }
+          confirmLabel={translate('AnnasArchiveManualDownloadOpenLink')}
+          cancelLabel={translate('Close')}
+          onConfirm={this.onAnnaArchiveOpen}
+          onCancel={this.onAnnaArchiveClose}
         />
       </TableRow>
     );

@@ -64,6 +64,34 @@
   width: 75px;
 }
 
+.annaModalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.annaLinkRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  word-break: break-all;
+}
+
+.annaLinkLabel {
+  font-weight: bold;
+}
+
+.annaSteps {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.4;
+}
+
+.annaNote {
+  font-size: 12px;
+  color: $textColorMuted;
+}
+
 @media only screen and (max-width: $breakpointSmall) {
   .titleCell {
     width: 25ch;
