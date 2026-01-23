@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.3
+- Summary: Update lodash to the latest patched release.
+- Why: Dependabot flagged lodash for a security patch and PR #36 needed to be folded into develop.
+- Impact: Frontend dependencies use lodash 4.17.23; no runtime behavior changes expected.
+- Files: `package.json`, `yarn.lock`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.3`, push, then run the SSH update with the next log number (`update-56.log`).
+
 ## 2.1.2
 - Summary: Fix StyleCop formatting for torrent client logging to keep builds green.
 - Why: The update script failed on SA1117 parameter layout rules in `TorrentClientBase`.
