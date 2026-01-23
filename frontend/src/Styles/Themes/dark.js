@@ -1,4 +1,4 @@
-const readarrRed = '#ca302d';
+const readarrRed = '#4169e1';
 const darkGray = '#888';
 const gray = '#adadad';
 const black = '#000';
@@ -34,8 +34,8 @@ module.exports = {
   // Theme Colors
 
   themeRed: readarrRed,
-  themeAlternateRed: '#a41726',
-  themeDarkRed: '#66001a',
+  themeAlternateRed: '#2f52b3',
+  themeDarkRed: '#1f3b7a',
   themeDarkColor: '#494949',
   themeLightColor: '#595959',
   pageBackground: '#202020',

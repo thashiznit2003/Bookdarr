@@ -1,4 +1,4 @@
-const readarrRed = '#ca302d';
+const readarrRed = '#4169e1';
 const darkGray = '#888';
 const gray = '#adadad';
 const black = '#000';
@@ -34,10 +34,10 @@ module.exports = {
   // Theme Colors
 
   themeRed: readarrRed,
-  themeAlternateRed: '#a41726',
-  themeDarkRed: '#66001a',
+  themeAlternateRed: '#2f52b3',
+  themeDarkRed: '#1f3b7a',
   themeDarkColor: '#353535',
-  themeLightColor: '#810020',
+  themeLightColor: '#27408b',
   pageBackground: '#f5f7fa',
   pageFooterBackgroud: '#f1f1f1',
 
@@ -68,8 +68,8 @@ module.exports = {
 
   // Toolbar
   toolbarColor: '#e1e2e3',
-  toolbarBackgroundColor: '#810020',
-  toolbarMenuItemBackgroundColor: '#66001a',
+  toolbarBackgroundColor: '#27408b',
+  toolbarMenuItemBackgroundColor: '#1f3b7a',
   toolbarMenuItemHoverBackgroundColor: '#353535',
   toolbarLabelColor: '#e1e2e3',
 
