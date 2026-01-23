@@ -141,6 +141,11 @@ namespace NzbDrone.Core.Authentication
 
         public User FindUser(ClaimsPrincipal principal)
         {
+            if (!_repo.HasItems())
+            {
+                return CreateBootstrapUser();
+            }
+
             if (principal?.Identity?.IsAuthenticated == true)
             {
                 var identifierValue = principal.FindFirst("identifier")?.Value;
@@ -169,6 +174,20 @@ namespace NzbDrone.Core.Authentication
             }
 
             return FindUser();
+        }
+
+        private static User CreateBootstrapUser()
+        {
+            return new User
+            {
+                Id = 0,
+                Identifier = Guid.Empty,
+                Username = "setup",
+                Role = UserRole.Admin,
+                IsAdmin = true,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            };
         }
 
         public User FindUser(Guid identifier)

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.4
+- Summary: Allow fresh installs to complete authentication setup without spurious unauthenticated errors.
+- Why: New Docker installs can have no users yet, causing API calls (like `/users/me`) to error before setup is complete.
+- Impact: When no users exist, authenticated requests get a bootstrap admin user so setup flows can proceed and the UI can create the first real admin.
+- Files: `src/NzbDrone.Core/Authentication/UserService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.4`, push, then run the SSH update with the next log number (`update-57.log`).
+
 ## 2.1.3
 - Summary: Update lodash to the latest patched release.
 - Why: Dependabot flagged lodash for a security patch and PR #36 needed to be folded into develop.
