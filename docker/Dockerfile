@@ -32,13 +32,12 @@ RUN apk add --no-cache \
     py3-pip \
     python3 \
     qpdf \
+    su-exec \
     sqlite-libs \
     tesseract-ocr \
     tesseract-ocr-data-eng \
     tzdata \
     unpaper \
-  && addgroup -S bookdarr \
-  && adduser -S -G bookdarr bookdarr \
   && git clone --depth 1 https://github.com/kevinhendricks/KindleUnpack.git /opt/kindleunpack \
   && rm -rf /opt/kindleunpack/.git \
   && printf '%s\n' \
@@ -52,10 +51,8 @@ COPY --from=backend-build /src/_output/Readarr.Update/net10.0/${RID}/publish ./R
 COPY --from=backend-build /src/_output/UI ./bin/UI
 COPY docker/entrypoint.sh /entrypoint.sh
 
-RUN chmod +x /entrypoint.sh \
-  && chown -R bookdarr:bookdarr /app/readarr /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-USER bookdarr
 EXPOSE 8787
 VOLUME ["/config", "/books"]
 ENTRYPOINT ["/entrypoint.sh"]
