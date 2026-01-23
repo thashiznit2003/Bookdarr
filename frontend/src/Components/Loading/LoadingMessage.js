@@ -19,7 +19,17 @@ const messages = [
   'I\'ll be here all week',
   'Don\'t forget to tip your waitress',
   'Apply directly to the forehead',
-  'Loading Battlestation'
+  'Loading Battlestation',
+  'Maybe you should read a book',
+  'Go touch grass, then come back',
+  'This one actually kinda works!',
+  'Butterfly in the sky',
+  'I can go twice as high',
+  'Take a look, it\'s in a book',
+  'I can go anywhere',
+  'Friends to know, and ways to grow',
+  'I can be anything',
+  'Thanks ChatGPT!'
 ];
 
 let message = null;
