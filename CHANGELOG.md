@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.1
+- Summary: Address code scanning log-forging alerts and refresh frontend build dependencies.
+- Why: GitHub code scanning flagged user-controlled log content, and Dependabot updates needed to be applied cleanly.
+- Impact: Log output now sanitizes CR/LF sequences; frontend build tooling is updated; registry-specific compose files are pinned to 2.1.1.
+- Files: `src/NzbDrone.Common/Extensions/StringExtensions.cs`, `src/NzbDrone.Core/Download/TorrentClientBase.cs`, `src/NzbDrone.Core/Download/Clients/AnnasArchiveDirect/AnnasArchiveDirect.cs`, `src/NzbDrone.Core/DecisionEngine/Specifications/ProtocolSpecification.cs`, `package.json`, `yarn.lock`, `docker-compose.ghcr.yml`, `docker-compose.dockerhub.yml`, `README.md`, `docs/NET10_UPGRADE.md`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.1`, push, then run the SSH update with the next log number.
+
 ## 2.1.0
 - Summary: Production hardening for Docker runtime users, plus quality heuristics and loading UX updates.
 - Why: Containers need to honor `PUID/PGID` reliably and search results should not remain Unknown when sizes clearly suggest audiobooks or ebooks.
