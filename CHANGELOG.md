@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.2
+- Summary: Fix StyleCop formatting for torrent client logging to keep builds green.
+- Why: The update script failed on SA1117 parameter layout rules in `TorrentClientBase`.
+- Impact: Torrent download logging stays unchanged but now conforms to StyleCop; build/update succeeds.
+- Files: `src/NzbDrone.Core/Download/TorrentClientBase.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.2`, push, then run the SSH update with the next log number (`update-55.log`).
+
 ## 2.1.1
 - Summary: Address code scanning log-forging alerts and refresh frontend build dependencies.
 - Why: GitHub code scanning flagged user-controlled log content, and Dependabot updates needed to be applied cleanly.
