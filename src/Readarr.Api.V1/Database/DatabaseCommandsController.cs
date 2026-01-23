@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
-using NzbDrone.Core.Authentication;
-using NzbDrone.Common.Extensions;
+using NzbDrone.Common;
 using NzbDrone.Common.Disk;
+using NzbDrone.Common.Extensions;
+using NzbDrone.Core.Authentication;
 using NzbDrone.Core.MediaFiles;
 using Readarr.Http;
+using Readarr.Http.REST;
 
 namespace Readarr.Api.V1.Database
 {
@@ -184,7 +186,7 @@ namespace Readarr.Api.V1.Database
             if (issues.Any())
             {
                 logs.AddRange(issues.Select(issue =>
-                    $"{timestamp} - File {issue.BookFileId}: {issue.Path} (Edition {issue.EditionId}, Book {(issue.BookId?.ToString() ?? "none")}): {issue.Reason}"));
+                    $"{timestamp} - File {issue.BookFileId}: {issue.Path} (Edition {issue.EditionId}, Book {issue.BookId?.ToString() ?? "none"}): {issue.Reason}"));
             }
 
             _logger.Info("Database command {0} completed. Issues: {1}", action, issues.Count);

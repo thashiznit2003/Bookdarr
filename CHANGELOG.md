@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.20
+- Summary: Fix Database Commands build errors (missing comparer/imports and StyleCop ordering).
+- Why: The first VM update failed because the API controller referenced missing types and violated StyleCop ordering rules.
+- Impact: The Database Commands endpoints compile cleanly and the update script can build/publish.
+- Files: `src/Readarr.Api.V1/Database/DatabaseCommandsController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`, `docs/HANDOFF.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.0.20`, push, then run the SSH update with the next log number (`update-11.log`).
+
 ## 2.0.19
 - Summary: Add a Database Commands page for repairing orphaned file links, missing file paths, and duplicate BookFile entries.
 - Why: Users need safe, UI-driven fixes for file/edition/book mismatches without direct DB surgery.

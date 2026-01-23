@@ -24,7 +24,7 @@ Use this file to onboard a new Codex chat.
 - Increment the assembly/app version (`src/Directory.Build.props`) before every Git push so the repo always reflects a higher release.
 - When giving install commands, use sudo and chain with `&&`.
 - Always put commands or code the user should run in fenced code blocks.
-- Update commands should `tee` to `/opt/bookdarr-dev/Logs/update-0XX.log`, next up is `update-11.log`.
+- Update commands should `tee` to `/opt/bookdarr-dev/Logs/update-0XX.log`, next up is `update-12.log`.
 - Update script now pushes a diagnostics bundle before exit for every update and immediately on failures, including the latest update log file (toggle with `DIAGNOSTICS_PUSH=false`).
 - Avoid adding repeated `apt-get update` steps in install/build flows.
 - Changelog entries must be handoff-friendly (Summary/Why/Impact/Files/Next).
@@ -40,7 +40,7 @@ Use this file to onboard a new Codex chat.
 ## Command Continuity
 - If a command was interrupted, rerun it before continuing.
 - Keep the latest instructions/commands in this section so every agent knows what to execute next (e.g., the current SSH update command, diagnostics push steps, version bump, StyleCop build, etc.).
-- After pushing to GitHub, immediately run the SSH update workflow (`ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-11.log'`) so the Ubuntu VM mirrors the latest version and the diagnostics bundle is generated.
+- After pushing to GitHub, immediately run the SSH update workflow (`ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'sudo /opt/bookdarr-dev/scripts/update-dev.sh 2>&1 | sudo tee -a /opt/bookdarr-dev/Logs/update-12.log'`) so the Ubuntu VM mirrors the latest version and the diagnostics bundle is generated.
 
 ## Diagnostics Workflow
 
@@ -73,6 +73,7 @@ Use this file to onboard a new Codex chat.
 - Library stability: after clearing the user library, `/api/v1/user/library/books` has thrown “Expected query to return N rows but returned M” and the UI then showed only downloading books. Latest attempt (v1.3.111, tag snapshot-20260118-0647, update-176) makes `GetBooks` tolerate missing IDs and uses that in the user-library endpoint. If it recurs, pull the latest diagnostics and recheck the user-library fetch path/DB integrity.
 
 ## Recent Changes (since last handoff)
+- Fixed Database Commands controller imports/order and comparer usage so the build succeeds on update.
 - Added File Operations → Database Commands to scan/clear invalid file links, find missing file paths, and remove duplicate BookFile rows; manual import preserves edition IDs and book deletion unlinks by edition.
 - User library fetch no longer 500s when book IDs are missing; endpoint tolerates missing rows; version bumped to 1.3.111.
 - Guard against clearing the user library view when `/user/library/books` returns empty; client preserves existing items; version bumped to 1.3.110.
