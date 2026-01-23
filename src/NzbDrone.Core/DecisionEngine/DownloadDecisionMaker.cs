@@ -23,6 +23,8 @@ namespace NzbDrone.Core.DecisionEngine
 
     public class DownloadDecisionMaker : IMakeDownloadDecision
     {
+        private static readonly long FallbackTextMaxSize = 50.Megabytes();
+        private static readonly long FallbackAudioMinSize = 150.Megabytes();
         private readonly IEnumerable<IDecisionEngineSpecification> _specifications;
         private readonly ICustomFormatCalculationService _formatCalculator;
         private readonly IParsingService _parsingService;
@@ -275,13 +277,31 @@ namespace NzbDrone.Core.DecisionEngine
 
         private static void ApplySizeBasedQualityHint(SizeBasedQualityHint hint, QualityModel qualityModel, long size)
         {
-            if (hint == null || qualityModel == null || size <= 0)
+            if (qualityModel == null || size <= 0)
             {
                 return;
             }
 
             if (qualityModel.Quality != Quality.Unknown)
             {
+                return;
+            }
+
+            if (hint == null)
+            {
+                if (size <= FallbackTextMaxSize)
+                {
+                    qualityModel.Quality = Quality.LikelyEbook;
+                    qualityModel.QualityDetectionSource = QualityDetectionSource.Heuristic;
+                    return;
+                }
+
+                if (size >= FallbackAudioMinSize)
+                {
+                    qualityModel.Quality = Quality.LikelyAudiobook;
+                    qualityModel.QualityDetectionSource = QualityDetectionSource.Heuristic;
+                }
+
                 return;
             }
 

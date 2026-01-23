@@ -399,5 +399,54 @@ namespace NzbDrone.Core.Test.DecisionEngineTests
             sourceBySize[500.Megabytes()].Should().Be(QualityDetectionSource.Heuristic);
             sourceBySize[700.Megabytes()].Should().Be(QualityDetectionSource.Heuristic);
         }
+
+        [Test]
+        public void should_apply_fallback_size_based_hint_when_no_size_gap_exists()
+        {
+            GivenSpecifications(_pass1);
+
+            var author = new Author { Name = "Some Author" };
+            var book = new Book
+            {
+                Title = "Some Book",
+                Editions = new List<Edition>
+                {
+                    new Edition { Title = "Some Book", Monitored = true }
+                }
+            };
+
+            var criteria = new BookSearchCriteria
+            {
+                Author = author,
+                Books = new List<Book> { book }
+            };
+
+            _reports = new List<ReleaseInfo>
+            {
+                new ReleaseInfo { Title = "Some Author - Some Book Medium 1", Size = 400.Megabytes() },
+                new ReleaseInfo { Title = "Some Author - Some Book Medium 2", Size = 450.Megabytes() },
+                new ReleaseInfo { Title = "Some Author - Some Book Medium 3", Size = 500.Megabytes() }
+            };
+
+            Mocker.GetMock<IParsingService>()
+                .Setup(c => c.Map(It.IsAny<ParsedBookInfo>(), It.IsAny<SearchCriteriaBase>()))
+                .Returns((ParsedBookInfo parsed, SearchCriteriaBase search) => new RemoteBook
+                {
+                    Author = author,
+                    Books = search.Books,
+                    ParsedBookInfo = parsed
+                });
+
+            var decisions = Subject.GetSearchDecision(_reports, criteria);
+
+            decisions.Should().NotBeEmpty();
+
+            foreach (var decision in decisions)
+            {
+                decision.RemoteBook.ParsedBookInfo.Quality.Quality.Should().Be(Quality.LikelyAudiobook);
+                decision.RemoteBook.ParsedBookInfo.Quality.QualityDetectionSource.Should()
+                    .Be(QualityDetectionSource.Heuristic);
+            }
+        }
     }
 }
