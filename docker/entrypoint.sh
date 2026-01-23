@@ -7,6 +7,8 @@ RUN_USER="${BOOKDARR_USER:-bookdarr}"
 RUN_GROUP="${BOOKDARR_GROUP:-bookdarr}"
 PUID="${PUID:-1000}"
 PGID="${PGID:-1000}"
+CHOWN_BOOKS="${BOOKDARR_CHOWN_BOOKS:-}"
+CHOWN_DOWNLOADS="${BOOKDARR_CHOWN_DOWNLOADS:-}"
 
 ensure_user() {
   if ! getent group "${RUN_GROUP}" >/dev/null 2>&1; then
@@ -30,10 +32,29 @@ ensure_user() {
   fi
 }
 
+should_chown() {
+  case "${1}" in
+    1|true|TRUE|yes|YES|on|ON)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
 if [ "$(id -u)" = "0" ]; then
   ensure_user
   mkdir -p "${DATA_DIR}"
   chown -R "${PUID}:${PGID}" "${DATA_DIR}"
+  if should_chown "${CHOWN_BOOKS}"; then
+    mkdir -p /books
+    chown -R "${PUID}:${PGID}" /books
+  fi
+  if should_chown "${CHOWN_DOWNLOADS}"; then
+    mkdir -p /downloads
+    chown -R "${PUID}:${PGID}" /downloads
+  fi
   exec su-exec "${RUN_USER}:${RUN_GROUP}" "${APP_BIN}" "/data=${DATA_DIR}" "/nobrowser" "$@"
 fi
 
