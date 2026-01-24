@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.7
+- Summary: Fix HTML cache-busting so icon links with query strings do not break the UI.
+- Why: The HTML cache-breaker regex expects a quote after the file extension and fails on `?v=...`, causing a FileNotFoundException at startup.
+- Impact: Icon URLs no longer include query strings; the cache-breaker now appends its own hash so the UI loads correctly in Docker.
+- Files: `frontend/src/index.ejs`, `frontend/src/login.html`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.7`, push, then run the SSH update with the next log number (`update-60.log`).
+
 ## 2.1.6
 - Summary: Fix Anna's Archive cleanup typing so production builds compile.
 - Why: The update script failed because `CleanupReleases` returns an `IList`, but the async enrich step expects a `List`.
