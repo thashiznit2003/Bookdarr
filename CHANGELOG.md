@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.16
+- Summary: Fix StyleCop ordering in the author API controller to keep builds green.
+- Why: The VM update failed on SA1210 due to out-of-order using directives.
+- Impact: The update script runs cleanly again and the VM can build/publish without StyleCop errors.
+- Files: `src/Readarr.Api.V1/Author/AuthorController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.16`, push, then run the SSH update with the next log number (`update-12.log`).
+
 ## 2.1.15
 - Summary: Add per-user author tracking and ratings, allow imports during audiobook encoding, and refresh defaults/docs.
 - Why: Authors were missing from user libraries until books were added, ratings needed user and Open Library support, and encoding was blocking manual imports and download processing.
