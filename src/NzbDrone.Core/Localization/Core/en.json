@@ -1377,6 +1377,7 @@
   "FirstRunWizardOpenDownloadClients": "Open Download Clients",
   "FirstRunWizardOpenIndexers": "Open Indexers",
   "FirstRunWizardApplyRecommended": "Apply recommended settings",
+  "FirstRunWizardApplyDefaultRootFolder": "Use default /books folder",
   "FirstRunWizardBack": "Back",
   "FirstRunWizardNext": "Next",
   "FirstRunWizardFinish": "Finish",

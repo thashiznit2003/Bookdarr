@@ -50,6 +50,8 @@ function EditIndexerModalContent(props) {
     downloadClientId
   } = item;
 
+  const isAnnasArchive = item.implementation === 'AnnasArchive' || implementationName === "Anna's Archive";
+
   return (
     <ModalContent onModalClose={onModalClose}>
       <ModalHeader>
@@ -151,22 +153,25 @@ function EditIndexerModalContent(props) {
                 />
               </FormGroup>
 
-              <FormGroup
-                advancedSettings={advancedSettings}
-                isAdvanced={true}
-              >
-                <FormLabel>{translate('DownloadClient')}</FormLabel>
+              {
+                !isAnnasArchive &&
+                  <FormGroup
+                    advancedSettings={advancedSettings}
+                    isAdvanced={true}
+                  >
+                    <FormLabel>{translate('DownloadClient')}</FormLabel>
 
-                <FormInputGroup
-                  type={inputTypes.DOWNLOAD_CLIENT_SELECT}
-                  name="downloadClientId"
-                  helpText={translate('IndexerDownloadClientHelpText')}
-                  {...downloadClientId}
-                  includeAny={true}
-                  protocol={protocol.value}
-                  onChange={onInputChange}
-                />
-              </FormGroup>
+                    <FormInputGroup
+                      type={inputTypes.DOWNLOAD_CLIENT_SELECT}
+                      name="downloadClientId"
+                      helpText={translate('IndexerDownloadClientHelpText')}
+                      {...downloadClientId}
+                      includeAny={true}
+                      protocol={protocol.value}
+                      onChange={onInputChange}
+                    />
+                  </FormGroup>
+              }
 
               <FormGroup>
                 <FormLabel>

@@ -108,6 +108,8 @@
 
 .wizardFinishButton {
   min-width: 110px;
+  text-align: center;
+  justify-content: center;
 }
 .wizardDock {
   position: fixed;

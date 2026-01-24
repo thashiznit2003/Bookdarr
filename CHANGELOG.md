@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.14
+- Summary: Auto-launch the first-run wizard for new admins, streamline add-author defaults, and refine manual import/encode UX.
+- Why: The wizard wasn’t auto-starting, add-author options still surfaced monitoring/quality controls, and encoding progress and reset guidance needed cleanup.
+- Impact: The wizard opens automatically for new admin users, adds a one-click default `/books` root folder action, and centers the Finish button; add-author hides monitor/quality fields; manual import no longer blocks during audiobook combine; encode progress shows percent outside the bar; Anna’s Archive no longer requires a download client and skips the invalid-client warning; reset-password instructions now match the Radarr flow and clarify config locations.
+- Files: `frontend/src/FirstRun/FirstRunWizardModalContentConnector.js`, `frontend/src/FirstRun/FirstRunWizardModalContent.js`, `frontend/src/FirstRun/FirstRunWizardModalContent.css`, `frontend/src/Search/Common/AddAuthorOptionsForm.js`, `frontend/src/InteractiveImport/Interactive/InteractiveImportModalContentConnector.js`, `frontend/src/InteractiveImport/Interactive/InteractiveImportModalContent.js`, `frontend/src/Book/Details/CombineAudiobookProgress.js`, `frontend/src/Book/Details/CombineAudiobookProgress.css`, `frontend/src/Settings/Indexers/Indexers/EditIndexerModalContent.js`, `src/NzbDrone.Core/HealthCheck/Checks/IndexerDownloadClientCheck.cs`, `frontend/src/reset-password.html`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.14`, push, then run the SSH update with the next log number (`update-12.log`).
+
 ## 2.1.13
 - Summary: Add available books to user libraries, harden manual import during audiobook combine, and refine the first-run wizard.
 - Why: Available books were only added to the pool, manual import failed silently during combine, and the wizard needed clearer guidance and re-launch controls.

@@ -28,7 +28,10 @@ namespace NzbDrone.Core.HealthCheck.Checks
         {
             var downloadClientsIds = _downloadClientFactory.All().Where(v => v.Enable).Select(v => v.Id).ToList();
             var invalidIndexers = _indexerFactory.All()
-                .Where(v => v.Enable && v.DownloadClientId > 0 && !downloadClientsIds.Contains(v.DownloadClientId))
+                .Where(v => v.Enable &&
+                            v.DownloadClientId > 0 &&
+                            !downloadClientsIds.Contains(v.DownloadClientId) &&
+                            !string.Equals(v.Implementation, "AnnasArchive"))
                 .ToList();
 
             if (invalidIndexers.Any())

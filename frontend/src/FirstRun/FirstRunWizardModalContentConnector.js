@@ -11,14 +11,17 @@ import {
   fetchRootFolders,
   saveMediaManagementSettings,
   saveNamingSettings,
+  saveRootFolder,
   setMediaManagementSettingsValue,
-  setNamingSettingsValue
+  setNamingSettingsValue,
+  setRootFolderValue
 } from 'Store/Actions/settingsActions';
 import FirstRunWizardModalContent from './FirstRunWizardModalContent';
 import styles from './FirstRunWizardModalContent.css';
 
 const DISMISS_KEY = 'bookdarr.firstRunWizardDismissed';
 const STARTED_KEY = 'bookdarr.firstRunWizardStarted';
+const USER_KEY = 'bookdarr.firstRunWizardUserId';
 const OPEN_EVENT = 'bookdarr:openFirstRunWizard';
 
 function createMapStateToProps() {
@@ -36,13 +39,14 @@ function createMapStateToProps() {
       const indexerCount = indexers.items.length;
 
       const isAdmin = currentUser?.isAdmin ?? systemStatus?.isAdmin ?? false;
-      const authenticationEnabled = systemStatus?.authentication !== 'none';
+      const authenticationEnabled = systemStatus?.authentication !== 'none' || !!currentUser;
 
       const needsSetup = rootFolderCount === 0 ||
         downloadClientCount === 0 ||
         indexerCount === 0;
 
       return {
+        currentUserId: currentUser?.id ?? null,
         needsSetup,
         authenticationEnabled,
         isAdmin,
@@ -67,8 +71,10 @@ const mapDispatchToProps = {
   fetchNamingSettings,
   saveMediaManagementSettings,
   saveNamingSettings,
+  saveRootFolder,
   setMediaManagementSettingsValue,
-  setNamingSettingsValue
+  setNamingSettingsValue,
+  setRootFolderValue
 };
 
 class FirstRunWizardModalContentConnector extends Component {
@@ -114,6 +120,8 @@ class FirstRunWizardModalContentConnector extends Component {
     if (!isOpen && prevState.isDragging) {
       this.stopDragging();
     }
+
+    this.maybeAutoOpenWizard(prevProps);
   }
 
   componentWillUnmount() {
@@ -145,6 +153,30 @@ class FirstRunWizardModalContentConnector extends Component {
     const dismissed = window.localStorage.getItem(DISMISS_KEY) === 'true';
     const started = window.localStorage.getItem(STARTED_KEY) === 'true';
     this.setState({ dismissed, started });
+  }
+
+  maybeAutoOpenWizard(prevProps) {
+    const { currentUserId, needsSetup, isAdmin } = this.props;
+
+    if (!currentUserId || !needsSetup || !isAdmin) {
+      return;
+    }
+
+    if (prevProps.currentUserId === currentUserId) {
+      return;
+    }
+
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return;
+    }
+
+    const storedUserId = window.localStorage.getItem(USER_KEY);
+    if (storedUserId === String(currentUserId)) {
+      return;
+    }
+
+    window.localStorage.setItem(USER_KEY, String(currentUserId));
+    this.onOpenWizard();
   }
 
   setStarted() {
@@ -185,6 +217,13 @@ class FirstRunWizardModalContentConnector extends Component {
 
     this.props.saveNamingSettings();
     this.props.saveMediaManagementSettings();
+  };
+
+  onApplyDefaultRootFolder = () => {
+    this.props.setRootFolderValue({ name: 'path', value: '/books' });
+    this.props.setRootFolderValue({ name: 'name', value: 'Books' });
+    this.props.setRootFolderValue({ name: 'isCalibreLibrary', value: false });
+    this.props.saveRootFolder({});
   };
 
   getIsOpen() {
@@ -353,6 +392,7 @@ class FirstRunWizardModalContentConnector extends Component {
       >
         <FirstRunWizardModalContent
           {...otherProps}
+          onApplyDefaultRootFolder={this.onApplyDefaultRootFolder}
           onApplyRecommendedSettings={this.onApplyRecommendedSettings}
           onDismiss={this.onDismiss}
           onDragStart={this.onDragStart}
@@ -366,6 +406,7 @@ FirstRunWizardModalContentConnector.propTypes = {
   needsSetup: PropTypes.bool.isRequired,
   authenticationEnabled: PropTypes.bool.isRequired,
   isAdmin: PropTypes.bool.isRequired,
+  currentUserId: PropTypes.number,
   rootFolderCount: PropTypes.number.isRequired,
   downloadClientCount: PropTypes.number.isRequired,
   indexerCount: PropTypes.number.isRequired,
@@ -382,7 +423,9 @@ FirstRunWizardModalContentConnector.propTypes = {
   saveMediaManagementSettings: PropTypes.func.isRequired,
   saveNamingSettings: PropTypes.func.isRequired,
   setMediaManagementSettingsValue: PropTypes.func.isRequired,
-  setNamingSettingsValue: PropTypes.func.isRequired
+  setNamingSettingsValue: PropTypes.func.isRequired,
+  setRootFolderValue: PropTypes.func.isRequired,
+  saveRootFolder: PropTypes.func.isRequired
 };
 
 FirstRunWizardModalContentConnector.defaultProps = {

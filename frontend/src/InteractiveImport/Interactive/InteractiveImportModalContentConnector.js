@@ -13,22 +13,14 @@ import {
   setInteractiveImportSort,
   updateInteractiveImportItem } from 'Store/Actions/interactiveImportActions';
 import createClientSideCollectionSelector from 'Store/Selectors/createClientSideCollectionSelector';
-import createCommandsSelector from 'Store/Selectors/createCommandsSelector';
-import { isCommandExecuting } from 'Utilities/Command';
 import InteractiveImportModalContent from './InteractiveImportModalContent';
 
 function createMapStateToProps() {
   return createSelector(
     createClientSideCollectionSelector('interactiveImport'),
-    createCommandsSelector(),
-    (interactiveImport, commands) => {
-      const isCombining = commands.some((command) => (
-        command.name === commandNames.COMBINE_AUDIOBOOK && isCommandExecuting(command)
-      ));
-
+    (interactiveImport) => {
       return {
-        ...interactiveImport,
-        isCombineInProgress: isCombining
+        ...interactiveImport
       };
     }
   );
@@ -135,11 +127,6 @@ class InteractiveImportModalContentConnector extends Component {
   onImportSelectedPress = (selected, importMode) => {
     const files = [];
 
-    if (this.props.isCombineInProgress) {
-      this.setState({ interactiveImportErrorMessage: 'Audiobook combining is in progress. Please try the import again after encoding finishes.' });
-      return;
-    }
-
     if (importMode === 'chooseImportMode') {
       this.setState({ interactiveImportErrorMessage: 'An import mode must be selected' });
       return;
@@ -216,7 +203,6 @@ class InteractiveImportModalContentConnector extends Component {
         interactiveImportErrorMessage={interactiveImportErrorMessage}
         filterExistingFiles={filterExistingFiles}
         replaceExistingFiles={replaceExistingFiles}
-        isCombineInProgress={this.props.isCombineInProgress}
         onSortPress={this.onSortPress}
         onFilterExistingFilesChange={this.onFilterExistingFilesChange}
         onReplaceExistingFilesChange={this.onReplaceExistingFilesChange}
@@ -232,7 +218,6 @@ InteractiveImportModalContentConnector.propTypes = {
   bookId: PropTypes.number,
   downloadId: PropTypes.string,
   folder: PropTypes.string,
-  isCombineInProgress: PropTypes.bool,
   filterExistingFiles: PropTypes.bool.isRequired,
   replaceExistingFiles: PropTypes.bool.isRequired,
   forceAllFiles: PropTypes.bool,

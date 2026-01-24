@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import AuthorMetadataProfilePopoverContent from 'AddAuthor/AuthorMetadataProfilePopoverContent';
-import AuthorMonitoringOptionsPopoverContent from 'AddAuthor/AuthorMonitoringOptionsPopoverContent';
-import AuthorMonitorNewItemsOptionsPopoverContent from 'AddAuthor/AuthorMonitorNewItemsOptionsPopoverContent';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -18,10 +16,6 @@ class AddAuthorOptionsForm extends Component {
   //
   // Listeners
 
-  onQualityProfileIdChange = ({ value }) => {
-    this.props.onInputChange({ name: 'qualityProfileId', value: parseInt(value) });
-  };
-
   onMetadataProfileIdChange = ({ value }) => {
     this.props.onInputChange({ name: 'metadataProfileId', value: parseInt(value) });
   };
@@ -32,12 +26,8 @@ class AddAuthorOptionsForm extends Component {
   render() {
     const {
       rootFolderPath,
-      monitor,
-      monitorNewItems,
-      qualityProfileId,
       metadataProfileId,
       includeNoneMetadataProfile,
-      includeSpecificBookMonitor,
       showMetadataProfile,
       folder,
       tags,
@@ -64,71 +54,6 @@ class AddAuthorOptionsForm extends Component {
             helpText={translate('AddNewAuthorRootFolderHelpText', { folder })}
             onChange={onInputChange}
             {...rootFolderPath}
-          />
-        </FormGroup>
-
-        <FormGroup>
-          <FormLabel>
-            {translate('Monitor')}
-
-            <Popover
-              anchor={
-                <Icon
-                  className={styles.labelIcon}
-                  name={icons.INFO}
-                />
-              }
-              title={translate('MonitoringOptions')}
-              body={<AuthorMonitoringOptionsPopoverContent />}
-              position={tooltipPositions.RIGHT}
-            />
-          </FormLabel>
-
-          <FormInputGroup
-            type={inputTypes.MONITOR_BOOKS_SELECT}
-            name="monitor"
-            helpText={translate('MonitoringOptionsHelpText')}
-            onChange={onInputChange}
-            includeSpecificBook={includeSpecificBookMonitor}
-            {...monitor}
-          />
-        </FormGroup>
-
-        <FormGroup>
-          <FormLabel>
-            {translate('MonitorNewItems')}
-            <Popover
-              anchor={
-                <Icon
-                  className={styles.labelIcon}
-                  name={icons.INFO}
-                />
-              }
-              title={translate('MonitorNewItems')}
-              body={<AuthorMonitorNewItemsOptionsPopoverContent />}
-              position={tooltipPositions.RIGHT}
-            />
-          </FormLabel>
-
-          <FormInputGroup
-            type={inputTypes.MONITOR_NEW_ITEMS_SELECT}
-            name="monitorNewItems"
-            helpText={translate('MonitorNewItemsHelpText')}
-            {...monitorNewItems}
-            onChange={onInputChange}
-          />
-        </FormGroup>
-
-        <FormGroup>
-          <FormLabel>
-            {translate('QualityProfile')}
-          </FormLabel>
-
-          <FormInputGroup
-            type={inputTypes.QUALITY_PROFILE_SELECT}
-            name="qualityProfileId"
-            onChange={this.onQualityProfileIdChange}
-            {...qualityProfileId}
           />
         </FormGroup>
 
@@ -180,20 +105,12 @@ class AddAuthorOptionsForm extends Component {
 
 AddAuthorOptionsForm.propTypes = {
   rootFolderPath: PropTypes.object,
-  monitor: PropTypes.object.isRequired,
-  monitorNewItems: PropTypes.object.isRequired,
-  qualityProfileId: PropTypes.object,
   metadataProfileId: PropTypes.object,
   showMetadataProfile: PropTypes.bool.isRequired,
   includeNoneMetadataProfile: PropTypes.bool.isRequired,
-  includeSpecificBookMonitor: PropTypes.bool.isRequired,
   folder: PropTypes.string.isRequired,
   tags: PropTypes.object.isRequired,
   onInputChange: PropTypes.func.isRequired
-};
-
-AddAuthorOptionsForm.defaultProps = {
-  includeSpecificBookMonitor: false
 };
 
 export default AddAuthorOptionsForm;

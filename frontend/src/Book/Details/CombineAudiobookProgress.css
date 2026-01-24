@@ -4,6 +4,20 @@
   gap: 4px;
 }
 
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progressPercent {
+  min-width: 44px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+  color: var(--textColor);
+}
+
 .bannerContainer {
   position: fixed;
   top: 0;

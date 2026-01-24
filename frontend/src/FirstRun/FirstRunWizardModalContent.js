@@ -20,6 +20,7 @@ function FirstRunWizardModalContent(props) {
     combineAudiobookMode,
     combineAudiobookDeleteMode,
     isSaving,
+    onApplyDefaultRootFolder,
     onApplyRecommendedSettings,
     onDragStart,
     onDismiss
@@ -62,6 +63,15 @@ function FirstRunWizardModalContent(props) {
               to="/settings/mediamanagement"
             >
               {translate('FirstRunWizardOpenMediaManagement')}
+            </Button>
+            <Button
+              kind={kinds.DEFAULT}
+              size={sizes.MEDIUM}
+              className={styles.wizardActionButton}
+              isDisabled={rootFolderCount > 0}
+              onPress={onApplyDefaultRootFolder}
+            >
+              {translate('FirstRunWizardApplyDefaultRootFolder')}
             </Button>
           </div>
           <div className={styles.note}>
@@ -186,6 +196,7 @@ function FirstRunWizardModalContent(props) {
     combineModeLabel,
     combineDeleteLabel,
     isSaving,
+    onApplyDefaultRootFolder,
     onApplyRecommendedSettings
   ]);
 
@@ -262,6 +273,7 @@ FirstRunWizardModalContent.propTypes = {
   combineAudiobookMode: PropTypes.string,
   combineAudiobookDeleteMode: PropTypes.string,
   isSaving: PropTypes.bool.isRequired,
+  onApplyDefaultRootFolder: PropTypes.func.isRequired,
   onApplyRecommendedSettings: PropTypes.func.isRequired,
   onDragStart: PropTypes.func,
   onDismiss: PropTypes.func.isRequired

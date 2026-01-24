@@ -90,13 +90,18 @@ class CombineAudiobookProgress extends Component {
     if (showComplete) {
       return (
         <div className={containerClassName}>
-          <ProgressBar
-            progress={100}
-            showText={true}
-            text={translate('CombineAudiobookComplete')}
-            kind={kinds.SUCCESS}
-            size={progressSize}
-          />
+          <div className={styles.progressRow}>
+            <span className={styles.progressPercent}>100%</span>
+            <ProgressBar
+              progress={100}
+              showText={false}
+              kind={kinds.SUCCESS}
+              size={progressSize}
+            />
+          </div>
+          <div className={styles.detail}>
+            {translate('CombineAudiobookComplete')}
+          </div>
         </div>
       );
     }
@@ -110,13 +115,15 @@ class CombineAudiobookProgress extends Component {
 
     return (
       <div className={containerClassName}>
-        <ProgressBar
-          progress={percent}
-          showText={true}
-          text={translate('CombineAudiobookProgressText', [percent.toFixed(0)])}
-          kind={kinds.PRIMARY}
-          size={progressSize}
-        />
+        <div className={styles.progressRow}>
+          <span className={styles.progressPercent}>{percent.toFixed(0)}%</span>
+          <ProgressBar
+            progress={percent}
+            showText={false}
+            kind={kinds.PRIMARY}
+            size={progressSize}
+          />
+        </div>
         {
           detailText &&
             <div className={styles.detail}>
