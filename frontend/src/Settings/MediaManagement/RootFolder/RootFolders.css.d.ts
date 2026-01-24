@@ -2,6 +2,8 @@
 // Please do not change this file!
 interface CssExports {
   'addRootFolder': string;
+  'addRootFolderHelp': string;
+  'addRootFolderRow': string;
   'center': string;
   'rootFolders': string;
 }

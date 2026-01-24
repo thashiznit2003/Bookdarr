@@ -17,6 +17,7 @@ import createHandleActions from './Creators/createHandleActions';
 
 export const section = 'search';
 let abortCurrentRequest = null;
+let currentRequestId = 0;
 
 //
 // State
@@ -80,12 +81,13 @@ export const setBookAddDefault = createAction(SET_BOOK_ADD_DEFAULT);
 export const actionHandlers = handleThunks({
 
   [GET_SEARCH_RESULTS]: function(getState, payload, dispatch) {
-    dispatch(set({ section, isFetching: true }));
+    dispatch(set({ section, isFetching: true, error: null }));
 
     if (abortCurrentRequest) {
       abortCurrentRequest();
     }
 
+    const requestId = ++currentRequestId;
     const { request, abortRequest } = createAjaxRequest({
       url: '/search',
       data: {
@@ -96,6 +98,10 @@ export const actionHandlers = handleThunks({
     abortCurrentRequest = abortRequest;
 
     request.done((data) => {
+      if (requestId !== currentRequestId) {
+        return;
+      }
+
       dispatch(batchActions([
         update({ section, data }),
 
@@ -109,6 +115,10 @@ export const actionHandlers = handleThunks({
     });
 
     request.fail((xhr) => {
+      if (requestId !== currentRequestId) {
+        return;
+      }
+
       dispatch(set({
         section,
         isFetching: false,
@@ -124,6 +134,17 @@ export const actionHandlers = handleThunks({
     const foreignAuthorId = payload.foreignAuthorId;
     const items = getState().search.items;
     const itemToAdd = _.find(items, { foreignId: foreignAuthorId });
+
+    if (!itemToAdd?.author) {
+      dispatch(set({
+        section,
+        isAdding: false,
+        isAdded: false,
+        addError: { message: 'Unable to find the selected author in search results.' }
+      }));
+      return;
+    }
+
     const newAuthor = getNewAuthor(_.cloneDeep(itemToAdd.author), payload);
 
     const promise = createAjaxRequest({
@@ -163,6 +184,17 @@ export const actionHandlers = handleThunks({
     const foreignBookId = payload.foreignBookId;
     const items = getState().search.items;
     const itemToAdd = _.find(items, { foreignId: foreignBookId });
+
+    if (!itemToAdd?.book) {
+      dispatch(set({
+        section,
+        isAdding: false,
+        isAdded: false,
+        addError: { message: 'Unable to find the selected book in search results.' }
+      }));
+      return;
+    }
+
     const newBook = getNewBook(_.cloneDeep(itemToAdd.book), payload);
 
     const promise = createAjaxRequest({

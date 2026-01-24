@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.9
+- Summary: Fix authentication refresh, stabilize search/add flows, and add a local password reset guide.
+- Why: Users could not log back in after auth changes, search errors could flash before results arrived, and the login page linked to external reset instructions.
+- Impact: Auth checks now read the current config each login/logout; search requests ignore stale/aborted responses and add flows fail fast if selection is missing; login no longer shows a copyright line and links to a new reset page; `/reset-password` explains how to disable auth and set new credentials; hardlinks default to off for new installs.
+- Files: `src/Readarr.Http/Authentication/AuthenticationService.cs`, `frontend/src/Store/Actions/searchActions.js`, `frontend/src/login.html`, `frontend/src/reset-password.html`, `src/Readarr.Http/Frontend/Mappers/ResetPasswordHtmlMapper.cs`, `src/Readarr.Http/Frontend/StaticResourceController.cs`, `src/NzbDrone.Core/Configuration/ConfigService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.9`, push, then run the SSH update with the next log number (`update-62.log`).
+
 ## 2.1.8
 - Summary: Make the first-run wizard non-blocking and clarify root folder guidance.
 - Why: The wizard should not lock the UI, and root folders need clearer Docker guidance; hardlinks should be off by default without extra prompts.

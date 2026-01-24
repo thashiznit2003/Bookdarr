@@ -254,7 +254,7 @@
                 </span>
 
                 <a
-                  href="https://wiki.servarr.com/readarr/faq#help-i-have-locked-my-self-out"
+                  href="/reset-password"
                   class="forgot-password"
                   >Forgot your password?</a
                 >
@@ -268,23 +268,11 @@
           </div>
         </div>
 
-        <div id="copy" class="copy hidden">
-          <span>&copy;</span>
-          <span id="year"></span>
-          <span>-</span>
-          <span>Bookdarr</span>
-        </div>
       </div>
     </div>
   </body>
 
   <script type="text/javascript">
-    var yearSpan = document.getElementById("year");
-    yearSpan.innerHTML = "2017-" + new Date().getFullYear();
-
-    var copyDiv = document.getElementById("copy");
-    copyDiv.classList.remove("hidden");
-
     if (window.location.search.indexOf("loginFailed=true") > -1) {
       var loginFailedDiv = document.getElementById("login-failed");
 

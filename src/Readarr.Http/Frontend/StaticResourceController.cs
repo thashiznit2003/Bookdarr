@@ -40,6 +40,13 @@ namespace Readarr.Http.Frontend
             return MapResource("login");
         }
 
+        [AllowAnonymous]
+        [HttpGet("reset-password")]
+        public IActionResult ResetPasswordPage()
+        {
+            return MapResource("reset-password");
+        }
+
         [EnableCors("AllowGet")]
         [AllowAnonymous]
         [HttpGet("content/{**path:regex(^(?!/*api/).*)}")]

@@ -49,7 +49,6 @@ function createMapStateToProps() {
         indexerCount,
         renameBooks: naming.item.renameBooks ?? false,
         standardBookFormat: naming.item.standardBookFormat ?? '',
-        copyUsingHardlinks: mediaManagement.item.copyUsingHardlinks ?? false,
         combineAudiobookMode: mediaManagement.item.combineAudiobookMode ?? 'disabled',
         combineAudiobookDeleteMode: mediaManagement.item.combineAudiobookDeleteMode ?? 'deleteImmediately',
         isSaving: mediaManagement.isSaving || naming.isSaving
@@ -293,7 +292,6 @@ FirstRunWizardModalContentConnector.propTypes = {
   indexerCount: PropTypes.number.isRequired,
   renameBooks: PropTypes.bool.isRequired,
   standardBookFormat: PropTypes.string,
-  copyUsingHardlinks: PropTypes.bool.isRequired,
   combineAudiobookMode: PropTypes.string,
   combineAudiobookDeleteMode: PropTypes.string,
   isSaving: PropTypes.bool.isRequired,
