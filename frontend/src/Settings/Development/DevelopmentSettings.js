@@ -5,10 +5,11 @@ import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
+import Alert from 'Components/Alert';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
-import { inputTypes } from 'Helpers/Props';
+import { inputTypes, kinds } from 'Helpers/Props';
 import SettingsToolbarConnector from 'Settings/SettingsToolbarConnector';
 import translate from 'Utilities/String/translate';
 
@@ -52,6 +53,13 @@ class DevelopmentSettings extends Component {
               <div>
                 Unable to load Development settings
               </div>
+          }
+
+          {
+            hasSettings && !isFetching && !error &&
+              <Alert kind={kinds.INFO}>
+                {translate('DevelopmentNote')}
+              </Alert>
           }
 
           {

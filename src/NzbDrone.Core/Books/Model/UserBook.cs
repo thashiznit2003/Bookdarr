@@ -11,6 +11,7 @@ namespace NzbDrone.Core.Books
         public bool WantsEbook { get; set; }
         public bool WantsAudiobook { get; set; }
         public bool SharedCopyClaimed { get; set; }
+        public decimal? UserRating { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? LastNotificationAt { get; set; }
         public bool IsDeleted { get; set; }

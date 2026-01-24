@@ -10,6 +10,7 @@ import Marquee from 'Components/Marquee';
 import Measure from 'Components/Measure';
 import Popover from 'Components/Tooltip/Popover';
 import Tooltip from 'Components/Tooltip/Tooltip';
+import StarRating from 'Components/StarRating';
 import { icons, kinds, sizes, tooltipPositions } from 'Helpers/Props';
 import QualityProfileName from 'Settings/Profiles/Quality/QualityProfileName';
 import fonts from 'Styles/Variables/fonts';
@@ -99,6 +100,10 @@ class AuthorDetailsHeader extends Component {
       width,
       authorName,
       ratings,
+      userAverageRating,
+      userRatedBookCount,
+      openLibraryAverageRating,
+      openLibraryRatedBookCount,
       path,
       statistics,
       qualityProfileId,
@@ -214,6 +219,38 @@ class AuthorDetailsHeader extends Component {
                   iconSize={20}
                 />
               </div>
+
+              {
+                (openLibraryAverageRating || userAverageRating) &&
+                  <div className={styles.ratingRow}>
+                    {
+                      openLibraryAverageRating &&
+                        <div className={styles.ratingGroup}>
+                          <span className={styles.ratingLabel}>
+                            {translate('OpenLibraryRating')}
+                          </span>
+                          <StarRating
+                            rating={Number(openLibraryAverageRating)}
+                            votes={openLibraryRatedBookCount}
+                            iconSize={14}
+                          />
+                        </div>
+                    }
+                    {
+                      userAverageRating &&
+                        <div className={styles.ratingGroup}>
+                          <span className={styles.ratingLabel}>
+                            {translate('UserLibraryRating')}
+                          </span>
+                          <StarRating
+                            rating={Number(userAverageRating)}
+                            votes={userRatedBookCount}
+                            iconSize={14}
+                          />
+                        </div>
+                    }
+                  </div>
+              }
             </div>
 
             <div className={styles.detailsLabels}>
@@ -359,6 +396,10 @@ AuthorDetailsHeader.propTypes = {
   width: PropTypes.number.isRequired,
   authorName: PropTypes.string.isRequired,
   ratings: PropTypes.object.isRequired,
+  userAverageRating: PropTypes.number,
+  userRatedBookCount: PropTypes.number,
+  openLibraryAverageRating: PropTypes.number,
+  openLibraryRatedBookCount: PropTypes.number,
   path: PropTypes.string.isRequired,
   statistics: PropTypes.object.isRequired,
   qualityProfileId: PropTypes.number.isRequired,
@@ -369,6 +410,13 @@ AuthorDetailsHeader.propTypes = {
   alternateTitles: PropTypes.arrayOf(PropTypes.string).isRequired,
   tags: PropTypes.arrayOf(PropTypes.number).isRequired,
   isSmallScreen: PropTypes.bool.isRequired
+};
+
+AuthorDetailsHeader.defaultProps = {
+  userAverageRating: null,
+  userRatedBookCount: 0,
+  openLibraryAverageRating: null,
+  openLibraryRatedBookCount: 0
 };
 
 export default AuthorDetailsHeader;

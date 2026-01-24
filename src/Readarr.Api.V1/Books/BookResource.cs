@@ -25,6 +25,7 @@ namespace Readarr.Api.V1.Books
         public bool Monitored { get; set; }
         public bool AnyEditionOk { get; set; }
         public Ratings Ratings { get; set; }
+        public decimal? UserRating { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public int PageCount { get; set; }
         public List<string> Genres { get; set; }

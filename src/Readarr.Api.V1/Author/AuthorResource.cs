@@ -55,6 +55,11 @@ namespace Readarr.Api.V1.Author
         public DateTime Added { get; set; }
         public AddAuthorOptions AddOptions { get; set; }
         public Ratings Ratings { get; set; }
+        public bool InMyLibrary { get; set; }
+        public decimal? UserAverageRating { get; set; }
+        public int UserRatedBookCount { get; set; }
+        public decimal? OpenLibraryAverageRating { get; set; }
+        public int OpenLibraryRatedBookCount { get; set; }
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public bool? DoRefresh { get; set; }
 

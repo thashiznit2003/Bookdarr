@@ -81,6 +81,18 @@
   margin-right: 15px;
 }
 
+.userRating {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 10px;
+}
+
+.userRatingLabel {
+  font-size: 14px;
+  font-weight: 300;
+}
+
 .detailsLabel {
   composes: label from '~Components/Label.css';
 

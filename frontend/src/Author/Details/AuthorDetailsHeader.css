@@ -107,6 +107,24 @@
   font-size: 20px;
 }
 
+.ratingRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.ratingGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ratingLabel {
+  font-size: 14px;
+  font-weight: 300;
+}
+
 .detailsLabel {
   composes: label from '~Components/Label.css';
 

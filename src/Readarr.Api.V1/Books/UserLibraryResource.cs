@@ -13,6 +13,7 @@ namespace Readarr.Api.V1.Books
         public bool HasEbook { get; set; }
         public bool HasAudiobook { get; set; }
         public bool PoolHasBook { get; set; }
+        public decimal? UserRating { get; set; }
         public bool NeedsAttention => Status != LibraryStatus.Available;
     }
 }

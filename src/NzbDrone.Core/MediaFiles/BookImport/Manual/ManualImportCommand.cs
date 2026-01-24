@@ -9,6 +9,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Manual
 
         public override bool SendUpdatesToClient => true;
         public override bool RequiresDiskAccess => true;
+        public override bool AllowConcurrentDiskAccess => true;
 
         public ImportMode ImportMode { get; set; }
         public bool ReplaceExistingFiles { get; set; }

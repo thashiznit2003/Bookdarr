@@ -14,6 +14,7 @@ namespace NzbDrone.Core.Books
         IEnumerable<UserBook> GetUserLibrary(int userId);
         UserBook GetUserBookById(int id, int userId);
         void RemoveUserBook(int userId, int bookId);
+        UserBook SetUserRating(int userId, int bookId, decimal? rating);
         bool IsBookAvailableInPool(int bookId);
         LibraryStatus GetPoolStatus(int bookId, bool wantsEbook, bool wantsAudiobook);
         bool PoolHasMedia(int bookId, BookFileMediaType mediaType);
@@ -116,6 +117,25 @@ namespace NzbDrone.Core.Books
             }
 
             _userBookRepository.Delete(userBook.Id);
+        }
+
+        public UserBook SetUserRating(int userId, int bookId, decimal? rating)
+        {
+            var userBook = _userBookRepository.GetByUserAndBook(userId, bookId);
+
+            if (userBook == null)
+            {
+                throw new ModelNotFoundException(typeof(UserBook), bookId);
+            }
+
+            if (rating.HasValue)
+            {
+                var clamped = Math.Min(5m, Math.Max(1m, rating.Value));
+                rating = clamped;
+            }
+
+            userBook.UserRating = rating;
+            return _userBookRepository.Update(userBook);
         }
 
         public bool IsBookAvailableInPool(int bookId)

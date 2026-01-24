@@ -333,6 +333,7 @@ namespace NzbDrone.Core.MediaFiles
             }
 
             builder.Append("-map 0:a ");
+            builder.Append("-threads 0 ");
 
             if (mode == CombineAudiobookMode.Mp3ToMp3 && allSourcesAreMp3)
             {

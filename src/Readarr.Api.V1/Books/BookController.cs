@@ -52,6 +52,7 @@ namespace Readarr.Api.V1.Books
         private readonly IDiskProvider _diskProvider;
         private readonly IPendingReleaseService _pendingReleaseService;
         private readonly IUserService _userService;
+        private readonly IUserLibraryService _userLibraryService;
         private readonly IBookMergeService _bookMergeService;
 
         public BookController(IAuthorService authorService,
@@ -70,6 +71,7 @@ namespace Readarr.Api.V1.Books
                           IDiskProvider diskProvider,
                           IPendingReleaseService pendingReleaseService,
                           IUserService userService,
+                          IUserLibraryService userLibraryService,
                           IBookMergeService bookMergeService,
                           IBroadcastSignalRMessage signalRBroadcaster,
                           QualityProfileExistsValidator<BookResource> qualityProfileExistsValidator,
@@ -88,6 +90,7 @@ namespace Readarr.Api.V1.Books
             _diskProvider = diskProvider;
             _pendingReleaseService = pendingReleaseService;
             _userService = userService;
+            _userLibraryService = userLibraryService;
             _bookMergeService = bookMergeService;
 
             PostValidator.RuleFor(s => s.ForeignBookId).NotEmpty();
@@ -126,7 +129,9 @@ namespace Readarr.Api.V1.Books
                     }
                 }
 
-                return MapToResource(books, false);
+                var resources = MapToResource(books, false);
+                ApplyUserRatings(resources);
+                return resources;
             }
 
             if (authorId.HasValue)
@@ -151,7 +156,9 @@ namespace Readarr.Api.V1.Books
                     }
                 }
 
-                return MapToResource(books, false);
+                var resources = MapToResource(books, false);
+                ApplyUserRatings(resources);
+                return resources;
             }
 
             if (titleSlug.IsNotNullOrWhiteSpace())
@@ -169,15 +176,21 @@ namespace Readarr.Api.V1.Books
 
                 if (includeAllAuthorBooks)
                 {
-                    return MapToResource(_bookService.GetBooksByAuthor(book.AuthorId), false);
+                    var resources = MapToResource(_bookService.GetBooksByAuthor(book.AuthorId), false);
+                    ApplyUserRatings(resources);
+                    return resources;
                 }
                 else
                 {
-                    return MapToResource(new List<Book> { book }, false);
+                    var resources = MapToResource(new List<Book> { book }, false);
+                    ApplyUserRatings(resources);
+                    return resources;
                 }
             }
 
-            return MapToResource(_bookService.GetBooks(bookIds), false);
+            var finalResources = MapToResource(_bookService.GetBooks(bookIds), false);
+            ApplyUserRatings(finalResources);
+            return finalResources;
         }
 
         [HttpGet("{id:int}/overview")]
@@ -503,6 +516,33 @@ namespace Readarr.Api.V1.Books
             }
 
             return user;
+        }
+
+        private void ApplyUserRatings(List<BookResource> resources)
+        {
+            var user = _userService.FindUser(HttpContext?.User);
+            if (user == null)
+            {
+                return;
+            }
+
+            var userBooks = _userLibraryService.GetUserLibrary(user.Id);
+            if (!userBooks.Any())
+            {
+                return;
+            }
+
+            var ratingByBookId = userBooks
+                .Where(x => x.UserRating.HasValue)
+                .ToDictionary(x => x.BookId, x => x.UserRating);
+
+            foreach (var resource in resources)
+            {
+                if (ratingByBookId.TryGetValue(resource.Id, out var rating))
+                {
+                    resource.UserRating = rating;
+                }
+            }
         }
 
         [HttpPut("monitor")]

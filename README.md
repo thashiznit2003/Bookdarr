@@ -1,155 +1,58 @@
 # Bookdarr
 
-Bookdarr is a fork of [Bookshelf](https://github.com/pennydreadful/bookshelf)
-and [Readarr](https://github.com/Readarr/Readarr). The goal is to provide a
-stable, self-hosted book manager with improved metadata options.
+Bookdarr is a fork of [Readarr](https://github.com/Readarr/Readarr) and
+[Bookshelf](https://github.com/pennydreadful/bookshelf). It is a self-hosted
+manager for ebooks and audiobooks with a shared book pool and a mobile-friendly
+web UI.
 
-Bookdarr is an ebook and audiobook collection manager for Usenet and BitTorrent
-users. It can monitor multiple RSS feeds for new books from your favorite
-authors and will grab, sort, and rename them. Bookdarr can keep both ebook and
-audiobook files for the same book in a single instance.
+Bookdarr has only been tested as a Linux Docker deployment. No support is
+provided.
 
-## Getting Started
+## Quick Start (Docker Hub)
 
-The container listens on port 8787 and expects a volume mounted at `/config`.
-Docker images are published under `thashiznit2003/bookdarr` (Docker Hub) and
-`ghcr.io/thashiznit2003/bookdarr` (GHCR). Use the compose file that matches
-your registry.
+Bookdarr listens on port 8787 and expects these volume mounts:
 
-For download client integration, mount your host download folder to
-`/downloads` inside the container (example: `-v /qb1/downloads:/downloads`).
+- `/config` for the application data
+- `/books` for your library root
+- `/downloads` for your download client output
 
-### Metadata
+Docker Compose (recommended for Portainer stacks):
 
-Bookdarr supports two metadata providers:
+```yaml
+services:
+  bookdarr:
+    image: thashiznit2003/bookdarr:latest
+    container_name: bookdarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+    volumes:
+      - /bookdarr/config:/config
+      - /bookdarr/books:/books
+      - /bookdarr/downloads:/downloads
+    ports:
+      - "8787:8787"
+    restart: unless-stopped
+```
 
-- **Google Books (default)** – fast, broad coverage, no API key required. The quota
-  is shared across all users who rely on the public endpoint, so watch for `429`
-  responses and only request a key if you routinely hit the limit.
-- **Open Library** – free fallback metadata with solid coverage for books and authors.
+## Usage Notes
 
-Controls:
+- The mobile web UI is available for phones and tablets.
+- For reading or listening, use a native ebook reader or audiobook player on
+  your device of choice.
+- No support is provided. Use at your own risk.
 
-- Set `GOOGLE_BOOKS_API_KEY` (via config.xml or environment) if you want more quota
-  from Google Books without hitting the shared limit.
-- Set `METADATA_PROVIDER=openlibrary` to prefer Open Library metadata.
+## License
 
-## Shared Book Pool
+Bookdarr remains licensed under GPLv3, inherited from Readarr and Bookshelf.
+See `LICENSE` for details. You are free to modify and distribute this software
+under that license.
 
-Bookdarr now keeps every downloaded book in a global shared pool so additional
-users can adopt already-imported files without duplicating downloads. Click the
-new **Book Pool** entry in the sidebar (or visit `/bookpool`) to see all shared
-books, their ebook/audiobook availability, and whether they require manual attention.
-Each row shows an **Add to my library** button that creates a personal claim on the
-book and immediately links your library to the shared files—no new downloads are
-triggered unless a preferred file is still missing. Use the filters above the grid
-to switch between **All** (every shared book, even those without ebook/audiobook
-files), **Ready** (titles that already have shared media), and **Needs files** so
-you can focus on the books that still require attention.
+## Origins
 
-## Install Script (Source Build)
-
-### Install Script (Source Build)
-
-This uses Docker to build from source and logs output to `/opt/bookdarr/install.log`.
-By default it only builds the image; redeploy your Portainer stack to start the container.
-If you want to use a locally built image, update the `image:` line in your
-chosen compose file to `bookdarr:local`.
-
-    sudo mkdir -p /opt/bookdarr && sudo curl -L https://raw.githubusercontent.com/thashiznit2003/Bookdarr/develop/scripts/install-bookdarr.sh -o /opt/bookdarr/install-bookdarr.sh && sudo chmod +x /opt/bookdarr/install-bookdarr.sh && sudo /opt/bookdarr/install-bookdarr.sh
-
-### Docker Compose / Portainer Stack
-
-Use the compose file that matches your registry:
-- `docker-compose.ghcr.yml`
-- `docker-compose.dockerhub.yml`
-
-To start or redeploy:
-
-    sudo docker compose -f /opt/bookdarr/docker-compose.ghcr.yml up -d
-
-To rebuild only when needed:
-
-    sudo /opt/bookdarr/install-bookdarr.sh
-
-### Native Dev on Ubuntu (No Docker)
-
-Use this for faster local builds on a dedicated dev VM. It installs Node 20,
-Yarn 1.22.19 (via npm), and .NET SDK 10.0.101, clones the repo to
-`/opt/bookdarr-dev`, and creates `/opt/bookdarr-dev/config` for AppData.
-
-One-step setup + build + run (foreground):
-
-    sudo curl -L https://raw.githubusercontent.com/thashiznit2003/Bookdarr/develop/scripts/dev-ubuntu.sh -o /opt/bookdarr-dev.sh && sudo bash /opt/bookdarr-dev.sh
-
-If you only want to build (no run):
-
-    sudo RUN_APP=false bash /opt/bookdarr-dev.sh
-
-You can still use the individual scripts afterward:
-
-    sudo -u joe /opt/bookdarr-dev/scripts/dev-build.sh
-    sudo -u joe /opt/bookdarr-dev/scripts/dev-run.sh
-
-### Systemd (Linux only)
-
-Use the bundled unit file and install/uninstall steps in
-`docs/LINUX_SYSTEMD.md`.
-
-### Log Retention (Dev VM)
-
-Update logs live in `/opt/bookdarr-dev/Logs` and are not rotated automatically.
-See `docs/LOGGING.md` for a logrotate example and cleanup guidance.
-
-## Diagnostics & Update Workflow
-
-Every change to Bookdarr must follow the same tightly-controlled routine so we keep the diagnostics repo, changelog, and UI version in sync:
-
-1. Run the native update script on the Ubuntu VM. Point it at the next sequential `Logs/update-0XX.log` file so the run is logged for later reference:
-
-   ```bash
-   LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh
-   ```
-
-   When invoking the command over SSH, include the full path so the shell sees the same layout every time:
-
-   ```bash
-   ssh -i ~/.ssh/bookdarr-agent joe@192.168.0.103 'LOG_FILE="/opt/bookdarr-dev/Logs/update-0XX.log" sudo /opt/bookdarr-dev/scripts/update-dev.sh'
-   ```
-
-   The update script uploads the generated log bundle to `thashiznit2003/Bookdarr-Diagnostics` before exiting, so you can trust it to deliver the diagnostic archive every time (success or failure). Housekeeping note: keep iterating `update-0XX.log` (01, 02, 03, …) for every run so the diagnostics repo shows a linear history.
-
-2. Commit and push your changes to GitHub on `develop` immediately after they build locally. Tag the release as `snapshot-YYYYMMDD-HHMM`, then push the tag along with the branch so the remote mirrors the local history.
-
-3. Update `src/Directory.Build.props` with the new semantic version (e.g., bump from `1.3.26.*` to `1.3.27.*`) and make sure the UI header now reports exactly that version string. The header reads the version from `/initialize.json`, so keep `BuildInfo.Version` aligned with the assembly version.
-
-4. After the push, verify that the diagnostics bundle exists in `Bookdarr-Diagnostics` and that any changed logs are attached. The `Diagnostics` button in the sidebar can trigger the upload manually, but the update script handles it automatically, so this is mostly a sanity check.
-
-These steps are the “always run” checklist in the handoff documentation so that every agent coming after you can follow the same workflow without reminding you again.
-
-## Support
-
-This project won't use Discord for support. If you have a problem, please file
-an issue or start a discussion.
-
-## Contributors & Developers
-
-Help is very welcome. Priority is on fixing quality of life issues
-
-- [ ] Monitor series.
-- [ ] Hardcover bookshelf import.
-- [x] Support ebook and audio files in the same root.
-
-## Roadmap
-
-See `docs/ROADMAP.md` for major upcoming milestones, especially the emerging
-multi-user/shared book pool architecture outlined in `docs/MULTI_USER.md`.
-
-### License
-
-This is a derivative work of the [Readarr](https://github.com/Readarr/Readarr)
-and [Prowlarr](https://github.com/Prowlarr/Prowlarr) projects which are both
-licensed [GPLv3](http://www.gnu.org/licenses/gpl.html). This project is
-therefore also licensed under the terms of GPLv3.
-
-Copyright 2025
+This fork began from Readarr and Bookshelf and evolved into Bookdarr. Nearly
+all changes in this fork were implemented using OpenAI's Codex extension in VS
+Code, with a minimal amount done using Claude Code. The creator makes no claim
+to the original intent or source of Readarr, Bookshelf, ffmpeg, or any ebook
+conversion, viewing, audiobook playing, or other tools included in Bookdarr.

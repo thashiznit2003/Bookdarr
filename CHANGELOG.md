@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.15
+- Summary: Add per-user author tracking and ratings, allow imports during audiobook encoding, and refresh defaults/docs.
+- Why: Authors were missing from user libraries until books were added, ratings needed user and Open Library support, and encoding was blocking manual imports and download processing.
+- Impact: Authors added via search now appear in user libraries immediately; users can set 1–5 star ratings and see Open Library averages; author detail headers show both rating types; combine encoding uses multithreaded ffmpeg; manual imports and monitored downloads can run while encoding; diagnostics/development menus default off with new guidance; README is Docker-focused and support-free.
+- Files: `src/NzbDrone.Core/Books/Model/UserAuthor.cs`, `src/NzbDrone.Core/Books/Repositories/UserAuthorRepository.cs`, `src/NzbDrone.Core/Books/Services/UserAuthorService.cs`, `src/NzbDrone.Core/Datastore/Migration/053_add_user_author_library.cs`, `src/NzbDrone.Core/Datastore/Migration/054_add_user_book_rating.cs`, `src/NzbDrone.Core/Books/Model/UserBook.cs`, `src/NzbDrone.Core/Books/Services/UserLibraryService.cs`, `src/Readarr.Api.V1/Author/AuthorController.cs`, `src/Readarr.Api.V1/Author/AuthorResource.cs`, `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `src/Readarr.Api.V1/Books/BookController.cs`, `src/Readarr.Api.V1/Books/BookResource.cs`, `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/NzbDrone.Core/Messaging/Commands/Command.cs`, `src/NzbDrone.Core/Messaging/Commands/CommandQueue.cs`, `src/NzbDrone.Core/MediaFiles/BookImport/Manual/ManualImportCommand.cs`, `src/NzbDrone.Core/Download/ProcessMonitoredDownloadsCommand.cs`, `frontend/src/Components/StarRatingInput.js`, `frontend/src/Book/Details/BookDetailsHeader.js`, `frontend/src/Author/Details/AuthorDetailsHeader.js`, `frontend/src/Book/Details/CombineAudiobookProgress.js`, `frontend/src/System/Diagnostics/Diagnostics.js`, `frontend/src/Settings/Development/DevelopmentSettings.js`, `frontend/src/Settings/Settings.js`, `README.md`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.15`, push, then run the SSH update with the next log number (`update-12.log`).
+
 ## 2.1.14
 - Summary: Auto-launch the first-run wizard for new admins, streamline add-author defaults, and refine manual import/encode UX.
 - Why: The wizard wasn’t auto-starting, add-author options still surfaced monitoring/quality controls, and encoding progress and reset guidance needed cleanup.

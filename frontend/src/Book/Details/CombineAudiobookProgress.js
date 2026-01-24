@@ -125,7 +125,7 @@ class CombineAudiobookProgress extends Component {
           />
         </div>
         {
-          detailText &&
+          !isInline && detailText &&
             <div className={styles.detail}>
               {detailText}
             </div>

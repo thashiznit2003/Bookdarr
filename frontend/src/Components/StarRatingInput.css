@@ -1,0 +1,22 @@
+.starInput {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.starButton {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: #ffbc0b;
+}
+
+.starInactive {
+  opacity: 0.3;
+}
+
+.starButton:focus {
+  outline: 1px solid #ffbc0b;
+  outline-offset: 2px;
+}

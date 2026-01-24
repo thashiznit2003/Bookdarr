@@ -11,6 +11,7 @@ import Button from 'Components/Link/Button';
 import Marquee from 'Components/Marquee';
 import Measure from 'Components/Measure';
 import Modal from 'Components/Modal/Modal';
+import StarRatingInput from 'Components/StarRatingInput';
 import Tooltip from 'Components/Tooltip/Tooltip';
 import { icons, kinds, sizes, tooltipPositions } from 'Helpers/Props';
 import fonts from 'Styles/Variables/fonts';
@@ -75,6 +76,9 @@ class BookDetailsHeader extends Component {
       statistics = {},
       releaseDate,
       ratings,
+      userRating,
+      inMyLibrary,
+      onUserRatingChange,
       images,
       links,
       shortDateFormat,
@@ -150,6 +154,19 @@ class BookDetailsHeader extends Component {
                   rating={ratings.value}
                   iconSize={20}
                 />
+
+                {
+                  inMyLibrary &&
+                    <div className={styles.userRating}>
+                      <span className={styles.userRatingLabel}>
+                        {translate('YourRating')}
+                      </span>
+                      <StarRatingInput
+                        value={userRating}
+                        onChange={onUserRatingChange}
+                      />
+                    </div>
+                }
               </div>
             </div>
 
@@ -279,6 +296,9 @@ BookDetailsHeader.propTypes = {
   statistics: PropTypes.object.isRequired,
   releaseDate: PropTypes.string.isRequired,
   ratings: PropTypes.object.isRequired,
+  userRating: PropTypes.number,
+  inMyLibrary: PropTypes.bool.isRequired,
+  onUserRatingChange: PropTypes.func,
   images: PropTypes.arrayOf(PropTypes.object).isRequired,
   links: PropTypes.arrayOf(PropTypes.object).isRequired,
   shortDateFormat: PropTypes.string.isRequired,
@@ -287,7 +307,10 @@ BookDetailsHeader.propTypes = {
 };
 
 BookDetailsHeader.defaultProps = {
-  width: '100%'
+  width: '100%',
+  inMyLibrary: false,
+  userRating: null,
+  onUserRatingChange: () => {}
 };
 
 export default BookDetailsHeader;

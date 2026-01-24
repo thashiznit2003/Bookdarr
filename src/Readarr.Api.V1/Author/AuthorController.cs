@@ -7,6 +7,7 @@ using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Authentication;
 using NzbDrone.Core.AuthorStats;
 using NzbDrone.Core.Books;
+using NzbDrone.Core.Books.Services;
 using NzbDrone.Core.Books.Commands;
 using NzbDrone.Core.Books.Events;
 using NzbDrone.Core.Datastore.Events;
@@ -49,6 +50,8 @@ namespace Readarr.Api.V1.Author
         private readonly IManageCommandQueue _commandQueueManager;
         private readonly IRootFolderService _rootFolderService;
         private readonly IUserService _userService;
+        private readonly IUserLibraryService _userLibraryService;
+        private readonly IUserAuthorService _userAuthorService;
 
         public AuthorController(IBroadcastSignalRMessage signalRBroadcaster,
                             IAuthorService authorService,
@@ -62,6 +65,8 @@ namespace Readarr.Api.V1.Author
                             IManageCommandQueue commandQueueManager,
                             IRootFolderService rootFolderService,
                             IUserService userService,
+                            IUserLibraryService userLibraryService,
+                            IUserAuthorService userAuthorService,
                             RecycleBinValidator<AuthorResource> recycleBinValidator,
                             RootFolderValidator<AuthorResource> rootFolderValidator,
                             AuthorPathValidator<AuthorResource> authorPathValidator,
@@ -85,6 +90,8 @@ namespace Readarr.Api.V1.Author
             _commandQueueManager = commandQueueManager;
             _rootFolderService = rootFolderService;
             _userService = userService;
+            _userLibraryService = userLibraryService;
+            _userAuthorService = userAuthorService;
 
             Http.Validation.RuleBuilderExtensions.ValidId(SharedValidator.RuleFor(s => s.QualityProfileId));
             Http.Validation.RuleBuilderExtensions.ValidId(SharedValidator.RuleFor(s => s.MetadataProfileId));
@@ -134,6 +141,7 @@ namespace Readarr.Api.V1.Author
             LinkNextPreviousBooks(resource);
 
             LinkRootFolderPath(resource);
+            ApplyUserLibraryInfo(resource);
 
             return resource;
         }
@@ -141,6 +149,7 @@ namespace Readarr.Api.V1.Author
         [HttpGet]
         public List<AuthorResource> AllAuthors()
         {
+            var userLibraryInfo = BuildUserAuthorInfo();
             var authorStats = _authorStatisticsService.AuthorStatistics();
             var authors = _authorService.GetAllAuthors();
             foreach (var author in authors)
@@ -154,6 +163,7 @@ namespace Readarr.Api.V1.Author
             LinkNextPreviousBooks(authorResources.ToArray());
             LinkAuthorStatistics(authorResources, authorStats.ToDictionary(x => x.AuthorId));
             LinkRootFolderPath(authorResources.ToArray());
+            ApplyUserLibraryInfo(authorResources, userLibraryInfo);
 
             return authorResources;
         }
@@ -162,8 +172,111 @@ namespace Readarr.Api.V1.Author
         public ActionResult<AuthorResource> AddAuthor(AuthorResource authorResource)
         {
             var author = _addAuthorService.AddAuthor(authorResource.ToModel(), authorResource.DoRefresh ?? true);
+            var user = GetCurrentUser();
+            _userAuthorService.AddOrGetUserAuthor(user.Id, author.Id);
 
             return Created(author.Id);
+        }
+
+        private class RatingAccumulator
+        {
+            public decimal Sum { get; set; }
+            public int Count { get; set; }
+        }
+
+        private class UserAuthorInfo
+        {
+            public HashSet<int> AuthorIds { get; } = new HashSet<int>();
+            public Dictionary<int, RatingAccumulator> UserRatings { get; } = new Dictionary<int, RatingAccumulator>();
+            public Dictionary<int, RatingAccumulator> OpenLibraryRatings { get; } = new Dictionary<int, RatingAccumulator>();
+        }
+
+        private UserAuthorInfo BuildUserAuthorInfo()
+        {
+            var user = GetCurrentUser();
+            var info = new UserAuthorInfo();
+            var userAuthors = _userAuthorService.GetByUser(user.Id);
+
+            foreach (var userAuthor in userAuthors.Where(x => !x.IsDeleted))
+            {
+                info.AuthorIds.Add(userAuthor.AuthorId);
+            }
+
+            var userBooks = _userLibraryService.GetUserLibrary(user.Id);
+            if (!userBooks.Any())
+            {
+                return info;
+            }
+
+            var bookIds = userBooks.Select(x => x.BookId).Distinct().ToList();
+            var books = _bookService.GetBooks(bookIds, allowMissing: true);
+            var bookById = books.ToDictionary(x => x.Id);
+
+            foreach (var userBook in userBooks)
+            {
+                if (!bookById.TryGetValue(userBook.BookId, out var book))
+                {
+                    continue;
+                }
+
+                var authorId = book.AuthorId;
+                info.AuthorIds.Add(authorId);
+
+                if (userBook.UserRating.HasValue && userBook.UserRating.Value > 0)
+                {
+                    AddRating(info.UserRatings, authorId, userBook.UserRating.Value);
+                }
+
+                if (book.Ratings?.Value > 0)
+                {
+                    AddRating(info.OpenLibraryRatings, authorId, book.Ratings.Value);
+                }
+            }
+
+            return info;
+        }
+
+        private void ApplyUserLibraryInfo(AuthorResource resource)
+        {
+            var info = BuildUserAuthorInfo();
+            ApplyUserLibraryInfo(new[] { resource }, info);
+        }
+
+        private void ApplyUserLibraryInfo(IEnumerable<AuthorResource> resources, UserAuthorInfo info)
+        {
+            foreach (var resource in resources)
+            {
+                if (resource == null)
+                {
+                    continue;
+                }
+
+                resource.InMyLibrary = info.AuthorIds.Contains(resource.Id);
+
+                if (info.UserRatings.TryGetValue(resource.Id, out var userRatings))
+                {
+                    resource.UserAverageRating = userRatings.Sum / userRatings.Count;
+                    resource.UserRatedBookCount = userRatings.Count;
+                }
+
+                if (info.OpenLibraryRatings.TryGetValue(resource.Id, out var openRatings))
+                {
+                    resource.OpenLibraryAverageRating = openRatings.Sum / openRatings.Count;
+                    resource.OpenLibraryRatedBookCount = openRatings.Count;
+                }
+            }
+        }
+
+        private void AddRating(Dictionary<int, RatingAccumulator> ratings, int authorId, decimal value)
+        {
+            if (!ratings.TryGetValue(authorId, out var accumulator))
+            {
+                accumulator = new RatingAccumulator();
+                ratings[authorId] = accumulator;
+            }
+
+            accumulator.Sum += value;
+            accumulator.Count += 1;
         }
 
         [RestPutById]

@@ -289,6 +289,7 @@ export const REFRESH_BOOK_METADATA = 'books/refreshBookMetadata';
 export const DELETE_AUTHOR_BOOKS = 'books/deleteAuthorBooks';
 export const TOGGLE_BOOK_MONITORED = 'books/toggleBookMonitored';
 export const TOGGLE_BOOKS_MONITORED = 'books/toggleBooksMonitored';
+export const SET_USER_BOOK_RATING = 'books/setUserBookRating';
 
 //
 // Action Creators
@@ -303,6 +304,7 @@ export const toggleBooksMonitored = createThunk(TOGGLE_BOOKS_MONITORED);
 export const saveBook = createThunk(SAVE_BOOK);
 export const refreshBookMetadata = createThunk(REFRESH_BOOK_METADATA);
 export const fetchUserLibraryBooks = (payload) => fetchBooks({ ...payload, useUserLibrary: true });
+export const setUserBookRating = createThunk(SET_USER_BOOK_RATING);
 
 export const deleteBook = createThunk(DELETE_BOOK, (payload) => {
   return {
@@ -460,6 +462,29 @@ export const actionHandlers = handleThunks({
         id,
         section,
         isSaving: false
+      }));
+    });
+
+    return request;
+  },
+
+  [SET_USER_BOOK_RATING]: (getState, payload, dispatch) => {
+    const { bookId, rating } = payload;
+
+    const request = createAjaxRequest({
+      url: `/user/library/${bookId}/rating`,
+      method: 'PUT',
+      dataType: 'json',
+      data: {
+        userRating: rating
+      }
+    }).request;
+
+    request.done(() => {
+      dispatch(updateItem({
+        id: bookId,
+        section,
+        userRating: rating
       }));
     });
 

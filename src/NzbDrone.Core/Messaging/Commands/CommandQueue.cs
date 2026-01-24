@@ -168,7 +168,8 @@ namespace NzbDrone.Core.Messaging.Commands
 
                     if (startedCommands.Any(x => x.Body.RequiresDiskAccess))
                     {
-                        queuedCommands = queuedCommands.Where(c => !c.Body.RequiresDiskAccess);
+                        queuedCommands = queuedCommands.Where(c =>
+                            !c.Body.RequiresDiskAccess || c.Body.AllowConcurrentDiskAccess);
                     }
 
                     if (startedCommands.Any(x => x.Body.IsTypeExclusive))

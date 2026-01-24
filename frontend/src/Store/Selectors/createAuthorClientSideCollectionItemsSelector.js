@@ -7,18 +7,25 @@ function createUnoptimizedSelector(uiSection) {
     createClientSideCollectionSelector('authors', uiSection),
     (state) => (state.books?.items || []).filter((b) => b.inMyLibrary),
     (authors, books) => {
+      const hasLibraryFlag = authors.items.some((item) => item.inMyLibrary !== undefined);
       const authorIds = new Set(books.map((b) => b.authorId));
 
       const filteredItems = authors.items
-        .filter((s) => authorIds.has(s.id))
-        .map((s) => {
+        .filter((item) => {
+          if (hasLibraryFlag) {
+            return item.inMyLibrary;
+          }
+
+          return authorIds.has(item.id);
+        })
+        .map((item) => {
           const {
             id,
             authorName,
             authorNameLastFirst,
             sortName,
             sortNameLastFirst
-          } = s;
+          } = item;
 
           return {
             id,

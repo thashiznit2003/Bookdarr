@@ -1454,6 +1454,18 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 edition.Language = data.Language;
             }
 
+            if (data.AverageRating.HasValue && data.AverageRating.Value > 0)
+            {
+                var rating = new Ratings
+                {
+                    Value = data.AverageRating.Value,
+                    Votes = data.RatingCount ?? 0
+                };
+
+                book.Ratings = rating;
+                edition.Ratings = rating;
+            }
+
             edition.Images ??= new List<MediaCover.MediaCover>();
             if (!edition.Images.Any())
             {
@@ -1642,6 +1654,14 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             data.Subjects = ParseOpenLibraryStringList(workJson["subjects"]);
             data.Series = ParseOpenLibrarySeriesList(workJson["series"]);
             data.WorkCoverIds = ParseOpenLibraryCoverIds(workJson["covers"]);
+
+            var ratingsJson = GetOpenLibraryJson($"https://openlibrary.org{data.WorkKey}/ratings.json", TimeSpan.FromHours(12));
+            if (ratingsJson != null)
+            {
+                var summary = ratingsJson["summary"];
+                data.AverageRating = summary?["average"]?.Value<decimal?>();
+                data.RatingCount = summary?["count"]?.Value<int?>();
+            }
         }
 
         private static string NormalizeOpenLibraryIsbn(string isbn)
@@ -2653,6 +2673,8 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             public string Publisher { get; set; }
             public int? PageCount { get; set; }
             public string Language { get; set; }
+            public decimal? AverageRating { get; set; }
+            public int? RatingCount { get; set; }
             public List<string> Subjects { get; set; } = new List<string>();
             public List<string> Series { get; set; } = new List<string>();
             public List<int> EditionCoverIds { get; set; } = new List<int>();

@@ -313,6 +313,7 @@ class Diagnostics extends Component {
                 <li>{translate('DiagnosticsSetupTokenStep')}</li>
                 <li>{translate('DiagnosticsSetupSaveStep')}</li>
                 <li>{translate('DiagnosticsSetupTestStep')}</li>
+                <li>{translate('DiagnosticsAssistantNote')}</li>
               </ul>
             </Alert>
           }

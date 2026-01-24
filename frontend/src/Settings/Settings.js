@@ -134,7 +134,7 @@ function createMapStateToProps() {
     (state) => state.system.status.item,
     (currentUser, systemStatus) => ({
       isAdmin: currentUser?.isAdmin ?? systemStatus?.isAdmin ?? false,
-      enableDevelopmentMenu: systemStatus?.enableDevelopmentMenu ?? true
+      enableDevelopmentMenu: systemStatus?.enableDevelopmentMenu ?? false
     })
   );
 }

@@ -25,6 +25,7 @@ namespace NzbDrone.Core.Messaging.Commands
         public virtual bool UpdateScheduledTask => true;
         public virtual string CompletionMessage => null;
         public virtual bool RequiresDiskAccess => false;
+        public virtual bool AllowConcurrentDiskAccess => false;
         public virtual bool IsExclusive => false;
         public virtual bool IsTypeExclusive => false;
         public virtual bool IsLongRunning => false;

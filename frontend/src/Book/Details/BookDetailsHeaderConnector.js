@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import { setUserBookRating } from 'Store/Actions/bookActions';
 import createBookSelector from 'Store/Selectors/createBookSelector';
 import createDimensionsSelector from 'Store/Selectors/createDimensionsSelector';
 import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
@@ -33,6 +34,10 @@ function createMapStateToProps() {
   );
 }
 
+const mapDispatchToProps = {
+  setUserBookRating
+};
+
 class BookDetailsHeaderConnector extends Component {
 
   //
@@ -42,14 +47,22 @@ class BookDetailsHeaderConnector extends Component {
     return (
       <BookDetailsHeader
         {...this.props}
+        onUserRatingChange={this.onUserRatingChange}
       />
     );
   }
+
+  onUserRatingChange = (rating) => {
+    const { id, setUserBookRating } = this.props;
+    setUserBookRating({ bookId: id, rating });
+  };
 }
 
 BookDetailsHeaderConnector.propTypes = {
   bookId: PropTypes.number,
-  author: PropTypes.object
+  author: PropTypes.object,
+  id: PropTypes.number,
+  setUserBookRating: PropTypes.func.isRequired
 };
 
-export default connect(createMapStateToProps)(BookDetailsHeaderConnector);
+export default connect(createMapStateToProps, mapDispatchToProps)(BookDetailsHeaderConnector);

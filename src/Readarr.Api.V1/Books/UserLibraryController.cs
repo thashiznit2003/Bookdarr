@@ -84,6 +84,15 @@ namespace Readarr.Api.V1.Books
             return NoContent();
         }
 
+        [HttpPut("{bookId:int}/rating")]
+        public ActionResult<UserLibraryResource> SetUserRating(int bookId, [FromBody] UserLibraryResource resource)
+        {
+            var user = GetCurrentUser();
+            var updated = _libraryService.SetUserRating(user.Id, bookId, resource?.UserRating);
+
+            return Accepted(MapUserBook(updated));
+        }
+
         [HttpGet("pool")]
         public ActionResult<List<BookPoolResource>> GetBookPool()
         {
@@ -135,6 +144,7 @@ namespace Readarr.Api.V1.Books
             var books = _bookService.GetBooks(bookIds, allowMissing: true);
 
             var resources = books.ToResource();
+            var userBookById = userBooks.ToDictionary(x => x.BookId);
 
             // Populate statistics (includes ebook/audiobook counts)
             var authorStats = _authorStatisticsService.AuthorStatistics();
@@ -142,6 +152,11 @@ namespace Readarr.Api.V1.Books
 
             foreach (var resource in resources)
             {
+                if (userBookById.TryGetValue(resource.Id, out var userBook))
+                {
+                    resource.UserRating = userBook.UserRating;
+                }
+
                 if (statsDict.TryGetValue(resource.Id, out var stats))
                 {
                     resource.Statistics = stats.ToResource();
@@ -173,7 +188,8 @@ namespace Readarr.Api.V1.Books
                 WantsAudiobook = userBook.WantsAudiobook,
                 HasEbook = _libraryService.UserBookHasMedia(userBook, BookFileMediaType.Ebook),
                 HasAudiobook = _libraryService.UserBookHasMedia(userBook, BookFileMediaType.Audiobook),
-                PoolHasBook = _libraryService.IsBookAvailableInPool(book.Id)
+                PoolHasBook = _libraryService.IsBookAvailableInPool(book.Id),
+                UserRating = userBook.UserRating
             };
         }
 

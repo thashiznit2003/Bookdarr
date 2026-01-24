@@ -176,6 +176,7 @@ namespace NzbDrone.Core.Datastore
 
             Mapper.Entity<UserBook>("UserBooks").RegisterModel();
             Mapper.Entity<UserBookFile>("UserBookFiles").RegisterModel();
+            Mapper.Entity<UserAuthor>("UserAuthors").RegisterModel();
             Mapper.Entity<UserBookProgress>("UserBookProgress").RegisterModel();
 
             Mapper.Entity<QualityDefinition>("QualityDefinitions").RegisterModel()

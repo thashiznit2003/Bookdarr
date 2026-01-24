@@ -296,9 +296,9 @@ namespace NzbDrone.Core.Configuration
 
         public string DiagnosticsGitUserEmail => GetValue("DiagnosticsGitUserEmail", string.Empty, persist: false);
 
-        public bool EnableDiagnostics => GetValueBoolean("EnableDiagnostics", true);
+        public bool EnableDiagnostics => GetValueBoolean("EnableDiagnostics", false);
 
-        public bool EnableDevelopmentMenu => GetValueBoolean("EnableDevelopmentMenu", true);
+        public bool EnableDevelopmentMenu => GetValueBoolean("EnableDevelopmentMenu", false);
 
         public string DisabledTasks => GetValue("DisabledTasks", string.Empty);
 
