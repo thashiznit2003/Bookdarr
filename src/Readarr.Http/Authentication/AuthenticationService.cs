@@ -40,6 +40,10 @@ namespace Readarr.Http.Authentication
             {
                 LogSuccess(request, username);
 
+                var shouldTrackLogin = request?.Path.HasValue == true &&
+                    request.Path.Value.EndsWith("/login", System.StringComparison.OrdinalIgnoreCase);
+                _userService.RecordSuccessfulLogin(user, shouldTrackLogin);
+
                 return user;
             }
 

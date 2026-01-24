@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.17
+- Summary: Fix user ratings persistence and move first-run wizard auto-launch to server-side login tracking.
+- Why: Ratings were not sticking between navigation, and the wizard was gated by browser storage instead of per-admin login history.
+- Impact: Rating clicks now update immediately and persist across fetches; first-run wizard auto-shows based on admin login counts stored in the user record, tracks auto-shown count server-side, and displays the auto-show count in the modal; wizard auto-show is no longer blocked by browser history.
+- Files: `frontend/src/Store/Actions/bookActions.js`, `frontend/src/FirstRun/FirstRunWizardModalContentConnector.js`, `frontend/src/FirstRun/FirstRunWizardModalContent.js`, `frontend/src/FirstRun/FirstRunWizardModalContent.css`, `src/Readarr.Http/Authentication/AuthenticationService.cs`, `src/NzbDrone.Core/Authentication/User.cs`, `src/NzbDrone.Core/Authentication/UserService.cs`, `src/Readarr.Api.V1/Users/UserResource.cs`, `src/Readarr.Api.V1/Users/UsersController.cs`, `src/NzbDrone.Core/Datastore/Migration/055_add_user_wizard_tracking.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.17`, push, then run the SSH update with the next log number (`update-12.log`).
+
 ## 2.1.16
 - Summary: Fix StyleCop ordering in the author API controller to keep builds green.
 - Why: The VM update failed on SA1210 due to out-of-order using directives.

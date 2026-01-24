@@ -363,7 +363,12 @@ export const actionHandlers = handleThunks({
           const base = existing.map((b) => ({ ...b, inMyLibrary: false }));
           data.forEach((item) => {
             const idx = base.findIndex((b) => b.id === item.id);
-            const next = { ...item, inMyLibrary: true };
+            const existingItem = idx >= 0 ? base[idx] : null;
+            const next = {
+              ...item,
+              inMyLibrary: true,
+              userRating: item.userRating ?? existingItem?.userRating
+            };
             if (idx >= 0) {
               base[idx] = next;
             } else {
@@ -376,7 +381,8 @@ export const actionHandlers = handleThunks({
             const found = existing.find((b) => b.id === item.id);
             return {
               ...item,
-              inMyLibrary: found?.inMyLibrary ?? false
+              inMyLibrary: found?.inMyLibrary ?? false,
+              userRating: item.userRating ?? found?.userRating
             };
           });
         }
@@ -470,6 +476,13 @@ export const actionHandlers = handleThunks({
 
   [SET_USER_BOOK_RATING]: (getState, payload, dispatch) => {
     const { bookId, rating } = payload;
+    const currentRating = getState().books.items.find((b) => b.id === bookId)?.userRating ?? null;
+
+    dispatch(updateItem({
+      id: bookId,
+      section,
+      userRating: rating
+    }));
 
     const request = createAjaxRequest({
       url: `/user/library/${bookId}/rating`,
@@ -480,11 +493,20 @@ export const actionHandlers = handleThunks({
       }
     }).request;
 
-    request.done(() => {
+    request.done((data) => {
+      const nextRating = data?.userRating ?? rating;
       dispatch(updateItem({
         id: bookId,
         section,
-        userRating: rating
+        userRating: nextRating
+      }));
+    });
+
+    request.fail(() => {
+      dispatch(updateItem({
+        id: bookId,
+        section,
+        userRating: currentRating
       }));
     });
 

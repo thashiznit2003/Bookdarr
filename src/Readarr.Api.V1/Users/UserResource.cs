@@ -13,6 +13,9 @@ namespace Readarr.Api.V1.Users
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLogin { get; set; }
+        public int LoginCount { get; set; }
+        public int WizardAutoShownCount { get; set; }
+        public bool WizardAutoDisabled { get; set; }
         public string PreferredQualityMedia { get; set; }
     }
 }

@@ -62,6 +62,26 @@ namespace Readarr.Api.V1.Users
             return Map(currentUser);
         }
 
+        [HttpPost("{id:int}/wizard-auto-shown")]
+        public ActionResult<UserResource> RecordWizardAutoShown(int id)
+        {
+            var currentUser = GetCurrentUser();
+
+            if (!currentUser.IsAdmin && currentUser.Id != id)
+            {
+                return Forbid();
+            }
+
+            var user = _userService.FindUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user = _userService.IncrementWizardAutoShown(user);
+            return Accepted(Map(user));
+        }
+
         [HttpPut("{id:int}")]
         public ActionResult<UserResource> Update(int id, UserUpdateResource resource)
         {
@@ -154,6 +174,9 @@ namespace Readarr.Api.V1.Users
                 IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt,
                 LastLogin = user.LastLogin,
+                LoginCount = user.LoginCount,
+                WizardAutoShownCount = user.WizardAutoShownCount,
+                WizardAutoDisabled = user.WizardAutoDisabled,
                 PreferredQualityMedia = user.PreferredQualityMedia
             };
         }

@@ -20,6 +20,8 @@ namespace NzbDrone.Core.Authentication
         User FindUser(ClaimsPrincipal principal);
         User FindUser(Guid identifier);
         List<User> GetUsers();
+        User RecordSuccessfulLogin(User user, bool incrementLoginCount);
+        User IncrementWizardAutoShown(User user);
     }
 
     public class UserService : IUserService
@@ -50,6 +52,10 @@ namespace NzbDrone.Core.Authentication
                 IsAdmin = finalRole == UserRole.Admin,
                 IsActive = isActive,
                 CreatedAt = DateTime.UtcNow,
+                LastLogin = DateTime.UtcNow,
+                LoginCount = 0,
+                WizardAutoShownCount = 0,
+                WizardAutoDisabled = false,
                 PreferredQualityMedia = string.IsNullOrWhiteSpace(preferredQualityMedia) ? "both" : preferredQualityMedia
             };
 
@@ -186,7 +192,10 @@ namespace NzbDrone.Core.Authentication
                 Role = UserRole.Admin,
                 IsAdmin = true,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                LoginCount = 0,
+                WizardAutoShownCount = 0,
+                WizardAutoDisabled = false
             };
         }
 
@@ -199,6 +208,49 @@ namespace NzbDrone.Core.Authentication
         public List<User> GetUsers()
         {
             return _repo.All().ToList();
+        }
+
+        public User RecordSuccessfulLogin(User user, bool incrementLoginCount)
+        {
+            if (user == null || user.Id <= 0)
+            {
+                return user;
+            }
+
+            if (!incrementLoginCount)
+            {
+                return user;
+            }
+
+            user.LastLogin = DateTime.UtcNow;
+
+            if (user.IsAdmin && !user.WizardAutoDisabled)
+            {
+                user.LoginCount = Math.Max(0, user.LoginCount) + 1;
+
+                if (user.LoginCount > 5)
+                {
+                    user.WizardAutoDisabled = true;
+                }
+            }
+
+            return _repo.Update(user);
+        }
+
+        public User IncrementWizardAutoShown(User user)
+        {
+            if (user == null || user.Id <= 0)
+            {
+                return user;
+            }
+
+            if (user.WizardAutoDisabled)
+            {
+                return user;
+            }
+
+            user.WizardAutoShownCount = Math.Max(0, user.WizardAutoShownCount) + 1;
+            return _repo.Update(user);
         }
 
         private static UserRole ResolveRole(bool hasUsers, bool isAdminRequested, UserRole requestedRole)

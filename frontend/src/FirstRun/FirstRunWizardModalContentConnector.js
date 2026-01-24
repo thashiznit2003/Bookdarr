@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import createAjaxRequest from 'Utilities/createAjaxRequest';
 import {
   fetchDownloadClients,
   fetchIndexers,
@@ -16,12 +17,10 @@ import {
   setNamingSettingsValue,
   setRootFolderValue
 } from 'Store/Actions/settingsActions';
+import { fetchCurrentUser } from 'Store/Actions/currentUserActions';
 import FirstRunWizardModalContent from './FirstRunWizardModalContent';
 import styles from './FirstRunWizardModalContent.css';
 
-const DISMISS_KEY = 'bookdarr.firstRunWizardDismissed';
-const STARTED_KEY = 'bookdarr.firstRunWizardStarted';
-const USER_KEY = 'bookdarr.firstRunWizardUserId';
 const OPEN_EVENT = 'bookdarr:openFirstRunWizard';
 
 function createMapStateToProps() {
@@ -47,6 +46,9 @@ function createMapStateToProps() {
 
       return {
         currentUserId: currentUser?.id ?? null,
+        loginCount: currentUser?.loginCount ?? 0,
+        wizardAutoShownCount: currentUser?.wizardAutoShownCount ?? 0,
+        wizardAutoDisabled: currentUser?.wizardAutoDisabled ?? false,
         needsSetup,
         authenticationEnabled,
         isAdmin,
@@ -69,6 +71,7 @@ const mapDispatchToProps = {
   fetchIndexers,
   fetchMediaManagementSettings,
   fetchNamingSettings,
+  fetchCurrentUser,
   saveMediaManagementSettings,
   saveNamingSettings,
   saveRootFolder,
@@ -84,6 +87,7 @@ class FirstRunWizardModalContentConnector extends Component {
     this.state = {
       dismissed: false,
       started: false,
+      autoOpenedForUserId: null,
       position: null,
       isDragging: false,
       dragOffset: null
@@ -93,7 +97,6 @@ class FirstRunWizardModalContentConnector extends Component {
   }
 
   componentDidMount() {
-    this.loadDismissedState();
     this.bindOpenEvent();
     this.props.fetchRootFolders();
     this.props.fetchDownloadClients();
@@ -111,10 +114,6 @@ class FirstRunWizardModalContentConnector extends Component {
 
     if (isOpen && this._dockRef.current && !this.state.isDragging) {
       this.constrainToViewport();
-    }
-
-    if (this.props.needsSetup && !this.state.started) {
-      this.setStarted();
     }
 
     if (!isOpen && prevState.isDragging) {
@@ -145,69 +144,68 @@ class FirstRunWizardModalContentConnector extends Component {
     window.removeEventListener(OPEN_EVENT, this.onOpenWizard);
   }
 
-  loadDismissedState() {
-    if (typeof window === 'undefined' || !window.localStorage) {
-      return;
-    }
-
-    const dismissed = window.localStorage.getItem(DISMISS_KEY) === 'true';
-    const started = window.localStorage.getItem(STARTED_KEY) === 'true';
-    this.setState({ dismissed, started });
-  }
-
   maybeAutoOpenWizard(prevProps) {
-    const { currentUserId, needsSetup, isAdmin } = this.props;
+    const { currentUserId, needsSetup, isAdmin, loginCount, wizardAutoDisabled } = this.props;
+    const { autoOpenedForUserId } = this.state;
 
     if (!currentUserId || !needsSetup || !isAdmin) {
       return;
     }
 
-    if (prevProps.currentUserId === currentUserId) {
+    if (wizardAutoDisabled || loginCount >= 2) {
       return;
     }
 
-    if (typeof window === 'undefined' || !window.localStorage) {
+    if (autoOpenedForUserId === currentUserId) {
       return;
     }
 
-    const storedUserId = window.localStorage.getItem(USER_KEY);
-    if (storedUserId === String(currentUserId)) {
+    if (prevProps.currentUserId === currentUserId && prevProps.loginCount === loginCount) {
       return;
     }
 
-    window.localStorage.setItem(USER_KEY, String(currentUserId));
-    this.onOpenWizard();
-  }
-
-  setStarted() {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.setItem(STARTED_KEY, 'true');
-    }
-
-    this.setState({ started: true });
+    this.onAutoOpenWizard(currentUserId);
   }
 
   onDismiss = () => {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.setItem(DISMISS_KEY, 'true');
-    }
-
     this.setState({ dismissed: true });
     this.stopDragging();
   };
 
   onOpenWizard = () => {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.setItem(DISMISS_KEY, 'false');
-      window.localStorage.setItem(STARTED_KEY, 'true');
-    }
-
     this.setState({ dismissed: false, started: true }, () => {
       if (this._dockRef.current) {
         this.setInitialPosition();
       }
     });
   };
+
+  onAutoOpenWizard = (userId) => {
+    this.setState({ dismissed: false, started: true, autoOpenedForUserId: userId }, () => {
+      if (this._dockRef.current) {
+        this.setInitialPosition();
+      }
+    });
+
+    this.recordAutoDisplay(userId);
+  };
+
+  recordAutoDisplay(userId) {
+    if (!userId) {
+      return;
+    }
+
+    const { fetchCurrentUser } = this.props;
+    const request = createAjaxRequest({
+      url: `/users/${userId}/wizard-auto-shown`,
+      method: 'POST',
+      dataType: 'json'
+    }).request;
+
+    request.always(() => {
+      fetchCurrentUser();
+    });
+  }
 
   onApplyRecommendedSettings = () => {
     this.props.setNamingSettingsValue({ name: 'renameBooks', value: true });
@@ -392,6 +390,7 @@ class FirstRunWizardModalContentConnector extends Component {
       >
         <FirstRunWizardModalContent
           {...otherProps}
+          autoDisplayCount={this.props.wizardAutoShownCount}
           onApplyDefaultRootFolder={this.onApplyDefaultRootFolder}
           onApplyRecommendedSettings={this.onApplyRecommendedSettings}
           onDismiss={this.onDismiss}
@@ -407,6 +406,9 @@ FirstRunWizardModalContentConnector.propTypes = {
   authenticationEnabled: PropTypes.bool.isRequired,
   isAdmin: PropTypes.bool.isRequired,
   currentUserId: PropTypes.number,
+  loginCount: PropTypes.number.isRequired,
+  wizardAutoShownCount: PropTypes.number.isRequired,
+  wizardAutoDisabled: PropTypes.bool.isRequired,
   rootFolderCount: PropTypes.number.isRequired,
   downloadClientCount: PropTypes.number.isRequired,
   indexerCount: PropTypes.number.isRequired,
@@ -420,6 +422,7 @@ FirstRunWizardModalContentConnector.propTypes = {
   fetchIndexers: PropTypes.func.isRequired,
   fetchMediaManagementSettings: PropTypes.func.isRequired,
   fetchNamingSettings: PropTypes.func.isRequired,
+  fetchCurrentUser: PropTypes.func.isRequired,
   saveMediaManagementSettings: PropTypes.func.isRequired,
   saveNamingSettings: PropTypes.func.isRequired,
   setMediaManagementSettingsValue: PropTypes.func.isRequired,

@@ -19,6 +19,7 @@ function FirstRunWizardModalContent(props) {
     standardBookFormat,
     combineAudiobookMode,
     combineAudiobookDeleteMode,
+    autoDisplayCount,
     isSaving,
     onApplyDefaultRootFolder,
     onApplyRecommendedSettings,
@@ -215,6 +216,10 @@ function FirstRunWizardModalContent(props) {
 
       <ModalBody>
         <div className={styles.container}>
+          {
+            autoDisplayCount != null &&
+              <div className={styles.autoCount}>{autoDisplayCount}</div>
+          }
           <div className={styles.stepIntro}>{translate('FirstRunWizardIntro')}</div>
           <div className={styles.headerRow}>
             <div className={styles.stepTitle}>{step.title}</div>
@@ -272,6 +277,7 @@ FirstRunWizardModalContent.propTypes = {
   standardBookFormat: PropTypes.string,
   combineAudiobookMode: PropTypes.string,
   combineAudiobookDeleteMode: PropTypes.string,
+  autoDisplayCount: PropTypes.number,
   isSaving: PropTypes.bool.isRequired,
   onApplyDefaultRootFolder: PropTypes.func.isRequired,
   onApplyRecommendedSettings: PropTypes.func.isRequired,
