@@ -209,7 +209,7 @@ namespace NzbDrone.Core.Configuration
 
         public bool CopyUsingHardlinks
         {
-            get { return GetValueBoolean("CopyUsingHardlinks", true); }
+            get { return GetValueBoolean("CopyUsingHardlinks", false); }
 
             set { SetValue("CopyUsingHardlinks", value); }
         }

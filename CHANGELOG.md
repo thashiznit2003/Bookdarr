@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.8
+- Summary: Make the first-run wizard non-blocking and clarify root folder guidance.
+- Why: The wizard should not lock the UI, and root folders need clearer Docker guidance; hardlinks should be off by default without extra prompts.
+- Impact: The wizard docks in the bottom-right and is draggable; the media-management step no longer calls out hardlinks; root folder settings now explain /books bind mounts; new installs default Copy Using Hardlinks to off.
+- Files: `frontend/src/FirstRun/FirstRunWizardModalContentConnector.js`, `frontend/src/FirstRun/FirstRunWizardModalContent.js`, `frontend/src/FirstRun/FirstRunWizardModalContent.css`, `frontend/src/Components/Modal/ModalHeader.js`, `frontend/src/Settings/MediaManagement/RootFolder/RootFolders.js`, `frontend/src/Settings/MediaManagement/RootFolder/RootFolders.css`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/NzbDrone.Core/Configuration/ConfigService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.8`, push, then run the SSH update with the next log number (`update-61.log`).
+
 ## 2.1.7
 - Summary: Fix HTML cache-busting so icon links with query strings do not break the UI.
 - Why: The HTML cache-breaker regex expects a quote after the file extension and fails on `?v=...`, causing a FileNotFoundException at startup.

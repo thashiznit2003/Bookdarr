@@ -70,17 +70,22 @@ class RootFolders extends Component {
               })
             }
 
-            <Card
-              className={styles.addRootFolder}
-              onPress={this.onAddRootFolderPress}
-            >
-              <div className={styles.center}>
-                <Icon
-                  name={icons.ADD}
-                  size={45}
-                />
+            <div className={styles.addRootFolderRow}>
+              <Card
+                className={styles.addRootFolder}
+                onPress={this.onAddRootFolderPress}
+              >
+                <div className={styles.center}>
+                  <Icon
+                    name={icons.ADD}
+                    size={45}
+                  />
+                </div>
+              </Card>
+              <div className={styles.addRootFolderHelp}>
+                {translate('RootFolderAddHelpText')}
               </div>
-            </Card>
+            </div>
           </div>
 
           <EditRootFolderModalConnector

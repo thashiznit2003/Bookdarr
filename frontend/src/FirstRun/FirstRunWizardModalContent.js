@@ -17,11 +17,11 @@ function FirstRunWizardModalContent(props) {
     indexerCount,
     renameBooks,
     standardBookFormat,
-    copyUsingHardlinks,
     combineAudiobookMode,
     combineAudiobookDeleteMode,
     isSaving,
     onApplyRecommendedSettings,
+    onDragStart,
     onDismiss
   } = props;
 
@@ -130,7 +130,6 @@ function FirstRunWizardModalContent(props) {
           <ul className={styles.recommendations}>
             <li>{translate('FirstRunWizardMediaManagementRename')}</li>
             <li>{translate('FirstRunWizardMediaManagementFormat')}</li>
-            <li>{translate('FirstRunWizardMediaManagementHardlinks')}</li>
             <li>{translate('FirstRunWizardMediaManagementCombine')}</li>
           </ul>
           <div className={styles.statusRow}>
@@ -138,7 +137,6 @@ function FirstRunWizardModalContent(props) {
               {translate('FirstRunWizardMediaManagementStatus', [
                 renameBooks ? translate('FirstRunWizardOn') : translate('FirstRunWizardOff'),
                 standardBookFormat || translate('FirstRunWizardNotSet'),
-                copyUsingHardlinks ? translate('FirstRunWizardOn') : translate('FirstRunWizardOff'),
                 combineModeLabel,
                 combineDeleteLabel
               ])}
@@ -170,7 +168,6 @@ function FirstRunWizardModalContent(props) {
     indexerCount,
     renameBooks,
     standardBookFormat,
-    copyUsingHardlinks,
     combineModeLabel,
     combineDeleteLabel,
     isSaving,
@@ -182,7 +179,11 @@ function FirstRunWizardModalContent(props) {
 
   return (
     <ModalContent showCloseButton={false}>
-      <ModalHeader>
+      <ModalHeader
+        className={styles.dragHandle}
+        onMouseDown={onDragStart}
+        onTouchStart={onDragStart}
+      >
         {translate('FirstRunWizardTitle')}
       </ModalHeader>
 
@@ -238,11 +239,11 @@ FirstRunWizardModalContent.propTypes = {
   indexerCount: PropTypes.number.isRequired,
   renameBooks: PropTypes.bool.isRequired,
   standardBookFormat: PropTypes.string,
-  copyUsingHardlinks: PropTypes.bool.isRequired,
   combineAudiobookMode: PropTypes.string,
   combineAudiobookDeleteMode: PropTypes.string,
   isSaving: PropTypes.bool.isRequired,
   onApplyRecommendedSettings: PropTypes.func.isRequired,
+  onDragStart: PropTypes.func,
   onDismiss: PropTypes.func.isRequired
 };
 

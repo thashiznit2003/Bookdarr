@@ -83,3 +83,29 @@
   display: flex;
   gap: 8px;
 }
+.wizardDock {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: $modalZIndex;
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  max-width: calc(100% - 32px);
+  max-height: calc(100% - 32px);
+  border: 1px solid var(--borderColor);
+  border-radius: 8px;
+  background-color: var(--modalBackgroundColor);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.wizardDockDragging {
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+}
+
+.dragHandle {
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
