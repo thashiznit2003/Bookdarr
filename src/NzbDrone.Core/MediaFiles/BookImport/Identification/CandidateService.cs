@@ -4,7 +4,6 @@ using NLog;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.MetadataSource;
-using NzbDrone.Core.MetadataSource.Goodreads;
 using NzbDrone.Core.Parser.Model;
 
 namespace NzbDrone.Core.MediaFiles.BookImport.Identification
@@ -202,22 +201,11 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Identification
 
             var isbns = localEdition.LocalBooks.Select(x => x.FileTrackInfo.Isbn).Distinct().ToList();
             var asins = localEdition.LocalBooks.Select(x => x.FileTrackInfo.Asin).Distinct().ToList();
-            var goodreads = localEdition.LocalBooks.Select(x => x.FileTrackInfo.GoodreadsId).Distinct().ToList();
-
             // grab possibilities for all the IDs present
             if (isbns.Count == 1 && isbns[0].IsNotNullOrWhiteSpace())
             {
                 _logger.Trace($"Searching by isbn {isbns[0]}");
-
-                try
-                {
-                    remoteBooks = _bookSearchService.SearchByIsbn(isbns[0]);
-                }
-                catch (GoodreadsException e)
-                {
-                    _logger.Info(e, "Skipping ISBN search due to Goodreads Error");
-                    remoteBooks = new List<Book>();
-                }
+                remoteBooks = _bookSearchService.SearchByIsbn(isbns[0]);
 
                 foreach (var candidate in ToCandidates(remoteBooks, seenCandidates, idOverrides))
                 {
@@ -230,44 +218,11 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Identification
                 asins[0].Length == 10)
             {
                 _logger.Trace($"Searching by asin {asins[0]}");
-
-                try
-                {
-                    remoteBooks = _bookSearchService.SearchByAsin(asins[0]);
-                }
-                catch (GoodreadsException e)
-                {
-                    _logger.Info(e, "Skipping ASIN search due to Goodreads Error");
-                    remoteBooks = new List<Book>();
-                }
+                remoteBooks = _bookSearchService.SearchByAsin(asins[0]);
 
                 foreach (var candidate in ToCandidates(remoteBooks, seenCandidates, idOverrides))
                 {
                     yield return candidate;
-                }
-            }
-
-            if (goodreads.Count == 1 &&
-                goodreads[0].IsNotNullOrWhiteSpace())
-            {
-                if (int.TryParse(goodreads[0], out var id))
-                {
-                    _logger.Trace($"Searching by goodreads id {id}");
-
-                    try
-                    {
-                        remoteBooks = _bookSearchService.SearchByGoodreadsBookId(id, true);
-                    }
-                    catch (GoodreadsException e)
-                    {
-                        _logger.Info(e, "Skipping Goodreads ID search due to Goodreads Error");
-                        remoteBooks = new List<Book>();
-                    }
-
-                    foreach (var candidate in ToCandidates(remoteBooks, seenCandidates, idOverrides))
-                    {
-                        yield return candidate;
-                    }
                 }
             }
 
@@ -309,15 +264,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Identification
             // Search by author+book
             foreach (var authorTag in authorTags)
             {
-                try
-                {
-                    remoteBooks = _bookSearchService.SearchForNewBook(bookTag, authorTag);
-                }
-                catch (GoodreadsException e)
-                {
-                    _logger.Info(e, "Skipping author/title search due to Goodreads Error");
-                    remoteBooks = new List<Book>();
-                }
+                remoteBooks = _bookSearchService.SearchForNewBook(bookTag, authorTag);
 
                 foreach (var candidate in ToCandidates(remoteBooks, seenCandidates, idOverrides))
                 {
@@ -332,15 +279,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Identification
             }
 
             // Search by just book title
-            try
-            {
-                remoteBooks = _bookSearchService.SearchForNewBook(bookTag, null);
-            }
-            catch (GoodreadsException e)
-            {
-                _logger.Info(e, "Skipping book title search due to Goodreads Error");
-                remoteBooks = new List<Book>();
-            }
+            remoteBooks = _bookSearchService.SearchForNewBook(bookTag, null);
 
             foreach (var candidate in ToCandidates(remoteBooks, seenCandidates, idOverrides))
             {
@@ -350,15 +289,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Identification
             // Search by just author
             foreach (var a in authorTags)
             {
-                try
-                {
-                    remoteBooks = _bookSearchService.SearchForNewBook(a, null);
-                }
-                catch (GoodreadsException e)
-                {
-                    _logger.Info(e, "Skipping author search due to Goodreads Error");
-                    remoteBooks = new List<Book>();
-                }
+                remoteBooks = _bookSearchService.SearchForNewBook(a, null);
 
                 foreach (var candidate in ToCandidates(remoteBooks, seenCandidates, idOverrides))
                 {

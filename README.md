@@ -26,23 +26,13 @@ Bookdarr supports two metadata providers:
 - **Google Books (default)** – fast, broad coverage, no API key required. The quota
   is shared across all users who rely on the public endpoint, so watch for `429`
   responses and only request a key if you routinely hit the limit.
-- **BookInfo (`bookinfo.pro`)** – richer author/series metadata and cover fallbacks.
-  The provider depends on a dedicated API key and can rate-limit under load, so
-  only enable it when you need the extra detail or missing artwork.
+- **Open Library** – free fallback metadata with solid coverage for books and authors.
 
 Controls:
 
 - Set `GOOGLE_BOOKS_API_KEY` (via config.xml or environment) if you want more quota
   from Google Books without hitting the shared limit.
-- Set `METADATA_PROVIDER=bookinfo` to prefer BookInfo; the `METADATA_URL` setting
-  can override the default `https://api.bookinfo.pro` base URL if you run behind a
-  proxy or mirror.
-- Store your BookInfo API key in the “BookInfo API Key” field inside Settings →
-  Metadata when you unlock that provider.
-
-Leave the provider fields blank to keep using Google Books silently; Bookdarr no
-longer prompts users unnecessarily to switch providers and only surfaces a warning
-when rate limits occur.
+- Set `METADATA_PROVIDER=openlibrary` to prefer Open Library metadata.
 
 ## Shared Book Pool
 

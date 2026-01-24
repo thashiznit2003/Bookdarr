@@ -158,7 +158,7 @@ namespace NzbDrone.Core.Profiles.Metadata
             var localHash = new HashSet<string>(localBooks.Where(x => x.AddOptions.AddType == BookAddType.Manual).Select(x => x.ForeignBookId));
             localHash.UnionWith(localFiles.Select(x => x.Edition.Value.Book.Value.ForeignBookId));
 
-            if (!IsGoogleBooksProvider())
+            if (!IsMetadataProviderWithoutRatings())
             {
                 FilterByPredicate(hash, x => x.ForeignBookId, localHash, profile, BookAllowedByRating, "rating criteria not met");
                 FilterByPredicate(hash, x => x.ForeignBookId, localHash, profile, (x, p) => !p.SkipMissingDate || x.ReleaseDate.HasValue, "release date is missing");
@@ -218,9 +218,11 @@ namespace NzbDrone.Core.Profiles.Metadata
             return (b.Ratings.Popularity >= p.MinPopularity) || b.ReleaseDate > DateTime.UtcNow;
         }
 
-        private bool IsGoogleBooksProvider()
+        private bool IsMetadataProviderWithoutRatings()
         {
-            return string.Equals(_configService.MetadataProvider, "googlebooks", StringComparison.OrdinalIgnoreCase);
+            var provider = _configService.MetadataProvider;
+            return string.Equals(provider, "googlebooks", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(provider, "openlibrary", StringComparison.OrdinalIgnoreCase);
         }
 
         private bool IsPartOrSet(Book book, List<SeriesBookLink> seriesLinks, HashSet<string> titles)

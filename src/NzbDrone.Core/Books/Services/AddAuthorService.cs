@@ -99,7 +99,7 @@ namespace NzbDrone.Core.Books
             }
             catch (AuthorNotFoundException)
             {
-                _logger.Error("BookdarrId {0} was not found, it may have been removed from Goodreads.", newAuthor.Metadata.Value.ForeignAuthorId);
+                _logger.Error("Author ID {0} was not found by the metadata provider.", newAuthor.Metadata.Value.ForeignAuthorId);
 
                 throw new ValidationException(new List<ValidationFailure>
                 {

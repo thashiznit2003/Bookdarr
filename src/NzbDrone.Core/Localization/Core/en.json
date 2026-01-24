@@ -723,8 +723,6 @@
   "GoogleBooksApiKey": "Google Books API Key",
   "GoogleBooksApiKeyHelpText": "Optional. Only needed if you hit Google Books rate limits. Create a key in Google Cloud Console, enable the Books API, and paste it here.",
   "GoogleBooksApiKeyTooltip": "Get a free key from console.cloud.google.com and enable the Books API.",
-  "MetadataSource": "Metadata Source",
-  "MetadataSourceHelpText": "Base URL for the BookInfo metadata API (used when METADATA_PROVIDER=bookinfo). Defaults to https://api.bookinfo.pro; can also be set with METADATA_URL. Google Books ignores this setting.",
   "CalibreHelpTitle": "What is Calibre?",
   "CalibreHelpText": "Calibre is a free ebook manager that can receive updated metadata and covers from Bookdarr. Install it if you want Bookdarr to write metadata back into your book files.",
   "CalibreHelpLinkLabel": "calibre-ebook.com",

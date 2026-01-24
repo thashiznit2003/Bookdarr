@@ -1,31 +1,21 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.Json;
-using System.Threading;
-using LazyCache;
-using LazyCache.Providers;
-using Microsoft.Extensions.Caching.Memory;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 using NzbDrone.Common.Cache;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Http;
-using NzbDrone.Common.Serializer;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Exceptions;
 using NzbDrone.Core.Http;
 using NzbDrone.Core.Languages;
 using NzbDrone.Core.MediaCover;
-using NzbDrone.Core.MetadataSource.Goodreads;
 using NzbDrone.Core.MetadataSource.GoogleBooks;
 using NzbDrone.Core.Parser;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace NzbDrone.Core.MetadataSource.BookInfo
 {
@@ -33,6 +23,8 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
     {
         private const string GoogleBookPrefix = "gb:";
         private const string GoogleAuthorPrefix = "gba:";
+        private const string OpenLibraryWorkPrefix = "olw:";
+        private const string OpenLibraryAuthorPrefix = "ola:";
         private const int GoogleBooksMaxResultsPerRequest = 40;
         private const int GoogleBooksAuthorMaxResults = 200;
         private const int GoogleBooksAuthorMinResults = 5;
@@ -41,46 +33,24 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
         private const int OpenLibraryMaxGenres = 25;
         private const int OpenLibraryMaxCovers = 1;
         private const int OpenLibraryAuthorLookupLimit = 5;
-        private static readonly JsonSerializerOptions SerializerSettings = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = false,
-            Converters = { new STJUtcConverter() }
-        };
-
         private readonly IHttpClient _httpClient;
         private readonly ICachedHttpResponseService _cachedHttpClient;
-        private readonly IGoodreadsSearchProxy _goodreadsSearchProxy;
         private readonly IConfigService _configService;
-        private readonly IAuthorService _authorService;
-        private readonly IBookService _bookService;
-        private readonly IEditionService _editionService;
         private readonly Logger _logger;
-        private readonly IMetadataRequestBuilder _requestBuilder;
         private readonly IHttpRequestBuilderFactory _googleBooksRequestBuilder;
         private readonly ICached<HashSet<string>> _cache;
         private readonly ICached<AuthorExtraMetadata> _authorExtrasCache;
         private readonly ICached<OpenLibraryBookData> _openLibraryBookCache;
-        private readonly CachingService _authorCache;
 
         public BookInfoProxy(IHttpClient httpClient,
                              ICachedHttpResponseService cachedHttpClient,
-                             IGoodreadsSearchProxy goodreadsSearchProxy,
                              IConfigService configService,
-                             IAuthorService authorService,
-                             IBookService bookService,
-                             IEditionService editionService,
-                             IMetadataRequestBuilder requestBuilder,
                              Logger logger,
                              ICacheManager cacheManager)
         {
             _httpClient = httpClient;
             _cachedHttpClient = cachedHttpClient;
-            _goodreadsSearchProxy = goodreadsSearchProxy;
             _configService = configService;
-            _authorService = authorService;
-            _bookService = bookService;
-            _editionService = editionService;
-            _requestBuilder = requestBuilder;
             _cache = cacheManager.GetCache<HashSet<string>>(GetType());
             _authorExtrasCache = cacheManager.GetCache<AuthorExtraMetadata>(GetType(), "authorImage");
             _openLibraryBookCache = cacheManager.GetCache<OpenLibraryBookData>(GetType(), "openLibraryBook");
@@ -90,11 +60,6 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 .KeepAlive()
                 .CreateFactory();
 
-            _authorCache = new CachingService(new MemoryCacheProvider(new MemoryCache(new MemoryCacheOptions { SizeLimit = 10 })));
-            _authorCache.DefaultCachePolicy = new CacheDefaults
-            {
-                DefaultCacheDurationSeconds = 60
-            };
         }
 
         private bool UseGoogleBooks
@@ -110,26 +75,12 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
         public HashSet<string> GetChangedAuthors(DateTime startTime)
         {
-            var httpRequest = _requestBuilder.GetRequestBuilder().Create()
-                .SetSegment("route", "author/changed")
-                .AddQueryParam("since", startTime.ToString("o"))
-                .Build();
-
-            httpRequest.SuppressHttpError = true;
-
-            var httpResponse = _httpClient.Get<RecentUpdatesResource>(httpRequest);
-
-            if (httpResponse.Resource == null || httpResponse.Resource.Limited)
-            {
-                return null;
-            }
-
-            return new HashSet<string>(httpResponse.Resource.Ids.Select(x => x.ToString()));
+            return null;
         }
 
         public Author GetAuthorInfo(string foreignAuthorId, bool useCache = false)
         {
-            _logger.Debug("Getting Author details GoodreadsId of {0}", foreignAuthorId);
+            _logger.Debug("Getting author details for {0}", foreignAuthorId);
 
             try
             {
@@ -137,13 +88,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 {
                     return GetGoogleAuthorInfo(authorName);
                 }
-
-                if (useCache)
-                {
-                    return PollAuthor(foreignAuthorId);
-                }
-
-                return PollAuthorUncached(foreignAuthorId);
+                return GetOpenLibraryAuthorInfo(foreignAuthorId);
             }
             catch (BookInfoException e)
             {
@@ -171,7 +116,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                     return GetGoogleBookInfo(volumeId);
                 }
 
-                return PollBook(foreignBookId);
+                return GetOpenLibraryBookInfo(foreignBookId);
             }
             catch (BookInfoException e)
             {
@@ -225,6 +170,12 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 }
             }
 
+            var openLibraryAuthors = SearchOpenLibraryAuthors(title);
+            if (openLibraryAuthors.Any())
+            {
+                return openLibraryAuthors;
+            }
+
             var books = SearchForNewBookFallback(title, null, true);
 
             return books
@@ -269,71 +220,57 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 return new List<Book>();
             }
 
-            var q = title.ToLower().Trim();
-            if (author != null)
+            var trimmed = title.Trim();
+            var lowerTitle = trimmed.ToLowerInvariant();
+
+            var split = lowerTitle.Split(':');
+            if (split.Length == 2)
             {
-                q += " " + author;
-            }
+                var prefix = split[0].Trim();
+                var slug = split[1].Trim();
 
-            try
-            {
-                var lowerTitle = title.ToLowerInvariant();
-
-                var split = lowerTitle.Split(':');
-                var prefix = split[0];
-
-                if (split.Length == 2 && new[] { "author", "work", "edition", "isbn", "asin" }.Contains(prefix))
+                if (slug.IsNullOrWhiteSpace())
                 {
-                    var slug = split[1].Trim();
-
-                    if (slug.IsNullOrWhiteSpace() || slug.Any(char.IsWhiteSpace))
-                    {
-                        return new List<Book>();
-                    }
-
-                    // lgtm [cs/user-controlled-bypass] user query selects search mode, not auth.
-                    if (prefix == "author" || prefix == "work" || prefix == "edition")
-                    {
-                        var isValid = int.TryParse(slug, out var searchId);
-
-                        // lgtm [cs/user-controlled-bypass] slug validation blocks invalid search ids only.
-                        if (!isValid)
-                        {
-                            return new List<Book>();
-                        }
-
-                        if (prefix == "author")
-                        {
-                            return SearchByGoodreadsAuthorId(searchId);
-                        }
-
-                        if (prefix == "work")
-                        {
-                            return SearchByGoodreadsWorkId(searchId);
-                        }
-
-                        if (prefix == "edition")
-                        {
-                            return SearchByGoodreadsBookId(searchId, getAllEditions);
-                        }
-                    }
-
-                    // to handle isbn / asin
-                    q = slug;
+                    return new List<Book>();
                 }
 
-                return Search(q, getAllEditions);
+                if (prefix == "isbn")
+                {
+                    return SearchOpenLibraryByIsbn(slug);
+                }
+
+                if (prefix == "asin")
+                {
+                    return SearchOpenLibraryByAsin(slug);
+                }
+
+                if (prefix == "work")
+                {
+                    return SearchOpenLibraryByWorkId(slug);
+                }
+
+                if (prefix == "edition")
+                {
+                    return SearchOpenLibraryByEditionId(slug);
+                }
+
+                if (prefix == "author")
+                {
+                    return SearchOpenLibraryByAuthorId(slug);
+                }
             }
-            catch (HttpException ex)
+
+            if (TryParseOpenLibraryWorkId(trimmed, out var workId))
             {
-                _logger.Warn(ex, ex.Message);
-                throw new GoodreadsException("Search for '{0}' failed. Unable to communicate with Goodreads.", ex, title);
+                return SearchOpenLibraryByWorkId(workId);
             }
-            catch (Exception ex) when (ex is not BookInfoException)
+
+            if (TryParseOpenLibraryAuthorId(trimmed, out var authorId))
             {
-                _logger.Warn(ex, ex.Message);
-                throw new GoodreadsException("Search for '{0}' failed. Invalid response received from Goodreads.", ex, title);
+                return SearchOpenLibraryByAuthorId(authorId);
             }
+
+            return SearchOpenLibrary(trimmed, author, getAllEditions);
         }
 
         public List<Book> SearchByIsbn(string isbn)
@@ -350,7 +287,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 }
             }
 
-            return Search(isbn, true);
+            return SearchOpenLibraryByIsbn(isbn);
         }
 
         public List<Book> SearchByAsin(string asin)
@@ -367,716 +304,289 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 }
             }
 
-            return Search(asin, true);
+            return SearchOpenLibraryByAsin(asin);
         }
 
-        private List<Book> Search(string query, bool getAllEditions)
+        private List<Book> SearchOpenLibrary(string title, string author, bool getAllEditions)
         {
-            List<SearchJsonResource> result;
-            try
+            if (title.IsNullOrWhiteSpace())
             {
-                result = _goodreadsSearchProxy.Search(query);
-            }
-            catch (Exception e)
-            {
-                _logger.Warn(e, "Error searching for {0}", query);
                 return new List<Book>();
             }
 
-            var books = new List<Book>();
-
-            if (getAllEditions)
+            var queryParams = new Dictionary<string, string>
             {
-                // Slower but more exhaustive, less intensive on metadata API
-                var bookIds = result.Select(x => x.WorkId).ToList();
+                { "limit", "20" }
+            };
 
-                var idMap = result.Select(x => new { AuthorId = x.Author.Id, BookId = x.WorkId })
-                    .GroupBy(x => x.AuthorId)
-                    .ToDictionary(x => x.Key, x => x.Select(i => i.BookId.ToString()).ToList());
-
-                List<Book> authorBooks;
-                foreach (var author in idMap.Keys)
-                {
-                    authorBooks = SearchByGoodreadsAuthorId(author);
-                    books.AddRange(authorBooks.Where(b => idMap[author].Contains(b.ForeignBookId)));
-                }
-
-                var missingBooks = bookIds.ExceptBy(x => x.ToString(), books, x => x.ForeignBookId, StringComparer.Ordinal).ToList();
-                foreach (var book in missingBooks)
-                {
-                    books.AddRange(SearchByGoodreadsWorkId(book));
-                }
-
-                return books;
+            if (author.IsNotNullOrWhiteSpace())
+            {
+                queryParams["title"] = title;
+                queryParams["author"] = author;
             }
             else
             {
-                // Use sparingly, hits metadata API quite hard
-                var ids = result.Select(x => x.BookId).ToList();
-
-                if (ids.Count == 0)
-                {
-                    return new List<Book>();
-                }
-
-                if (ids.Count == 1)
-                {
-                    return SearchByGoodreadsBookId(ids[0], false);
-                }
-
-                try
-                {
-                    return MapSearchResult(ids);
-                }
-                catch (HttpException ex)
-                {
-                    _logger.Warn(ex);
-                    throw new BookInfoException("Search for '{0}' failed. Unable to communicate with BookdarrAPI, returning status code: {1}.", ex, query, ex.Response.StatusCode);
-                }
-                catch (Exception e)
-                {
-                    _logger.Warn(e, "Error mapping search results");
-
-                    return new List<Book>();
-                }
+                queryParams["q"] = title;
             }
+
+            var docs = GetOpenLibrarySearchDocs(queryParams);
+            return MapOpenLibrarySearchDocs(docs);
         }
 
-        private List<Book> SearchByGoodreadsAuthorId(int id)
+        private List<Book> SearchOpenLibraryByIsbn(string isbn)
         {
-            try
-            {
-                var authorId = id.ToString();
-                var result = GetAuthorInfo(authorId);
-                var books = result.Books.Value;
-                var authors = new Dictionary<string, AuthorMetadata> { { authorId, result.Metadata.Value } };
-
-                foreach (var book in books)
-                {
-                    AddDbIds(authorId, book, authors);
-                }
-
-                return books;
-            }
-            catch (AuthorNotFoundException)
+            if (isbn.IsNullOrWhiteSpace())
             {
                 return new List<Book>();
             }
-            catch (BookInfoException e)
+
+            var normalized = NormalizeOpenLibraryIsbn(isbn);
+            if (normalized.IsNullOrWhiteSpace())
             {
-                _logger.Warn(e, "Error searching by author id");
                 return new List<Book>();
             }
+
+            var docs = GetOpenLibrarySearchDocs(new Dictionary<string, string>
+            {
+                { "isbn", normalized },
+                { "limit", "10" }
+            });
+
+            return MapOpenLibrarySearchDocs(docs);
         }
 
-        public List<Book> SearchByGoodreadsWorkId(int id)
+        private List<Book> SearchOpenLibraryByAsin(string asin)
+        {
+            if (asin.IsNullOrWhiteSpace())
+            {
+                return new List<Book>();
+            }
+
+            return SearchOpenLibrary(asin, null, true);
+        }
+
+        private List<Book> SearchOpenLibraryByWorkId(string workId)
         {
             try
             {
-                var tuple = GetBookInfo(id.ToString());
-                AddDbIds(tuple.Item1, tuple.Item2, tuple.Item3.ToDictionary(x => x.ForeignAuthorId));
+                var tuple = GetOpenLibraryBookInfo(BuildOpenLibraryWorkId(workId));
                 return new List<Book> { tuple.Item2 };
             }
             catch (BookNotFoundException)
             {
                 return new List<Book>();
             }
-            catch (BookInfoException e)
+            catch (BookInfoException ex)
             {
-                _logger.Warn(e, "Error searching by work id");
+                _logger.Warn(ex, "Error searching by Open Library work id");
                 return new List<Book>();
             }
         }
 
-        public List<Book> SearchByGoodreadsBookId(int id, bool getAllEditions)
+        private List<Book> SearchOpenLibraryByEditionId(string editionId)
         {
             try
             {
-                var book = GetEditionInfo(id, getAllEditions);
+                var tuple = GetOpenLibraryBookInfoFromEdition(editionId);
+                if (tuple == null)
+                {
+                    return new List<Book>();
+                }
 
-                return new List<Book> { book };
-            }
-            catch (AuthorNotFoundException)
-            {
-                return new List<Book>();
+                return new List<Book> { tuple.Item2 };
             }
             catch (BookNotFoundException)
             {
                 return new List<Book>();
             }
-            catch (EditionNotFoundException)
+            catch (BookInfoException ex)
             {
-                return new List<Book>();
-            }
-            catch (BookInfoException e)
-            {
-                _logger.Warn(e, "Error searching by book id");
+                _logger.Warn(ex, "Error searching by Open Library edition id");
                 return new List<Book>();
             }
         }
 
-        private Book GetEditionInfo(int id, bool getAllEditions)
+        private List<Book> SearchOpenLibraryByAuthorId(string authorId)
         {
-            HttpRequest httpRequest;
-            HttpResponse httpResponse;
-
-            while (true)
+            try
             {
-                httpRequest = _requestBuilder.GetRequestBuilder().Create()
-                    .SetSegment("route", $"book/{id}")
-                    .Build();
-
-                httpRequest.SuppressHttpError = true;
-
-                // we expect a redirect
-                httpResponse = _httpClient.Get(httpRequest);
-
-                if (httpResponse.StatusCode == HttpStatusCode.TooManyRequests)
-                {
-                    WaitUntilRetry(httpResponse);
-                }
-                else
-                {
-                    break;
-                }
+                var normalizedAuthorId = BuildOpenLibraryAuthorId(authorId, null) ?? authorId;
+                var author = GetOpenLibraryAuthorInfo(normalizedAuthorId);
+                return author?.Books?.Value ?? new List<Book>();
             }
-
-            if (httpResponse.StatusCode == HttpStatusCode.NotFound)
+            catch (AuthorNotFoundException)
             {
-                throw new EditionNotFoundException(id.ToString());
+                return new List<Book>();
             }
-
-            if (!httpResponse.HasHttpRedirect)
+            catch (BookInfoException ex)
             {
-                throw new BookInfoException($"Unexpected response from {httpRequest.Url}");
+                _logger.Warn(ex, "Error searching by Open Library author id");
+                return new List<Book>();
             }
-
-            var location = httpResponse.Headers.GetSingleValue("Location");
-            var split = location.Split('/').Reverse().ToList();
-            var newId = split[0];
-            var type = split[1];
-
-            Book book;
-            List<AuthorMetadata> authors;
-
-            if (type == "author")
-            {
-                var author = PollAuthor(newId);
-
-                book = author.Books.Value.FirstOrDefault(b => b.Editions.Value.Any(e => e.ForeignEditionId == id.ToString()));
-                authors = new List<AuthorMetadata> { author.Metadata.Value };
-            }
-            else if (type == "work")
-            {
-                var tuple = PollBook(newId);
-
-                book = tuple.Item2;
-                authors = tuple.Item3;
-            }
-            else
-            {
-                throw new NotImplementedException($"Unexpected response from {httpResponse.Request.Url}");
-            }
-
-            if (book == null || book.Editions.Value.All(e => e.ForeignEditionId != id.ToString()))
-            {
-                throw new EditionNotFoundException(id.ToString());
-            }
-
-            if (!getAllEditions)
-            {
-                var trimmed = new Book();
-                trimmed.UseMetadataFrom(book);
-                trimmed.Author.Value.Metadata = book.AuthorMetadata.Value;
-                trimmed.AuthorMetadata = book.AuthorMetadata.Value;
-                trimmed.SeriesLinks = book.SeriesLinks;
-                var edition = book.Editions.Value.SingleOrDefault(e => e.ForeignEditionId == id.ToString());
-                if (edition != null)
-                {
-                    edition.Monitored = true;
-                }
-
-                trimmed.Editions = new List<Edition> { edition };
-                book = trimmed;
-            }
-
-            var authorDict = authors.ToDictionary(x => x.ForeignAuthorId);
-            AddDbIds(book.AuthorMetadata.Value.ForeignAuthorId, book, authorDict);
-
-            return book;
         }
 
-        private List<Book> MapSearchResult(List<int> ids)
+        private JArray GetOpenLibrarySearchDocs(Dictionary<string, string> queryParams)
         {
-            HttpResponse<BulkBookResource> httpResponse;
+            var builder = new HttpRequestBuilder("https://openlibrary.org/search.json");
 
-            while (true)
+            foreach (var queryParam in queryParams)
             {
-                var httpRequest = _requestBuilder.GetRequestBuilder().Create()
-                    .SetSegment("route", "book/bulk")
-                    .SetHeader("Content-Type", "application/json")
-                    .Build();
-
-                httpRequest.SetContent(ids.ToJson());
-                httpRequest.ContentSummary = ids.ToJson(Formatting.None);
-
-                httpRequest.AllowAutoRedirect = true;
-                httpRequest.SuppressHttpErrorStatusCodes = new[] { HttpStatusCode.TooManyRequests };
-
-                httpResponse = _httpClient.Post<BulkBookResource>(httpRequest);
-
-                if (httpResponse.StatusCode == HttpStatusCode.TooManyRequests)
-                {
-                    WaitUntilRetry(httpResponse);
-                }
-                else
-                {
-                    break;
-                }
+                builder.AddQueryParam(queryParam.Key, queryParam.Value);
             }
 
-            return MapBulkBook(httpResponse.Resource);
+            var request = builder.Build();
+            request.AllowAutoRedirect = true;
+            request.SuppressHttpError = true;
+
+            var response = _cachedHttpClient.Get(request, false, TimeSpan.FromHours(2));
+            if (response.HasHttpError)
+            {
+                _logger.Warn("Open Library search returned {0} for query {1}", response.StatusCode, queryParams.ConcatToString());
+                return new JArray();
+            }
+
+            var json = JObject.Parse(response.Content);
+            return json["docs"] as JArray ?? new JArray();
         }
 
-        private List<Book> MapBulkBook(BulkBookResource resource)
+        private List<Book> MapOpenLibrarySearchDocs(JArray docs)
         {
-            var books = new List<Book>();
-
-            if (resource == null)
+            if (docs == null || docs.Count == 0)
             {
-                return books;
+                return new List<Book>();
             }
 
-            var authors = resource.Authors.Select(MapAuthorMetadata).ToDictionary(x => x.ForeignAuthorId, x => x);
-            var series = resource.Series.Select(MapSeries).ToList();
-
-            foreach (var work in resource.Works)
-            {
-                var book = MapBook(work);
-                var authorId = work.Books.OrderByDescending(b => b.AverageRating * b.RatingCount).First().Contributors.First().ForeignId.ToString();
-
-                AddDbIds(authorId, book, authors);
-
-                books.Add(book);
-            }
-
-            MapSeriesLinks(series, books, resource.Series);
-
-            return books;
+            return docs
+                .Select(MapOpenLibrarySearchDoc)
+                .Where(x => x != null)
+                .DistinctBy(x => x.ForeignBookId)
+                .ToList();
         }
 
-        private void AddDbIds(string authorId, Book book, Dictionary<string, AuthorMetadata> authors)
+        private Book MapOpenLibrarySearchDoc(JToken doc)
         {
-            var dbBook = _bookService.FindById(book.ForeignBookId);
-            if (dbBook != null)
+            var workKey = NormalizeOpenLibraryWorkKey(doc?["key"]?.ToString());
+            if (workKey.IsNullOrWhiteSpace())
             {
-                book.UseDbFieldsFrom(dbBook);
-
-                var editions = _editionService.GetEditionsByBook(dbBook.Id).ToDictionary(x => x.ForeignEditionId);
-
-                // If we have any database editions, exactly one will be monitored.
-                // So unmonitor all the found editions and let the UseDbFieldsFrom set
-                // the monitored status
-                foreach (var edition in book.Editions.Value)
-                {
-                    edition.Monitored = false;
-                    if (editions.TryGetValue(edition.ForeignEditionId, out var dbEdition))
-                    {
-                        edition.UseDbFieldsFrom(dbEdition);
-                    }
-                }
-
-                // Double check at least one edition is monitored
-                if (book.Editions.Value.Any() && !book.Editions.Value.Any(x => x.Monitored))
-                {
-                    var mostPopular = book.Editions.Value.OrderByDescending(x => x.Ratings.Popularity).First();
-                    mostPopular.Monitored = true;
-                }
+                return null;
             }
 
-            var author = _authorService.FindById(authorId);
-
-            if (author == null)
+            var title = doc["title"]?.ToString() ?? doc["title_suggest"]?.ToString();
+            if (title.IsNullOrWhiteSpace())
             {
-                if (!authors.TryGetValue(authorId, out var metadata))
-                {
-                    throw new BookInfoException(string.Format("Expected author metadata for id [{0}] in book data {1}", authorId, book));
-                }
-
-                author = new Author
-                {
-                    CleanName = Parser.Parser.CleanAuthorName(metadata.Name),
-                    Metadata = metadata
-                };
+                return null;
             }
 
-            book.Author = author;
-            book.AuthorMetadata = author.Metadata.Value;
-            book.AuthorMetadataId = author.AuthorMetadataId;
-        }
-
-        private Author PollAuthor(string foreignAuthorId)
-        {
-            return _authorCache.GetOrAdd(foreignAuthorId,
-                () => PollAuthorUncached(foreignAuthorId),
-                new LazyCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1),
-                    ImmediateAbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1),
-                    Size = 1,
-                    SlidingExpiration = TimeSpan.FromMinutes(1),
-                    ExpirationMode = ExpirationMode.ImmediateEviction
-                }.RegisterPostEvictionCallback((key, value, reason, state) => _logger.Debug($"Clearing cache for {key} due to {reason}")));
-        }
-
-        private Author PollAuthorUncached(string foreignAuthorId)
-        {
-            AuthorResource resource = null;
-
-            for (var i = 0; i < 60; i++)
+            var authorName = doc["author_name"]?.FirstOrDefault()?.ToString();
+            if (authorName.IsNullOrWhiteSpace())
             {
-                var httpRequest = _requestBuilder.GetRequestBuilder().Create()
-                    .SetSegment("route", $"author/{foreignAuthorId}")
-                    .Build();
-
-                httpRequest.AllowAutoRedirect = true;
-                httpRequest.SuppressHttpError = true;
-
-                var httpResponse = _cachedHttpClient.Get(httpRequest, false, TimeSpan.FromMinutes(30));
-
-                if (httpResponse.HasHttpError)
-                {
-                    if (httpResponse.StatusCode == HttpStatusCode.TooManyRequests)
-                    {
-                        WaitUntilRetry(httpResponse);
-                        continue;
-                    }
-                    else if (httpResponse.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        throw new AuthorNotFoundException(foreignAuthorId);
-                    }
-                    else if (httpResponse.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        throw new BadRequestException(foreignAuthorId);
-                    }
-                    else
-                    {
-                        throw new BookInfoException("Unexpected error fetching author data");
-                    }
-                }
-
-                resource = JsonSerializer.Deserialize<AuthorResource>(httpResponse.Content, SerializerSettings);
-
-                if (resource.Works != null)
-                {
-                    resource.Works ??= new List<WorkResource>();
-                    resource.Series ??= new List<SeriesResource>();
-                    break;
-                }
-
-                Thread.Sleep(2000);
+                authorName = "Unknown Author";
             }
 
-            if (resource?.Works == null)
+            var authorKey = NormalizeOpenLibraryAuthorKey(doc["author_key"]?.FirstOrDefault()?.ToString());
+            var authorMetadata = BuildOpenLibraryAuthorMetadataFromSearch(authorName, authorKey);
+
+            var bookId = BuildOpenLibraryWorkId(workKey);
+            var edition = new Edition
             {
-                throw new BookInfoException($"Failed to get works for {foreignAuthorId}");
-            }
-
-            return MapAuthor(resource);
-        }
-
-        private Tuple<string, Book, List<AuthorMetadata>> PollBook(string foreignBookId)
-        {
-            WorkResource resource = null;
-
-            for (var i = 0; i < 60; i++)
-            {
-                var httpRequest = _requestBuilder.GetRequestBuilder().Create()
-                    .SetSegment("route", $"work/{foreignBookId}")
-                    .Build();
-
-                httpRequest.SuppressHttpError = true;
-
-                // this may redirect to an author
-                var httpResponse = _httpClient.Get(httpRequest);
-
-                if (httpResponse.StatusCode == HttpStatusCode.TooManyRequests)
-                {
-                    WaitUntilRetry(httpResponse);
-                    continue;
-                }
-
-                if (httpResponse.StatusCode == HttpStatusCode.NotFound)
-                {
-                    throw new BookNotFoundException(foreignBookId);
-                }
-
-                if (httpResponse.HasHttpRedirect)
-                {
-                    var location = httpResponse.Headers.GetSingleValue("Location");
-                    var split = location.Split('/').Reverse().ToList();
-                    var newId = split[0];
-                    var type = split[1];
-
-                    if (type == "author")
-                    {
-                        var author = PollAuthor(newId);
-                        var authorBook = author.Books.Value.SingleOrDefault(x => x.ForeignBookId == foreignBookId);
-
-                        if (authorBook == null)
-                        {
-                            throw new BookNotFoundException(foreignBookId);
-                        }
-
-                        var authorMetadata = new List<AuthorMetadata> { author.Metadata.Value };
-
-                        return Tuple.Create(author.ForeignAuthorId, authorBook, authorMetadata);
-                    }
-                    else
-                    {
-                        throw new NotImplementedException($"Unexpected response from {httpResponse.Request.Url}");
-                    }
-                }
-
-                if (httpResponse.HasHttpError)
-                {
-                    if (httpResponse.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        throw new BadRequestException(foreignBookId);
-                    }
-                    else
-                    {
-                        throw new BookInfoException("Unexpected response fetching book data");
-                    }
-                }
-
-                resource = JsonSerializer.Deserialize<WorkResource>(httpResponse.Content, SerializerSettings);
-
-                if (resource.Books != null)
-                {
-                    break;
-                }
-
-                Thread.Sleep(2000);
-            }
-
-            if (resource?.Books == null || resource?.Authors == null || (!resource?.Authors?.Any() ?? false))
-            {
-                throw new BookInfoException($"Failed to get books for {foreignBookId}");
-            }
-
-            var book = MapBook(resource);
-            var authorId = GetAuthorId(resource).ToString();
-            var metadata = resource.Authors.Select(MapAuthorMetadata).ToList();
-
-            var series = resource.Series.Select(MapSeries).ToList();
-            MapSeriesLinks(series, new List<Book> { book }, resource.Series);
-
-            return Tuple.Create(authorId, book, metadata);
-        }
-
-        private void WaitUntilRetry(HttpResponse response)
-        {
-            var seconds = 5;
-
-            if (response.Headers.ContainsKey("Retry-After"))
-            {
-                var retryAfter = response.Headers["Retry-After"];
-
-                if (!int.TryParse(retryAfter, out seconds))
-                {
-                    seconds = 5;
-                }
-            }
-
-            _logger.Info("BookInfo returned 429, backing off for {0}s", seconds);
-
-            Thread.Sleep(TimeSpan.FromSeconds(seconds));
-        }
-
-        private AuthorMetadata MapAuthorMetadata(AuthorResource resource)
-        {
-            var metadata = new AuthorMetadata
-            {
-                ForeignAuthorId = resource.ForeignId.ToString(),
-                TitleSlug = resource.ForeignId.ToString(),
-                Name = resource.Name.CleanSpaces(),
-                Overview = resource.Description,
-                Ratings = new Ratings { Votes = resource.RatingCount, Value = (decimal)resource.AverageRating },
-                Status = AuthorStatusType.Continuing
+                ForeignEditionId = bookId,
+                TitleSlug = bookId,
+                Title = title,
+                ReleaseDate = ParseOpenLibrarySearchPublishedDate(doc),
+                PageCount = ParseOpenLibraryPageCount(doc["number_of_pages_median"]),
+                Publisher = GetOpenLibraryPublisher(doc["publisher"]),
+                Language = ParseOpenLibrarySearchLanguage(doc["language"]),
+                Isbn13 = GetOpenLibrarySearchIsbn(doc["isbn"]),
+                Ratings = new Ratings { Votes = 0, Value = 0 }
             };
 
-            metadata.SortName = metadata.Name.ToLower();
-            metadata.NameLastFirst = metadata.Name.ToLastFirst();
-            metadata.SortNameLastFirst = metadata.NameLastFirst.ToLower();
-
-            if (resource.ImageUrl.IsNotNullOrWhiteSpace())
+            var coverId = doc["cover_i"]?.ToObject<int?>();
+            if (coverId.HasValue)
             {
-                metadata.Images.Add(new MediaCover.MediaCover
+                edition.Images.Add(new MediaCover.MediaCover
                 {
-                    Url = resource.ImageUrl,
-                    CoverType = MediaCoverTypes.Poster
+                    Url = $"https://covers.openlibrary.org/b/id/{coverId.Value}-L.jpg",
+                    CoverType = MediaCoverTypes.Cover
                 });
             }
 
-            if (resource.Url.IsNotNullOrWhiteSpace())
-            {
-                metadata.Links.Add(new Links { Url = resource.Url, Name = "Goodreads" });
-            }
+            var editionKey = NormalizeOpenLibraryEditionKey(doc["edition_key"]?.FirstOrDefault()?.ToString());
+            AddOpenLibraryLink(edition.Links, editionKey ?? workKey);
 
-            TryAddExternalAuthorImage(metadata);
+            edition.Monitored = true;
 
-            return metadata;
-        }
-
-        private Author MapAuthor(AuthorResource resource)
-        {
-            var metadata = MapAuthorMetadata(resource);
-
-            var books = resource.Works
-                .Where(x => x.ForeignId > 0 && GetAuthorId(x) == resource.ForeignId)
-                .Select(MapBook)
-                .ToList();
-
-            books.ForEach(x => x.AuthorMetadata = metadata);
-
-            var series = resource.Series.Select(MapSeries).ToList();
-
-            MapSeriesLinks(series, books, resource.Series);
-
-            var result = new Author
-            {
-                Metadata = metadata,
-                CleanName = Parser.Parser.CleanAuthorName(metadata.Name),
-                Books = books,
-                Series = series
-            };
-
-            return result;
-        }
-
-        private static void MapSeriesLinks(List<Series> series, List<Book> books, List<SeriesResource> resource)
-        {
-            var bookDict = books.ToDictionary(x => x.ForeignBookId);
-            var seriesDict = series.ToDictionary(x => x.ForeignSeriesId);
-
-            foreach (var book in books)
-            {
-                book.SeriesLinks = new List<SeriesBookLink>();
-            }
-
-            // only take series where there are some works
-            foreach (var s in resource.Where(x => x.LinkItems.Any()))
-            {
-                if (seriesDict.TryGetValue(s.ForeignId.ToString(), out var curr))
-                {
-                    curr.LinkItems = s.LinkItems.Where(x => x.ForeignWorkId != 0 && bookDict.ContainsKey(x.ForeignWorkId.ToString())).Select(l => new SeriesBookLink
-                    {
-                        Book = bookDict[l.ForeignWorkId.ToString()],
-                        Series = curr,
-                        IsPrimary = l.Primary,
-                        Position = l.PositionInSeries,
-                        SeriesPosition = l.SeriesPosition
-                    }).ToList();
-
-                    foreach (var l in curr.LinkItems.Value)
-                    {
-                        l.Book.Value.SeriesLinks.Value.Add(l);
-                    }
-                }
-            }
-        }
-
-        private static Series MapSeries(SeriesResource resource)
-        {
-            var series = new Series
-            {
-                ForeignSeriesId = resource.ForeignId.ToString(),
-                Title = resource.Title,
-                Description = resource.Description
-            };
-
-            return series;
-        }
-
-        private static Book MapBook(WorkResource resource)
-        {
             var book = new Book
             {
-                ForeignBookId = resource.ForeignId.ToString(),
-                Title = resource.Title,
-                TitleSlug = resource.ForeignId.ToString(),
-                CleanTitle = Parser.Parser.CleanAuthorName(resource.Title),
-                ReleaseDate = resource.ReleaseDate,
-                Genres = resource.Genres,
-                RelatedBooks = resource.RelatedWorks
+                ForeignBookId = bookId,
+                Title = title,
+                TitleSlug = bookId,
+                CleanTitle = Parser.Parser.CleanAuthorName(title),
+                ReleaseDate = edition.ReleaseDate,
+                Genres = NormalizeOpenLibrarySubjects(ParseOpenLibraryStringList(doc["subject"])),
+                AnyEditionOk = true,
+                Editions = new List<Edition> { edition },
+                Author = new Author
+                {
+                    Metadata = authorMetadata,
+                    CleanName = Parser.Parser.CleanAuthorName(authorName)
+                },
+                AuthorMetadata = authorMetadata
             };
 
-            book.Links.Add(new Links { Url = resource.Url, Name = "Goodreads Editions" });
-
-            if (resource.Books != null)
-            {
-                book.Editions = resource.Books.Select(x => MapEdition(x)).ToList();
-
-                // monitor the most popular release
-                var mostPopular = book.Editions.Value.MaxBy(x => x.Ratings.Popularity);
-                if (mostPopular != null)
-                {
-                    mostPopular.Monitored = true;
-
-                    // fix work title if missing
-                    if (book.Title.IsNullOrWhiteSpace())
-                    {
-                        book.Title = mostPopular.Title;
-                    }
-                }
-            }
-            else
-            {
-                book.Editions = new List<Edition>();
-            }
-
-            // If we are missing the book release date, set as the earliest edition release date
-            if (!book.ReleaseDate.HasValue)
-            {
-                var editionReleases = book.Editions.Value
-                    .Where(x => x.ReleaseDate.HasValue && x.ReleaseDate.Value.Month != 1 && x.ReleaseDate.Value.Day != 1)
-                    .ToList();
-
-                if (editionReleases.Any())
-                {
-                    book.ReleaseDate = editionReleases.Min(x => x.ReleaseDate.Value);
-                }
-                else
-                {
-                    editionReleases = book.Editions.Value.Where(x => x.ReleaseDate.HasValue).ToList();
-                    if (editionReleases.Any())
-                    {
-                        book.ReleaseDate = editionReleases.Min(x => x.ReleaseDate.Value);
-                    }
-                }
-            }
-
-            Debug.Assert(!book.Editions.Value.Any() || book.Editions.Value.Count(x => x.Monitored) == 1, "one edition monitored");
-
-            book.AnyEditionOk = true;
-
-            var ratingCount = book.Editions.Value.Sum(x => x.Ratings.Votes);
-
-            if (ratingCount > 0)
-            {
-                book.Ratings = new Ratings
-                {
-                    Votes = ratingCount,
-                    Value = book.Editions.Value.Sum(x => x.Ratings.Votes * x.Ratings.Value) / ratingCount
-                };
-            }
-            else
-            {
-                book.Ratings = new Ratings { Votes = 0, Value = 0 };
-            }
+            AddOpenLibraryLink(book.Links, workKey);
 
             return book;
+        }
+
+        private static string GetOpenLibrarySearchIsbn(JToken isbnToken)
+        {
+            if (isbnToken is JValue isbnValue)
+            {
+                return isbnValue.ToString();
+            }
+
+            if (isbnToken is not JArray isbns)
+            {
+                return null;
+            }
+
+            var isbn13 = isbns.Select(x => x.ToString()).FirstOrDefault(x => x.Length == 13);
+            if (isbn13.IsNotNullOrWhiteSpace())
+            {
+                return isbn13;
+            }
+
+            return isbns.Select(x => x.ToString()).FirstOrDefault(x => x.Length == 10);
+        }
+
+        private static string ParseOpenLibrarySearchLanguage(JToken languageToken)
+        {
+            if (languageToken is not JArray languages)
+            {
+                return null;
+            }
+
+            return languages.Select(x => x.ToString()).FirstOrDefault();
+        }
+
+        private static DateTime? ParseOpenLibrarySearchPublishedDate(JToken doc)
+        {
+            var yearToken = doc?["first_publish_year"];
+            if (yearToken != null && int.TryParse(yearToken.ToString(), out var year))
+            {
+                return new DateTime(year, 1, 1);
+            }
+
+            if (doc?["publish_year"] is JArray years)
+            {
+                var yearValue = years.Select(x => x.ToString()).FirstOrDefault();
+                if (int.TryParse(yearValue, out year))
+                {
+                    return new DateTime(year, 1, 1);
+                }
+            }
+
+            return null;
         }
 
         private List<Book> SearchGoogleBooks(string query, int maxResults = 20, int startIndex = 0)
@@ -1204,6 +714,498 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             TryEnrichGoogleAuthorBooksFromOpenLibrary(author);
 
             return author;
+        }
+
+        private Tuple<string, Book, List<AuthorMetadata>> GetOpenLibraryBookInfo(string foreignBookId)
+        {
+            if (!TryParseOpenLibraryWorkId(foreignBookId, out var workId))
+            {
+                throw new BookNotFoundException(foreignBookId);
+            }
+
+            var workKey = NormalizeOpenLibraryWorkKey(workId);
+            if (workKey.IsNullOrWhiteSpace())
+            {
+                throw new BookNotFoundException(foreignBookId);
+            }
+
+            var workJson = GetOpenLibraryJson($"https://openlibrary.org{workKey}.json", TimeSpan.FromHours(12));
+            if (workJson == null)
+            {
+                throw new BookNotFoundException(foreignBookId);
+            }
+
+            var title = workJson["title"]?.ToString();
+            if (title.IsNullOrWhiteSpace())
+            {
+                title = "Unknown Title";
+            }
+
+            var authorKey = NormalizeOpenLibraryAuthorKey(workJson["authors"]?.FirstOrDefault()?["author"]?["key"]?.ToString());
+            var authorMetadata = BuildOpenLibraryAuthorMetadata(authorKey, null);
+
+            if (authorMetadata == null)
+            {
+                authorMetadata = BuildOpenLibraryAuthorMetadataFromSearch("Unknown Author", null);
+            }
+
+            var bookId = BuildOpenLibraryWorkId(workKey);
+            var edition = new Edition
+            {
+                ForeignEditionId = bookId,
+                TitleSlug = bookId,
+                Title = title,
+                Overview = GetOpenLibraryDescription(workJson["description"]) ?? string.Empty,
+                ReleaseDate = ParseOpenLibraryPublishedDate(workJson["first_publish_date"]?.ToString()),
+                Ratings = new Ratings { Votes = 0, Value = 0 }
+            };
+
+            var book = new Book
+            {
+                ForeignBookId = bookId,
+                Title = title,
+                TitleSlug = bookId,
+                CleanTitle = Parser.Parser.CleanAuthorName(title),
+                ReleaseDate = edition.ReleaseDate,
+                Genres = NormalizeOpenLibrarySubjects(ParseOpenLibraryStringList(workJson["subjects"])),
+                AnyEditionOk = true,
+                Editions = new List<Edition> { edition },
+                Author = new Author
+                {
+                    Metadata = authorMetadata,
+                    CleanName = Parser.Parser.CleanAuthorName(authorMetadata.Name)
+                },
+                AuthorMetadata = authorMetadata
+            };
+
+            var data = new OpenLibraryBookData
+            {
+                WorkKey = workKey,
+                WorkTitle = title,
+                Description = GetOpenLibraryDescription(workJson["description"]),
+                FirstPublishDate = ParseOpenLibraryPublishedDate(workJson["first_publish_date"]?.ToString()),
+                Subjects = NormalizeOpenLibrarySubjects(ParseOpenLibraryStringList(workJson["subjects"])),
+                Series = NormalizeOpenLibrarySeries(ParseOpenLibrarySeriesList(workJson["series"])),
+                WorkCoverIds = ParseOpenLibraryCoverIds(workJson["covers"])
+            };
+
+            var editionJson = GetOpenLibraryEditionForWork(workId);
+            if (editionJson != null)
+            {
+                ApplyOpenLibraryEditionData(edition, data, editionJson);
+            }
+
+            ApplyOpenLibraryMetadata(book, edition, data);
+            edition.Monitored = true;
+
+            var seriesById = new Dictionary<string, Series>(StringComparer.OrdinalIgnoreCase);
+            ApplyOpenLibrarySeries(book, book.Author.Value, data, seriesById);
+            if (seriesById.Any())
+            {
+                book.Author.Value.Series = seriesById.Values.ToList();
+            }
+
+            return Tuple.Create(authorMetadata.ForeignAuthorId, book, new List<AuthorMetadata> { authorMetadata });
+        }
+
+        private Tuple<string, Book, List<AuthorMetadata>> GetOpenLibraryBookInfoFromEdition(string editionId)
+        {
+            var editionKey = NormalizeOpenLibraryEditionKey(editionId);
+            if (editionKey.IsNullOrWhiteSpace())
+            {
+                throw new BookNotFoundException(editionId);
+            }
+
+            var editionJson = GetOpenLibraryJson($"https://openlibrary.org{editionKey}.json", TimeSpan.FromHours(12));
+            if (editionJson == null)
+            {
+                throw new BookNotFoundException(editionId);
+            }
+
+            var workKey = NormalizeOpenLibraryWorkKey(editionJson["works"]?.FirstOrDefault()?["key"]?.ToString());
+            if (workKey.IsNullOrWhiteSpace())
+            {
+                throw new BookNotFoundException(editionId);
+            }
+
+            var tuple = GetOpenLibraryBookInfo(BuildOpenLibraryWorkId(workKey));
+            var edition = GetPrimaryEdition(tuple.Item2);
+            if (edition != null)
+            {
+                var data = new OpenLibraryBookData
+                {
+                    WorkKey = workKey,
+                    WorkTitle = tuple.Item2.Title
+                };
+
+                ApplyOpenLibraryEditionData(edition, data, editionJson);
+            }
+
+            return tuple;
+        }
+
+        private Author GetOpenLibraryAuthorInfo(string foreignAuthorId)
+        {
+            var authorKey = NormalizeOpenLibraryAuthorKey(foreignAuthorId);
+            if (authorKey.IsNullOrWhiteSpace())
+            {
+                if (!TryParseOpenLibraryAuthorId(foreignAuthorId, out var authorId) || !TryBase64UrlDecode(authorId, out var decodedName))
+                {
+                    throw new AuthorNotFoundException(foreignAuthorId);
+                }
+
+                var nameSearch = SearchOpenLibraryAuthors(decodedName);
+                var match = nameSearch.FirstOrDefault();
+                if (match?.Metadata?.Value?.ForeignAuthorId.IsNotNullOrWhiteSpace() == true &&
+                    !match.Metadata.Value.ForeignAuthorId.Equals(foreignAuthorId, StringComparison.OrdinalIgnoreCase))
+                {
+                    return GetOpenLibraryAuthorInfo(match.Metadata.Value.ForeignAuthorId);
+                }
+
+                return match ?? new Author
+                {
+                    Metadata = BuildOpenLibraryAuthorMetadataFromSearch(decodedName, null),
+                    CleanName = Parser.Parser.CleanAuthorName(decodedName),
+                    Books = new List<Book>(),
+                    Series = new List<Series>()
+                };
+            }
+
+            var authorJson = GetOpenLibraryJson($"https://openlibrary.org{authorKey}.json", TimeSpan.FromHours(12));
+            if (authorJson == null)
+            {
+                throw new AuthorNotFoundException(foreignAuthorId);
+            }
+
+            var name = authorJson["name"]?.ToString() ?? "Unknown Author";
+            var metadata = BuildOpenLibraryAuthorMetadata(authorKey, name, authorJson);
+            var books = SearchOpenLibraryWorksByAuthor(authorKey, metadata);
+
+            var author = new Author
+            {
+                Metadata = metadata,
+                CleanName = Parser.Parser.CleanAuthorName(metadata.Name),
+                Books = books,
+                Series = new List<Series>()
+            };
+
+            foreach (var book in books)
+            {
+                book.Author = author;
+                book.AuthorMetadata = metadata;
+            }
+
+            return author;
+        }
+
+        private List<Author> SearchOpenLibraryAuthors(string authorName)
+        {
+            if (authorName.IsNullOrWhiteSpace())
+            {
+                return new List<Author>();
+            }
+
+            var request = new HttpRequestBuilder("https://openlibrary.org/search/authors.json")
+                .AddQueryParam("q", authorName)
+                .Build();
+
+            request.AllowAutoRedirect = true;
+            request.SuppressHttpError = true;
+
+            var response = _cachedHttpClient.Get(request, false, TimeSpan.FromHours(2));
+            if (response.HasHttpError)
+            {
+                return new List<Author>();
+            }
+
+            var json = JObject.Parse(response.Content);
+            var docs = json["docs"] as JArray ?? new JArray();
+
+            return docs.Select(doc =>
+                {
+                    var name = doc["name"]?.ToString();
+                    if (name.IsNullOrWhiteSpace())
+                    {
+                        return null;
+                    }
+
+                    var authorKey = NormalizeOpenLibraryAuthorKey(doc["key"]?.ToString());
+                    var metadata = BuildOpenLibraryAuthorMetadataFromSearch(name, authorKey);
+
+                    return new Author
+                    {
+                        Metadata = metadata,
+                        CleanName = Parser.Parser.CleanAuthorName(metadata.Name),
+                        Books = new List<Book>(),
+                        Series = new List<Series>()
+                    };
+                })
+                .Where(x => x != null)
+                .DistinctBy(x => x.Metadata.Value.ForeignAuthorId)
+                .ToList();
+        }
+
+        private AuthorMetadata BuildOpenLibraryAuthorMetadata(string authorKey, string fallbackName, JObject authorJson = null)
+        {
+            var normalizedKey = NormalizeOpenLibraryAuthorKey(authorKey);
+            string name = fallbackName;
+            string overview = null;
+            string imageUrl = null;
+            var links = new List<Links>();
+
+            if (normalizedKey.IsNotNullOrWhiteSpace())
+            {
+                if (authorJson == null)
+                {
+                    authorJson = GetOpenLibraryJson($"https://openlibrary.org{normalizedKey}.json", TimeSpan.FromHours(12));
+                }
+
+                if (authorJson != null)
+                {
+                    name = authorJson["name"]?.ToString() ?? name;
+                    overview = ParseOpenLibraryAuthorOverview(authorJson["bio"]);
+                    var photoToken = authorJson["photo_id"] ?? authorJson["photos"]?.FirstOrDefault();
+                    var photoId = photoToken?.ToString();
+                    imageUrl = photoId.IsNullOrWhiteSpace() ? null : $"https://covers.openlibrary.org/a/id/{photoId}-L.jpg";
+                }
+
+                links.Add(new Links { Name = "Open Library", Url = $"https://openlibrary.org{normalizedKey}" });
+            }
+
+            if (name.IsNullOrWhiteSpace())
+            {
+                name = "Unknown Author";
+            }
+
+            var authorId = BuildOpenLibraryAuthorId(normalizedKey, name);
+            var metadata = new AuthorMetadata
+            {
+                ForeignAuthorId = authorId,
+                TitleSlug = authorId,
+                Name = name.CleanSpaces(),
+                Overview = overview,
+                Ratings = new Ratings { Votes = 0, Value = 0 },
+                Status = AuthorStatusType.Continuing
+            };
+
+            metadata.SortName = metadata.Name.ToLowerInvariant();
+            metadata.NameLastFirst = metadata.Name.ToLastFirst();
+            metadata.SortNameLastFirst = metadata.NameLastFirst.ToLowerInvariant();
+
+            if (imageUrl.IsNotNullOrWhiteSpace())
+            {
+                metadata.Images.Add(new MediaCover.MediaCover
+                {
+                    Url = imageUrl,
+                    CoverType = MediaCoverTypes.Poster
+                });
+            }
+
+            if (links.Any())
+            {
+                metadata.Links.AddRange(links);
+            }
+
+            TryAddExternalAuthorImage(metadata);
+
+            return metadata;
+        }
+
+        private AuthorMetadata BuildOpenLibraryAuthorMetadataFromSearch(string authorName, string authorKey)
+        {
+            if (authorName.IsNullOrWhiteSpace())
+            {
+                authorName = "Unknown Author";
+            }
+
+            var normalizedKey = NormalizeOpenLibraryAuthorKey(authorKey);
+            var authorId = BuildOpenLibraryAuthorId(normalizedKey, authorName);
+            var metadata = new AuthorMetadata
+            {
+                ForeignAuthorId = authorId,
+                TitleSlug = authorId,
+                Name = authorName.CleanSpaces(),
+                Ratings = new Ratings { Votes = 0, Value = 0 },
+                Status = AuthorStatusType.Continuing
+            };
+
+            metadata.SortName = metadata.Name.ToLowerInvariant();
+            metadata.NameLastFirst = metadata.Name.ToLastFirst();
+            metadata.SortNameLastFirst = metadata.NameLastFirst.ToLowerInvariant();
+
+            if (normalizedKey.IsNotNullOrWhiteSpace())
+            {
+                metadata.Links.Add(new Links { Name = "Open Library", Url = $"https://openlibrary.org{normalizedKey}" });
+            }
+
+            return metadata;
+        }
+
+        private List<Book> SearchOpenLibraryWorksByAuthor(string authorKey, AuthorMetadata authorMetadata)
+        {
+            var normalizedKey = NormalizeOpenLibraryAuthorKey(authorKey);
+            if (normalizedKey.IsNullOrWhiteSpace())
+            {
+                return new List<Book>();
+            }
+
+            var request = new HttpRequestBuilder($"https://openlibrary.org{normalizedKey}/works.json")
+                .AddQueryParam("limit", "50")
+                .Build();
+
+            request.AllowAutoRedirect = true;
+            request.SuppressHttpError = true;
+
+            var response = _cachedHttpClient.Get(request, false, TimeSpan.FromHours(6));
+            if (response.HasHttpError)
+            {
+                return new List<Book>();
+            }
+
+            var json = JObject.Parse(response.Content);
+            var entries = json["entries"] as JArray ?? new JArray();
+
+            return entries
+                .Select(entry => MapOpenLibraryWorkEntry(entry, authorMetadata))
+                .Where(book => book != null)
+                .DistinctBy(book => book.ForeignBookId)
+                .ToList();
+        }
+
+        private Book MapOpenLibraryWorkEntry(JToken entry, AuthorMetadata authorMetadata)
+        {
+            var workKey = NormalizeOpenLibraryWorkKey(entry?["key"]?.ToString());
+            if (workKey.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            var title = entry["title"]?.ToString();
+            if (title.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            var bookId = BuildOpenLibraryWorkId(workKey);
+            var edition = new Edition
+            {
+                ForeignEditionId = bookId,
+                TitleSlug = bookId,
+                Title = title,
+                Overview = GetOpenLibraryDescription(entry["description"]) ?? string.Empty,
+                ReleaseDate = ParseOpenLibraryPublishedDate(entry["first_publish_date"]?.ToString()),
+                Ratings = new Ratings { Votes = 0, Value = 0 }
+            };
+
+            if (entry["covers"] is JArray covers)
+            {
+                var coverIds = ParseOpenLibraryCoverIds(covers);
+                foreach (var image in coverIds.Select(id => new MediaCover.MediaCover
+                         {
+                             Url = $"https://covers.openlibrary.org/b/id/{id}-L.jpg",
+                             CoverType = MediaCoverTypes.Cover
+                         }))
+                {
+                    edition.Images.Add(image);
+                }
+            }
+
+            AddOpenLibraryLink(edition.Links, workKey);
+            edition.Monitored = true;
+
+            var book = new Book
+            {
+                ForeignBookId = bookId,
+                Title = title,
+                TitleSlug = bookId,
+                CleanTitle = Parser.Parser.CleanAuthorName(title),
+                ReleaseDate = edition.ReleaseDate,
+                Genres = NormalizeOpenLibrarySubjects(ParseOpenLibraryStringList(entry["subjects"])),
+                AnyEditionOk = true,
+                Editions = new List<Edition> { edition },
+                Author = new Author
+                {
+                    Metadata = authorMetadata,
+                    CleanName = Parser.Parser.CleanAuthorName(authorMetadata.Name)
+                },
+                AuthorMetadata = authorMetadata
+            };
+
+            AddOpenLibraryLink(book.Links, workKey);
+
+            return book;
+        }
+
+        private JObject GetOpenLibraryEditionForWork(string workId)
+        {
+            if (workId.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            var request = new HttpRequestBuilder($"https://openlibrary.org/works/{workId}/editions.json")
+                .AddQueryParam("limit", "1")
+                .Build();
+
+            request.AllowAutoRedirect = true;
+            request.SuppressHttpError = true;
+
+            var response = _httpClient.Get(request);
+            if (response.HasHttpError)
+            {
+                return null;
+            }
+
+            var json = JObject.Parse(response.Content);
+            return json["entries"]?.FirstOrDefault() as JObject;
+        }
+
+        private void ApplyOpenLibraryEditionData(Edition edition, OpenLibraryBookData data, JObject editionJson)
+        {
+            if (edition == null || data == null || editionJson == null)
+            {
+                return;
+            }
+
+            data.EditionKey = NormalizeOpenLibraryEditionKey(editionJson["key"]?.ToString());
+            data.EditionTitle = editionJson["title"]?.ToString();
+            data.PublishDate = ParseOpenLibraryPublishedDate(editionJson["publish_date"]?.ToString());
+            data.Publisher = GetOpenLibraryPublisher(editionJson["publishers"]);
+            data.PageCount = ParseOpenLibraryPageCount(editionJson["number_of_pages"]);
+            data.Language = ParseOpenLibraryLanguage(editionJson["languages"]);
+            data.EditionCoverIds = ParseOpenLibraryCoverIds(editionJson["covers"]);
+
+            var isbn13 = GetOpenLibrarySearchIsbn(editionJson["isbn_13"]);
+            var isbn10 = GetOpenLibrarySearchIsbn(editionJson["isbn_10"]);
+            edition.Isbn13 ??= isbn13 ?? isbn10;
+
+            if (edition.Title.IsNullOrWhiteSpace() && data.EditionTitle.IsNotNullOrWhiteSpace())
+            {
+                edition.Title = data.EditionTitle;
+            }
+
+            if (data.EditionKey.IsNotNullOrWhiteSpace())
+            {
+                AddOpenLibraryLink(edition.Links, data.EditionKey);
+            }
+        }
+
+        private JObject GetOpenLibraryJson(string url, TimeSpan? ttl)
+        {
+            var request = new HttpRequestBuilder(url)
+                .Build();
+
+            request.AllowAutoRedirect = true;
+            request.SuppressHttpError = true;
+
+            var cacheTtl = ttl ?? TimeSpan.FromHours(12);
+            var response = _cachedHttpClient.Get(request, false, cacheTtl);
+            if (response.HasHttpError)
+            {
+                return null;
+            }
+
+            return JObject.Parse(response.Content);
         }
 
         private void TryEnrichGoogleBookFromOpenLibrary(Book book, string isbnOverride = null)
@@ -1896,6 +1898,57 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             return $"{GoogleBookPrefix}{volumeId}";
         }
 
+        private static string BuildOpenLibraryWorkId(string workKey)
+        {
+            if (workKey.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            if (workKey.StartsWith(OpenLibraryWorkPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return workKey;
+            }
+
+            var normalized = NormalizeOpenLibraryWorkKey(workKey);
+            if (normalized.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            if (normalized.StartsWith("/works/", StringComparison.OrdinalIgnoreCase))
+            {
+                normalized = normalized.Substring("/works/".Length);
+            }
+
+            return $"{OpenLibraryWorkPrefix}{normalized}";
+        }
+
+        private static bool TryParseOpenLibraryWorkId(string foreignBookId, out string workId)
+        {
+            workId = null;
+
+            if (foreignBookId.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            if (foreignBookId.StartsWith(OpenLibraryWorkPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                workId = foreignBookId.Substring(OpenLibraryWorkPrefix.Length);
+            }
+            else if (foreignBookId.StartsWith("/works/", StringComparison.OrdinalIgnoreCase))
+            {
+                workId = foreignBookId.Substring("/works/".Length);
+            }
+            else if (foreignBookId.StartsWith("OL", StringComparison.OrdinalIgnoreCase) && foreignBookId.EndsWith("W", StringComparison.OrdinalIgnoreCase))
+            {
+                workId = foreignBookId;
+            }
+
+            return workId.IsNotNullOrWhiteSpace();
+        }
+
         private static bool TryParseGoogleBookId(string foreignBookId, out string volumeId)
         {
             volumeId = null;
@@ -1911,6 +1964,52 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
         private static string BuildGoogleAuthorId(string authorName)
         {
             return $"{GoogleAuthorPrefix}{Base64UrlEncode(authorName)}";
+        }
+
+        private static string BuildOpenLibraryAuthorId(string authorKey, string authorName)
+        {
+            var normalizedKey = NormalizeOpenLibraryAuthorKey(authorKey);
+            if (normalizedKey.IsNotNullOrWhiteSpace())
+            {
+                var id = normalizedKey.StartsWith("/authors/", StringComparison.OrdinalIgnoreCase)
+                    ? normalizedKey.Substring("/authors/".Length)
+                    : normalizedKey.TrimStart('/');
+
+                return $"{OpenLibraryAuthorPrefix}{id}";
+            }
+
+            if (authorName.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            var normalizedName = authorName.CleanSpaces().ToLowerInvariant();
+            return $"{OpenLibraryAuthorPrefix}{Base64UrlEncode(normalizedName)}";
+        }
+
+        private static bool TryParseOpenLibraryAuthorId(string foreignAuthorId, out string authorId)
+        {
+            authorId = null;
+
+            if (foreignAuthorId.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            if (foreignAuthorId.StartsWith(OpenLibraryAuthorPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                authorId = foreignAuthorId.Substring(OpenLibraryAuthorPrefix.Length);
+            }
+            else if (foreignAuthorId.StartsWith("/authors/", StringComparison.OrdinalIgnoreCase))
+            {
+                authorId = foreignAuthorId.Substring("/authors/".Length);
+            }
+            else if (foreignAuthorId.StartsWith("OL", StringComparison.OrdinalIgnoreCase) && foreignAuthorId.EndsWith("A", StringComparison.OrdinalIgnoreCase))
+            {
+                authorId = foreignAuthorId;
+            }
+
+            return authorId.IsNotNullOrWhiteSpace();
         }
 
         private static bool TryParseGoogleAuthorId(string foreignAuthorId, out string authorName)
@@ -2439,6 +2538,17 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 return null;
             }
 
+            if (authorKey.StartsWith(OpenLibraryAuthorPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                var id = authorKey.Substring(OpenLibraryAuthorPrefix.Length);
+                if (id.StartsWith("OL", StringComparison.OrdinalIgnoreCase) && id.EndsWith("A", StringComparison.OrdinalIgnoreCase))
+                {
+                    return $"/authors/{id}";
+                }
+
+                return null;
+            }
+
             if (authorKey.StartsWith("http", StringComparison.OrdinalIgnoreCase))
             {
                 var uri = new Uri(authorKey);
@@ -2456,6 +2566,63 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
 
             return $"/authors/{authorKey}";
+        }
+
+        private static string NormalizeOpenLibraryWorkKey(string workKey)
+        {
+            if (workKey.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            if (workKey.StartsWith(OpenLibraryWorkPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                workKey = workKey.Substring(OpenLibraryWorkPrefix.Length);
+            }
+
+            if (workKey.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                var uri = new Uri(workKey);
+                workKey = uri.AbsolutePath;
+            }
+
+            if (workKey.StartsWith("/works/", StringComparison.OrdinalIgnoreCase))
+            {
+                return workKey;
+            }
+
+            if (workKey.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+            {
+                return workKey;
+            }
+
+            return $"/works/{workKey}";
+        }
+
+        private static string NormalizeOpenLibraryEditionKey(string editionKey)
+        {
+            if (editionKey.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            if (editionKey.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                var uri = new Uri(editionKey);
+                editionKey = uri.AbsolutePath;
+            }
+
+            if (editionKey.StartsWith("/books/", StringComparison.OrdinalIgnoreCase))
+            {
+                return editionKey;
+            }
+
+            if (editionKey.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+            {
+                return editionKey;
+            }
+
+            return $"/books/{editionKey}";
         }
 
         private static string NormalizeOverview(string overview)
@@ -2678,43 +2845,5 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
         }
 
-        private static Edition MapEdition(BookResource resource)
-        {
-            var edition = new Edition
-            {
-                ForeignEditionId = resource.ForeignId.ToString(),
-                TitleSlug = resource.ForeignId.ToString(),
-                Isbn13 = resource.Isbn13,
-                Asin = resource.Asin,
-                Title = resource.Title.CleanSpaces(),
-                Language = resource.Language,
-                Overview = resource.Description,
-                Format = resource.Format,
-                IsEbook = resource.IsEbook,
-                Disambiguation = resource.EditionInformation,
-                Publisher = resource.Publisher,
-                PageCount = resource.NumPages ?? 0,
-                ReleaseDate = resource.ReleaseDate,
-                Ratings = new Ratings { Votes = resource.RatingCount, Value = (decimal)resource.AverageRating }
-            };
-
-            if (resource.ImageUrl.IsNotNullOrWhiteSpace())
-            {
-                edition.Images.Add(new MediaCover.MediaCover
-                {
-                    Url = resource.ImageUrl,
-                    CoverType = MediaCoverTypes.Cover
-                });
-            }
-
-            edition.Links.Add(new Links { Url = resource.Url, Name = "Goodreads Book" });
-
-            return edition;
-        }
-
-        private static int GetAuthorId(WorkResource b)
-        {
-            return b.Books.OrderByDescending(x => x.RatingCount * x.AverageRating).FirstOrDefault(x => x.Contributors.Any())?.Contributors.First().ForeignId ?? 0;
-        }
     }
 }

@@ -60,22 +60,6 @@ class DevelopmentSettings extends Component {
                 id="developmentSettings"
                 {...otherProps}
               >
-                <FieldSet legend={translate('MetadataProviderSource')}>
-                  <FormGroup>
-                    <FormLabel>
-                      {translate('MetadataSource')}
-                    </FormLabel>
-
-                    <FormInputGroup
-                      type={inputTypes.TEXT}
-                      name="metadataSource"
-                      helpText={translate('MetadataSourceHelpText')}
-                      onChange={onInputChange}
-                      {...settings.metadataSource}
-                    />
-                  </FormGroup>
-                </FieldSet>
-
                 <FieldSet legend={translate('Logging')}>
                   <FormGroup>
                     <FormLabel>

@@ -10,7 +10,7 @@ Bookdarr is a self-hosted ebook and audiobook collection manager forked from Boo
 - Monitors RSS feeds from indexers for new books from favorite authors
 - Integrates with Usenet and BitTorrent download clients to grab, sort, and rename books
 - Keeps both ebook AND audiobook files for the same book in a single unified instance
-- Manages metadata from multiple providers (Google Books, BookInfo)
+- Manages metadata from multiple providers (Google Books, Open Library)
 - Handles quality profiles, custom formats, and automatic upgrades
 
 **Key Differentiators:**
@@ -81,9 +81,9 @@ Bookdarr is a self-hosted ebook and audiobook collection manager forked from Boo
   - `MediaFiles/` - File processing, naming, tagging
   - `Download/` - Download client integration, decision engine
   - `Indexers/` - RSS feed monitoring, search providers
-  - `ImportLists/` - Goodreads, LazyLibrarian integration
+  - `ImportLists/` - External list integrations (LazyLibrarian, Readarr sync)
   - `Notifications/` - 43+ notification providers
-  - `MetadataSource/` - Google Books, BookInfo providers
+  - `MetadataSource/` - Google Books, Open Library providers
   - `Organizer/` - File naming conventions
   - `Parser/` - Regex-based title/quality parsing
   - `Profiles/` - Quality and metadata profiles
@@ -140,10 +140,8 @@ Bookdarr is a self-hosted ebook and audiobook collection manager forked from Boo
   - Metadata embedding (TagLibSharp)
 
 ### Metadata Providers
-- **BookInfo** (bookinfo.pro): Richer metadata, better matching, cover fallbacks
 - **Google Books**: Fast, broad coverage, optional API key for higher quota
-- **Goodreads**: Legacy support via search proxy
-- **OpenLibrary**: Series and genre data
+- **Open Library**: Free fallback metadata with series/genre data
 
 ### Download Management
 - **Decision Engine**: Quality decisions, upgrade logic, rejection handling
@@ -161,7 +159,7 @@ Bookdarr is a self-hosted ebook and audiobook collection manager forked from Boo
 - **RSS Feed** support
 
 ### Import Lists
-- Goodreads lists/shelves
+- External list/shelf integrations
 - LazyLibrarian sync
 - Readarr cross-instance sync
 
@@ -213,9 +211,9 @@ Discord, Slack, Telegram, Email, SMTP, Plex, Subsonic, Kavita, Pushover, Pushbul
 ```
 1. Author Refresh Command
    ↓
-2. ConfigService → Determine provider (Google Books or BookInfo)
+2. ConfigService → Determine provider (Google Books or Open Library)
    ↓
-3. BookInfoProxy/GoogleBooksProxy → Fetch metadata
+3. BookInfoProxy/GoogleBooksProxy/Open Library → Fetch metadata
    ↓
 4. Author/Book Services → Update database
    ↓
@@ -359,7 +357,7 @@ cd frontend && yarn build # Build frontend
 ### External Services
 - **Download Clients**: Various APIs (qBittorrent WebUI, SABnzbd API, etc.)
 - **Indexers**: Newznab/Torznab XML API, private tracker APIs
-- **Metadata**: Google Books API, BookInfo API, Goodreads (via proxy)
+- **Metadata**: Google Books API, Open Library API
 - **Notifications**: REST APIs, webhooks, SMTP
 - **Media Servers**: Plex, Subsonic, Kavita APIs
 

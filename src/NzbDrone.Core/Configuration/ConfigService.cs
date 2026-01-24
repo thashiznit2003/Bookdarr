@@ -302,6 +302,11 @@ namespace NzbDrone.Core.Configuration
                 {
                     provider = "googlebooks";
                 }
+                else if (!provider.Equals("googlebooks", StringComparison.OrdinalIgnoreCase) &&
+                         !provider.Equals("openlibrary", StringComparison.OrdinalIgnoreCase))
+                {
+                    provider = "googlebooks";
+                }
 
                 return provider;
             }

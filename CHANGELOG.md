@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.11
+- Summary: Switch metadata fallback to Open Library and remove BookInfo/Goodreads metadata settings.
+- Why: Google Books quota limits need a working fallback, and Goodreads/BookInfo search paths are no longer reliable.
+- Impact: Metadata search falls back to Open Library, metadata provider settings clamp to Google Books/Open Library, dev settings no longer expose metadata source, add-book/author errors reference the metadata provider, and docs reflect the new providers.
+- Files: `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/NzbDrone.Core/MetadataSource/ISearchForNewBook.cs`, `src/NzbDrone.Core/Profiles/Metadata/MetadataProfileService.cs`, `src/NzbDrone.Core/Configuration/ConfigService.cs`, `src/NzbDrone.Core/Books/Services/AddAuthorService.cs`, `src/NzbDrone.Core/Books/Services/AddBookService.cs`, `src/NzbDrone.Core/MediaFiles/BookImport/Identification/CandidateService.cs`, `frontend/src/Search/AddNewItem.js`, `frontend/src/Settings/Development/DevelopmentSettings.js`, `src/Readarr.Api.V1/Config/DevelopmentConfigController.cs`, `src/Readarr.Api.V1/Config/DevelopmentConfigResource.cs`, `src/NzbDrone.Core/Localization/Core/en.json`, `README.md`, `ARCHITECTURE.md`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.11`, push, then run the SSH update with the next log number (`update-12.log`).
+
 ## 2.1.10
 - Summary: Keep the first-run wizard visible until the user finishes it, and fall back when Google Books quota is hit.
 - Why: The wizard disappeared as soon as indexers were imported, even if the user hadn’t clicked Finish, and Google Books rate limits blocked search.
