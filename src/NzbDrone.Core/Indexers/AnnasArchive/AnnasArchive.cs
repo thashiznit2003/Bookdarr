@@ -123,7 +123,7 @@ namespace NzbDrone.Core.Indexers.AnnasArchive
                 _logger.Error(ex, "An error occurred while processing Anna's Archive responses. {0}", url);
             }
 
-            var cleaned = CleanupReleases(releases);
+            var cleaned = CleanupReleases(releases).ToList();
             await EnrichReleaseFileTypes(cleaned);
             return cleaned;
         }

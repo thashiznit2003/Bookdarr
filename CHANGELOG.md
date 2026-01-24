@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.6
+- Summary: Fix Anna's Archive cleanup typing so production builds compile.
+- Why: The update script failed because `CleanupReleases` returns an `IList`, but the async enrich step expects a `List`.
+- Impact: Build succeeds and Anna's Archive enrichment runs without type conversion errors; no runtime behavior changes.
+- Files: `src/NzbDrone.Core/Indexers/AnnasArchive/AnnasArchive.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.6`, push, then run the SSH update with the next log number (`update-59.log`).
+
 ## 2.1.5
 - Summary: Add first-run guidance, auto-login after initial setup, and improve search/result metadata handling.
 - Why: Fresh installs need a clearer setup flow, covers should persist after navigation, and Anna's Archive results should expose file types with EPUB priority.
