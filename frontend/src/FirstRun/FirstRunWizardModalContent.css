@@ -1,0 +1,85 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stepTitle {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.stepCount {
+  font-size: 12px;
+  color: var(--helpTextColor);
+}
+
+.stepBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--borderColor);
+  border-radius: 6px;
+  background-color: var(--cardBackgroundColor);
+}
+
+.statusLabel {
+  color: var(--helpTextColor);
+}
+
+.statusBadge {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.statusComplete {
+  color: var(--successColor);
+}
+
+.statusMissing {
+  color: var(--warningColor);
+}
+
+.recommendations {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--helpTextColor);
+}
+
+.inlineActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.note {
+  font-size: 12px;
+  color: var(--helpTextColor);
+}
+
+.footerActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.footerRight {
+  display: flex;
+  gap: 8px;
+}

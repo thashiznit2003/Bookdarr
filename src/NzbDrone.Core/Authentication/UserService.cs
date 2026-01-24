@@ -182,7 +182,7 @@ namespace NzbDrone.Core.Authentication
             {
                 Id = 0,
                 Identifier = Guid.Empty,
-                Username = "setup",
+                Username = string.Empty,
                 Role = UserRole.Admin,
                 IsAdmin = true,
                 IsActive = true,

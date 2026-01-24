@@ -72,22 +72,30 @@ class CombineAudiobookProgress extends Component {
   }
 
   render() {
-    const { command } = this.props;
+    const { command, isInline } = this.props;
     const { showComplete } = this.state;
+    const containerClassName = isInline ?
+      `${styles.container} ${styles.inlineContainer}` :
+      `${styles.container} ${styles.bannerContainer}`;
+    const progressSize = isInline ? sizes.SMALL : sizes.MEDIUM;
 
     if (!command && !showComplete) {
       return null;
     }
 
+    if (command?.status === 'completed' && !showComplete) {
+      return null;
+    }
+
     if (showComplete) {
       return (
-        <div className={styles.container}>
+        <div className={containerClassName}>
           <ProgressBar
             progress={100}
             showText={true}
             text={translate('CombineAudiobookComplete')}
             kind={kinds.SUCCESS}
-            size={sizes.MEDIUM}
+            size={progressSize}
           />
         </div>
       );
@@ -101,13 +109,13 @@ class CombineAudiobookProgress extends Component {
       command?.message;
 
     return (
-      <div className={styles.container}>
+      <div className={containerClassName}>
         <ProgressBar
           progress={percent}
           showText={true}
           text={translate('CombineAudiobookProgressText', [percent.toFixed(0)])}
           kind={kinds.PRIMARY}
-          size={sizes.MEDIUM}
+          size={progressSize}
         />
         {
           detailText &&
@@ -121,11 +129,13 @@ class CombineAudiobookProgress extends Component {
 }
 
 CombineAudiobookProgress.propTypes = {
-  command: PropTypes.object
+  command: PropTypes.object,
+  isInline: PropTypes.bool
 };
 
 CombineAudiobookProgress.defaultProps = {
-  command: null
+  command: null,
+  isInline: false
 };
 
 export default CombineAudiobookProgress;

@@ -81,10 +81,7 @@ namespace NzbDrone.Core.Books
             var shouldRefresh = doRefresh && book.AddOptions.AddType != BookAddType.Manual;
             _bookService.AddBook(book, shouldRefresh);
 
-            if (book.AddOptions.AddType == BookAddType.Manual)
-            {
-                _mediaCoverService.EnsureBookCovers(book);
-            }
+            _mediaCoverService.EnsureBookCovers(book);
 
             return book;
         }

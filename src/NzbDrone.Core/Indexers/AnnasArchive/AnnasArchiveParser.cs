@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using NzbDrone.Common.Extensions;
@@ -23,6 +24,10 @@ namespace NzbDrone.Core.Indexers.AnnasArchive
             "\\b(?<size>\\d+(?:\\.\\d+)?\\s*(?:KB|MB|GB|TB))\\b",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+        private static readonly Regex FileTypeRegex = new Regex(
+            "\\b(?<type>EPUB|MOBI|PDF|AZW3|AZW|FB2|DJVU|TXT|RTF|CBZ|CBR|DOCX?|M4B|MP3|FLAC|AAC|M4A|OGG|WAV|OPUS)\\b",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         public AnnasArchiveParser(AnnasArchiveSettings settings)
         {
         }
@@ -40,8 +45,9 @@ namespace NzbDrone.Core.Indexers.AnnasArchive
                 throw new IndexerException(indexerResponse, $"Unexpected response content type {indexerResponse.HttpResponse.Headers.ContentType}");
             }
 
-            var releases = new List<ReleaseInfo>();
+            var releases = new List<(ReleaseInfo release, string fileType, int order)>();
             var content = indexerResponse.Content;
+            var order = 0;
 
             foreach (Match match in TitleRegex.Matches(content))
             {
@@ -57,21 +63,26 @@ namespace NzbDrone.Core.Indexers.AnnasArchive
                 var author = ExtractAuthor(segment);
                 var size = ExtractSize(segment);
                 var infoUrl = BuildInfoUrl(indexerResponse, md5);
+                var fileType = ExtractFileType(segment);
 
-                releases.Add(new ReleaseInfo
+                releases.Add((new ReleaseInfo
                 {
                     Guid = $"AnnasArchive-{md5}",
-                    Title = BuildTitle(author, title),
+                    Title = BuildTitle(author, title, fileType),
                     Author = author,
                     Book = title,
                     InfoUrl = infoUrl,
                     DownloadUrl = infoUrl,
                     Size = size,
                     PublishDate = DateTime.UtcNow
-                });
+                }, fileType, order++));
             }
 
-            return releases;
+            return releases
+                .OrderBy(release => GetFileTypePriority(release.fileType))
+                .ThenBy(release => release.order)
+                .Select(release => release.release)
+                .ToList();
         }
 
         private static string BuildInfoUrl(IndexerResponse indexerResponse, string md5)
@@ -112,14 +123,46 @@ namespace NzbDrone.Core.Indexers.AnnasArchive
             return RssParser.ParseSize(match.Groups["size"].Value, false);
         }
 
-        private static string BuildTitle(string author, string title)
+        internal static string ExtractFileType(string segment)
         {
-            if (author.IsNullOrWhiteSpace())
+            var match = FileTypeRegex.Match(segment);
+
+            return match.Success ? NormalizeFileType(match.Groups["type"].Value) : null;
+        }
+
+        internal static string AppendFileTypeToTitle(string title, string fileType)
+        {
+            if (title.IsNullOrWhiteSpace() || fileType.IsNullOrWhiteSpace())
             {
                 return title;
             }
 
-            return $"{author} - {title}";
+            if (title.IndexOf(fileType, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return title;
+            }
+
+            return $"{title} [{fileType}]";
+        }
+
+        internal static int GetFileTypePriority(string fileType)
+        {
+            return string.Equals(fileType, "EPUB", StringComparison.OrdinalIgnoreCase) ? 0 : 1;
+        }
+
+        private static string NormalizeFileType(string value)
+        {
+            return value.IsNullOrWhiteSpace() ? null : value.Trim().ToUpperInvariant();
+        }
+
+        private static string BuildTitle(string author, string title, string fileType)
+        {
+            if (author.IsNullOrWhiteSpace())
+            {
+                return AppendFileTypeToTitle(title, fileType);
+            }
+
+            return AppendFileTypeToTitle($"{author} - {title}", fileType);
         }
     }
 }

@@ -4,6 +4,7 @@ import ColorImpairedContext from 'App/ColorImpairedContext';
 import ConnectionLostModalConnector from 'App/ConnectionLostModalConnector';
 import SignalRConnector from 'Components/SignalRConnector';
 import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
+import FirstRunWizardModalContentConnector from 'FirstRun/FirstRunWizardModalContentConnector';
 import locationShape from 'Helpers/Props/Shapes/locationShape';
 import PageHeader from './Header/PageHeader';
 import PageSidebar from './Sidebar/PageSidebar';
@@ -104,6 +105,8 @@ class Page extends Component {
           <AuthenticationRequiredModal
             isOpen={!authenticationEnabled}
           />
+
+          <FirstRunWizardModalContentConnector />
         </div>
       </ColorImpairedContext.Provider>
     );

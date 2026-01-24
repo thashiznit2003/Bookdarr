@@ -6,6 +6,7 @@ import Link from 'Components/Link/Link';
 import { icons } from 'Helpers/Props';
 import BookFileAudioDockedPlayer from 'BookFile/BookFileAudioDockedPlayer';
 import AuthorSearchInputConnector from './AuthorSearchInputConnector';
+import CombineAudiobookProgressConnector from './CombineAudiobookProgressConnector';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import PageHeaderActionsMenuConnector from './PageHeaderActionsMenuConnector';
 import PageHeaderUserConnector from './PageHeaderUserConnector';
@@ -86,6 +87,7 @@ class PageHeader extends Component {
         </div>
 
         <div className={styles.right}>
+          <CombineAudiobookProgressConnector />
           <PageHeaderUserConnector />
           <PageHeaderActionsMenuConnector />
         </div>

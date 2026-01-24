@@ -125,7 +125,6 @@ function createMapStateToProps() {
         bookFilesError,
         bookFiles: bookFileItems,
         hasBookFiles,
-        combineCommand,
         isCombining,
         previousBook,
         nextBook,

@@ -22,7 +22,6 @@ import RetagPreviewModalConnector from 'Retag/RetagPreviewModalConnector';
 import translate from 'Utilities/String/translate';
 import BookCoverUploadModal from './BookCoverUploadModal';
 import BookDetailsHeaderConnector from './BookDetailsHeaderConnector';
-import CombineAudiobookProgress from './CombineAudiobookProgress';
 import styles from './BookDetails.css';
 
 function isAudiobookAudio(file) {
@@ -193,7 +192,6 @@ class BookDetails extends Component {
       author,
       isSearching,
       isCombining,
-      combineCommand,
       isRescanningFiles,
       isRefreshingMetadata,
       inMyLibrary,
@@ -226,7 +224,6 @@ class BookDetails extends Component {
 
     return (
       <PageContent title={title}>
-        <CombineAudiobookProgress command={combineCommand} />
         <PageToolbar>
           <PageToolbarSection>
             <PageToolbarButton
@@ -502,7 +499,6 @@ BookDetails.propTypes = {
   nextBook: PropTypes.object,
   isSmallScreen: PropTypes.bool.isRequired,
   isCombining: PropTypes.bool.isRequired,
-  combineCommand: PropTypes.object,
   onMonitorTogglePress: PropTypes.func.isRequired,
   onRefreshPress: PropTypes.func,
   onRefreshMetadataPress: PropTypes.func,
@@ -515,7 +511,6 @@ BookDetails.defaultProps = {
   isSaving: false,
   isRescanningFiles: false,
   bookFiles: [],
-  combineCommand: null,
   inMyLibrary: false,
   fetchUserLibraryBooks: null
 };

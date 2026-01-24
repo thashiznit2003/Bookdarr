@@ -123,7 +123,9 @@ namespace NzbDrone.Core.Indexers.AnnasArchive
                 _logger.Error(ex, "An error occurred while processing Anna's Archive responses. {0}", url);
             }
 
-            return CleanupReleases(releases);
+            var cleaned = CleanupReleases(releases);
+            await EnrichReleaseFileTypes(cleaned);
+            return cleaned;
         }
 
         private void RecordFailure(Exception ex, TimeSpan minimumBackoff, string url)
@@ -203,6 +205,60 @@ namespace NzbDrone.Core.Indexers.AnnasArchive
                     _logger.Error(ex, "An error occurred while processing feed. {0}", url);
                     break;
             }
+        }
+
+        private async Task EnrichReleaseFileTypes(List<ReleaseInfo> releases)
+        {
+            if (releases == null || releases.Count == 0)
+            {
+                return;
+            }
+
+            for (var i = 0; i < releases.Count; i++)
+            {
+                var release = releases[i];
+                var existingType = AnnasArchiveParser.ExtractFileType(release.Title);
+
+                if (!existingType.IsNullOrWhiteSpace())
+                {
+                    continue;
+                }
+
+                if (release.InfoUrl.IsNullOrWhiteSpace())
+                {
+                    continue;
+                }
+
+                try
+                {
+                    var request = new HttpRequest(release.InfoUrl)
+                    {
+                        AllowAutoRedirect = true
+                    };
+
+                    var response = await _httpClient.GetAsync(request);
+                    var fileType = AnnasArchiveParser.ExtractFileType(response.Content);
+
+                    if (!fileType.IsNullOrWhiteSpace())
+                    {
+                        release.Title = AnnasArchiveParser.AppendFileTypeToTitle(release.Title, fileType);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Debug(ex, "Failed to enrich Anna's Archive release metadata for {0}", release.InfoUrl);
+                }
+            }
+
+            var ordered = releases
+                .Select((release, index) => new { release, index })
+                .OrderBy(item => AnnasArchiveParser.GetFileTypePriority(AnnasArchiveParser.ExtractFileType(item.release.Title)))
+                .ThenBy(item => item.index)
+                .Select(item => item.release)
+                .ToList();
+
+            releases.Clear();
+            releases.AddRange(ordered);
         }
     }
 }

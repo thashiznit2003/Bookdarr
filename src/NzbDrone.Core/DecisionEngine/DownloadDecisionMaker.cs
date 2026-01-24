@@ -282,7 +282,7 @@ namespace NzbDrone.Core.DecisionEngine
                 return;
             }
 
-            if (qualityModel.Quality != Quality.Unknown)
+            if (qualityModel.Quality != Quality.Unknown && qualityModel.Quality != Quality.UnknownAudio)
             {
                 return;
             }

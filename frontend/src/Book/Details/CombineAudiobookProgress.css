@@ -1,4 +1,10 @@
 .container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bannerContainer {
   position: fixed;
   top: 0;
   left: 0;
@@ -8,6 +14,11 @@
   background-color: var(--pageBackgroundColor);
   border-bottom: 1px solid var(--borderColor);
   box-shadow: 0 2px 6px var(--popoverShadowColor);
+}
+
+.inlineContainer {
+  max-width: 280px;
+  min-width: 220px;
 }
 
 .detail {

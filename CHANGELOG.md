@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.5
+- Summary: Add first-run guidance, auto-login after initial setup, and improve search/result metadata handling.
+- Why: Fresh installs need a clearer setup flow, covers should persist after navigation, and Anna's Archive results should expose file types with EPUB priority.
+- Impact: A first-run wizard guides root folders/download clients/indexers and recommends media settings; initial auth auto-logs in; book covers are cached on add; Anna's Archive results show types and sort EPUB first; combine progress is shown in the header; docker compose uses `latest`.
+- Files: `frontend/src/FirstRun/FirstRunWizardModalContent.js`, `frontend/src/FirstRun/FirstRunWizardModalContentConnector.js`, `frontend/src/FirstRun/AuthenticationRequiredModalContentConnector.js`, `frontend/src/Components/Page/Page.js`, `frontend/src/Components/Page/Header/PageHeader.js`, `frontend/src/Components/Page/Header/PageHeader.css`, `frontend/src/Components/Page/Header/CombineAudiobookProgressConnector.js`, `frontend/src/Book/Details/CombineAudiobookProgress.js`, `frontend/src/Book/Details/CombineAudiobookProgress.css`, `src/NzbDrone.Core/Authentication/UserService.cs`, `src/NzbDrone.Core/Books/Services/AddBookService.cs`, `src/NzbDrone.Core/Indexers/AnnasArchive/AnnasArchive.cs`, `src/NzbDrone.Core/Indexers/AnnasArchive/AnnasArchiveParser.cs`, `src/NzbDrone.Core/DecisionEngine/DownloadDecisionMaker.cs`, `src/NzbDrone.Core/Localization/Core/en.json`, `docker-compose.dockerhub.yml`, `docker-compose.ghcr.yml`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.5`, push, then run the SSH update with the next log number (`update-58.log`).
+
 ## 2.1.4
 - Summary: Allow fresh installs to complete authentication setup without spurious unauthenticated errors.
 - Why: New Docker installs can have no users yet, causing API calls (like `/users/me`) to error before setup is complete.
