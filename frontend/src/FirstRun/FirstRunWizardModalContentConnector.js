@@ -18,6 +18,7 @@ import FirstRunWizardModalContent from './FirstRunWizardModalContent';
 import styles from './FirstRunWizardModalContent.css';
 
 const DISMISS_KEY = 'bookdarr.firstRunWizardDismissed';
+const STARTED_KEY = 'bookdarr.firstRunWizardStarted';
 
 function createMapStateToProps() {
   return createSelector(
@@ -36,14 +37,14 @@ function createMapStateToProps() {
       const isAdmin = currentUser?.isAdmin ?? systemStatus?.isAdmin ?? false;
       const authenticationEnabled = systemStatus?.authentication !== 'none';
 
-      const shouldShowWizard = authenticationEnabled && isAdmin && (
-        rootFolderCount === 0 ||
+      const needsSetup = rootFolderCount === 0 ||
         downloadClientCount === 0 ||
-        indexerCount === 0
-      );
+        indexerCount === 0;
 
       return {
-        shouldShowWizard,
+        needsSetup,
+        authenticationEnabled,
+        isAdmin,
         rootFolderCount,
         downloadClientCount,
         indexerCount,
@@ -75,6 +76,7 @@ class FirstRunWizardModalContentConnector extends Component {
 
     this.state = {
       dismissed: false,
+      started: false,
       position: null,
       isDragging: false,
       dragOffset: null
@@ -99,6 +101,10 @@ class FirstRunWizardModalContentConnector extends Component {
       this.setInitialPosition();
     }
 
+    if (this.props.needsSetup && !this.state.started) {
+      this.setStarted();
+    }
+
     if (!isOpen && prevState.isDragging) {
       this.stopDragging();
     }
@@ -114,7 +120,16 @@ class FirstRunWizardModalContentConnector extends Component {
     }
 
     const dismissed = window.localStorage.getItem(DISMISS_KEY) === 'true';
-    this.setState({ dismissed });
+    const started = window.localStorage.getItem(STARTED_KEY) === 'true';
+    this.setState({ dismissed, started });
+  }
+
+  setStarted() {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem(STARTED_KEY, 'true');
+    }
+
+    this.setState({ started: true });
   }
 
   onDismiss = () => {
@@ -137,10 +152,18 @@ class FirstRunWizardModalContentConnector extends Component {
   };
 
   getIsOpen() {
-    const { shouldShowWizard } = this.props;
-    const { dismissed } = this.state;
+    const { needsSetup, authenticationEnabled, isAdmin } = this.props;
+    const { dismissed, started } = this.state;
 
-    return shouldShowWizard && !dismissed;
+    if (!authenticationEnabled || !isAdmin) {
+      return false;
+    }
+
+    if (dismissed) {
+      return false;
+    }
+
+    return needsSetup || started;
   }
 
   setInitialPosition() {
@@ -253,7 +276,7 @@ class FirstRunWizardModalContentConnector extends Component {
   }
 
   render() {
-    const { shouldShowWizard, ...otherProps } = this.props;
+    const { needsSetup, authenticationEnabled, isAdmin, ...otherProps } = this.props;
     const { position, isDragging } = this.state;
     const isOpen = this.getIsOpen();
 
@@ -286,7 +309,9 @@ class FirstRunWizardModalContentConnector extends Component {
 }
 
 FirstRunWizardModalContentConnector.propTypes = {
-  shouldShowWizard: PropTypes.bool.isRequired,
+  needsSetup: PropTypes.bool.isRequired,
+  authenticationEnabled: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
   rootFolderCount: PropTypes.number.isRequired,
   downloadClientCount: PropTypes.number.isRequired,
   indexerCount: PropTypes.number.isRequired,

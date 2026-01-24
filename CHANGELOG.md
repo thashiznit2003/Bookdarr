@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.10
+- Summary: Keep the first-run wizard visible until the user finishes it, and fall back when Google Books quota is hit.
+- Why: The wizard disappeared as soon as indexers were imported, even if the user hadn’t clicked Finish, and Google Books rate limits blocked search.
+- Impact: Once the wizard starts, it stays docked until the user finishes or dismisses it, while still allowing normal navigation; search falls back to the backup metadata provider on quota errors.
+- Files: `frontend/src/FirstRun/FirstRunWizardModalContentConnector.js`, `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.10`, push, then run the SSH update with the next log number (`update-63.log`).
+
 ## 2.1.9
 - Summary: Fix authentication refresh, stabilize search/add flows, and add a local password reset guide.
 - Why: Users could not log back in after auth changes, search errors could flash before results arrived, and the login page linked to external reset instructions.

@@ -210,15 +210,22 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                     return new List<Author>();
                 }
 
-                var googleBooks = SearchGoogleBooks($"inauthor:{query}");
+                try
+                {
+                    var googleBooks = SearchGoogleBooks($"inauthor:{query}");
 
-                return googleBooks
-                    .Select(x => x.Author.Value)
-                    .DistinctBy(x => x.ForeignAuthorId)
-                    .ToList();
+                    return googleBooks
+                        .Select(x => x.Author.Value)
+                        .DistinctBy(x => x.ForeignAuthorId)
+                        .ToList();
+                }
+                catch (NzbDroneClientException ex) when (IsGoogleBooksQuotaStatus(ex.StatusCode))
+                {
+                    _logger.Warn(ex, "Google Books quota exceeded, falling back to backup metadata provider for author search.");
+                }
             }
 
-            var books = SearchForNewBook(title, null);
+            var books = SearchForNewBookFallback(title, null, true);
 
             return books
                 .Select(x => x.Author.Value)
@@ -241,7 +248,25 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                     query = $"{query} inauthor:{author.Trim()}";
                 }
 
-                return SearchGoogleBooks(query);
+                try
+                {
+                    return SearchGoogleBooks(query);
+                }
+                catch (NzbDroneClientException ex) when (IsGoogleBooksQuotaStatus(ex.StatusCode))
+                {
+                    _logger.Warn(ex, "Google Books quota exceeded, falling back to backup metadata provider for book search.");
+                    return SearchForNewBookFallback(title, author, getAllEditions);
+                }
+            }
+
+            return SearchForNewBookFallback(title, author, getAllEditions);
+        }
+
+        private List<Book> SearchForNewBookFallback(string title, string author, bool getAllEditions)
+        {
+            if (title.IsNullOrWhiteSpace())
+            {
+                return new List<Book>();
             }
 
             var q = title.ToLower().Trim();
@@ -315,7 +340,14 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
         {
             if (UseGoogleBooks)
             {
-                return SearchGoogleBooks($"isbn:{isbn}");
+                try
+                {
+                    return SearchGoogleBooks($"isbn:{isbn}");
+                }
+                catch (NzbDroneClientException ex) when (IsGoogleBooksQuotaStatus(ex.StatusCode))
+                {
+                    _logger.Warn(ex, "Google Books quota exceeded, falling back to backup metadata provider for ISBN search.");
+                }
             }
 
             return Search(isbn, true);
@@ -325,7 +357,14 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
         {
             if (UseGoogleBooks)
             {
-                return SearchGoogleBooks(asin);
+                try
+                {
+                    return SearchGoogleBooks(asin);
+                }
+                catch (NzbDroneClientException ex) when (IsGoogleBooksQuotaStatus(ex.StatusCode))
+                {
+                    _logger.Warn(ex, "Google Books quota exceeded, falling back to backup metadata provider for ASIN search.");
+                }
             }
 
             return Search(asin, true);
@@ -2585,8 +2624,13 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
         private static bool IsGoogleBooksQuotaError(HttpResponse response)
         {
-            return response.StatusCode == HttpStatusCode.TooManyRequests ||
-                response.StatusCode == HttpStatusCode.Forbidden;
+            return IsGoogleBooksQuotaStatus(response.StatusCode);
+        }
+
+        private static bool IsGoogleBooksQuotaStatus(HttpStatusCode statusCode)
+        {
+            return statusCode == HttpStatusCode.TooManyRequests ||
+                statusCode == HttpStatusCode.Forbidden;
         }
 
         private static string Base64UrlEncode(string value)
