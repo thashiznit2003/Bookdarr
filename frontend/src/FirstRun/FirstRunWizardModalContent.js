@@ -211,15 +211,17 @@ function FirstRunWizardModalContent(props) {
         onMouseDown={onDragStart}
         onTouchStart={onDragStart}
       >
-        {translate('FirstRunWizardTitle')}
+        <div className={styles.headerContent}>
+          <span>{translate('FirstRunWizardTitle')}</span>
+          {
+            autoDisplayCount != null &&
+              <span className={styles.autoCount}>{autoDisplayCount}</span>
+          }
+        </div>
       </ModalHeader>
 
       <ModalBody>
         <div className={styles.container}>
-          {
-            autoDisplayCount != null &&
-              <div className={styles.autoCount}>{autoDisplayCount}</div>
-          }
           <div className={styles.stepIntro}>{translate('FirstRunWizardIntro')}</div>
           <div className={styles.headerRow}>
             <div className={styles.stepTitle}>{step.title}</div>

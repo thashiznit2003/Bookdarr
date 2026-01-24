@@ -1,15 +1,18 @@
 .container {
-  position: relative;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .autoCount {
-  position: absolute;
-  top: -4px;
-  right: 0;
-  font-size: 2rem;
+  font-size: 12px;
   font-weight: 600;
   color: var(--helpTextColor);
 }

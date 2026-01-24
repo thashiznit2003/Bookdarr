@@ -16,6 +16,7 @@ namespace Readarr.Api.V1.Users
         public int LoginCount { get; set; }
         public int WizardAutoShownCount { get; set; }
         public bool WizardAutoDisabled { get; set; }
+        public bool WizardInProgress { get; set; }
         public string PreferredQualityMedia { get; set; }
     }
 }

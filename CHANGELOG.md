@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.18
+- Summary: Keep the first-run wizard open after indexer imports and restyle the auto-show counter.
+- Why: The wizard closed as soon as setup items were imported, and the counter overlay was oversized and obscured text.
+- Impact: Wizard progress is persisted on the user record so it stays open across data refreshes and browser sessions until finished; the auto-show count now renders as a small value in the header corner.
+- Files: `src/NzbDrone.Core/Authentication/User.cs`, `src/NzbDrone.Core/Authentication/UserService.cs`, `src/Readarr.Api.V1/Users/UsersController.cs`, `src/Readarr.Api.V1/Users/UserResource.cs`, `src/Readarr.Api.V1/Users/UserWizardProgressResource.cs`, `src/NzbDrone.Core/Datastore/Migration/056_add_user_wizard_in_progress.cs`, `frontend/src/FirstRun/FirstRunWizardModalContentConnector.js`, `frontend/src/FirstRun/FirstRunWizardModalContent.js`, `frontend/src/FirstRun/FirstRunWizardModalContent.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.18`, push, then run the SSH update with the next log number (`update-12.log`).
+
 ## 2.1.17
 - Summary: Fix user ratings persistence and move first-run wizard auto-launch to server-side login tracking.
 - Why: Ratings were not sticking between navigation, and the wizard was gated by browser storage instead of per-admin login history.

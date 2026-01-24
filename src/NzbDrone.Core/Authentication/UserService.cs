@@ -22,6 +22,7 @@ namespace NzbDrone.Core.Authentication
         List<User> GetUsers();
         User RecordSuccessfulLogin(User user, bool incrementLoginCount);
         User IncrementWizardAutoShown(User user);
+        User SetWizardInProgress(User user, bool isInProgress);
     }
 
     public class UserService : IUserService
@@ -56,6 +57,7 @@ namespace NzbDrone.Core.Authentication
                 LoginCount = 0,
                 WizardAutoShownCount = 0,
                 WizardAutoDisabled = false,
+                WizardInProgress = false,
                 PreferredQualityMedia = string.IsNullOrWhiteSpace(preferredQualityMedia) ? "both" : preferredQualityMedia
             };
 
@@ -195,7 +197,8 @@ namespace NzbDrone.Core.Authentication
                 CreatedAt = DateTime.UtcNow,
                 LoginCount = 0,
                 WizardAutoShownCount = 0,
-                WizardAutoDisabled = false
+                WizardAutoDisabled = false,
+                WizardInProgress = false
             };
         }
 
@@ -250,6 +253,22 @@ namespace NzbDrone.Core.Authentication
             }
 
             user.WizardAutoShownCount = Math.Max(0, user.WizardAutoShownCount) + 1;
+            return _repo.Update(user);
+        }
+
+        public User SetWizardInProgress(User user, bool isInProgress)
+        {
+            if (user == null || user.Id <= 0)
+            {
+                return user;
+            }
+
+            if (user.WizardInProgress == isInProgress)
+            {
+                return user;
+            }
+
+            user.WizardInProgress = isInProgress;
             return _repo.Update(user);
         }
 

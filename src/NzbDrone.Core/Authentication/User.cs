@@ -17,6 +17,7 @@ namespace NzbDrone.Core.Authentication
         public int LoginCount { get; set; }
         public int WizardAutoShownCount { get; set; }
         public bool WizardAutoDisabled { get; set; }
+        public bool WizardInProgress { get; set; }
         public string PreferredQualityMedia { get; set; }
         public string ResetToken { get; set; }
         public DateTime? ResetTokenExpiration { get; set; }

@@ -49,6 +49,7 @@ function createMapStateToProps() {
         loginCount: currentUser?.loginCount ?? 0,
         wizardAutoShownCount: currentUser?.wizardAutoShownCount ?? 0,
         wizardAutoDisabled: currentUser?.wizardAutoDisabled ?? false,
+        wizardInProgress: currentUser?.wizardInProgress ?? false,
         needsSetup,
         authenticationEnabled,
         isAdmin,
@@ -145,10 +146,21 @@ class FirstRunWizardModalContentConnector extends Component {
   }
 
   maybeAutoOpenWizard(prevProps) {
-    const { currentUserId, needsSetup, isAdmin, loginCount, wizardAutoDisabled } = this.props;
+    const {
+      currentUserId,
+      needsSetup,
+      isAdmin,
+      loginCount,
+      wizardAutoDisabled,
+      wizardInProgress
+    } = this.props;
     const { autoOpenedForUserId } = this.state;
 
     if (!currentUserId || !needsSetup || !isAdmin) {
+      return;
+    }
+
+    if (wizardInProgress) {
       return;
     }
 
@@ -168,7 +180,8 @@ class FirstRunWizardModalContentConnector extends Component {
   }
 
   onDismiss = () => {
-    this.setState({ dismissed: true });
+    this.setState({ dismissed: true, started: false });
+    this.setWizardProgress(false);
     this.stopDragging();
   };
 
@@ -178,6 +191,8 @@ class FirstRunWizardModalContentConnector extends Component {
         this.setInitialPosition();
       }
     });
+
+    this.setWizardProgress(true);
   };
 
   onAutoOpenWizard = (userId) => {
@@ -187,6 +202,7 @@ class FirstRunWizardModalContentConnector extends Component {
       }
     });
 
+    this.setWizardProgress(true);
     this.recordAutoDisplay(userId);
   };
 
@@ -203,6 +219,24 @@ class FirstRunWizardModalContentConnector extends Component {
     }).request;
 
     request.always(() => {
+      fetchCurrentUser();
+    });
+  }
+
+  setWizardProgress(isInProgress) {
+    const { currentUserId, fetchCurrentUser } = this.props;
+    if (!currentUserId) {
+      return;
+    }
+
+    createAjaxRequest({
+      url: `/users/${currentUserId}/wizard-progress`,
+      method: 'POST',
+      dataType: 'json',
+      data: {
+        inProgress: isInProgress
+      }
+    }).request.always(() => {
       fetchCurrentUser();
     });
   }
@@ -225,7 +259,7 @@ class FirstRunWizardModalContentConnector extends Component {
   };
 
   getIsOpen() {
-    const { needsSetup, authenticationEnabled, isAdmin } = this.props;
+    const { needsSetup, authenticationEnabled, isAdmin, wizardInProgress } = this.props;
     const { dismissed, started } = this.state;
 
     if (!authenticationEnabled || !isAdmin) {
@@ -236,7 +270,7 @@ class FirstRunWizardModalContentConnector extends Component {
       return false;
     }
 
-    return needsSetup || started;
+    return needsSetup || started || wizardInProgress;
   }
 
   setInitialPosition() {
@@ -367,7 +401,7 @@ class FirstRunWizardModalContentConnector extends Component {
   }
 
   render() {
-    const { needsSetup, authenticationEnabled, isAdmin, ...otherProps } = this.props;
+    const { needsSetup, authenticationEnabled, isAdmin, wizardInProgress, ...otherProps } = this.props;
     const { position, isDragging } = this.state;
     const isOpen = this.getIsOpen();
 
@@ -409,6 +443,7 @@ FirstRunWizardModalContentConnector.propTypes = {
   loginCount: PropTypes.number.isRequired,
   wizardAutoShownCount: PropTypes.number.isRequired,
   wizardAutoDisabled: PropTypes.bool.isRequired,
+  wizardInProgress: PropTypes.bool.isRequired,
   rootFolderCount: PropTypes.number.isRequired,
   downloadClientCount: PropTypes.number.isRequired,
   indexerCount: PropTypes.number.isRequired,

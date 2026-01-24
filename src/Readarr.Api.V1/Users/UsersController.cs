@@ -82,6 +82,26 @@ namespace Readarr.Api.V1.Users
             return Accepted(Map(user));
         }
 
+        [HttpPost("{id:int}/wizard-progress")]
+        public ActionResult<UserResource> SetWizardInProgress(int id, [FromBody] UserWizardProgressResource resource)
+        {
+            var currentUser = GetCurrentUser();
+
+            if (!currentUser.IsAdmin && currentUser.Id != id)
+            {
+                return Forbid();
+            }
+
+            var user = _userService.FindUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user = _userService.SetWizardInProgress(user, resource?.InProgress ?? false);
+            return Accepted(Map(user));
+        }
+
         [HttpPut("{id:int}")]
         public ActionResult<UserResource> Update(int id, UserUpdateResource resource)
         {
@@ -177,6 +197,7 @@ namespace Readarr.Api.V1.Users
                 LoginCount = user.LoginCount,
                 WizardAutoShownCount = user.WizardAutoShownCount,
                 WizardAutoDisabled = user.WizardAutoDisabled,
+                WizardInProgress = user.WizardInProgress,
                 PreferredQualityMedia = user.PreferredQualityMedia
             };
         }
