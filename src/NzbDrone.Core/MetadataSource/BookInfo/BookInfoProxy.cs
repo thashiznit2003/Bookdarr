@@ -59,7 +59,6 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             _googleBooksRequestBuilder = new HttpRequestBuilder("https://www.googleapis.com/books/v1/{route}")
                 .KeepAlive()
                 .CreateFactory();
-
         }
 
         private bool UseGoogleBooks
@@ -88,6 +87,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 {
                     return GetGoogleAuthorInfo(authorName);
                 }
+
                 return GetOpenLibraryAuthorInfo(foreignAuthorId);
             }
             catch (BookInfoException e)
@@ -493,7 +493,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 TitleSlug = bookId,
                 Title = title,
                 ReleaseDate = ParseOpenLibrarySearchPublishedDate(doc),
-                PageCount = ParseOpenLibraryPageCount(doc["number_of_pages_median"]),
+                PageCount = ParseOpenLibraryPageCount(doc["number_of_pages_median"]) ?? 0,
                 Publisher = GetOpenLibraryPublisher(doc["publisher"]),
                 Language = ParseOpenLibrarySearchLanguage(doc["language"]),
                 Isbn13 = GetOpenLibrarySearchIsbn(doc["isbn"]),
@@ -948,7 +948,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
         private AuthorMetadata BuildOpenLibraryAuthorMetadata(string authorKey, string fallbackName, JObject authorJson = null)
         {
             var normalizedKey = NormalizeOpenLibraryAuthorKey(authorKey);
-            string name = fallbackName;
+            var name = fallbackName;
             string overview = null;
             string imageUrl = null;
             var links = new List<Links>();
@@ -2844,6 +2844,5 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 return false;
             }
         }
-
     }
 }

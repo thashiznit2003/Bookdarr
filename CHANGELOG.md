@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.12
+- Summary: Fix Open Library page-count mapping and StyleCop issues from the metadata fallback update.
+- Why: The VM build failed due to a nullable page count assignment and StyleCop/IDE warnings.
+- Impact: Open Library search results coalesce missing page counts to 0 and the build passes StyleCop.
+- Files: `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/NzbDrone.Core/MediaFiles/BookImport/Identification/CandidateService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.12`, push, then run the SSH update with the next log number (`update-13.log`).
+
 ## 2.1.11
 - Summary: Switch metadata fallback to Open Library and remove BookInfo/Goodreads metadata settings.
 - Why: Google Books quota limits need a working fallback, and Goodreads/BookInfo search paths are no longer reliable.
