@@ -45,7 +45,7 @@ function FirstRunWizardModalContent(props) {
       title: translate('FirstRunWizardRootFolderTitle'),
       body: (
         <div className={styles.stepBody}>
-          <div>{translate('FirstRunWizardRootFolderHelp')}</div>
+          <div className={styles.stepIntro}>{translate('FirstRunWizardRootFolderHelp')}</div>
           <div className={styles.statusRow}>
             <span className={styles.statusLabel}>
               {translate('FirstRunWizardConfiguredCount', [rootFolderCount])}
@@ -57,7 +57,8 @@ function FirstRunWizardModalContent(props) {
           <div className={styles.inlineActions}>
             <Button
               kind={kinds.PRIMARY}
-              size={sizes.SMALL}
+              size={sizes.MEDIUM}
+              className={styles.wizardActionButton}
               to="/settings/mediamanagement"
             >
               {translate('FirstRunWizardOpenMediaManagement')}
@@ -74,7 +75,7 @@ function FirstRunWizardModalContent(props) {
       title: translate('FirstRunWizardDownloadClientsTitle'),
       body: (
         <div className={styles.stepBody}>
-          <div>{translate('FirstRunWizardDownloadClientsHelp')}</div>
+          <div className={styles.stepIntro}>{translate('FirstRunWizardDownloadClientsHelp')}</div>
           <div className={styles.statusRow}>
             <span className={styles.statusLabel}>
               {translate('FirstRunWizardConfiguredCount', [downloadClientCount])}
@@ -86,7 +87,8 @@ function FirstRunWizardModalContent(props) {
           <div className={styles.inlineActions}>
             <Button
               kind={kinds.PRIMARY}
-              size={sizes.SMALL}
+              size={sizes.MEDIUM}
+              className={styles.wizardActionButton}
               to="/settings/downloadclients"
             >
               {translate('FirstRunWizardOpenDownloadClients')}
@@ -100,7 +102,7 @@ function FirstRunWizardModalContent(props) {
       title: translate('FirstRunWizardIndexersTitle'),
       body: (
         <div className={styles.stepBody}>
-          <div>{translate('FirstRunWizardIndexersHelp')}</div>
+          <div className={styles.stepIntro}>{translate('FirstRunWizardIndexersHelp')}</div>
           <div className={styles.statusRow}>
             <span className={styles.statusLabel}>
               {translate('FirstRunWizardConfiguredCount', [indexerCount])}
@@ -112,7 +114,8 @@ function FirstRunWizardModalContent(props) {
           <div className={styles.inlineActions}>
             <Button
               kind={kinds.PRIMARY}
-              size={sizes.SMALL}
+              size={sizes.MEDIUM}
+              className={styles.wizardActionButton}
               to="/settings/indexers"
             >
               {translate('FirstRunWizardOpenIndexers')}
@@ -126,7 +129,7 @@ function FirstRunWizardModalContent(props) {
       title: translate('FirstRunWizardMediaManagementTitle'),
       body: (
         <div className={styles.stepBody}>
-          <div>{translate('FirstRunWizardMediaManagementHelp')}</div>
+          <div className={styles.stepIntro}>{translate('FirstRunWizardMediaManagementHelp')}</div>
           <ul className={styles.recommendations}>
             <li>{translate('FirstRunWizardMediaManagementRename')}</li>
             <li>{translate('FirstRunWizardMediaManagementFormat')}</li>
@@ -145,7 +148,8 @@ function FirstRunWizardModalContent(props) {
           <div className={styles.inlineActions}>
             <SpinnerButton
               kind={kinds.PRIMARY}
-              size={sizes.SMALL}
+              size={sizes.MEDIUM}
+              className={styles.wizardActionButton}
               isSpinning={isSaving}
               onPress={onApplyRecommendedSettings}
             >
@@ -153,12 +157,23 @@ function FirstRunWizardModalContent(props) {
             </SpinnerButton>
             <Button
               kind={kinds.DEFAULT}
-              size={sizes.SMALL}
+              size={sizes.MEDIUM}
+              className={styles.wizardActionButton}
               to="/settings/mediamanagement"
             >
               {translate('FirstRunWizardOpenMediaManagement')}
             </Button>
           </div>
+        </div>
+      )
+    },
+    {
+      key: 'wrapup',
+      title: translate('FirstRunWizardOverviewTitle'),
+      body: (
+        <div className={styles.stepBody}>
+          <div className={styles.stepIntro}>{translate('FirstRunWizardOverviewHelp')}</div>
+          <div className={styles.stepIntro}>{translate('FirstRunWizardOverviewEnjoy')}</div>
         </div>
       )
     }
@@ -189,7 +204,7 @@ function FirstRunWizardModalContent(props) {
 
       <ModalBody>
         <div className={styles.container}>
-          <div>{translate('FirstRunWizardIntro')}</div>
+          <div className={styles.stepIntro}>{translate('FirstRunWizardIntro')}</div>
           <div className={styles.headerRow}>
             <div className={styles.stepTitle}>{step.title}</div>
             <div className={styles.stepCount}>
@@ -202,17 +217,11 @@ function FirstRunWizardModalContent(props) {
 
       <ModalFooter>
         <div className={styles.footerActions}>
-          <Button
-            kind={kinds.DEFAULT}
-            size={sizes.SMALL}
-            onPress={onDismiss}
-          >
-            {translate('FirstRunWizardFinish')}
-          </Button>
-          <div className={styles.footerRight}>
+          <div className={styles.footerLeft}>
             <Button
               kind={kinds.DEFAULT}
-              size={sizes.SMALL}
+              size={sizes.MEDIUM}
+              className={styles.wizardNavButton}
               onPress={() => setStepIndex(Math.max(0, stepIndex - 1))}
               isDisabled={stepIndex === 0}
             >
@@ -220,11 +229,22 @@ function FirstRunWizardModalContent(props) {
             </Button>
             <Button
               kind={kinds.PRIMARY}
-              size={sizes.SMALL}
+              size={sizes.MEDIUM}
+              className={styles.wizardNavButton}
               onPress={() => setStepIndex(Math.min(steps.length - 1, stepIndex + 1))}
               isDisabled={isLastStep}
             >
               {translate('FirstRunWizardNext')}
+            </Button>
+          </div>
+          <div className={styles.footerRight}>
+            <Button
+              kind={kinds.SUCCESS}
+              size={sizes.MEDIUM}
+              className={styles.wizardFinishButton}
+              onPress={onDismiss}
+            >
+              {translate('FirstRunWizardFinish')}
             </Button>
           </div>
         </div>

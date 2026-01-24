@@ -294,6 +294,7 @@ class InteractiveImportModalContent extends Component {
       isFetching,
       isPopulated,
       isSaving,
+      isCombineInProgress,
       error,
       items,
       sortKey,
@@ -528,7 +529,7 @@ class InteractiveImportModalContent extends Component {
 
             <Button
               kind={kinds.SUCCESS}
-              isDisabled={isSaving || !selectedIds.length || !!invalidRowsSelected.length || inconsistentBookReleases}
+              isDisabled={isSaving || isCombineInProgress || !selectedIds.length || !!invalidRowsSelected.length || inconsistentBookReleases}
               onPress={this.onImportSelectedPress}
             >
               Import
@@ -619,6 +620,7 @@ InteractiveImportModalContent.propTypes = {
   sortKey: PropTypes.string,
   sortDirection: PropTypes.string,
   interactiveImportErrorMessage: PropTypes.string,
+  isCombineInProgress: PropTypes.bool,
   onSortPress: PropTypes.func.isRequired,
   onFilterExistingFilesChange: PropTypes.func.isRequired,
   onReplaceExistingFilesChange: PropTypes.func.isRequired,

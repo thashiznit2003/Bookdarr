@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.13
+- Summary: Add available books to user libraries, harden manual import during audiobook combine, and refine the first-run wizard.
+- Why: Available books were only added to the pool, manual import failed silently during combine, and the wizard needed clearer guidance and re-launch controls.
+- Impact: Author available-book adds now also add the book to the logged-in user’s library; manual import is blocked with a clear message if a combine is running; the wizard gains stronger CTA styling, updated indexer guidance, a Radarr/Sonarr overview step, a Settings → General launcher, and auto-repositions to keep buttons visible.
+- Files: `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `frontend/src/InteractiveImport/Interactive/InteractiveImportModalContentConnector.js`, `frontend/src/InteractiveImport/Interactive/InteractiveImportModalContent.js`, `frontend/src/FirstRun/FirstRunWizardModalContent.js`, `frontend/src/FirstRun/FirstRunWizardModalContent.css`, `frontend/src/FirstRun/FirstRunWizardModalContentConnector.js`, `frontend/src/Settings/General/GeneralSettings.js`, `src/NzbDrone.Core/Localization/Core/en.json`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.13`, push, then run the SSH update with the next log number (`update-14.log`).
+
 ## 2.1.12
 - Summary: Fix Open Library page-count mapping and StyleCop issues from the metadata fallback update.
 - Why: The VM build failed due to a nullable page count assignment and StyleCop/IDE warnings.

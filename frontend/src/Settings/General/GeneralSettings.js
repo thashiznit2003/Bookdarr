@@ -7,7 +7,8 @@ import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
-import { kinds } from 'Helpers/Props';
+import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
+import { icons, kinds } from 'Helpers/Props';
 import SettingsToolbarConnector from 'Settings/SettingsToolbarConnector';
 import translate from 'Utilities/String/translate';
 import AdvancedSettings from './AdvancedSettings';
@@ -85,6 +86,12 @@ class GeneralSettings extends Component {
     this.props.onConfirmRestart();
   };
 
+  onOpenFirstRunWizard = () => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('bookdarr:openFirstRunWizard'));
+    }
+  };
+
   onCloseRestartRequiredModalOpen = () => {
     this.setState({ isRestartRequiredModalOpen: false });
   };
@@ -111,6 +118,13 @@ class GeneralSettings extends Component {
     return (
       <PageContent title={translate('GeneralSettings')}>
         <SettingsToolbarConnector
+          additionalButtons={
+            <PageToolbarButton
+              label={translate('FirstRunWizardLaunch')}
+              iconName={icons.QUICK}
+              onPress={this.onOpenFirstRunWizard}
+            />
+          }
           {...otherProps}
         />
 

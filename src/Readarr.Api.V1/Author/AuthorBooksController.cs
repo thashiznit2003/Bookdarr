@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.ImportLists.Exclusions;
 using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MetadataSource;
 using Readarr.Api.V1.Books;
 using Readarr.Http;
+using Readarr.Http.REST;
 
 namespace Readarr.Api.V1.Author
 {
@@ -20,13 +22,17 @@ namespace Readarr.Api.V1.Author
         private readonly IMapCoversToLocal _coverMapper;
         private readonly IProvideAuthorInfo _authorInfo;
         private readonly IImportListExclusionService _importListExclusionService;
+        private readonly IUserLibraryService _userLibraryService;
+        private readonly IUserService _userService;
 
         public AuthorBooksController(IAddBookService addBookService,
                                      IAuthorService authorService,
                                      IBookService bookService,
                                      IMapCoversToLocal coverMapper,
                                      IProvideAuthorInfo authorInfo,
-                                     IImportListExclusionService importListExclusionService)
+                                     IImportListExclusionService importListExclusionService,
+                                     IUserLibraryService userLibraryService,
+                                     IUserService userService)
         {
             _addBookService = addBookService;
             _authorService = authorService;
@@ -34,6 +40,8 @@ namespace Readarr.Api.V1.Author
             _coverMapper = coverMapper;
             _authorInfo = authorInfo;
             _importListExclusionService = importListExclusionService;
+            _userLibraryService = userLibraryService;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -70,6 +78,12 @@ namespace Readarr.Api.V1.Author
             books.ForEach(book => book.Monitored = true);
 
             var added = _addBookService.AddBooks(books);
+            var user = GetCurrentUser();
+
+            foreach (var book in added)
+            {
+                _userLibraryService.AddOrGetUserBook(user.Id, book.Id, true, true);
+            }
 
             return Ok(MapToResource(added));
         }
@@ -154,6 +168,18 @@ namespace Readarr.Api.V1.Author
             }
 
             return resource;
+        }
+
+        private User GetCurrentUser()
+        {
+            var user = _userService.FindUser(HttpContext?.User);
+
+            if (user == null)
+            {
+                throw new UnauthorizedException("User is not authenticated.");
+            }
+
+            return user;
         }
     }
 }

@@ -19,6 +19,7 @@ import styles from './FirstRunWizardModalContent.css';
 
 const DISMISS_KEY = 'bookdarr.firstRunWizardDismissed';
 const STARTED_KEY = 'bookdarr.firstRunWizardStarted';
+const OPEN_EVENT = 'bookdarr:openFirstRunWizard';
 
 function createMapStateToProps() {
   return createSelector(
@@ -87,6 +88,7 @@ class FirstRunWizardModalContentConnector extends Component {
 
   componentDidMount() {
     this.loadDismissedState();
+    this.bindOpenEvent();
     this.props.fetchRootFolders();
     this.props.fetchDownloadClients();
     this.props.fetchIndexers();
@@ -101,6 +103,10 @@ class FirstRunWizardModalContentConnector extends Component {
       this.setInitialPosition();
     }
 
+    if (isOpen && this._dockRef.current && !this.state.isDragging) {
+      this.constrainToViewport();
+    }
+
     if (this.props.needsSetup && !this.state.started) {
       this.setStarted();
     }
@@ -111,7 +117,24 @@ class FirstRunWizardModalContentConnector extends Component {
   }
 
   componentWillUnmount() {
+    this.unbindOpenEvent();
     this.stopDragging();
+  }
+
+  bindOpenEvent() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.addEventListener(OPEN_EVENT, this.onOpenWizard);
+  }
+
+  unbindOpenEvent() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.removeEventListener(OPEN_EVENT, this.onOpenWizard);
   }
 
   loadDismissedState() {
@@ -139,6 +162,19 @@ class FirstRunWizardModalContentConnector extends Component {
 
     this.setState({ dismissed: true });
     this.stopDragging();
+  };
+
+  onOpenWizard = () => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem(DISMISS_KEY, 'false');
+      window.localStorage.setItem(STARTED_KEY, 'true');
+    }
+
+    this.setState({ dismissed: false, started: true }, () => {
+      if (this._dockRef.current) {
+        this.setInitialPosition();
+      }
+    });
   };
 
   onApplyRecommendedSettings = () => {
@@ -177,6 +213,24 @@ class FirstRunWizardModalContentConnector extends Component {
     const y = Math.max(margin, window.innerHeight - rect.height - margin);
 
     this.setState({ position: { x, y } });
+  }
+
+  constrainToViewport() {
+    if (!this._dockRef.current || !this.state.position) {
+      return;
+    }
+
+    const rect = this._dockRef.current.getBoundingClientRect();
+    const margin = 16;
+    const maxX = Math.max(margin, window.innerWidth - rect.width - margin);
+    const maxY = Math.max(margin, window.innerHeight - rect.height - margin);
+
+    const x = Math.min(Math.max(margin, this.state.position.x), maxX);
+    const y = Math.min(Math.max(margin, this.state.position.y), maxY);
+
+    if (x !== this.state.position.x || y !== this.state.position.y) {
+      this.setState({ position: { x, y } });
+    }
   }
 
   getEventPoint(event) {
