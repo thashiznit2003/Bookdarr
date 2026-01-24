@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.19
+- Summary: Harden Open Library search parsing and show cover images in search results.
+- Why: Invalid publish years were crashing searches, and author search results lacked images.
+- Impact: Open Library publish years are validated before conversion, author search results now include Open Library photo covers when available, and book searches fall back to ISBN-based covers when no cover ID is supplied.
+- Files: `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.19`, push, then run the SSH update with the next log number (`update-12.log`).
+
 ## 2.1.18
 - Summary: Keep the first-run wizard open after indexer imports and restyle the auto-show counter.
 - Why: The wizard closed as soon as setup items were imported, and the counter overlay was oversized and obscured text.

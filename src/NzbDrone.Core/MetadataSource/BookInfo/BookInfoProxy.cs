@@ -487,6 +487,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             var authorMetadata = BuildOpenLibraryAuthorMetadataFromSearch(authorName, authorKey);
 
             var bookId = BuildOpenLibraryWorkId(workKey);
+            var isbn = GetOpenLibrarySearchIsbn(doc["isbn"]);
             var edition = new Edition
             {
                 ForeignEditionId = bookId,
@@ -496,7 +497,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 PageCount = ParseOpenLibraryPageCount(doc["number_of_pages_median"]) ?? 0,
                 Publisher = GetOpenLibraryPublisher(doc["publisher"]),
                 Language = ParseOpenLibrarySearchLanguage(doc["language"]),
-                Isbn13 = GetOpenLibrarySearchIsbn(doc["isbn"]),
+                Isbn13 = isbn,
                 Ratings = new Ratings { Votes = 0, Value = 0 }
             };
 
@@ -506,6 +507,14 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 edition.Images.Add(new MediaCover.MediaCover
                 {
                     Url = $"https://covers.openlibrary.org/b/id/{coverId.Value}-L.jpg",
+                    CoverType = MediaCoverTypes.Cover
+                });
+            }
+            else if (isbn.IsNotNullOrWhiteSpace())
+            {
+                edition.Images.Add(new MediaCover.MediaCover
+                {
+                    Url = $"https://covers.openlibrary.org/b/isbn/{isbn}-L.jpg",
                     CoverType = MediaCoverTypes.Cover
                 });
             }
@@ -574,19 +583,37 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             var yearToken = doc?["first_publish_year"];
             if (yearToken != null && int.TryParse(yearToken.ToString(), out var year))
             {
-                return new DateTime(year, 1, 1);
+                return TryBuildOpenLibraryDate(year);
             }
 
             if (doc?["publish_year"] is JArray years)
             {
-                var yearValue = years.Select(x => x.ToString()).FirstOrDefault();
-                if (int.TryParse(yearValue, out year))
+                foreach (var yearValue in years.Select(x => x.ToString()))
                 {
-                    return new DateTime(year, 1, 1);
+                    if (!int.TryParse(yearValue, out year))
+                    {
+                        continue;
+                    }
+
+                    var date = TryBuildOpenLibraryDate(year);
+                    if (date.HasValue)
+                    {
+                        return date;
+                    }
                 }
             }
 
             return null;
+        }
+
+        private static DateTime? TryBuildOpenLibraryDate(int year)
+        {
+            if (year < 1 || year > 9999)
+            {
+                return null;
+            }
+
+            return new DateTime(year, 1, 1);
         }
 
         private List<Book> SearchGoogleBooks(string query, int maxResults = 20, int startIndex = 0)
@@ -931,6 +958,16 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
                     var authorKey = NormalizeOpenLibraryAuthorKey(doc["key"]?.ToString());
                     var metadata = BuildOpenLibraryAuthorMetadataFromSearch(name, authorKey);
+                    var photoToken = doc["photo_id"] ?? doc["photos"]?.FirstOrDefault();
+                    var photoId = photoToken?.ToString();
+                    if (photoId.IsNotNullOrWhiteSpace())
+                    {
+                        metadata.Images.Add(new MediaCover.MediaCover
+                        {
+                            Url = $"https://covers.openlibrary.org/a/id/{photoId}-L.jpg",
+                            CoverType = MediaCoverTypes.Poster
+                        });
+                    }
 
                     return new Author
                     {
