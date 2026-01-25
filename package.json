@@ -96,7 +96,7 @@
     "@types/redux-actions": "2.6.5",
     "@typescript-eslint/eslint-plugin": "6.21.0",
     "@typescript-eslint/parser": "8.52.0",
-    "autoprefixer": "10.4.20",
+    "autoprefixer": "10.4.23",
     "babel-loader": "10.0.0",
     "babel-plugin-inline-classnames": "2.0.1",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
