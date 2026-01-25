@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.38
+- Summary: Persist user ratings, suppress autofill on non-login forms, and roll dependency/security updates.
+- Why: Ratings were not saving when a user book did not exist, password managers were hijacking text inputs, and GitHub alerts required package upgrades.
+- Impact: User ratings persist for all library books, form fields default to opt-out autofill, and updated dependencies build cleanly.
+- Files: `src/NzbDrone.Core/Books/Services/UserLibraryService.cs`, `frontend/src/Components/Form/TextInput.js`, `frontend/src/Components/Form/TextArea.js`, `frontend/src/login.html`, `package.json`, `yarn.lock`, `src/Directory.Packages.props`, `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.38`, push, then run the SSH update with the next log number.
+
 ## 2.1.37
 - Summary: Fix build issues in BookInfoProxy prefix handling and log formatting.
 - Why: VM build failed due to variable shadowing and StyleCop layout rules.
