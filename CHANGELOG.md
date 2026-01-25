@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.35
+- Summary: Fix build failure from queue service using directives.
+- Why: VM update failed with StyleCop SA1210/IDE0005 after adding queue type heuristics.
+- Impact: Build passes again without changing runtime behavior.
+- Files: `src/NzbDrone.Core/Queue/QueueService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.35`, push, then run the SSH update with the next log number.
+
 ## 2.1.34
 - Summary: Preserve queue type from grabbed metadata, hide queue/history Formats, and fix Open Library author fallback.
 - Why: Queue items were showing Unknown Text, ratings weren’t sticking, and author available books failed when Open Library was selected.
