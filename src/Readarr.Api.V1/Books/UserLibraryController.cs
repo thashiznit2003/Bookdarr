@@ -10,6 +10,7 @@ using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.MetadataSource;
 using NzbDrone.Core.RootFolders;
+using NzbDrone.Http.REST.Attributes;
 using Readarr.Api.V1.Author;
 using Readarr.Http;
 using Readarr.Http.REST;
@@ -85,8 +86,19 @@ namespace Readarr.Api.V1.Books
         }
 
         [HttpPut("{bookId:int}/rating")]
+        [SkipValidation]
         public ActionResult<UserLibraryResource> SetUserRating(int bookId, [FromBody] UserLibraryResource resource)
         {
+            if (bookId <= 0)
+            {
+                return BadRequest("bookId is required");
+            }
+
+            if (resource == null)
+            {
+                return BadRequest("userRating is required");
+            }
+
             var user = GetCurrentUser();
             var updated = _libraryService.SetUserRating(user.Id, bookId, resource?.UserRating);
 

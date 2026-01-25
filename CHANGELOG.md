@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.39
+- Summary: Fix user rating API validation for `/user/library/{bookId}/rating`.
+- Why: PUT requests validated against `Id` instead of the `bookId` route, causing 400 errors.
+- Impact: Ratings now save without validation errors.
+- Files: `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.39`, push, then run the SSH update with the next log number.
+
 ## 2.1.38
 - Summary: Persist user ratings, suppress autofill on non-login forms, and roll dependency/security updates.
 - Why: Ratings were not saving when a user book did not exist, password managers were hijacking text inputs, and GitHub alerts required package upgrades.
