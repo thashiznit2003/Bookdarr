@@ -260,6 +260,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
                         return SearchOpenLibraryByIsbn(normalizedIsbn);
                     }
+
                     case QualifiedSearchType.Asin:
                     {
                         if (!IsLikelyAsin(slug))
@@ -269,6 +270,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
                         return SearchOpenLibraryByAsin(slug);
                     }
+
                     case QualifiedSearchType.Work:
                     {
                         if (!TryParseOpenLibraryWorkId(slug, out var explicitWorkId))
@@ -278,6 +280,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
                         return SearchOpenLibraryByWorkId(explicitWorkId);
                     }
+
                     case QualifiedSearchType.Edition:
                     {
                         var normalizedEdition = NormalizeOpenLibraryEditionKey(slug);
@@ -288,6 +291,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
                         return SearchOpenLibraryByEditionId(normalizedEdition);
                     }
+
                     case QualifiedSearchType.Author:
                     {
                         if (!TryParseOpenLibraryAuthorId(slug, out var explicitAuthorId))
