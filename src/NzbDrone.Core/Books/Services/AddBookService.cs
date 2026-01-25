@@ -119,6 +119,12 @@ namespace NzbDrone.Core.Books
             }
             catch (BookNotFoundException)
             {
+                if (newBook?.Editions?.Value?.Any() == true && newBook.AuthorMetadata?.Value != null)
+                {
+                    _logger.Warn("Book with foreign ID {0} was not found by the metadata provider. Using existing metadata payload.", newBook.ForeignBookId);
+                    return newBook;
+                }
+
                 _logger.Error("Book with foreign ID {0} was not found by the metadata provider.", newBook.ForeignBookId);
 
                 throw new ValidationException(new List<ValidationFailure>
@@ -134,7 +140,22 @@ namespace NzbDrone.Core.Books
             newBook.Editions.Value.ForEach(x => x.Monitored = false);
             newBook.Editions.Value.Single(x => x.ForeignEditionId == editionId).Monitored = true;
 
-            var metadata = tuple.Item3.FirstOrDefault(x => x.ForeignAuthorId == tuple.Item1);
+            var metadata = tuple.Item3.FirstOrDefault(x => x.ForeignAuthorId == tuple.Item1) ??
+                tuple.Item2.AuthorMetadata?.Value ??
+                tuple.Item2.Author?.Value?.Metadata?.Value ??
+                tuple.Item3.FirstOrDefault() ??
+                newBook.AuthorMetadata?.Value;
+
+            if (metadata == null)
+            {
+                metadata = new AuthorMetadata
+                {
+                    ForeignAuthorId = newBook.Author?.Value?.ForeignAuthorId ?? "unknown",
+                    Name = newBook.Author?.Value?.Name ?? "Unknown Author",
+                    Status = AuthorStatusType.Continuing,
+                    Ratings = new Ratings { Votes = 0, Value = 0 }
+                };
+            }
             newBook.AuthorMetadata = metadata;
 
             return newBook;

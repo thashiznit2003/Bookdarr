@@ -61,6 +61,21 @@ const writeBookTagOptions = [
   }
 ];
 
+const metadataProviderOptions = [
+  {
+    key: 'googlebooks',
+    get value() {
+      return translate('GoogleBooksProvider');
+    }
+  },
+  {
+    key: 'openlibrary',
+    get value() {
+      return translate('OpenLibraryProvider');
+    }
+  }
+];
+
 function MetadataProvider(props) {
   const {
     isFetching,
@@ -89,6 +104,20 @@ function MetadataProvider(props) {
         hasSettings && !isFetching && !error &&
           <Form>
             <FieldSet legend={translate('SearchMetadata')}>
+              <FormGroup>
+                <FormLabel>{translate('MetadataProvider')}</FormLabel>
+
+                <FormInputGroup
+                  type={inputTypes.SELECT}
+                  name="metadataProvider"
+                  values={metadataProviderOptions}
+                  helpText={translate('MetadataProviderHelpText')}
+                  helpTextWarning={translate('MetadataProviderRestartHelpText')}
+                  onChange={onInputChange}
+                  {...settings.metadataProvider}
+                />
+              </FormGroup>
+
               <FormGroup>
                 <FormLabel>
                   <span className={styles.apiKeyLabel}>

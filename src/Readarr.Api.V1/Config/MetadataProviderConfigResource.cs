@@ -5,6 +5,7 @@ namespace Readarr.Api.V1.Config
 {
     public class MetadataProviderConfigResource : RestResource
     {
+        public string MetadataProvider { get; set; }
         public string GoogleBooksApiKey { get; set; }
         public WriteAudioTagsType WriteAudioTags { get; set; }
         public bool ScrubAudioTags { get; set; }
@@ -19,6 +20,7 @@ namespace Readarr.Api.V1.Config
         {
             return new MetadataProviderConfigResource
             {
+                MetadataProvider = model.MetadataProvider,
                 GoogleBooksApiKey = model.GoogleBooksApiKey,
                 WriteAudioTags = model.WriteAudioTags,
                 ScrubAudioTags = model.ScrubAudioTags,

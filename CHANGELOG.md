@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.32
+- Summary: Add metadata provider switcher and make available-book adds more resilient.
+- Why: Users need to prioritize Open Library for search reliability, and some available books failed to add due to metadata lookups.
+- Impact: Metadata settings now let you select the provider (with restart guidance), and available books fall back to their existing metadata when the provider can’t resolve IDs.
+- Files: `src/Readarr.Api.V1/Config/MetadataProviderConfigResource.cs`, `frontend/src/Settings/Metadata/MetadataProvider/MetadataProvider.js`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/NzbDrone.Core/Books/Services/AddBookService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.32`, push, then run the SSH update with the next log number.
+
 ## 2.1.31
 - Summary: Show remote cover URLs for author available books.
 - Why: Available books were still displaying placeholder covers despite having remote cover data.
