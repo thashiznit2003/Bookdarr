@@ -95,7 +95,7 @@ namespace Readarr.Api.V1.Search
             }
         }
 
-        private static void UseRemoteCoverUrls(IEnumerable<MediaCover.MediaCover> covers)
+        private static void UseRemoteCoverUrls(IEnumerable<MediaCover> covers)
         {
             if (covers == null)
             {

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.22
+- Summary: Fix build error in search cover URL helper.
+- Why: The MediaCover type was referenced with an invalid nested class name.
+- Impact: Search cover URL fallback compiles cleanly and VM updates build successfully.
+- Files: `src/Readarr.Api.V1/Search/SearchController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.22`, push, then run the SSH update with the next log number (`update-12.log`).
+
 ## 2.1.21
 - Summary: Show remote cover URLs for search results when items are not in the database.
 - Why: MediaCoverProxy requires UI auth and search images were still resolving to placeholders without credentials.
