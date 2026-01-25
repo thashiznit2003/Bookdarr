@@ -78,7 +78,9 @@ namespace NzbDrone.Core.Books
                 catch (Exception ex)
                 {
                     // Catch Import Errors for now until we get things fixed up
-                    _logger.Error(ex, "Failed to import id: {0} - {1}",
+                    _logger.Error(
+                        ex,
+                        "Failed to import id: {0} - {1}",
                         SanitizeForLog(s.Metadata.Value.ForeignAuthorId),
                         SanitizeForLog(s.Metadata.Value.Name));
                 }

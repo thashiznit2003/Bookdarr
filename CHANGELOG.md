@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.37
+- Summary: Fix build issues in BookInfoProxy prefix handling and log formatting.
+- Why: VM build failed due to variable shadowing and StyleCop layout rules.
+- Impact: Code scanning fixes build cleanly with no runtime behavior change.
+- Files: `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/NzbDrone.Core/Books/Services/AddAuthorService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.37`, push, then run the SSH update with the next log number.
+
 ## 2.1.36
 - Summary: Harden log messages and validate explicit Open Library search prefixes.
 - Why: Code scanning flagged log forging and user-controlled bypass warnings.

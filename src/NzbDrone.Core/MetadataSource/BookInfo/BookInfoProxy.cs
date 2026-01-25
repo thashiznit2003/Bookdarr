@@ -291,12 +291,12 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
                 if (prefix == "work")
                 {
-                    if (!TryParseOpenLibraryWorkId(slug, out var workId))
+                    if (!TryParseOpenLibraryWorkId(slug, out var explicitWorkId))
                     {
                         return new List<Book>();
                     }
 
-                    return SearchOpenLibraryByWorkId(workId);
+                    return SearchOpenLibraryByWorkId(explicitWorkId);
                 }
 
                 if (prefix == "edition")
@@ -312,12 +312,12 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
                 if (prefix == "author")
                 {
-                    if (!TryParseOpenLibraryAuthorId(slug, out var authorId))
+                    if (!TryParseOpenLibraryAuthorId(slug, out var explicitAuthorId))
                     {
                         return new List<Book>();
                     }
 
-                    return SearchOpenLibraryByAuthorId(authorId);
+                    return SearchOpenLibraryByAuthorId(explicitAuthorId);
                 }
             }
 
