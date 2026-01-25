@@ -63,9 +63,9 @@ under that license.
 
 This fork began from Readarr and Bookshelf and evolved into Bookdarr. Nearly
 all changes in this fork were implemented using OpenAI's Codex extension in VS
-Code, with a minimal amount done using Claude Code. The creator makes no claim
-to the original intent or source of Readarr, Bookshelf, ffmpeg, or any ebook
-conversion, viewing, audiobook playing, or other tools included in Bookdarr. 
+Code, with a minimal amount done using Claude Code. The creator is not a traditional 
+developer, and makes no claim to the original intent or source of Readarr, Bookshelf, 
+ffmpeg, or any ebook conversion, viewing, audiobook playing, or other tools included in Bookdarr. 
 The creator does not want your data, does not scrape your data, and will not 
-ever try to acquire your data.  This application is running entirely independently 
+ever try to acquire your data. This application is running entirely independently 
 on your own machine and is not reporting back to anywhere.
