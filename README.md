@@ -42,7 +42,7 @@ Downloads should be where your download client saves what is downloaded.  Change
 
 ## Usage Notes
 
-I decided that I wanted to read more, and preferably listen to Audiobooks as my 2026 New Year's resolution, and as an avid user of the -arr stack, I decided to try my hand at making Readarr work for me.  
+I decided that I wanted to read more, and preferably listen to Audiobooks as my 2026 New Year's resolution, and as an avid user of the -arr stack, I decided to try making Readarr work for me.  
 
 Readarr, as it exists now, sucks. Thus, I forked a fork of it and made Bookdarr:
 
