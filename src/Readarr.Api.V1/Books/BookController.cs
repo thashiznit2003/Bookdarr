@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,6 +22,7 @@ using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.MediaFiles.Events;
 using NzbDrone.Core.Messaging.Events;
 using NzbDrone.Core.MetadataSource;
+using NzbDrone.Core.MetadataSource.BookInfo;
 using NzbDrone.Core.Parser;
 using NzbDrone.Core.Validation;
 using NzbDrone.Core.Validation.Paths;
@@ -48,6 +50,7 @@ namespace Readarr.Api.V1.Books
         private readonly IRefreshBookService _refreshBookService;
         private readonly IMediaFileService _mediaFileService;
         private readonly IConfigService _configService;
+        private readonly IProvideBookInfo _bookInfo;
         private readonly ISearchForNewBook _bookSearchProxy;
         private readonly IDiskProvider _diskProvider;
         private readonly IPendingReleaseService _pendingReleaseService;
@@ -65,6 +68,7 @@ namespace Readarr.Api.V1.Books
                           IRefreshBookService refreshBookService,
                           IMediaFileService mediaFileService,
                           IConfigService configService,
+                          IProvideBookInfo bookInfo,
                           ISearchForNewBook bookSearchProxy,
                           IMapCoversToLocal coverMapper,
                           IUpgradableSpecification upgradableSpecification,
@@ -86,6 +90,7 @@ namespace Readarr.Api.V1.Books
             _refreshBookService = refreshBookService;
             _mediaFileService = mediaFileService;
             _configService = configService;
+            _bookInfo = bookInfo;
             _bookSearchProxy = bookSearchProxy;
             _diskProvider = diskProvider;
             _pendingReleaseService = pendingReleaseService;
@@ -238,6 +243,8 @@ namespace Readarr.Api.V1.Books
                 _editionService.SetMonitored(preferredEdition);
             }
 
+            TryAppendAlternateCover(preferredEdition);
+
             var refreshed = _bookService.GetBook(id);
             _coverMapper.DeleteBookCovers(refreshed.Id);
             _coverMapper.EnsureBookCovers(refreshed);
@@ -360,6 +367,54 @@ namespace Readarr.Api.V1.Books
             _coverMapper.EnsureBookCovers(refreshed);
 
             return Accepted(MapToResource(refreshed, true));
+        }
+
+        private void TryAppendAlternateCover(Edition edition)
+        {
+            if (edition == null)
+            {
+                return;
+            }
+
+            if (!_configService.MetadataProvider.Equals("googlebooks", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (edition.Isbn13.IsNullOrWhiteSpace())
+            {
+                return;
+            }
+
+            if (!(_bookInfo is BookInfoProxy bookInfoProxy))
+            {
+                return;
+            }
+
+            var covers = bookInfoProxy.GetOpenLibraryCoverImages(edition.Isbn13);
+            if (!covers.Any())
+            {
+                return;
+            }
+
+            edition.Images ??= new List<MediaCover>();
+            var added = false;
+
+            foreach (var cover in covers)
+            {
+                if (edition.Images.Any(x => x.Url.Equals(cover.Url, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                edition.Images.Add(cover);
+                added = true;
+            }
+
+            if (added)
+            {
+                _editionService.UpdateMany(new List<Edition> { edition });
+            }
         }
 
         private Edition GetPreferredEdition(List<Edition> editions)

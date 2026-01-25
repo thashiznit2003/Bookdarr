@@ -125,6 +125,17 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
         }
 
+        public List<MediaCover.MediaCover> GetOpenLibraryCoverImages(string isbn)
+        {
+            var data = GetOpenLibraryBookData(isbn);
+            if (data == null)
+            {
+                return new List<MediaCover.MediaCover>();
+            }
+
+            return BuildOpenLibraryImages(data);
+        }
+
         public List<object> SearchForNewEntity(string title)
         {
             var books = SearchForNewBook(title, null, false);

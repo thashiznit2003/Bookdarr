@@ -81,7 +81,7 @@ const baseColumns = [
 
 function getColumns(isSmallScreen) {
   const visibleColumns = isSmallScreen ?
-    ['title', 'peers', 'releaseWeight', 'rejections'] :
+    ['title', 'peers', 'qualityWeight', 'releaseWeight'] :
     baseColumns.map((column) => column.name);
 
   return baseColumns

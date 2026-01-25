@@ -8,6 +8,7 @@ import IconButton from 'Components/Link/IconButton';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
+import TablePager from 'Components/Table/TablePager';
 import { icons, kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import styles from './AuthorDetailsAvailableBooks.css';
@@ -207,6 +208,24 @@ class AuthorDetailsAvailableBooks extends Component {
     });
   };
 
+  onFirstPagePress = () => {
+    this.props.onPageChange(1);
+  };
+
+  onPreviousPagePress = () => {
+    const { page } = this.props;
+    this.props.onPageChange(Math.max(page - 1, 1));
+  };
+
+  onNextPagePress = () => {
+    const { page, totalPages } = this.props;
+    this.props.onPageChange(Math.min(page + 1, totalPages));
+  };
+
+  onLastPagePress = () => {
+    this.props.onPageChange(this.props.totalPages);
+  };
+
   //
   // Render
 
@@ -218,6 +237,9 @@ class AuthorDetailsAvailableBooks extends Component {
       excludeError,
       isAdding,
       isExcluding,
+      page,
+      totalPages,
+      totalRecords,
       onAddBookPress
     } = this.props;
 
@@ -235,6 +257,7 @@ class AuthorDetailsAvailableBooks extends Component {
     const selectionCount = isSelecting ? this.getSelectionCount() : 0;
     const allSelected = isSelecting && items.length > 0 && selectionCount === items.length;
     const isWorking = isAdding || isExcluding;
+    const showPager = !error && totalPages > 1;
 
     const confirmTitle = pendingRemoveIds.length > 1 ?
       translate('RemoveAvailableBooksConfirmTitle') :
@@ -407,6 +430,23 @@ class AuthorDetailsAvailableBooks extends Component {
             </div>
         }
 
+        {
+          showPager &&
+            <div className={styles.pager}>
+              <TablePager
+                page={page}
+                totalPages={totalPages}
+                totalRecords={totalRecords}
+                isFetching={isFetching}
+                onFirstPagePress={this.onFirstPagePress}
+                onPreviousPagePress={this.onPreviousPagePress}
+                onNextPagePress={this.onNextPagePress}
+                onLastPagePress={this.onLastPagePress}
+                onPageSelect={this.props.onPageChange}
+              />
+            </div>
+        }
+
         <ConfirmModal
           isOpen={isConfirmRemoveOpen}
           title={confirmTitle}
@@ -442,9 +482,13 @@ AuthorDetailsAvailableBooks.propTypes = {
   excludeError: PropTypes.object,
   isAdding: PropTypes.bool.isRequired,
   isExcluding: PropTypes.bool.isRequired,
+  page: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
+  totalRecords: PropTypes.number.isRequired,
   onAddBookPress: PropTypes.func.isRequired,
   onAddBooksPress: PropTypes.func.isRequired,
-  onExcludeBooksPress: PropTypes.func.isRequired
+  onExcludeBooksPress: PropTypes.func.isRequired,
+  onPageChange: PropTypes.func.isRequired
 };
 
 export default AuthorDetailsAvailableBooks;

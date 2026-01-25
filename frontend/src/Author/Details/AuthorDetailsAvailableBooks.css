@@ -55,6 +55,10 @@
   gap: 12px;
 }
 
+.pager {
+  margin-top: 12px;
+}
+
 .card {
   display: grid;
   grid-template-columns: 60px 1fr 32px 32px;

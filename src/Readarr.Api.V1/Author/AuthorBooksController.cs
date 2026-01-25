@@ -45,12 +45,42 @@ namespace Readarr.Api.V1.Author
         }
 
         [HttpGet]
-        public List<BookResource> GetAvailable(int authorId)
+        public PagingResource<BookResource> GetAvailable(int authorId, [FromQuery] PagingRequestResource paging)
         {
             var author = _authorService.GetAuthor(authorId);
             var books = GetAvailableBooks(author);
+            var pagingResource = new PagingResource<BookResource>(paging);
+            var totalRecords = books.Count;
+            var pageSize = pagingResource.PageSize;
+            var totalPages = totalRecords == 0
+                ? 1
+                : (int)Math.Ceiling((decimal)totalRecords / pageSize);
+            var page = pagingResource.Page;
 
-            return MapToResource(books);
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            if (page > totalPages)
+            {
+                page = totalPages;
+            }
+
+            var records = books
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return new PagingResource<BookResource>
+            {
+                Page = page,
+                PageSize = pageSize,
+                SortKey = pagingResource.SortKey,
+                SortDirection = pagingResource.SortDirection,
+                TotalRecords = totalRecords,
+                Records = MapToResource(records)
+            };
         }
 
         [HttpPost]

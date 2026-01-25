@@ -1,7 +1,8 @@
+import { batchActions } from 'redux-batched-actions';
 import { createAction } from 'redux-actions';
 import { createThunk, handleThunks } from 'Store/thunks';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
-import { set, update } from './baseActions';
+import { set, updateServerSideCollection } from './baseActions';
 import { fetchUserLibraryBooks } from './bookActions';
 import createHandleActions from './Creators/createHandleActions';
 import createClearReducer from './Creators/Reducers/createClearReducer';
@@ -22,6 +23,10 @@ export const defaultState = {
   addError: null,
   isExcluding: false,
   excludeError: null,
+  page: 1,
+  pageSize: 20,
+  totalRecords: 0,
+  totalPages: 1,
   items: [],
   authorId: null
 };
@@ -48,6 +53,9 @@ export const clearAuthorAvailableBooks = createAction(CLEAR_AUTHOR_AVAILABLE_BOO
 export const actionHandlers = handleThunks({
   [FETCH_AUTHOR_AVAILABLE_BOOKS]: function(getState, payload, dispatch) {
     const { authorId } = payload;
+    const sectionState = getState().authorAvailableBooks;
+    const page = payload.page || sectionState.page || 1;
+    const pageSize = payload.pageSize || sectionState.pageSize || 20;
 
     dispatch(set({
       section,
@@ -57,19 +65,24 @@ export const actionHandlers = handleThunks({
     }));
 
     const { request, abortRequest } = createAjaxRequest({
-      url: `/author/${authorId}/books`
+      url: `/author/${authorId}/books`,
+      data: {
+        page,
+        pageSize
+      }
     });
 
     request.done((data) => {
-      dispatch(update({ section, data }));
-
-      dispatch(set({
-        section,
-        isFetching: false,
-        isPopulated: true,
-        error: null,
-        authorId
-      }));
+      dispatch(batchActions([
+        updateServerSideCollection({ section, data }),
+        set({
+          section,
+          isFetching: false,
+          isPopulated: true,
+          error: null,
+          authorId
+        })
+      ]));
     });
 
     request.fail((xhr) => {
@@ -174,6 +187,10 @@ export const reducers = createHandleActions({
     addError: null,
     isExcluding: false,
     excludeError: null,
+    page: 1,
+    pageSize: 20,
+    totalRecords: 0,
+    totalPages: 1,
     items: [],
     authorId: null
   })

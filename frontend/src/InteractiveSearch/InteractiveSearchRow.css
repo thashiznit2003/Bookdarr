@@ -35,6 +35,28 @@
   white-space: nowrap;
 }
 
+.qualityMobile {
+  composes: cell;
+
+  width: 70px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.qualityLabel {
+  composes: label from '~Components/Label.css';
+}
+
+.qualityRejectedLabel {
+  border-color: var(--dangerColor);
+  background-color: var(--dangerColor);
+  color: var(--white);
+}
+
+.qualityRejected {
+  color: var(--dangerColor);
+}
+
 .customFormatScore {
   composes: cell from '~Components/Table/Cells/TableRowCell.css';
 
@@ -112,8 +134,11 @@
   }
 
   .peers,
-  .download,
-  .rejected {
+  .download {
     width: 55px;
+  }
+
+  .qualityMobile {
+    width: 70px;
   }
 }

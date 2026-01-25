@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ProtocolLabel from 'Activity/Queue/ProtocolLabel';
@@ -161,6 +162,7 @@ class InteractiveSearchRow extends Component {
       isSmallScreen
     } = this.props;
 
+    const isRejected = !!rejections.length;
     const isAnnasArchive = /anna's archive/i.test(indexer) ||
       (infoUrl && infoUrl.toLowerCase().includes('annas-archive'));
 
@@ -237,6 +239,20 @@ class InteractiveSearchRow extends Component {
         }
 
         {
+          isSmallScreen &&
+            <TableRowCell
+              className={classNames(styles.qualityMobile, isRejected && styles.qualityRejected)}
+            >
+              <BookQuality
+                className={classNames(styles.qualityLabel, isRejected && styles.qualityRejectedLabel)}
+                quality={quality}
+                isLikely={qualityIsHeuristic}
+                showRevision={true}
+              />
+            </TableRowCell>
+        }
+
+        {
           !isSmallScreen &&
             <TableRowCell className={styles.customFormatScore}>
               <Tooltip
@@ -275,34 +291,37 @@ class InteractiveSearchRow extends Component {
           }
         </TableRowCell>
 
-        <TableRowCell className={styles.rejected}>
-          {
-            !!rejections.length &&
-              <Popover
-                anchor={
-                  <Icon
-                    name={icons.DANGER}
-                    kind={kinds.DANGER}
-                  />
-                }
-                title={translate('ReleaseRejected')}
-                body={
-                  <ul>
-                    {
-                      rejections.map((rejection, index) => {
-                        return (
-                          <li key={index}>
-                            {rejection}
-                          </li>
-                        );
-                      })
+        {
+          !isSmallScreen &&
+            <TableRowCell className={styles.rejected}>
+              {
+                !!rejections.length &&
+                  <Popover
+                    anchor={
+                      <Icon
+                        name={icons.DANGER}
+                        kind={kinds.DANGER}
+                      />
                     }
-                  </ul>
-                }
-                position={tooltipPositions.LEFT}
-              />
-          }
-        </TableRowCell>
+                    title={translate('ReleaseRejected')}
+                    body={
+                      <ul>
+                        {
+                          rejections.map((rejection, index) => {
+                            return (
+                              <li key={index}>
+                                {rejection}
+                              </li>
+                            );
+                          })
+                        }
+                      </ul>
+                    }
+                    position={tooltipPositions.LEFT}
+                  />
+              }
+            </TableRowCell>
+        }
 
         <ConfirmModal
           isOpen={this.state.isConfirmGrabModalOpen}

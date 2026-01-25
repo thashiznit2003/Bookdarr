@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.24
+- Summary: Paginate author available books, tweak mobile search columns, and allow refresh metadata to append Open Library covers for Google Books items.
+- Why: Author details only showed a subset of books, mobile search lost type context, and refresh metadata didn't surface alternate artwork.
+- Impact: Available books now page, mobile search shows Type (with rejected items highlighted), and refresh metadata can pull Open Library cover images when ISBNs exist.
+- Files: `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `src/Readarr.Api.V1/Books/BookController.cs`, `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `frontend/src/Author/Details/AuthorDetailsAvailableBooks.js`, `frontend/src/Author/Details/AuthorDetailsAvailableBooksConnector.js`, `frontend/src/Author/Details/AuthorDetailsAvailableBooks.css`, `frontend/src/Store/Actions/authorAvailableBooksActions.js`, `frontend/src/InteractiveSearch/InteractiveSearch.js`, `frontend/src/InteractiveSearch/InteractiveSearchRow.js`, `frontend/src/InteractiveSearch/InteractiveSearchRow.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.24`, push, then run the SSH update with the next log number.
+
 ## 2.1.23
 - Summary: Ensure Open Library author search results include OLID-based posters.
 - Why: Search results pulled authors from book hits, which still lacked author images.

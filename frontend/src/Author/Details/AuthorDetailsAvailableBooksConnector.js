@@ -25,7 +25,11 @@ function createMapStateToProps() {
         isAdding: isCurrentAuthor ? authorAvailableBooks.isAdding : false,
         isExcluding: isCurrentAuthor ? authorAvailableBooks.isExcluding : false,
         excludeError: isCurrentAuthor ? authorAvailableBooks.excludeError : null,
-        availableBooksCount: isCurrentAuthor ? authorAvailableBooks.items.length : 0
+        availableBooksCount: isCurrentAuthor ? authorAvailableBooks.items.length : 0,
+        page: isCurrentAuthor ? authorAvailableBooks.page : 1,
+        pageSize: isCurrentAuthor ? authorAvailableBooks.pageSize : 20,
+        totalPages: isCurrentAuthor ? authorAvailableBooks.totalPages : 1,
+        totalRecords: isCurrentAuthor ? authorAvailableBooks.totalRecords : 0
       };
     }
   );
@@ -89,6 +93,13 @@ class AuthorDetailsAvailableBooksConnector extends Component {
     });
   };
 
+  onPageChange = (page) => {
+    this.props.fetchAuthorAvailableBooks({
+      authorId: this.props.authorId,
+      page
+    });
+  };
+
   //
   // Render
 
@@ -99,6 +110,7 @@ class AuthorDetailsAvailableBooksConnector extends Component {
         onAddBookPress={this.onAddBookPress}
         onAddBooksPress={this.onAddBooksPress}
         onExcludeBooksPress={this.onExcludeBooksPress}
+        onPageChange={this.onPageChange}
       />
     );
   }
