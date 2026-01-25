@@ -488,9 +488,10 @@ export const actionHandlers = handleThunks({
       url: `/user/library/${bookId}/rating`,
       method: 'PUT',
       dataType: 'json',
-      data: {
+      contentType: 'application/json',
+      data: JSON.stringify({
         userRating: rating
-      }
+      })
     }).request;
 
     request.done((data) => {

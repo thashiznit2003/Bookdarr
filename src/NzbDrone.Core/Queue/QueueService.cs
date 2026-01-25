@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Crypto;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Download.TrackedDownloads;
@@ -19,6 +20,9 @@ namespace NzbDrone.Core.Queue
 
     public class QueueService : IQueueService, IHandle<TrackedDownloadRefreshedEvent>
     {
+        private static readonly long FallbackTextMaxSize = 50.Megabytes();
+        private static readonly long FallbackAudioMinSize = 150.Megabytes();
+
         private readonly IEventAggregator _eventAggregator;
         private static List<Queue> _queue = new ();
         private readonly IHistoryService _historyService;
@@ -69,11 +73,16 @@ namespace NzbDrone.Core.Queue
                 downloadForced = bool.Parse(history.Data["downloadForced"]);
             }
 
+            var qualityModel = trackedDownload.RemoteBook?.ParsedBookInfo?.Quality ??
+                history?.Quality ??
+                new QualityModel(Quality.Unknown);
+            ApplyFallbackQualityHint(qualityModel, trackedDownload.DownloadItem.TotalSize);
+
             var queue = new Queue
             {
                 Author = trackedDownload.RemoteBook?.Author,
                 Book = book,
-                Quality = trackedDownload.RemoteBook?.ParsedBookInfo.Quality ?? new QualityModel(Quality.Unknown),
+                Quality = qualityModel,
                 Title = Parser.Parser.RemoveFileExtension(trackedDownload.DownloadItem.Title),
                 Size = trackedDownload.DownloadItem.TotalSize,
                 Sizeleft = trackedDownload.DownloadItem.RemainingSize,
@@ -101,6 +110,32 @@ namespace NzbDrone.Core.Queue
             }
 
             return queue;
+        }
+
+        private static void ApplyFallbackQualityHint(QualityModel qualityModel, long size)
+        {
+            if (qualityModel == null || size <= 0)
+            {
+                return;
+            }
+
+            if (qualityModel.Quality != Quality.Unknown && qualityModel.Quality != Quality.UnknownAudio)
+            {
+                return;
+            }
+
+            if (size <= FallbackTextMaxSize)
+            {
+                qualityModel.Quality = Quality.LikelyEbook;
+                qualityModel.QualityDetectionSource = QualityDetectionSource.Heuristic;
+                return;
+            }
+
+            if (size >= FallbackAudioMinSize)
+            {
+                qualityModel.Quality = Quality.LikelyAudiobook;
+                qualityModel.QualityDetectionSource = QualityDetectionSource.Heuristic;
+            }
         }
 
         public void Handle(TrackedDownloadRefreshedEvent message)

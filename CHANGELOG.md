@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.34
+- Summary: Preserve queue type from grabbed metadata, hide queue/history Formats, and fix Open Library author fallback.
+- Why: Queue items were showing Unknown Text, ratings weren’t sticking, and author available books failed when Open Library was selected.
+- Impact: Queue now reuses grabbed release type, fallback size heuristics only apply when needed, ratings persist, and Open Library author pages load properly even with Google IDs.
+- Files: `src/NzbDrone.Core/Queue/QueueService.cs`, `frontend/src/Store/Actions/queueActions.js`, `frontend/src/Store/Actions/historyActions.js`, `frontend/src/Store/Actions/bookActions.js`, `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.34`, push, then run the SSH update with the next log number.
+
 ## 2.1.33
 - Summary: Fix StyleCop build failure in AddBookService.
 - Why: The VM update failed with SA1513 after the available-book add resiliency change.

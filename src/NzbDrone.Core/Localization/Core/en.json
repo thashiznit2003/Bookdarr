@@ -901,6 +901,7 @@
   "PublishedDate": "Published Date",
   "Publisher": "Publisher",
   "Quality": "Quality",
+  "Type": "Type",
   "QualityDefinitions": "Quality Definitions",
   "QualityProfile": "Quality Profile",
   "QualityProfileIdHelpText": "Quality Profile list items should be added with",

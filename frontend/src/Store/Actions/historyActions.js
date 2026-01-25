@@ -49,14 +49,15 @@ export const defaultState = {
     },
     {
       name: 'quality',
-      label: 'Quality',
+      label: 'Type',
       isVisible: true
     },
     {
       name: 'customFormats',
       label: 'Formats',
       isSortable: false,
-      isVisible: true
+      isVisible: false,
+      isModifiable: false
     },
     {
       name: 'date',

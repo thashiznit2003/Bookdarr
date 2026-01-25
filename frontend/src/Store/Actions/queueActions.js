@@ -85,7 +85,7 @@ export const defaultState = {
       },
       {
         name: 'quality',
-        label: () => translate('Quality'),
+        label: () => translate('Type'),
         isSortable: true,
         isVisible: true
       },
@@ -93,7 +93,8 @@ export const defaultState = {
         name: 'customFormats',
         label: 'Formats',
         isSortable: false,
-        isVisible: true
+        isVisible: false,
+        isModifiable: false
       },
       {
         name: 'customFormatScore',

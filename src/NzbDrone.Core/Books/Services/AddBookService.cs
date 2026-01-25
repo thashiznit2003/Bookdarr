@@ -4,6 +4,7 @@ using System.Linq;
 using FluentValidation;
 using FluentValidation.Results;
 using NLog;
+using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Exceptions;
 using NzbDrone.Core.ImportLists.Exclusions;
 using NzbDrone.Core.MediaCover;
@@ -110,7 +111,10 @@ namespace NzbDrone.Core.Books
 
         private Book AddSkyhookData(Book newBook)
         {
-            var editionId = newBook.Editions.Value.Single(x => x.Monitored).ForeignEditionId;
+            var existingAuthorMetadata = newBook.AuthorMetadata?.Value;
+            var existingAuthorId = existingAuthorMetadata?.ForeignAuthorId;
+            var editionId = newBook.Editions?.Value?.FirstOrDefault(x => x.Monitored)?.ForeignEditionId ??
+                newBook.Editions?.Value?.FirstOrDefault()?.ForeignEditionId;
 
             Tuple<string, Book, List<AuthorMetadata>> tuple = null;
             try
@@ -138,7 +142,12 @@ namespace NzbDrone.Core.Books
 
             newBook.Editions = tuple.Item2.Editions.Value;
             newBook.Editions.Value.ForEach(x => x.Monitored = false);
-            newBook.Editions.Value.Single(x => x.ForeignEditionId == editionId).Monitored = true;
+            var monitoredEdition = newBook.Editions.Value.FirstOrDefault(x => x.ForeignEditionId == editionId) ??
+                newBook.Editions.Value.FirstOrDefault();
+            if (monitoredEdition != null)
+            {
+                monitoredEdition.Monitored = true;
+            }
 
             var metadata = tuple.Item3.FirstOrDefault(x => x.ForeignAuthorId == tuple.Item1) ??
                 tuple.Item2.AuthorMetadata?.Value ??
@@ -155,6 +164,18 @@ namespace NzbDrone.Core.Books
                     Status = AuthorStatusType.Continuing,
                     Ratings = new Ratings { Votes = 0, Value = 0 }
                 };
+            }
+
+            if (existingAuthorMetadata != null &&
+                existingAuthorId.IsNotNullOrWhiteSpace() &&
+                metadata?.ForeignAuthorId.IsNotNullOrWhiteSpace() == true &&
+                !string.Equals(metadata.ForeignAuthorId, existingAuthorId, StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.Warn("Metadata author {0} does not match expected author {1} for book {2}. Using expected author.",
+                    metadata.ForeignAuthorId,
+                    existingAuthorId,
+                    newBook.ForeignBookId);
+                metadata = existingAuthorMetadata;
             }
 
             newBook.AuthorMetadata = metadata;

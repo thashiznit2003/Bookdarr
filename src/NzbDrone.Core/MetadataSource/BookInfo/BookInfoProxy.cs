@@ -85,8 +85,19 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
             try
             {
-                if (UseGoogleBooks && TryParseGoogleAuthorId(foreignAuthorId, out var authorName))
+                if (TryParseGoogleAuthorId(foreignAuthorId, out var authorName))
                 {
+                    if (UseGoogleBooks)
+                    {
+                        return GetGoogleAuthorInfo(authorName);
+                    }
+
+                    var openLibraryAuthorKey = TryGetOpenLibraryAuthorKeyForName(authorName);
+                    if (openLibraryAuthorKey.IsNotNullOrWhiteSpace())
+                    {
+                        return GetOpenLibraryAuthorInfo(openLibraryAuthorKey);
+                    }
+
                     return GetGoogleAuthorInfo(authorName);
                 }
 
