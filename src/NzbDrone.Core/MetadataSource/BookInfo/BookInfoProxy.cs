@@ -629,51 +629,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
         private List<Book> SearchGoogleBooks(string query, int maxResults = 20, int startIndex = 0)
         {
-            HttpResponse<GoogleBooksVolumeResponse> response;
-
-            try
-            {
-                var queryParams = new Dictionary<string, string>
-                {
-                    { "q", query },
-                    { "maxResults", maxResults.ToString() }
-                };
-
-                if (startIndex > 0)
-                {
-                    queryParams["startIndex"] = startIndex.ToString();
-                }
-
-                var request = BuildGoogleBooksRequest("volumes", queryParams);
-
-                request.SuppressHttpError = true;
-
-                response = _httpClient.Get<GoogleBooksVolumeResponse>(request);
-            }
-            catch (Exception ex)
-            {
-                _logger.Warn(ex, "Error searching Google Books for {0}", query);
-                return new List<Book>();
-            }
-
-            if (response.HasHttpError)
-            {
-                if (IsGoogleBooksQuotaError(response))
-                {
-                    throw new NzbDroneClientException(response.StatusCode,
-                        "Google Books free tier quota exceeded. Please try again later.");
-                }
-
-                _logger.Warn("Google Books returned {0} for query {1}", response.StatusCode, query);
-                return new List<Book>();
-            }
-
-            if (response.Resource?.Items == null)
-            {
-                return new List<Book>();
-            }
-
-            return response.Resource.Items
+            return FetchGoogleBooksVolumes(query, maxResults, startIndex)
                 .Select(MapGoogleVolume)
                 .Where(x => x != null)
                 .ToList();
@@ -706,6 +662,80 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
             return all
                 .DistinctBy(x => x.ForeignBookId)
+                .ToList();
+        }
+
+        private List<GoogleBooksVolume> FetchGoogleBooksVolumes(string query, int maxResults = 20, int startIndex = 0)
+        {
+            HttpResponse<GoogleBooksVolumeResponse> response;
+
+            try
+            {
+                var queryParams = new Dictionary<string, string>
+                {
+                    { "q", query },
+                    { "maxResults", maxResults.ToString() }
+                };
+
+                if (startIndex > 0)
+                {
+                    queryParams["startIndex"] = startIndex.ToString();
+                }
+
+                var request = BuildGoogleBooksRequest("volumes", queryParams);
+
+                request.SuppressHttpError = true;
+
+                response = _httpClient.Get<GoogleBooksVolumeResponse>(request);
+            }
+            catch (Exception ex)
+            {
+                _logger.Warn(ex, "Error searching Google Books for {0}", query);
+                return new List<GoogleBooksVolume>();
+            }
+
+            if (response.HasHttpError)
+            {
+                if (IsGoogleBooksQuotaError(response))
+                {
+                    throw new NzbDroneClientException(response.StatusCode,
+                        "Google Books free tier quota exceeded. Please try again later.");
+                }
+
+                _logger.Warn("Google Books returned {0} for query {1}", response.StatusCode, query);
+                return new List<GoogleBooksVolume>();
+            }
+
+            return response.Resource?.Items ?? new List<GoogleBooksVolume>();
+        }
+
+        private List<GoogleBooksVolume> SearchGoogleBooksVolumesPaged(string query, int maxResults)
+        {
+            var all = new List<GoogleBooksVolume>();
+            var startIndex = 0;
+
+            while (startIndex < maxResults)
+            {
+                var pageSize = Math.Min(GoogleBooksMaxResultsPerRequest, maxResults - startIndex);
+                var page = FetchGoogleBooksVolumes(query, pageSize, startIndex);
+
+                if (!page.Any())
+                {
+                    break;
+                }
+
+                all.AddRange(page);
+
+                if (page.Count < pageSize)
+                {
+                    break;
+                }
+
+                startIndex += pageSize;
+            }
+
+            return all
+                .DistinctBy(x => x.Id)
                 .ToList();
         }
 
@@ -2806,8 +2836,13 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
             foreach (var query in BuildGoogleAuthorQueries(authorName))
             {
-                var page = SearchGoogleBooksPaged(query, GoogleBooksAuthorMaxResults);
-                results.AddRange(page);
+                var page = SearchGoogleBooksVolumesPaged(query, GoogleBooksAuthorMaxResults);
+                var filtered = FilterGoogleAuthorVolumes(page, authorName)
+                    .Select(MapGoogleVolume)
+                    .Where(x => x != null)
+                    .ToList();
+
+                results.AddRange(filtered);
 
                 if (results.Count >= GoogleBooksAuthorMinResults)
                 {
@@ -2864,6 +2899,35 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             return books
                 .Where(book => IsGoogleAuthorNameMatch(expectedTokens, book.AuthorMetadata?.Value?.Name))
                 .ToList();
+        }
+
+        private static IEnumerable<GoogleBooksVolume> FilterGoogleAuthorVolumes(IEnumerable<GoogleBooksVolume> volumes, string authorName)
+        {
+            if (volumes == null || authorName.IsNullOrWhiteSpace())
+            {
+                return volumes ?? Enumerable.Empty<GoogleBooksVolume>();
+            }
+
+            var expectedTokens = NormalizeGoogleAuthorName(authorName)
+                .ToLowerInvariant()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (expectedTokens.Length == 0)
+            {
+                return volumes;
+            }
+
+            return volumes.Where(volume => IsGoogleAuthorListMatch(expectedTokens, volume?.VolumeInfo?.Authors));
+        }
+
+        private static bool IsGoogleAuthorListMatch(IEnumerable<string> expectedTokens, IEnumerable<string> candidateAuthors)
+        {
+            if (candidateAuthors == null)
+            {
+                return false;
+            }
+
+            return candidateAuthors.Any(candidate => IsGoogleAuthorNameMatch(expectedTokens, candidate));
         }
 
         private static bool IsGoogleAuthorNameMatch(IEnumerable<string> expectedTokens, string candidateName)

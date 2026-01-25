@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.26
+- Summary: Filter Google Books author lookups using the full author list in results.
+- Why: Some unrelated titles still appeared in available books when Google Books listed the target author as a contributor.
+- Impact: Available books now only include Google Books volumes whose author list contains the requested author name tokens.
+- Files: `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.26`, push, then run the SSH update with the next log number.
+
 ## 2.1.25
 - Summary: Filter Google Books author results by full author name tokens.
 - Why: Author pages were showing unrelated books due to broad Google Books author queries.
