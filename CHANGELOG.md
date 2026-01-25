@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.40
+- Summary: Fix author-page adds using the selected author metadata and suppress password manager autofill in non-login inputs.
+- Why: Some author-page adds created mismatched authors or no-ops, and password managers were hijacking form fields.
+- Impact: Author-page adds now honor the current author metadata, and general inputs ignore autofill by default.
+- Files: `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `frontend/src/Components/Form/TextInput.js`, `frontend/src/Components/Form/TextArea.js`, `frontend/src/Components/Form/AutoSuggestInput.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.40`, push, then run the SSH update with the next log number.
+
 ## 2.1.39
 - Summary: Fix user rating API validation for `/user/library/{bookId}/rating`.
 - Why: PUT requests validated against `Id` instead of the `bookId` route, causing 400 errors.

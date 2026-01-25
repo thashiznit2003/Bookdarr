@@ -127,6 +127,17 @@ namespace Readarr.Api.V1.Author
 
             books.ForEach(book => book.Monitored = true);
 
+            var authorMetadata = author.Metadata?.Value;
+            if (authorMetadata != null)
+            {
+                foreach (var book in books)
+                {
+                    book.AuthorMetadata = authorMetadata;
+                    book.AuthorMetadataId = authorMetadata.Id;
+                    book.Author = author;
+                }
+            }
+
             var added = _addBookService.AddBooks(books);
             var user = GetCurrentUser();
 
@@ -216,7 +227,7 @@ namespace Readarr.Api.V1.Author
                 .Where(book => AuthorNameMatches(expectedTokens, book.AuthorMetadata?.Value?.Name ?? book.Author?.Value?.Metadata?.Value?.Name))
                 .ToList();
 
-            return filtered.Any() ? filtered : books;
+            return filtered;
         }
 
         private List<Book> FilterByUiLanguage(List<Book> books)
@@ -236,7 +247,7 @@ namespace Readarr.Api.V1.Author
                 .Where(book => book.Editions?.Value?.Any(edition => LanguageMatches(edition?.Language, isoLanguage)) == true)
                 .ToList();
 
-            return filtered.Any() ? filtered : books;
+            return filtered;
         }
 
         private List<Book> FilterByCoverPresence(List<Book> books)
@@ -250,7 +261,7 @@ namespace Readarr.Api.V1.Author
                 .Where(book => book.Editions?.Value?.Any(edition => edition?.Images?.Any() == true) == true)
                 .ToList();
 
-            return filtered.Any() ? filtered : books;
+            return filtered;
         }
 
         private static List<string> NormalizeAuthorTokens(string authorName)

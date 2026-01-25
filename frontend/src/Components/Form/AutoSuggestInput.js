@@ -31,18 +31,25 @@ class AutoSuggestInput extends Component {
 
   renderInputComponent = (inputProps) => {
     const { renderInputComponent } = this.props;
+    const safeInputProps = { ...inputProps };
+
+    safeInputProps.autoComplete = inputProps?.autoComplete ?? 'off';
+    safeInputProps['data-form-type'] = inputProps?.['data-form-type'] ?? 'other';
+    safeInputProps['data-lpignore'] = inputProps?.['data-lpignore'] ?? 'true';
+    safeInputProps['data-1p-ignore'] = inputProps?.['data-1p-ignore'] ?? 'true';
+    safeInputProps['data-bwignore'] = inputProps?.['data-bwignore'] ?? 'true';
 
     return (
       <Reference>
         {({ ref }) => {
           if (renderInputComponent) {
-            return renderInputComponent(inputProps, ref);
+            return renderInputComponent(safeInputProps, ref);
           }
 
           return (
             <div ref={ref}>
               <input
-                {...inputProps}
+                {...safeInputProps}
               />
             </div>
           );

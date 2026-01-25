@@ -140,6 +140,7 @@ class TextInput extends Component {
       dataFormType,
       dataLpignore,
       data1pIgnore,
+      dataBwignore,
       onBlur,
       onCopy,
       onKeyDown
@@ -165,6 +166,7 @@ class TextInput extends Component {
         data-form-type={dataFormType}
         data-lpignore={dataLpignore}
         data-1p-ignore={data1pIgnore}
+        data-bwignore={dataBwignore}
         step={step}
         min={min}
         max={max}
@@ -201,6 +203,7 @@ TextInput.propTypes = {
   dataFormType: PropTypes.string,
   dataLpignore: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   data1pIgnore: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  dataBwignore: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   onChange: PropTypes.func.isRequired,
   onKeyDown: PropTypes.func,
   onFocus: PropTypes.func,
@@ -218,7 +221,8 @@ TextInput.defaultProps = {
   autoComplete: 'off',
   dataFormType: 'other',
   dataLpignore: true,
-  data1pIgnore: true
+  data1pIgnore: true,
+  dataBwignore: true
 };
 
 export default TextInput;

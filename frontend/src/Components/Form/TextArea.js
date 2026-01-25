@@ -122,6 +122,7 @@ class TextArea extends Component {
       dataFormType,
       dataLpignore,
       data1pIgnore,
+      dataBwignore,
       onBlur
     } = this.props;
 
@@ -143,6 +144,7 @@ class TextArea extends Component {
         data-form-type={dataFormType}
         data-lpignore={dataLpignore}
         data-1p-ignore={data1pIgnore}
+        data-bwignore={dataBwignore}
         onChange={this.onChange}
         onFocus={this.onFocus}
         onBlur={onBlur}
@@ -167,6 +169,7 @@ TextArea.propTypes = {
   dataFormType: PropTypes.string,
   dataLpignore: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   data1pIgnore: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  dataBwignore: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   onChange: PropTypes.func.isRequired,
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,
@@ -182,7 +185,8 @@ TextArea.defaultProps = {
   autoComplete: 'off',
   dataFormType: 'other',
   dataLpignore: true,
-  data1pIgnore: true
+  data1pIgnore: true,
+  dataBwignore: true
 };
 
 export default TextArea;
