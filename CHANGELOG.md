@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.28
+- Summary: Filter Open Library author works by author key and fix available-books language filtering build.
+- Why: Author available books still included unrelated works and the build failed due to missing ISO language types.
+- Impact: Open Library author works now require the matching author key in each entry, and UI language filtering compiles cleanly.
+- Files: `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.28`, push, then run the SSH update with the next log number.
+
 ## 2.1.27
 - Summary: Filter available books by author name, UI language, and cover presence.
 - Why: Author available books still included unrelated titles, foreign-language entries, and many without artwork.

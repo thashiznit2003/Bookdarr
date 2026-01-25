@@ -9,6 +9,7 @@ using NzbDrone.Core.ImportLists.Exclusions;
 using NzbDrone.Core.Languages;
 using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MetadataSource;
+using NzbDrone.Core.Parser;
 using Readarr.Api.V1.Books;
 using Readarr.Http;
 using Readarr.Http.REST;

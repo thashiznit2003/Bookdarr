@@ -1175,10 +1175,37 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             var entries = json["entries"] as JArray ?? new JArray();
 
             return entries
+                .Where(entry => OpenLibraryEntryHasAuthor(entry, normalizedKey))
                 .Select(entry => MapOpenLibraryWorkEntry(entry, authorMetadata))
                 .Where(book => book != null)
                 .DistinctBy(book => book.ForeignBookId)
                 .ToList();
+        }
+
+        private static bool OpenLibraryEntryHasAuthor(JToken entry, string normalizedAuthorKey)
+        {
+            if (normalizedAuthorKey.IsNullOrWhiteSpace())
+            {
+                return true;
+            }
+
+            var authors = entry?["authors"] as JArray;
+            if (authors == null || authors.Count == 0)
+            {
+                return false;
+            }
+
+            foreach (var author in authors)
+            {
+                var key = NormalizeOpenLibraryAuthorKey(author?["author"]?["key"]?.ToString());
+                if (key.IsNotNullOrWhiteSpace() &&
+                    key.Equals(normalizedAuthorKey, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private Book MapOpenLibraryWorkEntry(JToken entry, AuthorMetadata authorMetadata)
