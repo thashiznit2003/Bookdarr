@@ -156,6 +156,7 @@ namespace NzbDrone.Core.Books
                     Ratings = new Ratings { Votes = 0, Value = 0 }
                 };
             }
+
             newBook.AuthorMetadata = metadata;
 
             return newBook;

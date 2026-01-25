@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.33
+- Summary: Fix StyleCop build failure in AddBookService.
+- Why: The VM update failed with SA1513 after the available-book add resiliency change.
+- Impact: Build passes again so the metadata provider switch and add fallback can deploy.
+- Files: `src/NzbDrone.Core/Books/Services/AddBookService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.33`, push, then run the SSH update with the next log number.
+
 ## 2.1.32
 - Summary: Add metadata provider switcher and make available-book adds more resilient.
 - Why: Users need to prioritize Open Library for search reliability, and some available books failed to add due to metadata lookups.
