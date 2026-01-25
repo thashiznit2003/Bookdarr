@@ -4,7 +4,9 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Books;
+using NzbDrone.Core.Configuration;
 using NzbDrone.Core.ImportLists.Exclusions;
+using NzbDrone.Core.Languages;
 using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MetadataSource;
 using Readarr.Api.V1.Books;
@@ -19,6 +21,7 @@ namespace Readarr.Api.V1.Author
         private readonly IAddBookService _addBookService;
         private readonly IAuthorService _authorService;
         private readonly IBookService _bookService;
+        private readonly IConfigService _configService;
         private readonly IMapCoversToLocal _coverMapper;
         private readonly IProvideAuthorInfo _authorInfo;
         private readonly IImportListExclusionService _importListExclusionService;
@@ -28,6 +31,7 @@ namespace Readarr.Api.V1.Author
         public AuthorBooksController(IAddBookService addBookService,
                                      IAuthorService authorService,
                                      IBookService bookService,
+                                     IConfigService configService,
                                      IMapCoversToLocal coverMapper,
                                      IProvideAuthorInfo authorInfo,
                                      IImportListExclusionService importListExclusionService,
@@ -37,6 +41,7 @@ namespace Readarr.Api.V1.Author
             _addBookService = addBookService;
             _authorService = authorService;
             _bookService = bookService;
+            _configService = configService;
             _coverMapper = coverMapper;
             _authorInfo = authorInfo;
             _importListExclusionService = importListExclusionService;
@@ -49,6 +54,9 @@ namespace Readarr.Api.V1.Author
         {
             var author = _authorService.GetAuthor(authorId);
             var books = GetAvailableBooks(author);
+            books = FilterByAuthorName(books, author.Metadata?.Value?.Name ?? author.Name);
+            books = FilterByUiLanguage(books);
+            books = FilterByCoverPresence(books);
             var pagingResource = new PagingResource<BookResource>(paging);
             var totalRecords = books.Count;
             var pageSize = pagingResource.PageSize;
@@ -177,6 +185,116 @@ namespace Readarr.Api.V1.Author
                 .ToHashSet();
 
             return available.Where(book => !excluded.Contains(book.ForeignBookId)).ToList();
+        }
+
+        private List<Book> FilterByAuthorName(List<Book> books, string authorName)
+        {
+            if (books == null || books.Count == 0 || authorName.IsNullOrWhiteSpace())
+            {
+                return books;
+            }
+
+            var expectedTokens = NormalizeAuthorTokens(authorName);
+            if (expectedTokens.Count == 0)
+            {
+                return books;
+            }
+
+            var filtered = books
+                .Where(book => AuthorNameMatches(expectedTokens, book.AuthorMetadata?.Value?.Name ?? book.Author?.Value?.Metadata?.Name))
+                .ToList();
+
+            return filtered.Any() ? filtered : books;
+        }
+
+        private List<Book> FilterByUiLanguage(List<Book> books)
+        {
+            if (books == null || books.Count == 0)
+            {
+                return books;
+            }
+
+            var isoLanguage = IsoLanguages.Get((Language)_configService.UILanguage) ?? IsoLanguages.Get(Language.English);
+            if (isoLanguage == null)
+            {
+                return books;
+            }
+
+            var filtered = books
+                .Where(book => book.Editions?.Value?.Any(edition => LanguageMatches(edition?.Language, isoLanguage)) == true)
+                .ToList();
+
+            return filtered.Any() ? filtered : books;
+        }
+
+        private List<Book> FilterByCoverPresence(List<Book> books)
+        {
+            if (books == null || books.Count == 0)
+            {
+                return books;
+            }
+
+            var filtered = books
+                .Where(book => book.Editions?.Value?.Any(edition => edition?.Images?.Any() == true) == true)
+                .ToList();
+
+            return filtered.Any() ? filtered : books;
+        }
+
+        private static List<string> NormalizeAuthorTokens(string authorName)
+        {
+            var normalized = new string(authorName
+                .Where(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c))
+                .ToArray());
+
+            return normalized
+                .ToLowerInvariant()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
+        }
+
+        private static bool AuthorNameMatches(IEnumerable<string> expectedTokens, string candidateName)
+        {
+            if (candidateName.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            var candidateTokens = NormalizeAuthorTokens(candidateName);
+            if (candidateTokens.Count == 0)
+            {
+                return false;
+            }
+
+            return expectedTokens.All(token => candidateTokens.Contains(token));
+        }
+
+        private static bool LanguageMatches(string editionLanguage, IsoLanguage uiLanguage)
+        {
+            if (editionLanguage.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            var normalized = editionLanguage.Trim().Replace('_', '-').ToLowerInvariant();
+            var uiTwoLetter = uiLanguage.TwoLetterCode?.ToLowerInvariant();
+            var uiThreeLetter = uiLanguage.ThreeLetterCode?.ToLowerInvariant();
+            var uiName = uiLanguage.EnglishName?.ToLowerInvariant();
+
+            if (normalized == uiTwoLetter ||
+                normalized == uiThreeLetter ||
+                normalized == uiName)
+            {
+                return true;
+            }
+
+            if (uiTwoLetter.IsNotNullOrWhiteSpace() && normalized.StartsWith(uiTwoLetter + "-"))
+            {
+                return true;
+            }
+
+            var iso = IsoLanguages.Find(normalized);
+            return iso != null && iso.Language == uiLanguage.Language;
         }
 
         private List<BookResource> MapToResource(IEnumerable<Book> books)

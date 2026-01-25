@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.27
+- Summary: Filter available books by author name, UI language, and cover presence.
+- Why: Author available books still included unrelated titles, foreign-language entries, and many without artwork.
+- Impact: Available books now prioritize matching author names and UI language, and hide coverless items when covers are available.
+- Files: `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.27`, push, then run the SSH update with the next log number.
+
 ## 2.1.26
 - Summary: Filter Google Books author lookups using the full author list in results.
 - Why: Some unrelated titles still appeared in available books when Google Books listed the target author as a contributor.
