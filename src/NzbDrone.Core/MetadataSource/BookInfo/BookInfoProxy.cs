@@ -245,69 +245,58 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
 
             var trimmed = title.Trim();
-            var lowerTitle = trimmed.ToLowerInvariant();
 
-            var split = lowerTitle.Split(':');
-            if (split.Length == 2)
+            if (TryParseQualifiedSearch(trimmed, out var qualifier, out var slug))
             {
-                var prefix = split[0].Trim();
-                var slug = split[1].Trim();
-
-                if (slug.IsNullOrWhiteSpace())
+                switch (qualifier)
                 {
-                    return new List<Book>();
-                }
-
-                if (prefix == "isbn") // lgtm [cs/user-controlled-bypass]
-                {
-                    var normalizedIsbn = NormalizeOpenLibraryIsbn(slug);
-                    if (normalizedIsbn.IsNullOrWhiteSpace())
+                    case QualifiedSearchType.Isbn:
                     {
-                        return new List<Book>();
+                        var normalizedIsbn = NormalizeOpenLibraryIsbn(slug);
+                        if (normalizedIsbn.IsNullOrWhiteSpace())
+                        {
+                            return new List<Book>();
+                        }
+
+                        return SearchOpenLibraryByIsbn(normalizedIsbn);
                     }
-
-                    return SearchOpenLibraryByIsbn(normalizedIsbn);
-                }
-
-                if (prefix == "asin") // lgtm [cs/user-controlled-bypass]
-                {
-                    if (!IsLikelyAsin(slug))
+                    case QualifiedSearchType.Asin:
                     {
-                        return new List<Book>();
+                        if (!IsLikelyAsin(slug))
+                        {
+                            return new List<Book>();
+                        }
+
+                        return SearchOpenLibraryByAsin(slug);
                     }
-
-                    return SearchOpenLibraryByAsin(slug);
-                }
-
-                if (prefix == "work") // lgtm [cs/user-controlled-bypass]
-                {
-                    if (!TryParseOpenLibraryWorkId(slug, out var explicitWorkId))
+                    case QualifiedSearchType.Work:
                     {
-                        return new List<Book>();
+                        if (!TryParseOpenLibraryWorkId(slug, out var explicitWorkId))
+                        {
+                            return new List<Book>();
+                        }
+
+                        return SearchOpenLibraryByWorkId(explicitWorkId);
                     }
-
-                    return SearchOpenLibraryByWorkId(explicitWorkId);
-                }
-
-                if (prefix == "edition") // lgtm [cs/user-controlled-bypass]
-                {
-                    var normalizedEdition = NormalizeOpenLibraryEditionKey(slug);
-                    if (normalizedEdition.IsNullOrWhiteSpace())
+                    case QualifiedSearchType.Edition:
                     {
-                        return new List<Book>();
+                        var normalizedEdition = NormalizeOpenLibraryEditionKey(slug);
+                        if (normalizedEdition.IsNullOrWhiteSpace())
+                        {
+                            return new List<Book>();
+                        }
+
+                        return SearchOpenLibraryByEditionId(normalizedEdition);
                     }
-
-                    return SearchOpenLibraryByEditionId(normalizedEdition);
-                }
-
-                if (prefix == "author") // lgtm [cs/user-controlled-bypass]
-                {
-                    if (!TryParseOpenLibraryAuthorId(slug, out var explicitAuthorId))
+                    case QualifiedSearchType.Author:
                     {
-                        return new List<Book>();
-                    }
+                        if (!TryParseOpenLibraryAuthorId(slug, out var explicitAuthorId))
+                        {
+                            return new List<Book>();
+                        }
 
-                    return SearchOpenLibraryByAuthorId(explicitAuthorId);
+                        return SearchOpenLibraryByAuthorId(explicitAuthorId);
+                    }
                 }
             }
 
@@ -322,6 +311,61 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
 
             return SearchOpenLibrary(trimmed, author, getAllEditions);
+        }
+
+        private enum QualifiedSearchType
+        {
+            Isbn,
+            Asin,
+            Work,
+            Edition,
+            Author
+        }
+
+        private static bool TryParseQualifiedSearch(string input, out QualifiedSearchType qualifier, out string slug)
+        {
+            qualifier = default;
+            slug = null;
+
+            if (input.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            var split = input.Trim().Split(':');
+            if (split.Length != 2)
+            {
+                return false;
+            }
+
+            var prefix = split[0].Trim().ToLowerInvariant();
+            slug = split[1].Trim();
+
+            if (slug.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            switch (prefix)
+            {
+                case "isbn":
+                    qualifier = QualifiedSearchType.Isbn;
+                    return true;
+                case "asin":
+                    qualifier = QualifiedSearchType.Asin;
+                    return true;
+                case "work":
+                    qualifier = QualifiedSearchType.Work;
+                    return true;
+                case "edition":
+                    qualifier = QualifiedSearchType.Edition;
+                    return true;
+                case "author":
+                    qualifier = QualifiedSearchType.Author;
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public List<Book> SearchByIsbn(string isbn)

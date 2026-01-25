@@ -183,6 +183,5 @@ namespace NzbDrone.Core.Books
 
             return newBook;
         }
-
     }
 }
