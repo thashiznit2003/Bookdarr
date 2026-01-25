@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.36
+- Summary: Harden log messages and validate explicit Open Library search prefixes.
+- Why: Code scanning flagged log forging and user-controlled bypass warnings.
+- Impact: User-supplied values are sanitized before logging, and explicit `isbn:`/`asin:`/`work:`/`edition:`/`author:` searches validate input before direct lookups.
+- Files: `src/NzbDrone.Core/Books/Services/AddBookService.cs`, `src/NzbDrone.Core/Books/Services/AddAuthorService.cs`, `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.36`, push, then run the SSH update with the next log number.
+
 ## 2.1.35
 - Summary: Fix build failure from queue service using directives.
 - Why: VM update failed with StyleCop SA1210/IDE0005 after adding queue type heuristics.

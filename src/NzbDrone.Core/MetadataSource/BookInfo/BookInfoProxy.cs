@@ -74,6 +74,16 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             return isoLanguage?.TwoLetterCode;
         }
 
+        private static string SanitizeForLog(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return value;
+            }
+
+            return value.Replace("\r", string.Empty).Replace("\n", string.Empty);
+        }
+
         public HashSet<string> GetChangedAuthors(DateTime startTime)
         {
             return null;
@@ -81,7 +91,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
         public Author GetAuthorInfo(string foreignAuthorId, bool useCache = false)
         {
-            _logger.Debug("Getting author details for {0}", foreignAuthorId);
+            _logger.Debug("Getting author details for {0}", SanitizeForLog(foreignAuthorId));
 
             try
             {
@@ -105,7 +115,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
             catch (BookInfoException e)
             {
-                _logger.Warn(e, "Unexpected error getting author info: {foreignAuthorId}", foreignAuthorId);
+                _logger.Warn(e, "Unexpected error getting author info: {foreignAuthorId}", SanitizeForLog(foreignAuthorId));
                 throw;
             }
         }
@@ -133,7 +143,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
             catch (BookInfoException e)
             {
-                _logger.Warn(e, "Unexpected error getting book info: {foreignBookId}", foreignBookId);
+                _logger.Warn(e, "Unexpected error getting book info: {foreignBookId}", SanitizeForLog(foreignBookId));
                 throw;
             }
         }
@@ -260,27 +270,54 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
 
                 if (prefix == "isbn")
                 {
-                    return SearchOpenLibraryByIsbn(slug);
+                    var normalizedIsbn = NormalizeOpenLibraryIsbn(slug);
+                    if (normalizedIsbn.IsNullOrWhiteSpace())
+                    {
+                        return new List<Book>();
+                    }
+
+                    return SearchOpenLibraryByIsbn(normalizedIsbn);
                 }
 
                 if (prefix == "asin")
                 {
+                    if (!IsLikelyAsin(slug))
+                    {
+                        return new List<Book>();
+                    }
+
                     return SearchOpenLibraryByAsin(slug);
                 }
 
                 if (prefix == "work")
                 {
-                    return SearchOpenLibraryByWorkId(slug);
+                    if (!TryParseOpenLibraryWorkId(slug, out var workId))
+                    {
+                        return new List<Book>();
+                    }
+
+                    return SearchOpenLibraryByWorkId(workId);
                 }
 
                 if (prefix == "edition")
                 {
-                    return SearchOpenLibraryByEditionId(slug);
+                    var normalizedEdition = NormalizeOpenLibraryEditionKey(slug);
+                    if (normalizedEdition.IsNullOrWhiteSpace())
+                    {
+                        return new List<Book>();
+                    }
+
+                    return SearchOpenLibraryByEditionId(normalizedEdition);
                 }
 
                 if (prefix == "author")
                 {
-                    return SearchOpenLibraryByAuthorId(slug);
+                    if (!TryParseOpenLibraryAuthorId(slug, out var authorId))
+                    {
+                        return new List<Book>();
+                    }
+
+                    return SearchOpenLibraryByAuthorId(authorId);
                 }
             }
 
@@ -465,7 +502,9 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             var response = _cachedHttpClient.Get(request, false, TimeSpan.FromHours(2));
             if (response.HasHttpError)
             {
-                _logger.Warn("Open Library search returned {0} for query {1}", response.StatusCode, queryParams.ConcatToString());
+                _logger.Warn("Open Library search returned {0} for query {1}",
+                    response.StatusCode,
+                    SanitizeForLog(queryParams.ConcatToString()));
                 return new JArray();
             }
 
@@ -703,7 +742,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
             catch (Exception ex)
             {
-                _logger.Warn(ex, "Error searching Google Books for {0}", query);
+                _logger.Warn(ex, "Error searching Google Books for {0}", SanitizeForLog(query));
                 return new List<GoogleBooksVolume>();
             }
 
@@ -715,7 +754,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                         "Google Books free tier quota exceeded. Please try again later.");
                 }
 
-                _logger.Warn("Google Books returned {0} for query {1}", response.StatusCode, query);
+                _logger.Warn("Google Books returned {0} for query {1}", response.StatusCode, SanitizeForLog(query));
                 return new List<GoogleBooksVolume>();
             }
 
@@ -1501,7 +1540,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
             catch (Exception ex)
             {
-                _logger.Warn(ex, "Error fetching Google Books volume {0}", volumeId);
+                _logger.Warn(ex, "Error fetching Google Books volume {0}", SanitizeForLog(volumeId));
                 return null;
             }
 
@@ -1796,7 +1835,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                     }
                     catch (Exception ex)
                     {
-                        _logger.Debug(ex, "Open Library lookup failed for ISBN {0}", normalizedIsbn);
+                        _logger.Debug(ex, "Open Library lookup failed for ISBN {0}", SanitizeForLog(normalizedIsbn));
                         return null;
                     }
                 },
@@ -1891,6 +1930,30 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
 
             return normalized;
+        }
+
+        private static bool IsLikelyAsin(string asin)
+        {
+            if (asin.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            var trimmed = asin.Trim();
+            if (trimmed.Length != 10)
+            {
+                return false;
+            }
+
+            foreach (var ch in trimmed)
+            {
+                if (!char.IsLetterOrDigit(ch))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static string GetOpenLibraryDescription(JToken token)
@@ -2382,7 +2445,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
             catch (Exception ex)
             {
-                _logger.Debug(ex, "Wikidata author image lookup failed for {0}", authorName);
+                _logger.Debug(ex, "Wikidata author image lookup failed for {0}", SanitizeForLog(authorName));
             }
 
             try
@@ -2391,7 +2454,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
             catch (Exception ex)
             {
-                _logger.Debug(ex, "Open Library author image lookup failed for {0}", authorName);
+                _logger.Debug(ex, "Open Library author image lookup failed for {0}", SanitizeForLog(authorName));
             }
 
             try
@@ -2400,7 +2463,7 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
             catch (Exception ex)
             {
-                _logger.Debug(ex, "Wikipedia author lookup failed for {0}", authorName);
+                _logger.Debug(ex, "Wikipedia author lookup failed for {0}", SanitizeForLog(authorName));
             }
 
             var hasImage = combined.ImageUrl.IsNotNullOrWhiteSpace();
