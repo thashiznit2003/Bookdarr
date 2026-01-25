@@ -33,6 +33,8 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
         private const int OpenLibraryMaxGenres = 25;
         private const int OpenLibraryMaxCovers = 1;
         private const int OpenLibraryAuthorLookupLimit = 5;
+        private const int OpenLibraryAuthorWorksPageSize = 50;
+        private const int OpenLibraryAuthorMaxResults = 300;
         private readonly IHttpClient _httpClient;
         private readonly ICachedHttpResponseService _cachedHttpClient;
         private readonly IConfigService _configService;
@@ -764,6 +766,15 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             var metadata = BuildGoogleAuthorMetadata(authorId, authorName);
             TryAddExternalAuthorImage(metadata);
             var books = SearchGoogleBooksAuthor(authorName);
+            var openLibraryAuthorKey = TryGetOpenLibraryAuthorKeyForName(authorName);
+            if (openLibraryAuthorKey.IsNotNullOrWhiteSpace())
+            {
+                var openLibraryBooks = SearchOpenLibraryWorksByAuthor(openLibraryAuthorKey, metadata);
+                if (openLibraryBooks.Any())
+                {
+                    books = openLibraryBooks;
+                }
+            }
 
             var author = new Author
             {
@@ -1024,6 +1035,39 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 .ToList();
         }
 
+        private string TryGetOpenLibraryAuthorKeyForName(string authorName)
+        {
+            if (authorName.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            var candidates = SearchOpenLibraryAuthors(authorName);
+            if (candidates.Empty())
+            {
+                return null;
+            }
+
+            var expectedTokens = NormalizeGoogleAuthorName(authorName)
+                .ToLowerInvariant()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (expectedTokens.Length == 0)
+            {
+                return null;
+            }
+
+            var match = candidates.FirstOrDefault(author =>
+                IsGoogleAuthorNameMatch(expectedTokens, author.Metadata?.Value?.Name ?? author.Name));
+
+            if (match == null)
+            {
+                return null;
+            }
+
+            return NormalizeOpenLibraryAuthorKey(match.Metadata?.Value?.ForeignAuthorId);
+        }
+
         private AuthorMetadata BuildOpenLibraryAuthorMetadata(string authorKey, string fallbackName, JObject authorJson = null)
         {
             var normalizedKey = NormalizeOpenLibraryAuthorKey(authorKey);
@@ -1158,27 +1202,49 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 return new List<Book>();
             }
 
-            var request = new HttpRequestBuilder($"https://openlibrary.org{normalizedKey}/works.json")
-                .AddQueryParam("limit", "50")
-                .Build();
+            var results = new List<Book>();
+            var offset = 0;
 
-            request.AllowAutoRedirect = true;
-            request.SuppressHttpError = true;
-
-            var response = _cachedHttpClient.Get(request, false, TimeSpan.FromHours(6));
-            if (response.HasHttpError)
+            while (results.Count < OpenLibraryAuthorMaxResults)
             {
-                return new List<Book>();
+                var request = new HttpRequestBuilder($"https://openlibrary.org{normalizedKey}/works.json")
+                    .AddQueryParam("limit", OpenLibraryAuthorWorksPageSize.ToString())
+                    .AddQueryParam("offset", offset.ToString())
+                    .Build();
+
+                request.AllowAutoRedirect = true;
+                request.SuppressHttpError = true;
+
+                var response = _cachedHttpClient.Get(request, false, TimeSpan.FromHours(6));
+                if (response.HasHttpError)
+                {
+                    break;
+                }
+
+                var json = JObject.Parse(response.Content);
+                var entries = json["entries"] as JArray ?? new JArray();
+
+                if (entries.Count == 0)
+                {
+                    break;
+                }
+
+                results.AddRange(entries
+                    .Where(entry => OpenLibraryEntryHasAuthor(entry, normalizedKey))
+                    .Select(entry => MapOpenLibraryWorkEntry(entry, authorMetadata))
+                    .Where(book => book != null));
+
+                if (entries.Count < OpenLibraryAuthorWorksPageSize)
+                {
+                    break;
+                }
+
+                offset += OpenLibraryAuthorWorksPageSize;
             }
 
-            var json = JObject.Parse(response.Content);
-            var entries = json["entries"] as JArray ?? new JArray();
-
-            return entries
-                .Where(entry => OpenLibraryEntryHasAuthor(entry, normalizedKey))
-                .Select(entry => MapOpenLibraryWorkEntry(entry, authorMetadata))
-                .Where(book => book != null)
+            return results
                 .DistinctBy(book => book.ForeignBookId)
+                .Take(OpenLibraryAuthorMaxResults)
                 .ToList();
         }
 

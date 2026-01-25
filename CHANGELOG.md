@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.30
+- Summary: Prefer Open Library author works for Google authors and fetch more works per author.
+- Why: Available books still showed unrelated titles and only a small subset for prolific authors.
+- Impact: Google-author pages now use Open Library author matches when found, and author works are paged to surface many more titles.
+- Files: `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.30`, push, then run the SSH update with the next log number.
+
 ## 2.1.29
 - Summary: Fix author available-book filters to compile cleanly.
 - Why: The VM update failed due to missing extension imports and a bad author metadata access.
