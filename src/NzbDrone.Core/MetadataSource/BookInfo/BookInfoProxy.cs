@@ -968,6 +968,18 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                             CoverType = MediaCoverTypes.Poster
                         });
                     }
+                    else
+                    {
+                        var authorOlid = GetOpenLibraryAuthorOlid(authorKey);
+                        if (authorOlid.IsNotNullOrWhiteSpace())
+                        {
+                            metadata.Images.Add(new MediaCover.MediaCover
+                            {
+                                Url = $"https://covers.openlibrary.org/a/olid/{authorOlid}-L.jpg",
+                                CoverType = MediaCoverTypes.Poster
+                            });
+                        }
+                    }
 
                     return new Author
                     {
@@ -1076,6 +1088,23 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             }
 
             return metadata;
+        }
+
+        private static string GetOpenLibraryAuthorOlid(string authorKey)
+        {
+            if (authorKey.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            var trimmed = authorKey.Trim('/');
+            if (trimmed.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            var parts = trimmed.Split('/');
+            return parts.LastOrDefault();
         }
 
         private List<Book> SearchOpenLibraryWorksByAuthor(string authorKey, AuthorMetadata authorMetadata)

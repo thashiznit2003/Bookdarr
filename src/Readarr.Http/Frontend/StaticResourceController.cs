@@ -47,6 +47,13 @@ namespace Readarr.Http.Frontend
             return MapResource("reset-password");
         }
 
+        [AllowAnonymous]
+        [HttpGet("MediaCoverProxy/{**path}")]
+        public IActionResult MediaCoverProxy([FromRoute] string path)
+        {
+            return MapResource("MediaCoverProxy/" + path);
+        }
+
         [EnableCors("AllowGet")]
         [AllowAnonymous]
         [HttpGet("content/{**path:regex(^(?!/*api/).*)}")]

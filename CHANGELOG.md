@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.20
+- Summary: Unblock search result covers and add Open Library author OLID images.
+- Why: Search results were missing art due to MediaCoverProxy auth and missing author photo IDs from Open Library search responses.
+- Impact: MediaCoverProxy can be fetched without login, and Open Library author search now supplies OLID-based poster URLs when photo IDs are absent.
+- Files: `src/Readarr.Http/Frontend/StaticResourceController.cs`, `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.20`, push, then run the SSH update with the next log number (`update-12.log`).
+
 ## 2.1.19
 - Summary: Harden Open Library search parsing and show cover images in search results.
 - Why: Invalid publish years were crashing searches, and author search results lacked images.
