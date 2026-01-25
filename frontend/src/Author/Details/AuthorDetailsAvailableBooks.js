@@ -62,6 +62,10 @@ class AuthorDetailsAvailableBooks extends Component {
     }));
   };
 
+  getAvailableBookKey = (item) => {
+    return item?.foreignBookId || item?.foreignEditionId || '';
+  };
+
   hideTitleTooltip = () => {
     this.setState({
       isTitleTooltipVisible: false,
@@ -95,7 +99,10 @@ class AuthorDetailsAvailableBooks extends Component {
 
     if (value) {
       this.props.items.forEach((item) => {
-        selectedState[item.foreignBookId] = true;
+        const key = this.getAvailableBookKey(item);
+        if (key) {
+          selectedState[key] = true;
+        }
       });
     }
 
@@ -170,7 +177,7 @@ class AuthorDetailsAvailableBooks extends Component {
     }
 
     const singleSelected = selectedIds.length === 1 ?
-      this.props.items.find((item) => item.foreignBookId === selectedIds[0]) :
+      this.props.items.find((item) => this.getAvailableBookKey(item) === selectedIds[0]) :
       null;
 
     this.setState({
@@ -181,9 +188,14 @@ class AuthorDetailsAvailableBooks extends Component {
   };
 
   onRemoveBookPress = (item) => {
+    const key = this.getAvailableBookKey(item);
+    if (!key) {
+      return;
+    }
+
     this.setState({
       isConfirmRemoveOpen: true,
-      pendingRemoveIds: [item.foreignBookId],
+      pendingRemoveIds: [key],
       pendingRemoveTitle: item.title
     });
   };
@@ -234,6 +246,7 @@ class AuthorDetailsAvailableBooks extends Component {
       items,
       isFetching,
       error,
+      addError,
       excludeError,
       isAdding,
       isExcluding,
@@ -335,6 +348,13 @@ class AuthorDetailsAvailableBooks extends Component {
       }
 
       {
+        !isFetching && !error && addError &&
+          <Alert kind={kinds.DANGER}>
+            {translate('AddingBooksFailed')}
+          </Alert>
+      }
+
+      {
         !isFetching && !error && excludeError &&
           <Alert kind={kinds.DANGER}>
             {translate('RemovingAvailableBooksFailed')}
@@ -353,24 +373,25 @@ class AuthorDetailsAvailableBooks extends Component {
             <div className={styles.grid}>
               {
                 items.map((item) => {
+                  const key = this.getAvailableBookKey(item);
                   const year = renderReleaseYear(item.releaseDate);
-                  const isSelected = !!this.state.selectedState[item.foreignBookId];
+                  const isSelected = !!this.state.selectedState[key];
 
                   return (
                     <div
-                      key={item.foreignBookId}
+                      key={key || item.title}
                       className={isSelecting ? styles.cardSelecting : styles.card}
                     >
                       {
                         isSelecting &&
                           <div className={styles.selectCell}>
                             <CheckInput
-                              name={`availableBook-${item.foreignBookId}`}
+                              name={`availableBook-${key || item.title}`}
                               value={isSelected}
                               checkedValue={true}
                               uncheckedValue={false}
-                              onChange={(payload) => this.onSelectBookChange(item.foreignBookId, payload)}
-                              isDisabled={isWorking}
+                              onChange={(payload) => this.onSelectBookChange(key, payload)}
+                              isDisabled={isWorking || !key}
                             />
                           </div>
                       }
@@ -411,8 +432,8 @@ class AuthorDetailsAvailableBooks extends Component {
                         name={icons.ADD}
                         size={16}
                         title={translate('AddNewBook')}
-                        isDisabled={isWorking}
-                        onPress={() => onAddBookPress(item.foreignBookId)}
+                        isDisabled={isWorking || !key}
+                        onPress={() => key && onAddBookPress(key)}
                       />
 
                       <IconButton

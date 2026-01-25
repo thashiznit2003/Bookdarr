@@ -23,6 +23,7 @@ function createMapStateToProps() {
         isPopulated: isCurrentAuthor ? authorAvailableBooks.isPopulated : false,
         error: isCurrentAuthor ? authorAvailableBooks.error : null,
         isAdding: isCurrentAuthor ? authorAvailableBooks.isAdding : false,
+        addError: isCurrentAuthor ? authorAvailableBooks.addError : null,
         isExcluding: isCurrentAuthor ? authorAvailableBooks.isExcluding : false,
         excludeError: isCurrentAuthor ? authorAvailableBooks.excludeError : null,
         availableBooksCount: isCurrentAuthor ? authorAvailableBooks.items.length : 0,

@@ -25,6 +25,7 @@
   "AddBook": "Add Book",
   "AddBookManually": "Add Book Manually",
   "AddManualBookFailed": "Unable to add manual book",
+  "AddingBooksFailed": "Adding books failed",
   "AddSelectedBooks": "Add Selected",
   "AddNewItem": "Add New Item",
   "AddRootFolder": "Add Root Folder",

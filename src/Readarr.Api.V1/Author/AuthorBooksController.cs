@@ -99,15 +99,25 @@ namespace Readarr.Api.V1.Author
             var author = _authorService.GetAuthor(authorId);
             var books = GetAvailableBooks(author);
 
-            if (resource?.ForeignBookIds?.Any() == true)
+            var foreignIds = resource?.ForeignBookIds?
+                .Where(id => id.IsNotNullOrWhiteSpace())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (foreignIds == null || foreignIds.Count == 0)
             {
-                var selectedIds = new HashSet<string>(resource.ForeignBookIds);
+                return BadRequest("foreignBookIds is required");
+            }
+
+            if (foreignIds.Any())
+            {
+                var selectedIds = new HashSet<string>(foreignIds, StringComparer.OrdinalIgnoreCase);
                 books = books.Where(book => selectedIds.Contains(book.ForeignBookId)).ToList();
             }
 
             if (!books.Any())
             {
-                return Ok(new List<BookResource>());
+                return BadRequest("No matching books were found for the selected IDs.");
             }
 
             if (resource?.SearchForNewBook == true)
