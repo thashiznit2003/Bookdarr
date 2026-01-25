@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.23
+- Summary: Ensure Open Library author search results include OLID-based posters.
+- Why: Search results pulled authors from book hits, which still lacked author images.
+- Impact: Open Library author metadata now adds OLID cover URLs when no poster exists, with photo IDs still taking precedence.
+- Files: `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.23`, push, then run the SSH update with the next log number (`update-12.log`).
+
 ## 2.1.22
 - Summary: Fix build error in search cover URL helper.
 - Why: The MediaCover type was referenced with an invalid nested class name.

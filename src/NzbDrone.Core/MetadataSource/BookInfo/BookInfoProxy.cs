@@ -962,23 +962,12 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                     var photoId = photoToken?.ToString();
                     if (photoId.IsNotNullOrWhiteSpace())
                     {
+                        metadata.Images.RemoveAll(x => x.CoverType == MediaCoverTypes.Poster);
                         metadata.Images.Add(new MediaCover.MediaCover
                         {
                             Url = $"https://covers.openlibrary.org/a/id/{photoId}-L.jpg",
                             CoverType = MediaCoverTypes.Poster
                         });
-                    }
-                    else
-                    {
-                        var authorOlid = GetOpenLibraryAuthorOlid(authorKey);
-                        if (authorOlid.IsNotNullOrWhiteSpace())
-                        {
-                            metadata.Images.Add(new MediaCover.MediaCover
-                            {
-                                Url = $"https://covers.openlibrary.org/a/olid/{authorOlid}-L.jpg",
-                                CoverType = MediaCoverTypes.Poster
-                            });
-                        }
                     }
 
                     return new Author
@@ -1085,6 +1074,19 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             if (normalizedKey.IsNotNullOrWhiteSpace())
             {
                 metadata.Links.Add(new Links { Name = "Open Library", Url = $"https://openlibrary.org{normalizedKey}" });
+            }
+
+            if (normalizedKey.IsNotNullOrWhiteSpace() && !metadata.Images.Any(x => x.CoverType == MediaCoverTypes.Poster))
+            {
+                var authorOlid = GetOpenLibraryAuthorOlid(normalizedKey);
+                if (authorOlid.IsNotNullOrWhiteSpace())
+                {
+                    metadata.Images.Add(new MediaCover.MediaCover
+                    {
+                        Url = $"https://covers.openlibrary.org/a/olid/{authorOlid}-L.jpg",
+                        CoverType = MediaCoverTypes.Poster
+                    });
+                }
             }
 
             return metadata;
