@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.31
+- Summary: Show remote cover URLs for author available books.
+- Why: Available books were still displaying placeholder covers despite having remote cover data.
+- Impact: Available books now render remote cover URLs directly when the books aren’t in the database.
+- Files: `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.31`, push, then run the SSH update with the next log number.
+
 ## 2.1.30
 - Summary: Prefer Open Library author works for Google authors and fetch more works per author.
 - Why: Available books still showed unrelated titles and only a small subset for prolific authors.

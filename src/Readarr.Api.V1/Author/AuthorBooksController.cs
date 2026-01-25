@@ -309,6 +309,10 @@ namespace Readarr.Api.V1.Author
             var resource = book.ToResource();
 
             _coverMapper.ConvertToLocalUrls(resource.Id, MediaCoverEntity.Book, resource.Images);
+            if (resource.Id == 0)
+            {
+                UseRemoteCoverUrls(resource.Images);
+            }
 
             var cover = resource.Images.FirstOrDefault(c => c.CoverType == MediaCoverTypes.Cover);
 
@@ -318,6 +322,22 @@ namespace Readarr.Api.V1.Author
             }
 
             return resource;
+        }
+
+        private static void UseRemoteCoverUrls(IEnumerable<MediaCover> covers)
+        {
+            if (covers == null)
+            {
+                return;
+            }
+
+            foreach (var cover in covers)
+            {
+                if (cover.RemoteUrl.IsNotNullOrWhiteSpace())
+                {
+                    cover.Url = cover.RemoteUrl;
+                }
+            }
         }
 
         private User GetCurrentUser()
