@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.25
+- Summary: Filter Google Books author results by full author name tokens.
+- Why: Author pages were showing unrelated books due to broad Google Books author queries.
+- Impact: Available books lists now only include results whose author name matches all tokens of the requested author.
+- Files: `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.25`, push, then run the SSH update with the next log number.
+
 ## 2.1.24
 - Summary: Paginate author available books, tweak mobile search columns, and allow refresh metadata to append Open Library covers for Google Books items.
 - Why: Author details only showed a subset of books, mobile search lost type context, and refresh metadata didn't surface alternate artwork.

@@ -2815,9 +2815,11 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 }
             }
 
-            return results
+            var distinct = results
                 .DistinctBy(x => x.ForeignBookId)
                 .ToList();
+
+            return FilterGoogleAuthorResults(distinct, authorName);
         }
 
         private static IEnumerable<string> BuildGoogleAuthorQueries(string authorName)
@@ -2841,6 +2843,46 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
             {
                 yield return $"inauthor:{lastName}";
             }
+        }
+
+        private static List<Book> FilterGoogleAuthorResults(List<Book> books, string authorName)
+        {
+            if (books.Empty() || authorName.IsNullOrWhiteSpace())
+            {
+                return books;
+            }
+
+            var expectedTokens = NormalizeGoogleAuthorName(authorName)
+                .ToLowerInvariant()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (expectedTokens.Length == 0)
+            {
+                return books;
+            }
+
+            return books
+                .Where(book => IsGoogleAuthorNameMatch(expectedTokens, book.AuthorMetadata?.Value?.Name))
+                .ToList();
+        }
+
+        private static bool IsGoogleAuthorNameMatch(IEnumerable<string> expectedTokens, string candidateName)
+        {
+            if (candidateName.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            var candidateTokens = NormalizeGoogleAuthorName(candidateName)
+                .ToLowerInvariant()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (candidateTokens.Length == 0)
+            {
+                return false;
+            }
+
+            return expectedTokens.All(token => candidateTokens.Contains(token));
         }
 
         private static string NormalizeGoogleAuthorName(string authorName)
