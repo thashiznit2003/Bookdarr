@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using NzbDrone.Common.Extensions;
 using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MetadataSource;
 using NzbDrone.Core.Organizer;
@@ -54,6 +55,11 @@ namespace Readarr.Api.V1.Search
                         resource.Author.RemotePoster = poster.RemoteUrl;
                     }
 
+                    if (resource.Author.Id == 0)
+                    {
+                        UseRemoteCoverUrls(resource.Author.Images);
+                    }
+
                     resource.Author.Folder = _fileNameBuilder.GetAuthorFolder(author);
                 }
                 else if (result is NzbDrone.Core.Books.Book book)
@@ -73,6 +79,11 @@ namespace Readarr.Api.V1.Search
                         resource.Book.RemoteCover = cover.RemoteUrl;
                     }
 
+                    if (resource.Book.Id == 0)
+                    {
+                        UseRemoteCoverUrls(resource.Book.Images);
+                    }
+
                     resource.Book.Author.Folder = _fileNameBuilder.GetAuthorFolder(book.Author);
                 }
                 else
@@ -81,6 +92,22 @@ namespace Readarr.Api.V1.Search
                 }
 
                 yield return resource;
+            }
+        }
+
+        private static void UseRemoteCoverUrls(IEnumerable<MediaCover.MediaCover> covers)
+        {
+            if (covers == null)
+            {
+                return;
+            }
+
+            foreach (var cover in covers)
+            {
+                if (cover.RemoteUrl.IsNotNullOrWhiteSpace())
+                {
+                    cover.Url = cover.RemoteUrl;
+                }
             }
         }
     }

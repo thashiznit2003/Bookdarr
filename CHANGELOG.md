@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.21
+- Summary: Show remote cover URLs for search results when items are not in the database.
+- Why: MediaCoverProxy requires UI auth and search images were still resolving to placeholders without credentials.
+- Impact: Search results now render with remote Open Library/Google cover URLs immediately, while library items continue to use local cached covers.
+- Files: `src/Readarr.Api.V1/Search/SearchController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.21`, push, then run the SSH update with the next log number (`update-12.log`).
+
 ## 2.1.20
 - Summary: Unblock search result covers and add Open Library author OLID images.
 - Why: Search results were missing art due to MediaCoverProxy auth and missing author photo IDs from Open Library search responses.
