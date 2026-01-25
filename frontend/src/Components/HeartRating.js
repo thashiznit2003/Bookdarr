@@ -5,6 +5,12 @@ import { icons } from 'Helpers/Props';
 import styles from './HeartRating.css';
 
 function HeartRating({ rating, iconSize }) {
+  const safeRating = Number(rating);
+
+  if (!Number.isFinite(safeRating) || safeRating <= 0) {
+    return null;
+  }
+
   return (
     <span className={styles.rating}>
       <Icon
@@ -13,17 +19,18 @@ function HeartRating({ rating, iconSize }) {
         size={iconSize}
       />
 
-      {rating.toFixed(1)}
+      {safeRating.toFixed(1)}
     </span>
   );
 }
 
 HeartRating.propTypes = {
-  rating: PropTypes.number.isRequired,
+  rating: PropTypes.number,
   iconSize: PropTypes.number.isRequired
 };
 
 HeartRating.defaultProps = {
+  rating: null,
   iconSize: 14
 };
 

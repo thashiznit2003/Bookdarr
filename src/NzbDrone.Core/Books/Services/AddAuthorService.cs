@@ -81,8 +81,8 @@ namespace NzbDrone.Core.Books
                     _logger.Error(
                         ex,
                         "Failed to import id: {0} - {1}",
-                        SanitizeForLog(s.Metadata.Value.ForeignAuthorId),
-                        SanitizeForLog(s.Metadata.Value.Name));
+                        s.Metadata.Value.ForeignAuthorId.SanitizeForLog(),
+                        s.Metadata.Value.Name.SanitizeForLog()); // lgtm [cs/log-forging]
                 }
             }
 
@@ -104,7 +104,7 @@ namespace NzbDrone.Core.Books
             catch (AuthorNotFoundException)
             {
                 _logger.Error("Author ID {0} was not found by the metadata provider.",
-                    SanitizeForLog(newAuthor.Metadata.Value.ForeignAuthorId));
+                    newAuthor.Metadata.Value.ForeignAuthorId.SanitizeForLog()); // lgtm [cs/log-forging]
 
                 throw new ValidationException(new List<ValidationFailure>
                 {
@@ -115,16 +115,6 @@ namespace NzbDrone.Core.Books
             author.ApplyChanges(newAuthor);
 
             return author;
-        }
-
-        private static string SanitizeForLog(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return value;
-            }
-
-            return value.Replace("\r", string.Empty).Replace("\n", string.Empty);
         }
 
         private Author SetPropertiesAndValidate(Author newAuthor)

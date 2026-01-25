@@ -102,7 +102,7 @@ namespace NzbDrone.Core.Books
                 catch (Exception ex)
                 {
                     // Could be a bad id from an import list
-                    _logger.Error(ex, "Failed to import id: {0} - {1}", SanitizeForLog(a.ForeignBookId), SanitizeForLog(a.Title));
+                    _logger.Error(ex, "Failed to import id: {0} - {1}", a.ForeignBookId.SanitizeForLog(), a.Title.SanitizeForLog()); // lgtm [cs/log-forging]
                 }
             }
 
@@ -126,11 +126,11 @@ namespace NzbDrone.Core.Books
                 if (newBook?.Editions?.Value?.Any() == true && newBook.AuthorMetadata?.Value != null)
                 {
                     _logger.Warn("Book with foreign ID {0} was not found by the metadata provider. Using existing metadata payload.",
-                        SanitizeForLog(newBook.ForeignBookId));
+                        newBook.ForeignBookId.SanitizeForLog()); // lgtm [cs/log-forging]
                     return newBook;
                 }
 
-                _logger.Error("Book with foreign ID {0} was not found by the metadata provider.", SanitizeForLog(newBook.ForeignBookId));
+                _logger.Error("Book with foreign ID {0} was not found by the metadata provider.", newBook.ForeignBookId.SanitizeForLog()); // lgtm [cs/log-forging]
 
                 throw new ValidationException(new List<ValidationFailure>
                                               {
@@ -173,9 +173,9 @@ namespace NzbDrone.Core.Books
                 !string.Equals(metadata.ForeignAuthorId, existingAuthorId, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.Warn("Metadata author {0} does not match expected author {1} for book {2}. Using expected author.",
-                    SanitizeForLog(metadata.ForeignAuthorId),
-                    SanitizeForLog(existingAuthorId),
-                    SanitizeForLog(newBook.ForeignBookId));
+                    metadata.ForeignAuthorId.SanitizeForLog(),
+                    existingAuthorId.SanitizeForLog(),
+                    newBook.ForeignBookId.SanitizeForLog()); // lgtm [cs/log-forging]
                 metadata = existingAuthorMetadata;
             }
 
@@ -184,14 +184,5 @@ namespace NzbDrone.Core.Books
             return newBook;
         }
 
-        private static string SanitizeForLog(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return value;
-            }
-
-            return value.Replace("\r", string.Empty).Replace("\n", string.Empty);
-        }
     }
 }

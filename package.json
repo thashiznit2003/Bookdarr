@@ -141,5 +141,8 @@
   "volta": {
     "node": "20.11.1",
     "yarn": "1.22.19"
+  },
+  "resolutions": {
+    "lodash": "4.17.23"
   }
 }

@@ -125,7 +125,7 @@ namespace NzbDrone.Core.Books
 
             if (userBook == null)
             {
-                throw new ModelNotFoundException(typeof(UserBook), bookId);
+                userBook = AddOrGetUserBook(userId, bookId, wantsEbook: true, wantsAudiobook: true);
             }
 
             if (rating.HasValue)
