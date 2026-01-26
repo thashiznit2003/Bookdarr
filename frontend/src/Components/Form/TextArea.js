@@ -126,6 +126,8 @@ class TextArea extends Component {
       onBlur
     } = this.props;
 
+    const inputName = dataFormType === 'login' ? name : `bookdarr-${name}`;
+
     return (
       <textarea
         ref={this.setInputRef}
@@ -138,7 +140,7 @@ class TextArea extends Component {
           hasError && styles.hasError,
           hasWarning && styles.hasWarning
         )}
-        name={name}
+        name={inputName}
         value={value}
         autoComplete={autoComplete}
         data-form-type={dataFormType}

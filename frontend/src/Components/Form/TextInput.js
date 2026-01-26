@@ -146,6 +146,8 @@ class TextInput extends Component {
       onKeyDown
     } = this.props;
 
+    const inputName = dataFormType === 'login' ? name : `bookdarr-${name}`;
+
     return (
       <input
         ref={this.setInputRef}
@@ -160,7 +162,7 @@ class TextInput extends Component {
           hasWarning && styles.hasWarning,
           hasButton && styles.hasButton
         )}
-        name={name}
+        name={inputName}
         value={value}
         autoComplete={autoComplete}
         data-form-type={dataFormType}

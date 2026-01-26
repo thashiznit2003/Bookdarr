@@ -64,7 +64,31 @@ namespace NzbDrone.Core.Books
 
             // Note it's a manual addition so it's not deleted on next refresh
             book.AddOptions.AddType = BookAddType.Manual;
-            book.Editions.Value.Single(x => x.Monitored).ManualAdd = true;
+
+            var editions = book.Editions?.Value;
+            if (editions == null || editions.Count == 0)
+            {
+                editions = new List<Edition>
+                {
+                    new Edition
+                    {
+                        ForeignEditionId = book.ForeignBookId,
+                        Title = book.Title,
+                        TitleSlug = book.TitleSlug,
+                        Ratings = new Ratings { Votes = 0, Value = 0 },
+                        Monitored = true
+                    }
+                };
+                book.Editions = editions;
+            }
+
+            var monitoredEdition = editions.FirstOrDefault(x => x.Monitored) ?? editions.FirstOrDefault();
+            if (monitoredEdition != null)
+            {
+                editions.ForEach(x => x.Monitored = false);
+                monitoredEdition.Monitored = true;
+                monitoredEdition.ManualAdd = true;
+            }
 
             // Add the author if necessary
             var dbAuthor = _authorService.FindById(book.AuthorMetadata.Value.ForeignAuthorId);

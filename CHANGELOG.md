@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.41
+- Summary: Fix rating payload validation, harden available-book adds, and further suppress password autofill on non-login fields.
+- Why: Rating updates were still rejected by PUT validation, some author adds lacked a monitored edition, and password managers kept hijacking general inputs.
+- Impact: Ratings save via a dedicated payload, author-page adds normalize editions safely, and non-login inputs avoid autofill via name prefixes and ignore hints.
+- Files: `src/Readarr.Api.V1/Books/UserLibraryController.cs`, `src/Readarr.Api.V1/Books/UserRatingUpdateResource.cs`, `src/NzbDrone.Core/Books/Services/AddBookService.cs`, `frontend/src/Components/Form/TextInput.js`, `frontend/src/Components/Form/TextArea.js`, `frontend/src/Components/Form/AutoSuggestInput.js`, `frontend/src/Components/Form/TagInputInput.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.41`, push, then run the SSH update with the next log number.
+
 ## 2.1.40
 - Summary: Fix author-page adds using the selected author metadata and suppress password manager autofill in non-login inputs.
 - Why: Some author-page adds created mismatched authors or no-ops, and password managers were hijacking form fields.

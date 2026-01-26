@@ -33,6 +33,18 @@ class TagInputInput extends Component {
       onTagDelete,
       onTagEdit
     } = this.props;
+    const safeInputProps = { ...inputProps };
+
+    safeInputProps.autoComplete = inputProps?.autoComplete ?? 'off';
+    safeInputProps['data-form-type'] = inputProps?.['data-form-type'] ?? 'other';
+    safeInputProps['data-lpignore'] = inputProps?.['data-lpignore'] ?? 'true';
+    safeInputProps['data-1p-ignore'] = inputProps?.['data-1p-ignore'] ?? 'true';
+    safeInputProps['data-bwignore'] = inputProps?.['data-bwignore'] ?? 'true';
+
+    const inputName = safeInputProps?.name;
+    if (inputName && safeInputProps['data-form-type'] !== 'login') {
+      safeInputProps.name = `bookdarr-${inputName}`;
+    }
 
     return (
       <div
@@ -57,7 +69,7 @@ class TagInputInput extends Component {
           })
         }
 
-        <input {...inputProps} />
+        <input {...safeInputProps} />
       </div>
     );
   }

@@ -38,6 +38,10 @@ class AutoSuggestInput extends Component {
     safeInputProps['data-lpignore'] = inputProps?.['data-lpignore'] ?? 'true';
     safeInputProps['data-1p-ignore'] = inputProps?.['data-1p-ignore'] ?? 'true';
     safeInputProps['data-bwignore'] = inputProps?.['data-bwignore'] ?? 'true';
+    const inputName = safeInputProps?.name;
+    if (inputName && safeInputProps['data-form-type'] !== 'login') {
+      safeInputProps.name = `bookdarr-${inputName}`;
+    }
 
     return (
       <Reference>

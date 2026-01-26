@@ -87,7 +87,7 @@ namespace Readarr.Api.V1.Books
 
         [HttpPut("{bookId:int}/rating")]
         [SkipValidation]
-        public ActionResult<UserLibraryResource> SetUserRating(int bookId, [FromBody] UserLibraryResource resource)
+        public ActionResult<UserLibraryResource> SetUserRating(int bookId, [FromBody] UserRatingUpdateResource resource)
         {
             if (bookId <= 0)
             {
