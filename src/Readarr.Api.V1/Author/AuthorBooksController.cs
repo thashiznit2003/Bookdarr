@@ -73,6 +73,7 @@ namespace Readarr.Api.V1.Author
             {
                 books = coverFiltered;
             }
+
             var pagingResource = new PagingResource<BookResource>(paging);
             var totalRecords = books.Count;
             var pageSize = pagingResource.PageSize;

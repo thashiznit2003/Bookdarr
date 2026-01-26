@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.43
+- Summary: Fix StyleCop formatting in the Available Books filter fallback.
+- Why: The VM build failed on SA1513 after adding language/cover fallback logic.
+- Impact: Author Available Books now builds cleanly while keeping the filter fallback behavior.
+- Files: `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.43`, push, then run the SSH update with the next log number.
+
 ## 2.1.42
 - Summary: Avoid filtering all available books when language or cover data is missing.
 - Why: Open Library author works often omit language/cover data, which caused the Available Books list to go empty.
