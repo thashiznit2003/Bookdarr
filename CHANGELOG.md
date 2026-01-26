@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.44
+- Summary: Add a Force Import queue action for completed downloads stuck in import pending/failed.
+- Why: Some downloads are sufficiently matched but still fail auto-import, and the manual force option was hard to find.
+- Impact: Activity -> Queue now offers a toolbar button to force-import eligible completed downloads.
+- Files: `src/Readarr.Api.V1/Queue/QueueActionController.cs`, `frontend/src/Activity/Queue/Queue.js`, `frontend/src/Activity/Queue/QueueConnector.js`, `frontend/src/Store/Actions/queueActions.js`, `src/NzbDrone.Core/Localization/Core/en.json`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.44`, push, then run the SSH update with the next log number.
+
 ## 2.1.43
 - Summary: Fix StyleCop formatting in the Available Books filter fallback.
 - Why: The VM build failed on SA1513 after adding language/cover fallback logic.

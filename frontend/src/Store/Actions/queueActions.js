@@ -56,6 +56,7 @@ export const defaultState = {
     items: [],
     isGrabbing: false,
     isRemoving: false,
+    isForceImporting: false,
 
     columns: [
       {
@@ -201,6 +202,8 @@ export const GRAB_QUEUE_ITEM = 'queue/grabQueueItem';
 export const GRAB_QUEUE_ITEMS = 'queue/grabQueueItems';
 export const REMOVE_QUEUE_ITEM = 'queue/removeQueueItem';
 export const REMOVE_QUEUE_ITEMS = 'queue/removeQueueItems';
+export const FORCE_IMPORT_QUEUE_ITEM = 'queue/forceImportQueueItem';
+export const FORCE_IMPORT_QUEUE_ITEMS = 'queue/forceImportQueueItems';
 
 //
 // Action Creators
@@ -225,6 +228,8 @@ export const grabQueueItem = createThunk(GRAB_QUEUE_ITEM);
 export const grabQueueItems = createThunk(GRAB_QUEUE_ITEMS);
 export const removeQueueItem = createThunk(REMOVE_QUEUE_ITEM);
 export const removeQueueItems = createThunk(REMOVE_QUEUE_ITEMS);
+export const forceImportQueueItem = createThunk(FORCE_IMPORT_QUEUE_ITEM);
+export const forceImportQueueItems = createThunk(FORCE_IMPORT_QUEUE_ITEMS);
 
 //
 // Helpers
@@ -440,6 +445,48 @@ export const actionHandlers = handleThunks({
         set({ section: paged, isRemoving: false })
       ]));
     });
+  },
+
+  [FORCE_IMPORT_QUEUE_ITEM]: function(getState, payload, dispatch) {
+    const id = payload.id;
+
+    dispatch(set({ section: paged, isForceImporting: true }));
+
+    const promise = createAjaxRequest({
+      url: `/queue/import/${id}`,
+      method: 'POST'
+    }).request;
+
+    promise.done((data) => {
+      dispatch(fetchQueue());
+      dispatch(set({ section: paged, isForceImporting: false }));
+    });
+
+    promise.fail((xhr) => {
+      dispatch(set({ section: paged, isForceImporting: false }));
+    });
+  },
+
+  [FORCE_IMPORT_QUEUE_ITEMS]: function(getState, payload, dispatch) {
+    const ids = payload.ids;
+
+    dispatch(set({ section: paged, isForceImporting: true }));
+
+    const promise = createAjaxRequest({
+      url: '/queue/import/bulk',
+      method: 'POST',
+      dataType: 'json',
+      data: JSON.stringify({ ids })
+    }).request;
+
+    promise.done((data) => {
+      dispatch(fetchQueue());
+      dispatch(set({ section: paged, isForceImporting: false }));
+    });
+
+    promise.fail((xhr) => {
+      dispatch(set({ section: paged, isForceImporting: false }));
+    });
   }
 });
 
@@ -470,7 +517,8 @@ export const reducers = createHandleActions({
     error: null,
     items: [],
     totalPages: 0,
-    totalRecords: 0
+    totalRecords: 0,
+    isForceImporting: false
   })
 
 }, defaultState, section);

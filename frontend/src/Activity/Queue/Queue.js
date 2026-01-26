@@ -158,6 +158,7 @@ class Queue extends Component {
       totalRecords,
       isGrabbing,
       isRemoving,
+      isForceImporting,
       isRefreshMonitoredDownloadsExecuting,
       onRefreshPress,
       ...otherProps
@@ -178,6 +179,19 @@ class Queue extends Component {
     const selectedIds = this.getSelectedIds();
     const selectedCount = selectedIds.length;
     const disableSelectedActions = selectedCount === 0;
+    const forceImportEligibleIds = selectedIds.filter((id) => {
+      const item = items.find((queueItem) => queueItem.id === id);
+
+      if (!item) {
+        return false;
+      }
+
+      const status = (item.status || '').toLowerCase();
+      const state = (item.trackedDownloadState || '').toLowerCase();
+
+      return status === 'completed' && (state === 'importpending' || state === 'importfailed');
+    });
+    const canForceImport = selectedCount > 0 && forceImportEligibleIds.length === selectedCount;
 
     return (
       <PageContent title={translate('Queue')}>
@@ -206,6 +220,14 @@ class Queue extends Component {
               isDisabled={disableSelectedActions}
               isSpinning={isRemoving}
               onPress={this.onRemoveSelectedPress}
+            />
+
+            <PageToolbarButton
+              label={translate('ForceImport')}
+              iconName={icons.FILEIMPORT}
+              isDisabled={!canForceImport}
+              isSpinning={isForceImporting}
+              onPress={() => this.props.onForceImportSelectedPress(forceImportEligibleIds)}
             />
           </PageToolbarSection>
 
@@ -339,10 +361,12 @@ Queue.propTypes = {
   totalRecords: PropTypes.number,
   isGrabbing: PropTypes.bool.isRequired,
   isRemoving: PropTypes.bool.isRequired,
+  isForceImporting: PropTypes.bool.isRequired,
   isRefreshMonitoredDownloadsExecuting: PropTypes.bool.isRequired,
   onRefreshPress: PropTypes.func.isRequired,
   onGrabSelectedPress: PropTypes.func.isRequired,
-  onRemoveSelectedPress: PropTypes.func.isRequired
+  onRemoveSelectedPress: PropTypes.func.isRequired,
+  onForceImportSelectedPress: PropTypes.func.isRequired
 };
 
 Queue.defaultProps = {

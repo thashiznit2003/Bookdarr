@@ -130,6 +130,10 @@ class QueueConnector extends Component {
     this.props.removeQueueItems(payload);
   };
 
+  onForceImportSelectedPress = (ids) => {
+    this.props.forceImportQueueItems({ ids });
+  };
+
   //
   // Render
 
@@ -146,6 +150,7 @@ class QueueConnector extends Component {
         onRefreshPress={this.onRefreshPress}
         onGrabSelectedPress={this.onGrabSelectedPress}
         onRemoveSelectedPress={this.onRemoveSelectedPress}
+        onForceImportSelectedPress={this.onForceImportSelectedPress}
         {...this.props}
       />
     );
@@ -168,6 +173,7 @@ QueueConnector.propTypes = {
   clearQueue: PropTypes.func.isRequired,
   grabQueueItems: PropTypes.func.isRequired,
   removeQueueItems: PropTypes.func.isRequired,
+  forceImportQueueItems: PropTypes.func.isRequired,
   executeCommand: PropTypes.func.isRequired
 };
 
