@@ -56,9 +56,23 @@ namespace Readarr.Api.V1.Author
         {
             var author = _authorService.GetAuthor(authorId);
             var books = GetAvailableBooks(author);
-            books = FilterByAuthorName(books, author.Metadata?.Value?.Name ?? author.Name);
-            books = FilterByUiLanguage(books);
-            books = FilterByCoverPresence(books);
+            var authorFiltered = FilterByAuthorName(books, author.Metadata?.Value?.Name ?? author.Name);
+            if (authorFiltered.Any())
+            {
+                books = authorFiltered;
+            }
+
+            var languageFiltered = FilterByUiLanguage(books);
+            if (languageFiltered.Any())
+            {
+                books = languageFiltered;
+            }
+
+            var coverFiltered = FilterByCoverPresence(books);
+            if (coverFiltered.Any())
+            {
+                books = coverFiltered;
+            }
             var pagingResource = new PagingResource<BookResource>(paging);
             var totalRecords = books.Count;
             var pageSize = pagingResource.PageSize;

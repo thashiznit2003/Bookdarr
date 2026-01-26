@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.42
+- Summary: Avoid filtering all available books when language or cover data is missing.
+- Why: Open Library author works often omit language/cover data, which caused the Available Books list to go empty.
+- Impact: Available Books now falls back to unfiltered results when a filter would remove everything.
+- Files: `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.42`, push, then run the SSH update with the next log number.
+
 ## 2.1.41
 - Summary: Fix rating payload validation, harden available-book adds, and further suppress password autofill on non-login fields.
 - Why: Rating updates were still rejected by PUT validation, some author adds lacked a monitored edition, and password managers kept hijacking general inputs.
