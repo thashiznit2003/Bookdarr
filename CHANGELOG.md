@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.45
+- Summary: Raise multipart upload limits for manual imports.
+- Why: Large ebook uploads (>128MB) were rejected with a multipart body length error.
+- Impact: Manual import uploads now accept files up to ~1GB.
+- Files: `src/NzbDrone.Host/Startup.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.45`, push, then run the SSH update with the next log number.
+
 ## 2.1.44
 - Summary: Add a Force Import queue action for completed downloads stuck in import pending/failed.
 - Why: Some downloads are sufficiently matched but still fail auto-import, and the manual force option was hard to find.
