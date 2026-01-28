@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Common.Extensions;
+using NzbDrone.Common.Http;
 using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Configuration;
@@ -11,6 +12,7 @@ using NzbDrone.Core.Languages;
 using NzbDrone.Core.MediaCover;
 using NzbDrone.Core.MetadataSource;
 using NzbDrone.Core.Parser;
+using NLog;
 using Readarr.Api.V1.Books;
 using Readarr.Http;
 using Readarr.Http.REST;
@@ -29,6 +31,7 @@ namespace Readarr.Api.V1.Author
         private readonly IImportListExclusionService _importListExclusionService;
         private readonly IUserLibraryService _userLibraryService;
         private readonly IUserService _userService;
+        private readonly Logger _logger;
 
         public AuthorBooksController(IAddBookService addBookService,
                                      IAuthorService authorService,
@@ -38,7 +41,8 @@ namespace Readarr.Api.V1.Author
                                      IProvideAuthorInfo authorInfo,
                                      IImportListExclusionService importListExclusionService,
                                      IUserLibraryService userLibraryService,
-                                     IUserService userService)
+                                     IUserService userService,
+                                     Logger logger)
         {
             _addBookService = addBookService;
             _authorService = authorService;
@@ -49,13 +53,25 @@ namespace Readarr.Api.V1.Author
             _importListExclusionService = importListExclusionService;
             _userLibraryService = userLibraryService;
             _userService = userService;
+            _logger = logger;
         }
 
         [HttpGet]
         public PagingResource<BookResource> GetAvailable(int authorId, [FromQuery] PagingRequestResource paging)
         {
             var author = _authorService.GetAuthor(authorId);
-            var books = GetAvailableBooks(author);
+            List<Book> books;
+
+            try
+            {
+                books = GetAvailableBooks(author);
+            }
+            catch (TooManyRequestsException ex)
+            {
+                _logger.Warn(ex, "Rate limited while fetching available books for author {0}. Returning empty list.", authorId);
+                books = new List<Book>();
+            }
+
             var authorFiltered = FilterByAuthorName(books, author.Metadata?.Value?.Name ?? author.Name);
             if (authorFiltered.Any())
             {
