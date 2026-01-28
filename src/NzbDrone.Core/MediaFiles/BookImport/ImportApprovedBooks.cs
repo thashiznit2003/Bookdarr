@@ -287,6 +287,53 @@ namespace NzbDrone.Core.MediaFiles.BookImport
                 catch (DestinationAlreadyExistsException e)
                 {
                     _logger.Warn(e, "Couldn't import book " + localTrack);
+                    if (_diskProvider.FileExists(bookFile.Path))
+                    {
+                        var existingFile = _mediaFileService.GetFileWithPath(bookFile.Path);
+
+                        if (existingFile == null)
+                        {
+                            bookFile.Size = _diskProvider.GetFileSize(bookFile.Path);
+                            bookFile.Modified = _diskProvider.GetLastWriteTimeUtc(bookFile.Path);
+                            filesToAdd.Add(bookFile);
+                            allImportedTrackFiles.Add(bookFile);
+                            trackImportedEvents.Add(new TrackImportedEvent(localTrack, bookFile, oldFiles, false, downloadClientItem));
+                        }
+                        else
+                        {
+                            var updated = false;
+
+                            if (existingFile.BookId != bookFile.BookId)
+                            {
+                                existingFile.BookId = bookFile.BookId;
+                                updated = true;
+                            }
+
+                            if (existingFile.EditionId != bookFile.EditionId)
+                            {
+                                existingFile.EditionId = bookFile.EditionId;
+                                updated = true;
+                            }
+
+                            if (existingFile.MediaType == BookFileMediaType.Unknown && bookFile.MediaType != BookFileMediaType.Unknown)
+                            {
+                                existingFile.MediaType = bookFile.MediaType;
+                                updated = true;
+                            }
+
+                            if (updated)
+                            {
+                                _mediaFileService.Update(existingFile);
+                            }
+
+                            allImportedTrackFiles.Add(existingFile);
+                            trackImportedEvents.Add(new TrackImportedEvent(localTrack, existingFile, oldFiles, false, downloadClientItem));
+                        }
+
+                        importResults.Add(new ImportResult(importDecision));
+                        continue;
+                    }
+
                     importResults.Add(new ImportResult(importDecision, "Failed to import book, destination already exists."));
                 }
                 catch (UnauthorizedAccessException e)
