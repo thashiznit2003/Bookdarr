@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.50
+- Summary: Harden Available Books against all rate-limit exception shapes.
+- Why: Author metadata calls can throw 429s wrapped in different exception types, still causing “Loading books failed”.
+- Impact: Available Books now returns an empty list instead of erroring on any 429 response.
+- Files: `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.50`, push, then run the SSH update with the next log number.
+
 ## 2.1.49
 - Summary: Fix StyleCop ordering for author available-books controller.
 - Why: Build failed due to namespace ordering requirements.

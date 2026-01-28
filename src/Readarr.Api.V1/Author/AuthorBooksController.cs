@@ -66,9 +66,9 @@ namespace Readarr.Api.V1.Author
             {
                 books = GetAvailableBooks(author);
             }
-            catch (TooManyRequestsException ex)
+            catch (Exception ex) when (IsRateLimited(ex, out var rateLimitException))
             {
-                _logger.Warn(ex, "Rate limited while fetching available books for author {0}. Returning empty list.", authorId);
+                _logger.Warn(rateLimitException, "Rate limited while fetching available books for author {0}. Returning empty list.", authorId);
                 books = new List<Book>();
             }
 
@@ -415,6 +415,37 @@ namespace Readarr.Api.V1.Author
             }
 
             return user;
+        }
+
+        private static bool IsRateLimited(Exception ex, out Exception rateLimitException)
+        {
+            if (ex is TooManyRequestsException)
+            {
+                rateLimitException = ex;
+                return true;
+            }
+
+            if (ex is HttpException httpException &&
+                httpException.Response != null &&
+                (int)httpException.Response.StatusCode == 429)
+            {
+                rateLimitException = ex;
+                return true;
+            }
+
+            if (ex is AggregateException aggregateException)
+            {
+                foreach (var inner in aggregateException.Flatten().InnerExceptions)
+                {
+                    if (IsRateLimited(inner, out rateLimitException))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            rateLimitException = null;
+            return false;
         }
     }
 }
