@@ -8,6 +8,7 @@ using NzbDrone.Common.Http;
 using NzbDrone.Core.Authentication;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.Configuration;
+using NzbDrone.Core.Exceptions;
 using NzbDrone.Core.ImportLists.Exclusions;
 using NzbDrone.Core.Languages;
 using NzbDrone.Core.MediaCover;
@@ -428,6 +429,14 @@ namespace Readarr.Api.V1.Author
             if (ex is HttpException httpException &&
                 httpException.Response != null &&
                 (int)httpException.Response.StatusCode == 429)
+            {
+                rateLimitException = ex;
+                return true;
+            }
+
+            if (ex is NzbDroneClientException clientException &&
+                (clientException.StatusCode == System.Net.HttpStatusCode.TooManyRequests ||
+                 clientException.StatusCode == System.Net.HttpStatusCode.Forbidden))
             {
                 rateLimitException = ex;
                 return true;

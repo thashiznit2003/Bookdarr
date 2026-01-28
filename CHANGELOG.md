@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.51
+- Summary: Fall back to Open Library when Google Books author lookups are rate-limited.
+- Why: Google Books can return 429/403 even with minimal requests, which breaks Available Books for existing authors.
+- Impact: Author available books no longer hard-fail on Google rate limits; Open Library is used when possible and 429s are treated as rate limits.
+- Files: `src/NzbDrone.Core/MetadataSource/BookInfo/BookInfoProxy.cs`, `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.51`, push, then run the SSH update with the next log number.
+
 ## 2.1.50
 - Summary: Harden Available Books against all rate-limit exception shapes.
 - Why: Author metadata calls can throw 429s wrapped in different exception types, still causing “Loading books failed”.

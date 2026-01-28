@@ -89,7 +89,14 @@ namespace NzbDrone.Core.MetadataSource.BookInfo
                 {
                     if (UseGoogleBooks)
                     {
-                        return GetGoogleAuthorInfo(authorName);
+                        try
+                        {
+                            return GetGoogleAuthorInfo(authorName);
+                        }
+                        catch (NzbDroneClientException ex) when (IsGoogleBooksQuotaStatus(ex.StatusCode))
+                        {
+                            _logger.Warn(ex, "Google Books rate limited for author {0}, attempting Open Library fallback", authorName.SanitizeForLog()); // lgtm [cs/log-forging]
+                        }
                     }
 
                     var openLibraryAuthorKey = TryGetOpenLibraryAuthorKeyForName(authorName);
