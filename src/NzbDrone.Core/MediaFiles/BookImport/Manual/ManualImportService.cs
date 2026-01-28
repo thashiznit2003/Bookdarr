@@ -7,6 +7,7 @@ using NLog;
 using NzbDrone.Common;
 using NzbDrone.Common.Crypto;
 using NzbDrone.Common.Disk;
+using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Instrumentation.Extensions;
 using NzbDrone.Core.Books;
@@ -47,6 +48,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Manual
         private readonly ITrackedDownloadService _trackedDownloadService;
         private readonly IDownloadedBooksImportService _downloadedTracksImportService;
         private readonly IProvideImportItemService _provideImportItemService;
+        private readonly IAppFolderInfo _appFolderInfo;
         private readonly IEventAggregator _eventAggregator;
         private readonly Logger _logger;
 
@@ -65,6 +67,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Manual
                                    ITrackedDownloadService trackedDownloadService,
                                    IDownloadedBooksImportService downloadedTracksImportService,
                                    IProvideImportItemService provideImportItemService,
+                                   IAppFolderInfo appFolderInfo,
                                    IEventAggregator eventAggregator,
                                    Logger logger)
         {
@@ -83,6 +86,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Manual
             _trackedDownloadService = trackedDownloadService;
             _downloadedTracksImportService = downloadedTracksImportService;
             _provideImportItemService = provideImportItemService;
+            _appFolderInfo = appFolderInfo;
             _eventAggregator = eventAggregator;
             _logger = logger;
         }
@@ -328,6 +332,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Manual
             foreach (var importBookId in bookIds)
             {
                 var bookImportDecisions = new List<ImportDecision<LocalBook>>();
+                var manualImportRoot = Path.Combine(_appFolderInfo.AppDataFolder, "manual-import");
 
                 // turn off anyReleaseOk if specified
                 if (importBookId.First().DisableReleaseSwitching)
@@ -375,10 +380,11 @@ namespace NzbDrone.Core.MediaFiles.BookImport.Manual
                     var part = fileTrackInfo.TrackNumbers.Any()
                         ? fileTrackInfo.TrackNumbers.First()
                         : mediaType == BookFileMediaType.Audiobook ? 0 : 1;
+                    var isManualImportPath = manualImportRoot.IsParentPath(file.Path);
 
                     var localTrack = new LocalBook
                     {
-                        ExistingFile = fileRootFolder != null,
+                        ExistingFile = fileRootFolder != null && !isManualImportPath,
                         FileTrackInfo = fileTrackInfo,
                         Path = file.Path,
                         MediaType = mediaType,

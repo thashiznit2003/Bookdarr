@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.59
+- Summary: Force manual-upload imports to be treated as new files so they move into book folders.
+- Why: Files uploaded via browser were treated as existing and left in the manual-import temp folder.
+- Impact: Manual uploads now move/rename into the book directory and show in file lists properly.
+- Files: `src/NzbDrone.Core/MediaFiles/BookImport/Manual/ManualImportService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.59`, push, then run the SSH update with the next log number.
+
 ## 2.1.58
 - Summary: Fix manual-import destination conflict handling after build errors.
 - Why: The previous change referenced out-of-scope variables and a non-existent disk provider API.
