@@ -149,9 +149,9 @@ namespace Readarr.Api.V1.Author
                     return null;
                 }
 
-                var normalizedTarget = Parser.Parser.CleanAuthorName(authorName);
+                var normalizedTarget = Parser.CleanAuthorName(authorName);
                 var match = candidates.FirstOrDefault(candidate =>
-                    Parser.Parser.CleanAuthorName(candidate.Metadata?.Value?.Name ?? candidate.Name)
+                    Parser.CleanAuthorName(candidate.Metadata?.Value?.Name ?? candidate.Name)
                         .Equals(normalizedTarget, StringComparison.OrdinalIgnoreCase))
                             ?? candidates.FirstOrDefault();
 

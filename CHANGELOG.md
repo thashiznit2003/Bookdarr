@@ -1,11 +1,11 @@
 # Changelog
 
-## 2.1.55
-- Summary: Fallback to author search when Open Library author lookups fail.
-- Why: Some stored author IDs now 404 in Open Library, causing Available Books to error.
-- Impact: Available Books now tries a name-based author search and uses the best match instead of failing.
+## 2.1.56
+- Summary: Fix build after author-search fallback normalization.
+- Why: Used the wrong Parser type in the fallback matcher, causing a compile error.
+- Impact: Build succeeds and author-name fallback remains in place.
 - Files: `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
-- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.55`, push, then run the SSH update with the next log number.
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.56`, push, then run the SSH update with the next log number.
 
 ## 2.1.53
 - Summary: Make Open Library the default metadata provider.
