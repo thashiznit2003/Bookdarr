@@ -435,8 +435,8 @@ namespace Readarr.Api.V1.Author
             }
 
             if (ex is NzbDroneClientException clientException &&
-                (clientException.StatusCode == System.Net.HttpStatusCode.TooManyRequests ||
-                 clientException.StatusCode == System.Net.HttpStatusCode.Forbidden))
+                (clientException.StatusCode == global::System.Net.HttpStatusCode.TooManyRequests ||
+                 clientException.StatusCode == global::System.Net.HttpStatusCode.Forbidden))
             {
                 rateLimitException = ex;
                 return true;

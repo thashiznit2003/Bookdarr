@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.52
+- Summary: Fix API build after rate-limit handling update.
+- Why: `System.Net` was resolving to the API namespace, causing a compile error on the VM.
+- Impact: Build succeeds with explicit global `System.Net` references.
+- Files: `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.52`, push, then run the SSH update with the next log number.
+
 ## 2.1.51
 - Summary: Fall back to Open Library when Google Books author lookups are rate-limited.
 - Why: Google Books can return 429/403 even with minimal requests, which breaks Available Books for existing authors.
