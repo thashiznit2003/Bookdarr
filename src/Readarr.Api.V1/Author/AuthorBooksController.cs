@@ -30,6 +30,7 @@ namespace Readarr.Api.V1.Author
         private readonly IMapCoversToLocal _coverMapper;
         private readonly IProvideAuthorInfo _authorInfo;
         private readonly IImportListExclusionService _importListExclusionService;
+        private readonly ISearchForNewAuthor _authorSearch;
         private readonly IUserLibraryService _userLibraryService;
         private readonly IUserService _userService;
         private readonly Logger _logger;
@@ -41,6 +42,7 @@ namespace Readarr.Api.V1.Author
                                      IMapCoversToLocal coverMapper,
                                      IProvideAuthorInfo authorInfo,
                                      IImportListExclusionService importListExclusionService,
+                                     ISearchForNewAuthor authorSearch,
                                      IUserLibraryService userLibraryService,
                                      IUserService userService,
                                      Logger logger)
@@ -52,6 +54,7 @@ namespace Readarr.Api.V1.Author
             _coverMapper = coverMapper;
             _authorInfo = authorInfo;
             _importListExclusionService = importListExclusionService;
+            _authorSearch = authorSearch;
             _userLibraryService = userLibraryService;
             _userService = userService;
             _logger = logger;
@@ -71,6 +74,11 @@ namespace Readarr.Api.V1.Author
             {
                 _logger.Warn(rateLimitException, "Rate limited while fetching available books for author {0}. Returning empty list.", authorId);
                 books = new List<Book>();
+            }
+            catch (AuthorNotFoundException ex)
+            {
+                _logger.Warn(ex, "Author not found while fetching available books for author {0}. Returning empty list.", authorId);
+                books = TryFallbackAuthorSearch(author) ?? new List<Book>();
             }
 
             var authorFiltered = FilterByAuthorName(books, author.Metadata?.Value?.Name ?? author.Name);
@@ -123,6 +131,44 @@ namespace Readarr.Api.V1.Author
                 TotalRecords = totalRecords,
                 Records = MapToResource(records)
             };
+        }
+
+        private List<Book> TryFallbackAuthorSearch(NzbDrone.Core.Books.Author author)
+        {
+            var authorName = author?.Metadata?.Value?.Name ?? author?.Name;
+            if (authorName.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            try
+            {
+                var candidates = _authorSearch.SearchForNewAuthor(authorName);
+                if (candidates.Empty())
+                {
+                    return null;
+                }
+
+                var normalizedTarget = Parser.Parser.CleanAuthorName(authorName);
+                var match = candidates.FirstOrDefault(candidate =>
+                    Parser.Parser.CleanAuthorName(candidate.Metadata?.Value?.Name ?? candidate.Name)
+                        .Equals(normalizedTarget, StringComparison.OrdinalIgnoreCase))
+                            ?? candidates.FirstOrDefault();
+
+                var foreignId = match?.Metadata?.Value?.ForeignAuthorId;
+                if (foreignId.IsNullOrWhiteSpace())
+                {
+                    return null;
+                }
+
+                var remoteAuthor = _authorInfo.GetAuthorInfo(foreignId, true);
+                return remoteAuthor?.Books?.Value?.ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.Warn(ex, "Fallback author search failed for {0}", authorName);
+                return null;
+            }
         }
 
         [HttpPost]
