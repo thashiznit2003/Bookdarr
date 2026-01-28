@@ -159,6 +159,31 @@ namespace NzbDrone.Core.MediaFiles
                 catch (FileAlreadyExistsException ex)
                 {
                     _logger.Warn("File not renamed, there is already a file at the destination: {0}", ex.Filename);
+                    if (_diskProvider.FileExists(ex.Filename))
+                    {
+                        try
+                        {
+                            _logger.Warn("Removing existing destination file to overwrite: {0}", ex.Filename);
+                            _diskProvider.DeleteFile(ex.Filename);
+
+                            _logger.Debug("Retrying rename after removing existing file: {0}", bookFile);
+                            _bookFileMover.MoveBookFile(bookFile, author);
+                            _mediaFileService.Update(bookFile);
+
+                            renamed.Add(new RenamedBookFile
+                            {
+                                BookFile = bookFile,
+                                PreviousPath = previousPath
+                            });
+
+                            _eventAggregator.PublishEvent(new BookFileRenamedEvent(author, bookFile, previousPath));
+                            continue;
+                        }
+                        catch (Exception retryEx)
+                        {
+                            _logger.Error(retryEx, "Failed to overwrite existing file at destination: {0}", ex.Filename);
+                        }
+                    }
                 }
                 catch (SameFilenameException ex)
                 {

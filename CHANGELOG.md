@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.60
+- Summary: Allow organize/rename to overwrite existing destination files.
+- Why: Organize failed silently when a properly named file already existed.
+- Impact: Organize now removes existing destination files and retries the rename.
+- Files: `src/NzbDrone.Core/MediaFiles/RenameBookFileService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.60`, push, then run the SSH update with the next log number.
+
 ## 2.1.59
 - Summary: Force manual-upload imports to be treated as new files so they move into book folders.
 - Why: Files uploaded via browser were treated as existing and left in the manual-import temp folder.
