@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.61
+- Summary: Overwrite existing destination files before rename to avoid destination-exists errors.
+- Why: Organize was still failing because the destination existed and the rename never executed.
+- Impact: Organize now deletes the destination path up front and proceeds with the rename.
+- Files: `src/NzbDrone.Core/MediaFiles/RenameBookFileService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.61`, push, then run the SSH update with the next log number.
+
 ## 2.1.60
 - Summary: Allow organize/rename to overwrite existing destination files.
 - Why: Organize failed silently when a properly named file already existed.

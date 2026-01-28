@@ -25,6 +25,7 @@ namespace NzbDrone.Core.MediaFiles
     {
         private readonly IAuthorService _authorService;
         private readonly IMediaFileService _mediaFileService;
+        private readonly IEditionService _editionService;
         private readonly IMoveBookFiles _bookFileMover;
         private readonly IEventAggregator _eventAggregator;
         private readonly IBuildFileNames _filenameBuilder;
@@ -33,6 +34,7 @@ namespace NzbDrone.Core.MediaFiles
 
         public RenameBookFileService(IAuthorService authorService,
                                         IMediaFileService mediaFileService,
+                                        IEditionService editionService,
                                         IMoveBookFiles bookFileMover,
                                         IEventAggregator eventAggregator,
                                         IBuildFileNames filenameBuilder,
@@ -41,6 +43,7 @@ namespace NzbDrone.Core.MediaFiles
         {
             _authorService = authorService;
             _mediaFileService = mediaFileService;
+            _editionService = editionService;
             _bookFileMover = bookFileMover;
             _eventAggregator = eventAggregator;
             _filenameBuilder = filenameBuilder;
@@ -141,6 +144,16 @@ namespace NzbDrone.Core.MediaFiles
 
                 try
                 {
+                    var edition = _editionService.GetEdition(bookFile.EditionId);
+                    var newName = _filenameBuilder.BuildBookFileName(author, edition, bookFile);
+                    var newPath = _filenameBuilder.BuildBookFilePath(author, edition, newName, Path.GetExtension(bookFile.Path));
+
+                    if (!bookFile.Path.PathEquals(newPath, StringComparison.Ordinal) && _diskProvider.FileExists(newPath))
+                    {
+                        _logger.Warn("Removing existing destination file to overwrite: {0}", newPath);
+                        _diskProvider.DeleteFile(newPath);
+                    }
+
                     _logger.Debug("Renaming book file: {0}", bookFile);
                     _bookFileMover.MoveBookFile(bookFile, author);
 
@@ -159,31 +172,6 @@ namespace NzbDrone.Core.MediaFiles
                 catch (FileAlreadyExistsException ex)
                 {
                     _logger.Warn("File not renamed, there is already a file at the destination: {0}", ex.Filename);
-                    if (_diskProvider.FileExists(ex.Filename))
-                    {
-                        try
-                        {
-                            _logger.Warn("Removing existing destination file to overwrite: {0}", ex.Filename);
-                            _diskProvider.DeleteFile(ex.Filename);
-
-                            _logger.Debug("Retrying rename after removing existing file: {0}", bookFile);
-                            _bookFileMover.MoveBookFile(bookFile, author);
-                            _mediaFileService.Update(bookFile);
-
-                            renamed.Add(new RenamedBookFile
-                            {
-                                BookFile = bookFile,
-                                PreviousPath = previousPath
-                            });
-
-                            _eventAggregator.PublishEvent(new BookFileRenamedEvent(author, bookFile, previousPath));
-                            continue;
-                        }
-                        catch (Exception retryEx)
-                        {
-                            _logger.Error(retryEx, "Failed to overwrite existing file at destination: {0}", ex.Filename);
-                        }
-                    }
                 }
                 catch (SameFilenameException ex)
                 {
