@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.47
+- Summary: Guard Available Books retrieval when author metadata is missing or incomplete.
+- Why: Some providers return null author/book lists, causing “Loading books failed”.
+- Impact: Author Available Books now returns an empty list instead of erroring.
+- Files: `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.47`, push, then run the SSH update with the next log number.
+
 ## 2.1.46
 - Summary: Default chown flags for books/downloads inside the Docker entrypoint.
 - Why: Users shouldn’t have to set environment variables to avoid permissions errors.

@@ -202,12 +202,25 @@ namespace Readarr.Api.V1.Author
 
         private List<Book> GetAvailableBooks(NzbDrone.Core.Books.Author author)
         {
-            var remoteAuthor = _authorInfo.GetAuthorInfo(author.Metadata.Value.ForeignAuthorId, true);
+            var foreignAuthorId = author?.Metadata?.Value?.ForeignAuthorId;
+            if (foreignAuthorId.IsNullOrWhiteSpace())
+            {
+                return new List<Book>();
+            }
+
+            var remoteAuthor = _authorInfo.GetAuthorInfo(foreignAuthorId, true);
+            if (remoteAuthor?.Books?.Value == null)
+            {
+                return new List<Book>();
+            }
+
             var existingBookIds = _bookService.GetBooksByAuthor(author.Id)
                 .Select(book => book.ForeignBookId)
+                .Where(id => id.IsNotNullOrWhiteSpace())
                 .ToHashSet();
 
             var available = remoteAuthor.Books.Value
+                .Where(book => book?.ForeignBookId.IsNotNullOrWhiteSpace() == true)
                 .Where(book => !existingBookIds.Contains(book.ForeignBookId))
                 .OrderByDescending(book => book.ReleaseDate ?? DateTime.MinValue)
                 .ToList();
