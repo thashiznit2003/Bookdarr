@@ -172,6 +172,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport
             {
                 var localTrack = importDecision.Item;
                 var oldFiles = new List<BookFile>();
+                BookFile bookFile = null;
 
                 try
                 {
@@ -186,7 +187,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport
 
                     localTrack.Book.Author = localTrack.Author;
 
-                    var bookFile = new BookFile
+                    bookFile = new BookFile
                     {
                         Path = localTrack.Path.CleanFilePath(),
                         CalibreId = localTrack.CalibreId,
@@ -287,14 +288,14 @@ namespace NzbDrone.Core.MediaFiles.BookImport
                 catch (DestinationAlreadyExistsException e)
                 {
                     _logger.Warn(e, "Couldn't import book " + localTrack);
-                    if (_diskProvider.FileExists(bookFile.Path))
+                    if (bookFile != null && _diskProvider.FileExists(bookFile.Path))
                     {
                         var existingFile = _mediaFileService.GetFileWithPath(bookFile.Path);
 
                         if (existingFile == null)
                         {
                             bookFile.Size = _diskProvider.GetFileSize(bookFile.Path);
-                            bookFile.Modified = _diskProvider.GetLastWriteTimeUtc(bookFile.Path);
+                            bookFile.Modified = _diskProvider.FileGetLastWrite(bookFile.Path);
                             filesToAdd.Add(bookFile);
                             allImportedTrackFiles.Add(bookFile);
                             trackImportedEvents.Add(new TrackImportedEvent(localTrack, bookFile, oldFiles, false, downloadClientItem));
@@ -302,12 +303,6 @@ namespace NzbDrone.Core.MediaFiles.BookImport
                         else
                         {
                             var updated = false;
-
-                            if (existingFile.BookId != bookFile.BookId)
-                            {
-                                existingFile.BookId = bookFile.BookId;
-                                updated = true;
-                            }
 
                             if (existingFile.EditionId != bookFile.EditionId)
                             {

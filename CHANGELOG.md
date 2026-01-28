@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.58
+- Summary: Fix manual-import destination conflict handling after build errors.
+- Why: The previous change referenced out-of-scope variables and a non-existent disk provider API.
+- Impact: Manual import now links existing destination files without build failures.
+- Files: `src/NzbDrone.Core/MediaFiles/BookImport/ImportApprovedBooks.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.58`, push, then run the SSH update with the next log number.
+
 ## 2.1.57
 - Summary: Treat manual-import destination conflicts as successful when the file already exists on disk.
 - Why: Manual imports can move the file and then fail DB insert due to an existing destination path, leaving the file unlinked.
