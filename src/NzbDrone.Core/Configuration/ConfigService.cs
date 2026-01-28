@@ -300,12 +300,12 @@ namespace NzbDrone.Core.Configuration
 
                 if (provider.IsNullOrWhiteSpace())
                 {
-                    provider = "googlebooks";
+                    provider = "openlibrary";
                 }
                 else if (!provider.Equals("googlebooks", StringComparison.OrdinalIgnoreCase) &&
                          !provider.Equals("openlibrary", StringComparison.OrdinalIgnoreCase))
                 {
-                    provider = "googlebooks";
+                    provider = "openlibrary";
                 }
 
                 return provider;

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.53
+- Summary: Make Open Library the default metadata provider.
+- Why: Google Books rate limiting and noisy results make it unreliable for primary search/available-books.
+- Impact: Fresh installs default to Open Library for search and author availability unless explicitly switched.
+- Files: `src/NzbDrone.Core/Configuration/ConfigService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.53`, push, then run the SSH update with the next log number.
+
 ## 2.1.52
 - Summary: Fix API build after rate-limit handling update.
 - Why: `System.Net` was resolving to the API namespace, causing a compile error on the VM.
