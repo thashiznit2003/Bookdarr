@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.46
+- Summary: Default chown flags for books/downloads inside the Docker entrypoint.
+- Why: Users shouldn’t have to set environment variables to avoid permissions errors.
+- Impact: Containers now chown `/books` and `/downloads` by default unless explicitly disabled.
+- Files: `docker/entrypoint.sh`, `docker-compose.dockerhub.yml`, `docker-compose.ghcr.yml`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.46`, push, then run the SSH update with the next log number.
+
 ## 2.1.45
 - Summary: Raise multipart upload limits for manual imports.
 - Why: Large ebook uploads (>128MB) were rejected with a multipart body length error.

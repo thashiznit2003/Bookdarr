@@ -9,8 +9,6 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - BOOKDARR_CHOWN_BOOKS=1
-      - BOOKDARR_CHOWN_DOWNLOADS=1
       - TZ=UTC
     volumes:
       - /opt/bookdarr/config:/config
