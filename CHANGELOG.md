@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.49
+- Summary: Fix StyleCop ordering for author available-books controller.
+- Why: Build failed due to namespace ordering requirements.
+- Impact: No behavior change; build now succeeds.
+- Files: `src/Readarr.Api.V1/Author/AuthorBooksController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.49`, push, then run the SSH update with the next log number.
+
 ## 2.1.48
 - Summary: Handle metadata rate limits for Available Books without failing the page.
 - Why: Provider 429 responses were returning as API errors, triggering “Loading books failed”.
