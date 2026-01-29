@@ -80,6 +80,7 @@ namespace Readarr.Api.V1.ManualImport
         }
 
         [HttpPost("upload")]
+        [RequestFormLimits(MultipartBodyLengthLimit = 20L * 1024 * 1024 * 1024)]
         public IActionResult UploadFiles()
         {
             if (!Request.HasFormContentType)

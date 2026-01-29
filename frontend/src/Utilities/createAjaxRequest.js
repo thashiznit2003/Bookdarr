@@ -50,6 +50,11 @@ export default function createAjaxRequest(originalAjaxOptions) {
   const method = (ajaxOptions.method || ajaxOptions.type || 'GET').toUpperCase();
   const shouldRecord = !ajaxOptions.skipDiagnostics;
   const urlForLog = ajaxOptions.url;
+  const onUploadProgress = ajaxOptions.onUploadProgress;
+
+  if (onUploadProgress && requestXHR.upload) {
+    requestXHR.upload.onprogress = onUploadProgress;
+  }
 
   const request = $.ajax({
     xhr: () => requestXHR,

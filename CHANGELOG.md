@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.65
+- Summary: Show import progress for uploads and importing queue items; add indeterminate progress support.
+- Why: Large imports had no visible progress and uploads appeared stalled.
+- Impact: Browser manual uploads now show percent progress; queue items in importing state show an indeterminate progress bar.
+- Files: `frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.js`, `frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.css`, `frontend/src/Utilities/createAjaxRequest.js`, `frontend/src/Components/ProgressBar.js`, `frontend/src/Components/ProgressBar.css`, `frontend/src/Activity/Queue/QueueRow.js`, `src/Readarr.Api.V1/ManualImport/ManualImportController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.65`, push, then run the SSH update with the next log number.
+
 ## 2.1.64
 - Summary: Raise manual import upload limit to 20 GB.
 - Why: Large audiobook uploads (>1 GB) were blocked by the default multipart limit.

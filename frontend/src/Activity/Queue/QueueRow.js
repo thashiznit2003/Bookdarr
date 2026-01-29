@@ -15,7 +15,7 @@ import TableSelectCell from 'Components/Table/Cells/TableSelectCell';
 import TableRow from 'Components/Table/TableRow';
 import Popover from 'Components/Tooltip/Popover';
 import Tooltip from 'Components/Tooltip/Tooltip';
-import { icons, kinds, tooltipPositions } from 'Helpers/Props';
+import { icons, kinds, sizes, tooltipPositions } from 'Helpers/Props';
 import InteractiveImportModal from 'InteractiveImport/InteractiveImportModal';
 import formatBytes from 'Utilities/Number/formatBytes';
 import formatCustomFormatScore from 'Utilities/Number/formatCustomFormatScore';
@@ -121,9 +121,11 @@ class QueueRow extends Component {
       isInteractiveImportModalOpen
     } = this.state;
 
-    const progress = 100 - (sizeleft / size * 100);
+    const hasProgress = size && sizeleft != null && size > 0;
+    const progress = hasProgress ? 100 - (sizeleft / size * 100) : 0;
     const showInteractiveImport = status === 'completed' && trackedDownloadStatus === 'warning';
     const isPending = status === 'delay' || status === 'downloadClientUnavailable';
+    const isImporting = status === 'completed' && trackedDownloadState === 'importing';
 
     return (
       <TableRow>
@@ -315,10 +317,20 @@ class QueueRow extends Component {
                   className={styles.progress}
                 >
                   {
-                    !!progress &&
+                    hasProgress &&
                       <ProgressBar
                         progress={progress}
                         title={`${progress.toFixed(1)}%`}
+                      />
+                  }
+
+                  {
+                    !hasProgress && isImporting &&
+                      <ProgressBar
+                        progress={100}
+                        isIndeterminate={true}
+                        size={sizes.SMALL}
+                        kind={kinds.DEFAULT}
                       />
                   }
                 </TableRowCell>

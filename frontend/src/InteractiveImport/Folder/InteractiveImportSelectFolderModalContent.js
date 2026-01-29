@@ -7,6 +7,7 @@ import PathInputConnector from 'Components/Form/PathInputConnector';
 import TextInput from 'Components/Form/TextInput';
 import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
+import ProgressBar from 'Components/ProgressBar';
 import ModalBody from 'Components/Modal/ModalBody';
 import ModalContent from 'Components/Modal/ModalContent';
 import ModalFooter from 'Components/Modal/ModalFooter';
@@ -47,7 +48,8 @@ class InteractiveImportSelectFolderModalContent extends Component {
       folder: props.initialFolder || '',
       selectedFiles: [],
       isUploading: false,
-      uploadError: null
+      uploadError: null,
+      uploadProgress: 0
     };
   }
 
@@ -98,7 +100,7 @@ class InteractiveImportSelectFolderModalContent extends Component {
       formData.append('files', file);
     });
 
-    this.setState({ isUploading: true, uploadError: null });
+    this.setState({ isUploading: true, uploadError: null, uploadProgress: 0 });
 
     const request = createAjaxRequest({
       url: '/manualimport/upload',
@@ -106,7 +108,15 @@ class InteractiveImportSelectFolderModalContent extends Component {
       data: formData,
       dataType: 'json',
       processData: false,
-      contentType: false
+      contentType: false,
+      onUploadProgress: (event) => {
+        if (!event || !event.lengthComputable) {
+          return;
+        }
+
+        const progress = Math.min(100, (event.loaded / event.total) * 100);
+        this.setState({ uploadProgress: progress });
+      }
     }).request;
 
     request.done((data) => {
@@ -163,7 +173,8 @@ class InteractiveImportSelectFolderModalContent extends Component {
     const folder = this.state.folder;
     const {
       isUploading,
-      uploadError
+      uploadError,
+      uploadProgress
     } = this.state;
 
     const uploadErrorMessage = getErrorMessage(uploadError, translate('ManualImportUploadFailed'));
@@ -201,8 +212,18 @@ class InteractiveImportSelectFolderModalContent extends Component {
                   {
                     isUploading ?
                       <div className={styles.uploadProgress}>
-                        <Icon name={icons.SPINNER} isSpinning={true} />
-                        {translate('ManualImportUploading')}
+                        <div className={styles.uploadProgressHeader}>
+                          <Icon name={icons.SPINNER} isSpinning={true} />
+                          {translate('ManualImportUploading')}
+                        </div>
+
+                        <ProgressBar
+                          className={styles.uploadProgressBar}
+                          progress={uploadProgress}
+                          showText={true}
+                          size={sizes.SMALL}
+                          kind={kinds.DEFAULT}
+                        />
                       </div> :
                       null
                   }

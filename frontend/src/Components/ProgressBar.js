@@ -16,12 +16,16 @@ function ProgressBar(props) {
     text,
     kind,
     size,
-    width
+    width,
+    isIndeterminate
   } = props;
 
-  const progressPercent = `${progress.toFixed(precision)}%`;
+  const progressValue = isIndeterminate ? 100 : progress;
+  const progressPercent = `${progressValue.toFixed(precision)}%`;
   const progressText = text || progressPercent;
   const actualWidth = width ? `${width}px` : '100%';
+  const barStyle = isIndeterminate ? undefined : { width: progressPercent };
+  const ariaValue = isIndeterminate ? 0 : progressValue.toFixed(0);
 
   return (
     <ColorImpairedConsumer>
@@ -54,14 +58,15 @@ function ProgressBar(props) {
               className={classNames(
                 className,
                 styles[kind],
-                enableColorImpairedMode && 'colorImpaired'
+                enableColorImpairedMode && 'colorImpaired',
+                isIndeterminate && styles.indeterminateBar
               )}
               role="meter"
-              aria-label={`Progress Bar at ${progress.toFixed(0)}%`}
-              aria-valuenow={progress.toFixed(0)}
+              aria-label={isIndeterminate ? 'Progress Bar' : `Progress Bar at ${progressValue.toFixed(0)}%`}
+              aria-valuenow={ariaValue}
               aria-valuemin="0"
               aria-valuemax="100"
-              style={{ width: progressPercent }}
+              style={barStyle}
             />
 
             {
@@ -98,7 +103,8 @@ ProgressBar.propTypes = {
   text: PropTypes.string,
   kind: PropTypes.oneOf(kinds.all).isRequired,
   size: PropTypes.oneOf(sizes.all).isRequired,
-  width: PropTypes.number
+  width: PropTypes.number,
+  isIndeterminate: PropTypes.bool
 };
 
 ProgressBar.defaultProps = {
@@ -107,7 +113,8 @@ ProgressBar.defaultProps = {
   precision: 1,
   showText: false,
   kind: kinds.PRIMARY,
-  size: sizes.MEDIUM
+  size: sizes.MEDIUM,
+  isIndeterminate: false
 };
 
 export default ProgressBar;

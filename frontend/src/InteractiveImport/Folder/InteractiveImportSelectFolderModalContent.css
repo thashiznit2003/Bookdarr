@@ -20,13 +20,23 @@
 
 .uploadProgress {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 8px;
   padding: 10px;
   background-color: var(--infoColor);
   border-radius: 4px;
   color: var(--white);
   font-weight: 500;
+}
+
+.uploadProgressHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.uploadProgressBar {
+  max-width: 260px;
 }
 
 .uploadError {
