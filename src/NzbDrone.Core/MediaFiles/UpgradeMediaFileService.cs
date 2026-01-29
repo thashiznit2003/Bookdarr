@@ -55,6 +55,12 @@ namespace NzbDrone.Core.MediaFiles
                 existingFiles = existingFiles.Where(f => GetMediaType(f) == targetMediaType).ToList();
             }
 
+            // Preserve other parts for multi-file audiobooks; only replace the same part.
+            if (targetMediaType == BookFileMediaType.Audiobook && localBook.Part > 0)
+            {
+                existingFiles = existingFiles.Where(f => f.Part == localBook.Part).ToList();
+            }
+
             var rootFolderPath = _diskProvider.GetParentFolder(localBook.Author.Path);
             var rootFolder = _rootFolderService.GetBestRootFolder(rootFolderPath);
             var isCalibre = rootFolder.IsCalibreLibrary && rootFolder.CalibreSettings != null;

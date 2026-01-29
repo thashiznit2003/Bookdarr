@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.74
+- Summary: Keep all parts when importing multi-file audiobooks.
+- Why: Each imported audiobook file was replacing earlier parts, leaving only one file in the book details list.
+- Impact: Audiobook imports now only replace the same part number, preserving other parts.
+- Files: `src/NzbDrone.Core/MediaFiles/UpgradeMediaFileService.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.74`, push, then run the SSH update with the next log number.
+
 ## 2.1.73
 - Summary: Show all uploaded files in manual import for multi-file audiobooks.
 - Why: Filtered results were hiding additional files, making multi-file imports appear as a single file.
