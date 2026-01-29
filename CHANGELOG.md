@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.69
+- Summary: Ensure multi-file manual import triggers upload on selection.
+- Why: File inputs were still behaving like controlled inputs, preventing the upload request.
+- Impact: Selecting files now immediately triggers the upload request in the modal.
+- Files: `frontend/src/Components/Form/TextInput.js`, `frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.69`, push, then run the SSH update with the next log number.
+
 ## 2.1.68
 - Summary: Add clearer progress feedback for large multi-file manual uploads.
 - Why: Selecting many files showed no visible upload status, making it unclear if the upload was running.

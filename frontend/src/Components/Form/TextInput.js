@@ -150,7 +150,6 @@ class TextInput extends Component {
     } = this.props;
 
     const inputName = dataFormType === 'login' ? name : `bookdarr-${name}`;
-    const inputValue = type === 'file' ? undefined : value;
 
     return (
       <input
@@ -167,7 +166,6 @@ class TextInput extends Component {
           hasButton && styles.hasButton
         )}
         name={inputName}
-        value={inputValue}
         autoComplete={autoComplete}
         data-form-type={dataFormType}
         data-lpignore={dataLpignore}
@@ -188,6 +186,7 @@ class TextInput extends Component {
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onWheel={this.onWheel}
+        {...(type === 'file' ? {} : { value })}
         {...rest}
       />
     );

@@ -86,12 +86,14 @@ class InteractiveImportSelectFolderModalContent extends Component {
 
   onUploadFilesChange = ({ files }) => {
     const selectedFiles = files ? Array.from(files) : [];
+    if (!selectedFiles.length) {
+      return;
+    }
+
     this.setState({ selectedFiles, uploadError: null });
 
     // Auto-upload when files are selected
-    if (selectedFiles.length > 0) {
-      this.uploadFiles(selectedFiles);
-    }
+    this.uploadFiles(selectedFiles);
   };
 
   uploadFiles = (selectedFiles) => {
