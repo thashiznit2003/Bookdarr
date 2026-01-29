@@ -83,60 +83,72 @@ namespace Readarr.Api.V1.ManualImport
         [RequestFormLimits(MultipartBodyLengthLimit = 20L * 1024 * 1024 * 1024)]
         public IActionResult UploadFiles()
         {
-            if (!Request.HasFormContentType)
+            try
             {
-                return BadRequest("Form data is required.");
-            }
-
-            var files = Request.Form?.Files;
-            if (files == null || files.Count == 0)
-            {
-                return BadRequest("No files uploaded.");
-            }
-
-            var uploadRoot = Path.Combine(_appFolderInfo.AppDataFolder, "manual-import");
-            _diskProvider.EnsureFolder(uploadRoot);
-
-            var uploadFolder = Path.Combine(uploadRoot, $"{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}");
-            _diskProvider.EnsureFolder(uploadFolder);
-
-            var savedFiles = new List<string>();
-
-            foreach (var file in files)
-            {
-                if (file == null || file.Length == 0)
+                if (!Request.HasFormContentType)
                 {
-                    continue;
+                    return BadRequest("Form data is required.");
                 }
 
-                var originalName = Path.GetFileName(file.FileName);
-                var cleanName = FileNameBuilder.CleanFileName(originalName);
-
-                if (string.IsNullOrWhiteSpace(cleanName))
+                var files = Request.Form?.Files;
+                if (files == null || files.Count == 0)
                 {
-                    cleanName = "upload" + Path.GetExtension(originalName);
+                    return BadRequest("No files uploaded.");
                 }
 
-                var destination = GetUniquePath(uploadFolder, cleanName);
+                _logger.Info("Manual import upload started with {0} files", files.Count);
 
-                using (var stream = file.OpenReadStream())
+                var uploadRoot = Path.Combine(_appFolderInfo.AppDataFolder, "manual-import");
+                _diskProvider.EnsureFolder(uploadRoot);
+
+                var uploadFolder = Path.Combine(uploadRoot, $"{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}");
+                _diskProvider.EnsureFolder(uploadFolder);
+
+                var savedFiles = new List<string>();
+
+                foreach (var file in files)
                 {
-                    _diskProvider.SaveStream(stream, destination);
+                    if (file == null || file.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    var originalName = Path.GetFileName(file.FileName);
+                    var cleanName = FileNameBuilder.CleanFileName(originalName);
+
+                    if (string.IsNullOrWhiteSpace(cleanName))
+                    {
+                        cleanName = "upload" + Path.GetExtension(originalName);
+                    }
+
+                    var destination = GetUniquePath(uploadFolder, cleanName);
+
+                    using (var stream = file.OpenReadStream())
+                    {
+                        _diskProvider.SaveStream(stream, destination);
+                    }
+
+                    savedFiles.Add(destination);
                 }
 
-                savedFiles.Add(destination);
-            }
+                if (!savedFiles.Any())
+                {
+                    return BadRequest("No files uploaded.");
+                }
 
-            if (!savedFiles.Any())
-            {
-                return BadRequest("No files uploaded.");
-            }
+                _logger.Info("Manual import upload completed. Saved {0} files to {1}", savedFiles.Count, uploadFolder);
 
-            return Ok(new
+                return Ok(new
+                {
+                    path = uploadFolder,
+                    files = savedFiles.Select(Path.GetFileName).ToList()
+                });
+            }
+            catch (Exception ex)
             {
-                path = uploadFolder,
-                files = savedFiles.Select(Path.GetFileName).ToList()
-            });
+                _logger.Error(ex, "Manual import upload failed");
+                return BadRequest($"Unable to upload files: {ex.Message}");
+            }
         }
 
         private string GetUniquePath(string folder, string fileName)

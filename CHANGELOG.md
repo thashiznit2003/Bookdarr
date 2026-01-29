@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.71
+- Summary: Improve manual upload stability and error reporting for large multi-file uploads.
+- Why: Uploads could stall after the browser finished sending data with no clear error.
+- Impact: Kestrel data rate limits are disabled; upload failures now return a readable error and log details.
+- Files: `src/NzbDrone.Host/Bootstrap.cs`, `src/Readarr.Api.V1/ManualImport/ManualImportController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.71`, push, then run the SSH update with the next log number.
+
 ## 2.1.70
 - Summary: Use a native file input for manual import uploads.
 - Why: The shared TextInput component interfered with file input change events, preventing uploads from firing.

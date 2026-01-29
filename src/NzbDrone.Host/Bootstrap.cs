@@ -180,6 +180,8 @@ namespace NzbDrone.Host
                     {
                         serverOptions.AllowSynchronousIO = false;
                         serverOptions.Limits.MaxRequestBodySize = null;
+                        serverOptions.Limits.MinRequestBodyDataRate = null;
+                        serverOptions.Limits.MinResponseDataRate = null;
                     });
                     builder.UseStartup<Startup>();
                 });
