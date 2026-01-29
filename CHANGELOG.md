@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.63
+- Summary: Fix build errors in import overwrite retry path.
+- Why: Copy-only scope and StyleCop ordering/spacing caused build failures.
+- Impact: Import overwrite retry now builds and deploys cleanly.
+- Files: `src/NzbDrone.Core/MediaFiles/BookImport/ImportApprovedBooks.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.63`, push, then run the SSH update with the next log number.
+
 ## 2.1.62
 - Summary: Overwrite existing destination files during import retries when destination already exists.
 - Why: Manual imports were stuck in the temp folder and couldn’t overwrite existing named files.

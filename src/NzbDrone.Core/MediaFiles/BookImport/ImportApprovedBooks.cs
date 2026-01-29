@@ -18,11 +18,11 @@ using NzbDrone.Core.History;
 using NzbDrone.Core.MediaFiles.Events;
 using NzbDrone.Core.Messaging.Commands;
 using NzbDrone.Core.Messaging.Events;
+using NzbDrone.Core.Organizer;
 using NzbDrone.Core.Parser;
 using NzbDrone.Core.Parser.Model;
 using NzbDrone.Core.Qualities;
 using NzbDrone.Core.RootFolders;
-using NzbDrone.Core.Organizer;
 
 namespace NzbDrone.Core.MediaFiles.BookImport
 {
@@ -177,7 +177,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport
                 var localTrack = importDecision.Item;
                 var oldFiles = new List<BookFile>();
                 BookFile bookFile = null;
-                bool copyOnly;
+                var copyOnly = false;
 
                 try
                 {
@@ -364,6 +364,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport
                                 trackImportedEvents.Add(new TrackImportedEvent(localTrack, existingFile, oldFiles, false, downloadClientItem));
                             }
                         }
+
                         importResults.Add(new ImportResult(importDecision));
                         continue;
                     }
