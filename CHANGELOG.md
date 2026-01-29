@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.70
+- Summary: Use a native file input for manual import uploads.
+- Why: The shared TextInput component interfered with file input change events, preventing uploads from firing.
+- Impact: Selecting files now reliably triggers the upload request on manual import.
+- Files: `frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.70`, push, then run the SSH update with the next log number.
+
 ## 2.1.69
 - Summary: Ensure multi-file manual import triggers upload on selection.
 - Why: File inputs were still behaving like controlled inputs, preventing the upload request.

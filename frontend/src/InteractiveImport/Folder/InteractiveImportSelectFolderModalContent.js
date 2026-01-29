@@ -4,7 +4,6 @@ import FormGroup from 'Components/Form/FormGroup';
 import FormInputHelpText from 'Components/Form/FormInputHelpText';
 import FormLabel from 'Components/Form/FormLabel';
 import PathInputConnector from 'Components/Form/PathInputConnector';
-import TextInput from 'Components/Form/TextInput';
 import Icon from 'Components/Icon';
 import Button from 'Components/Link/Button';
 import ProgressBar from 'Components/ProgressBar';
@@ -84,7 +83,8 @@ class InteractiveImportSelectFolderModalContent extends Component {
     }
   };
 
-  onUploadFilesChange = ({ files }) => {
+  onUploadFilesChange = (eventOrPayload) => {
+    const files = eventOrPayload?.target?.files || eventOrPayload?.files;
     const selectedFiles = files ? Array.from(files) : [];
     if (!selectedFiles.length) {
       return;
@@ -197,7 +197,7 @@ class InteractiveImportSelectFolderModalContent extends Component {
                     {translate('ManualImportUploadLabel')}
                   </FormLabel>
 
-                  <TextInput
+                  <input
                     className={styles.fileInput}
                     name="uploadFiles"
                     type="file"
