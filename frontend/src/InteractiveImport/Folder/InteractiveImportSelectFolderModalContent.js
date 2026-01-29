@@ -49,7 +49,7 @@ class InteractiveImportSelectFolderModalContent extends Component {
       selectedFiles: [],
       isUploading: false,
       uploadError: null,
-      uploadProgress: 0
+      uploadProgress: null
     };
   }
 
@@ -100,7 +100,7 @@ class InteractiveImportSelectFolderModalContent extends Component {
       formData.append('files', file);
     });
 
-    this.setState({ isUploading: true, uploadError: null, uploadProgress: 0 });
+    this.setState({ isUploading: true, uploadError: null, uploadProgress: null });
 
     const request = createAjaxRequest({
       url: '/manualimport/upload',
@@ -174,7 +174,8 @@ class InteractiveImportSelectFolderModalContent extends Component {
     const {
       isUploading,
       uploadError,
-      uploadProgress
+      uploadProgress,
+      selectedFiles
     } = this.state;
 
     const uploadErrorMessage = getErrorMessage(uploadError, translate('ManualImportUploadFailed'));
@@ -215,14 +216,27 @@ class InteractiveImportSelectFolderModalContent extends Component {
                         <div className={styles.uploadProgressHeader}>
                           <Icon name={icons.SPINNER} isSpinning={true} />
                           {translate('ManualImportUploading')}
+                          {
+                            selectedFiles.length > 0 ?
+                              <span className={styles.uploadCount}>
+                                {selectedFiles.length} files
+                              </span> :
+                              null
+                          }
                         </div>
 
                         <ProgressBar
                           className={styles.uploadProgressBar}
-                          progress={uploadProgress}
+                          progress={uploadProgress || 0}
+                          isIndeterminate={uploadProgress === null}
                           showText={true}
                           size={sizes.SMALL}
                           kind={kinds.DEFAULT}
+                          text={
+                            uploadProgress === null ?
+                              'Preparing upload...' :
+                              `${uploadProgress.toFixed(0)}%`
+                          }
                         />
                       </div> :
                       null

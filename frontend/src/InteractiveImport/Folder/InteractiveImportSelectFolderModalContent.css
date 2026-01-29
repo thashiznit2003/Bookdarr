@@ -35,6 +35,11 @@
   gap: 10px;
 }
 
+.uploadCount {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
 .uploadProgressBar {
   max-width: 260px;
 }

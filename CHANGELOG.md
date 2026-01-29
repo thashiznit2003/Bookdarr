@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.68
+- Summary: Add clearer progress feedback for large multi-file manual uploads.
+- Why: Selecting many files showed no visible upload status, making it unclear if the upload was running.
+- Impact: Manual import now shows file count and an indeterminate/percent progress bar during upload.
+- Files: `frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.js`, `frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.css`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.68`, push, then run the SSH update with the next log number.
+
 ## 2.1.67
 - Summary: Fix multi-file manual import selection not triggering uploads.
 - Why: File inputs were controlled with a value, which prevents selection from persisting.
