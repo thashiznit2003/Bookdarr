@@ -74,7 +74,7 @@ namespace NzbDrone.Host
 
             services.Configure<FormOptions>(options =>
             {
-                options.MultipartBodyLengthLimit = 1000000000;
+                options.MultipartBodyLengthLimit = 20L * 1024 * 1024 * 1024;
             });
 
             services.AddCors(options =>

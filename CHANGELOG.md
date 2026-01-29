@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.64
+- Summary: Raise manual import upload limit to 20 GB.
+- Why: Large audiobook uploads (>1 GB) were blocked by the default multipart limit.
+- Impact: Manual import can now handle very large audiobook files.
+- Files: `src/NzbDrone.Host/Startup.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.64`, push, then run the SSH update with the next log number.
+
 ## 2.1.63
 - Summary: Fix build errors in import overwrite retry path.
 - Why: Copy-only scope and StyleCop ordering/spacing caused build failures.
