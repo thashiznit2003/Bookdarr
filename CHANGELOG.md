@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.62
+- Summary: Overwrite existing destination files during import retries when destination already exists.
+- Why: Manual imports were stuck in the temp folder and couldn’t overwrite existing named files.
+- Impact: Import now deletes the destination and retries the move, then links the file in the DB.
+- Files: `src/NzbDrone.Core/MediaFiles/BookImport/ImportApprovedBooks.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.62`, push, then run the SSH update with the next log number.
+
 ## 2.1.61
 - Summary: Overwrite existing destination files before rename to avoid destination-exists errors.
 - Why: Organize was still failing because the destination existed and the rename never executed.

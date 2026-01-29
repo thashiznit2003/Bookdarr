@@ -22,6 +22,7 @@ using NzbDrone.Core.Parser;
 using NzbDrone.Core.Parser.Model;
 using NzbDrone.Core.Qualities;
 using NzbDrone.Core.RootFolders;
+using NzbDrone.Core.Organizer;
 
 namespace NzbDrone.Core.MediaFiles.BookImport
 {
@@ -41,6 +42,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport
         private readonly IAddAuthorService _addAuthorService;
         private readonly IBookService _bookService;
         private readonly IEditionService _editionService;
+        private readonly IBuildFileNames _buildFileNames;
         private readonly IRootFolderService _rootFolderService;
         private readonly IRecycleBinProvider _recycleBinProvider;
         private readonly IExtraService _extraService;
@@ -57,6 +59,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport
                                    IAddAuthorService addAuthorService,
                                    IBookService bookService,
                                    IEditionService editionService,
+                                   IBuildFileNames buildFileNames,
                                    IRootFolderService rootFolderService,
                                    IRecycleBinProvider recycleBinProvider,
                                    IExtraService extraService,
@@ -73,6 +76,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport
             _addAuthorService = addAuthorService;
             _bookService = bookService;
             _editionService = editionService;
+            _buildFileNames = buildFileNames;
             _rootFolderService = rootFolderService;
             _recycleBinProvider = recycleBinProvider;
             _extraService = extraService;
@@ -173,6 +177,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport
                 var localTrack = importDecision.Item;
                 var oldFiles = new List<BookFile>();
                 BookFile bookFile = null;
+                bool copyOnly;
 
                 try
                 {
@@ -223,7 +228,6 @@ namespace NzbDrone.Core.MediaFiles.BookImport
                         bookFile.IndexerFlags = localTrack.IndexerFlags;
                     }
 
-                    bool copyOnly;
                     switch (importMode)
                     {
                         default:
@@ -288,43 +292,78 @@ namespace NzbDrone.Core.MediaFiles.BookImport
                 catch (DestinationAlreadyExistsException e)
                 {
                     _logger.Warn(e, "Couldn't import book " + localTrack);
-                    if (bookFile != null && _diskProvider.FileExists(bookFile.Path))
+                    if (bookFile != null && localTrack != null)
                     {
-                        var existingFile = _mediaFileService.GetFileWithPath(bookFile.Path);
+                        var extension = Path.GetExtension(localTrack.Path);
+                        var newName = _buildFileNames.BuildBookFileName(localTrack.Author, localTrack.Edition, bookFile);
+                        var destinationPath = _buildFileNames.BuildBookFilePath(localTrack.Author, localTrack.Edition, newName, extension);
 
-                        if (existingFile == null)
+                        if (_diskProvider.FileExists(destinationPath))
                         {
-                            bookFile.Size = _diskProvider.GetFileSize(bookFile.Path);
-                            bookFile.Modified = _diskProvider.FileGetLastWrite(bookFile.Path);
-                            filesToAdd.Add(bookFile);
-                            allImportedTrackFiles.Add(bookFile);
-                            trackImportedEvents.Add(new TrackImportedEvent(localTrack, bookFile, oldFiles, false, downloadClientItem));
-                        }
-                        else
-                        {
-                            var updated = false;
+                            _logger.Warn("Deleting existing destination file to allow overwrite: {0}", destinationPath);
+                            _diskProvider.DeleteFile(destinationPath);
 
-                            if (existingFile.EditionId != bookFile.EditionId)
+                            try
                             {
-                                existingFile.EditionId = bookFile.EditionId;
-                                updated = true;
-                            }
+                                var retryMoveResult = _bookFileUpgrader.UpgradeBookFile(bookFile, localTrack, copyOnly);
+                                oldFiles = retryMoveResult.OldFiles;
 
-                            if (existingFile.MediaType == BookFileMediaType.Unknown && bookFile.MediaType != BookFileMediaType.Unknown)
+                                filesToAdd.Add(bookFile);
+                                importResults.Add(new ImportResult(importDecision));
+
+                                if (!localTrack.ExistingFile)
+                                {
+                                    _extraService.ImportTrack(localTrack, bookFile, copyOnly);
+                                }
+
+                                allImportedTrackFiles.Add(bookFile);
+                                allOldTrackFiles.AddRange(oldFiles);
+                                trackImportedEvents.Add(new TrackImportedEvent(localTrack, bookFile, oldFiles, !localTrack.ExistingFile, downloadClientItem));
+                                continue;
+                            }
+                            catch (Exception retryEx)
                             {
-                                existingFile.MediaType = bookFile.MediaType;
-                                updated = true;
+                                _logger.Warn(retryEx, "Retry import after deleting destination failed");
                             }
-
-                            if (updated)
-                            {
-                                _mediaFileService.Update(existingFile);
-                            }
-
-                            allImportedTrackFiles.Add(existingFile);
-                            trackImportedEvents.Add(new TrackImportedEvent(localTrack, existingFile, oldFiles, false, downloadClientItem));
                         }
 
+                        if (_diskProvider.FileExists(bookFile.Path))
+                        {
+                            var existingFile = _mediaFileService.GetFileWithPath(bookFile.Path);
+
+                            if (existingFile == null)
+                            {
+                                bookFile.Size = _diskProvider.GetFileSize(bookFile.Path);
+                                bookFile.Modified = _diskProvider.FileGetLastWrite(bookFile.Path);
+                                filesToAdd.Add(bookFile);
+                                allImportedTrackFiles.Add(bookFile);
+                                trackImportedEvents.Add(new TrackImportedEvent(localTrack, bookFile, oldFiles, false, downloadClientItem));
+                            }
+                            else
+                            {
+                                var updated = false;
+
+                                if (existingFile.EditionId != bookFile.EditionId)
+                                {
+                                    existingFile.EditionId = bookFile.EditionId;
+                                    updated = true;
+                                }
+
+                                if (existingFile.MediaType == BookFileMediaType.Unknown && bookFile.MediaType != BookFileMediaType.Unknown)
+                                {
+                                    existingFile.MediaType = bookFile.MediaType;
+                                    updated = true;
+                                }
+
+                                if (updated)
+                                {
+                                    _mediaFileService.Update(existingFile);
+                                }
+
+                                allImportedTrackFiles.Add(existingFile);
+                                trackImportedEvents.Add(new TrackImportedEvent(localTrack, existingFile, oldFiles, false, downloadClientItem));
+                            }
+                        }
                         importResults.Add(new ImportResult(importDecision));
                         continue;
                     }
