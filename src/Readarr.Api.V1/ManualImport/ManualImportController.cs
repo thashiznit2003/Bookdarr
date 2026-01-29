@@ -101,8 +101,31 @@ namespace Readarr.Api.V1.ManualImport
                 var uploadRoot = Path.Combine(_appFolderInfo.AppDataFolder, "manual-import");
                 _diskProvider.EnsureFolder(uploadRoot);
 
-                var uploadFolder = Path.Combine(uploadRoot, $"{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}");
-                _diskProvider.EnsureFolder(uploadFolder);
+                var requestedFolder = Request.Form?["folder"].ToString();
+                string uploadFolder;
+
+                if (!string.IsNullOrWhiteSpace(requestedFolder))
+                {
+                    var rootPath = Path.GetFullPath(uploadRoot);
+                    var fullPath = Path.GetFullPath(requestedFolder);
+
+                    if (!fullPath.StartsWith(rootPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return BadRequest("Invalid upload folder.");
+                    }
+
+                    if (!_diskProvider.FolderExists(fullPath))
+                    {
+                        return BadRequest("Upload folder not found.");
+                    }
+
+                    uploadFolder = fullPath;
+                }
+                else
+                {
+                    uploadFolder = Path.Combine(uploadRoot, $"{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}");
+                    _diskProvider.EnsureFolder(uploadFolder);
+                }
 
                 var savedFiles = new List<string>();
 

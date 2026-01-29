@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.72
+- Summary: Batch manual import uploads to avoid timeouts on large multi-file selections.
+- Why: Single huge uploads could time out in the browser even though the server finished writing files.
+- Impact: Manual uploads now send files in batches and append them to the same upload folder.
+- Files: `frontend/src/InteractiveImport/Folder/InteractiveImportSelectFolderModalContent.js`, `src/Readarr.Api.V1/ManualImport/ManualImportController.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.72`, push, then run the SSH update with the next log number.
+
 ## 2.1.71
 - Summary: Improve manual upload stability and error reporting for large multi-file uploads.
 - Why: Uploads could stall after the browser finished sending data with no clear error.

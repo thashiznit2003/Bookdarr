@@ -96,13 +96,49 @@ class InteractiveImportSelectFolderModalContent extends Component {
     this.uploadFiles(selectedFiles);
   };
 
-  uploadFiles = (selectedFiles) => {
+  buildUploadBatches = (files) => {
+    const maxBatchBytes = 1024 * 1024 * 1024;
+    const maxBatchFiles = 20;
+    const batches = [];
+    let current = [];
+    let currentBytes = 0;
+
+    files.forEach((file) => {
+      const size = file?.size || 0;
+      const wouldOverflow = current.length >= maxBatchFiles || (currentBytes + size > maxBatchBytes && current.length > 0);
+
+      if (wouldOverflow) {
+        batches.push({ files: current, bytes: currentBytes });
+        current = [];
+        currentBytes = 0;
+      }
+
+      current.push(file);
+      currentBytes += size;
+
+      if (size > maxBatchBytes) {
+        batches.push({ files: current, bytes: currentBytes });
+        current = [];
+        currentBytes = 0;
+      }
+    });
+
+    if (current.length) {
+      batches.push({ files: current, bytes: currentBytes });
+    }
+
+    return batches;
+  };
+
+  uploadBatch = (files, uploadFolder, onUploadProgress) => {
     const formData = new FormData();
-    selectedFiles.forEach((file) => {
+    files.forEach((file) => {
       formData.append('files', file);
     });
 
-    this.setState({ isUploading: true, uploadError: null, uploadProgress: null });
+    if (uploadFolder) {
+      formData.append('folder', uploadFolder);
+    }
 
     const request = createAjaxRequest({
       url: '/manualimport/upload',
@@ -111,36 +147,57 @@ class InteractiveImportSelectFolderModalContent extends Component {
       dataType: 'json',
       processData: false,
       contentType: false,
-      onUploadProgress: (event) => {
-        if (!event || !event.lengthComputable) {
-          return;
-        }
-
-        const progress = Math.min(100, (event.loaded / event.total) * 100);
-        this.setState({ uploadProgress: progress });
-      }
+      onUploadProgress
     }).request;
 
-    request.done((data) => {
-      const uploadPath = data?.path || '';
+    return new Promise((resolve, reject) => {
+      request.done(resolve).fail(reject);
+    });
+  };
+
+  uploadFiles = async (selectedFiles) => {
+    const batches = this.buildUploadBatches(selectedFiles);
+    const totalBytes = selectedFiles.reduce((sum, file) => sum + (file?.size || 0), 0);
+    let uploadedBytes = 0;
+    let uploadPath = '';
+
+    this.setState({ isUploading: true, uploadError: null, uploadProgress: totalBytes ? 0 : null });
+
+    try {
+      for (const batch of batches) {
+        const batchBytes = batch.bytes || 0;
+        const data = await this.uploadBatch(batch.files, uploadPath, (event) => {
+          if (!event || !event.lengthComputable || !totalBytes) {
+            return;
+          }
+
+          const progressBytes = uploadedBytes + event.loaded;
+          const progress = Math.min(100, (progressBytes / totalBytes) * 100);
+          this.setState({ uploadProgress: progress });
+        });
+
+        uploadPath = data?.path || uploadPath;
+        uploadedBytes += batchBytes;
+
+        if (totalBytes) {
+          const progress = Math.min(100, (uploadedBytes / totalBytes) * 100);
+          this.setState({ uploadProgress: progress });
+        }
+      }
+
       this.setState({
         folder: uploadPath,
         selectedFiles: []
       });
 
-      // Auto-transition to Interactive Import view
       if (uploadPath) {
         this.props.onInteractiveImportPress(uploadPath);
       }
-    });
-
-    request.fail((xhr) => {
+    } catch (xhr) {
       this.setState({ uploadError: xhr });
-    });
-
-    request.always(() => {
+    } finally {
       this.setState({ isUploading: false });
-    });
+    }
   };
 
   onRecentPathPress = (folder) => {
