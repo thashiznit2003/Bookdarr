@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.75
+- Summary: Assign distinct part numbers for multi-file audiobooks even when all tags report the same part.
+- Why: Some MP3s report the same track number for every file, causing only one file to import.
+- Impact: Part numbers are now derived from filename ordering when all parts are identical.
+- Files: `src/NzbDrone.Core/MediaFiles/BookImport/ImportApprovedBooks.cs`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.75`, push, then run the SSH update with the next log number.
+
 ## 2.1.74
 - Summary: Keep all parts when importing multi-file audiobooks.
 - Why: Each imported audiobook file was replacing earlier parts, leaving only one file in the book details list.

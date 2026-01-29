@@ -140,7 +140,7 @@ namespace NzbDrone.Core.MediaFiles.BookImport
                     .Where(b => MediaFileExtensions.AudioExtensions.Contains(Path.GetExtension(b.Item.Path)))
                     .ToList();
 
-                if (audioDecisions.Any() && audioDecisions.All(b => b.Item.Part == 0))
+                if (audioDecisions.Any() && audioDecisions.Select(b => b.Item.Part).Distinct().Count() == 1)
                 {
                     var part = 1;
                     foreach (var d in audioDecisions.OrderBy(x => PadNumbers.Replace(x.Item.Path)))
