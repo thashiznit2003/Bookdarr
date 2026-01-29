@@ -150,6 +150,7 @@ class TextInput extends Component {
     } = this.props;
 
     const inputName = dataFormType === 'login' ? name : `bookdarr-${name}`;
+    const inputValue = type === 'file' ? undefined : value;
 
     return (
       <input
@@ -166,7 +167,7 @@ class TextInput extends Component {
           hasButton && styles.hasButton
         )}
         name={inputName}
-        value={value}
+        value={inputValue}
         autoComplete={autoComplete}
         data-form-type={dataFormType}
         data-lpignore={dataLpignore}

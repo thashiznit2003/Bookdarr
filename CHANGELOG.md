@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.67
+- Summary: Fix multi-file manual import selection not triggering uploads.
+- Why: File inputs were controlled with a value, which prevents selection from persisting.
+- Impact: Selecting multiple files now triggers upload as expected.
+- Files: `frontend/src/Components/Form/TextInput.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.67`, push, then run the SSH update with the next log number.
+
 ## 2.1.66
 - Summary: Allow multi-file uploads in manual import.
 - Why: File inputs were dropping the multiple attribute, preventing multi-file audiobook uploads.
