@@ -140,9 +140,15 @@ export const actionHandlers = handleThunks({
 
     dispatch(set({ section, isFetching: true }));
 
+    const requestPayload = { ...payload };
+
+    if (payload.folder && requestPayload.filterExistingFiles == null) {
+      requestPayload.filterExistingFiles = false;
+    }
+
     const { request, abortRequest } = createAjaxRequest({
       url: '/manualimport',
-      data: payload
+      data: requestPayload
     });
 
     abortCurrentFetchRequest = abortRequest;
