@@ -143,7 +143,10 @@ class TextInput extends Component {
       dataBwignore,
       onBlur,
       onCopy,
-      onKeyDown
+      onKeyDown,
+      multiple,
+      accept,
+      ...rest
     } = this.props;
 
     const inputName = dataFormType === 'login' ? name : `bookdarr-${name}`;
@@ -172,6 +175,8 @@ class TextInput extends Component {
         step={step}
         min={min}
         max={max}
+        multiple={multiple}
+        accept={accept}
         onChange={this.onChange}
         onFocus={this.onFocus}
         onBlur={onBlur}
@@ -182,6 +187,7 @@ class TextInput extends Component {
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onWheel={this.onWheel}
+        {...rest}
       />
     );
   }
@@ -206,6 +212,8 @@ TextInput.propTypes = {
   dataLpignore: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   data1pIgnore: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   dataBwignore: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  multiple: PropTypes.bool,
+  accept: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   onKeyDown: PropTypes.func,
   onFocus: PropTypes.func,

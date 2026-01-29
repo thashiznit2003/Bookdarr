@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.66
+- Summary: Allow multi-file uploads in manual import.
+- Why: File inputs were dropping the multiple attribute, preventing multi-file audiobook uploads.
+- Impact: Manual import now accepts selecting multiple files in one upload.
+- Files: `frontend/src/Components/Form/TextInput.js`, `src/Directory.Build.props`, `CHANGELOG.md`
+- Next: Tag `snapshot-YYYYMMDD-HHMM` and `v2.1.66`, push, then run the SSH update with the next log number.
+
 ## 2.1.65
 - Summary: Show import progress for uploads and importing queue items; add indeterminate progress support.
 - Why: Large imports had no visible progress and uploads appeared stalled.
