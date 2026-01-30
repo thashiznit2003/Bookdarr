@@ -48,7 +48,6 @@ module.exports = {
   ],
 
   plugins: [
-    'filenames',
     'react',
     'react-hooks',
     'simple-import-sort',
@@ -64,8 +63,6 @@ module.exports = {
   },
 
   rules: {
-    'filenames/match-exported': ['error'],
-
     // ECMAScript 6
 
     'arrow-body-style': [0],
@@ -387,7 +384,6 @@ module.exports = {
         '*.css.d.ts'
       ],
       rules: {
-        'filenames/match-exported': 'off',
         'init-declarations': 'off',
         'prettier/prettier': 'off'
       }

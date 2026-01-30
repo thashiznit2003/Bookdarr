@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using NLog;
 using NzbDrone.Common.Disk;
 using NzbDrone.Common.EnvironmentInfo;
+using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Books;
 using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.MediaFiles.BookImport.Manual;
@@ -159,7 +160,7 @@ namespace Readarr.Api.V1.ManualImport
                     return BadRequest("No files uploaded.");
                 }
 
-                _logger.Info("Manual import upload completed. Saved {0} files to {1}", savedFiles.Count, uploadFolder);
+                _logger.Info("Manual import upload completed. Saved {0} files to {1}", savedFiles.Count, uploadFolder.SanitizeForLog());
 
                 return Ok(new
                 {
