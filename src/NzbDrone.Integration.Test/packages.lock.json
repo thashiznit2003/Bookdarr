@@ -102,8 +102,8 @@
       },
       "Microsoft.Build.Tasks.Git": {
         "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "bZKfSIKJRXLTuSzLudMFte/8CempWjVamNUR5eHJizsy+iuOuO/k2gnh7W0dHJmYY0tBf+gUErfluCv5mySAOQ=="
+        "resolved": "10.0.102",
+        "contentHash": "0i81LYX31U6UiXz4NOLbvc++u+/mVDmOt+PskrM/MygpDxkv9THKQyRUmavBpLK6iBV0abNWnn+CQgSRz//Pwg=="
       },
       "Microsoft.CodeCoverage": {
         "type": "Transitive",
@@ -177,8 +177,8 @@
       },
       "Microsoft.SourceLink.Common": {
         "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "dk9JPxTCIevS75HyEQ0E4OVAFhB2N+V9ShCXf8Q6FkUQZDkgLI12y679Nym1YqsiSysuQskT7Z+6nUf3yab6Vw=="
+        "resolved": "10.0.102",
+        "contentHash": "Mk1IMb9q5tahC2NltxYXFkLBtuBvfBoCQ3pIxYQWfzbCE9o1OB9SsHe0hnNGo7lWgTA/ePbFAJLWu6nLL9K17A=="
       },
       "Microsoft.TestPlatform.ObjectModel": {
         "type": "Transitive",
@@ -466,7 +466,7 @@
         "dependencies": {
           "FluentValidation": "[12.1.0, )",
           "Ical.Net": "[4.3.1, )",
-          "Microsoft.SourceLink.GitHub": "[8.0.0, )",
+          "Microsoft.SourceLink.GitHub": "[10.0.102, )",
           "NLog": "[6.0.6, )",
           "Readarr.Common": "[1.0.0, )",
           "Readarr.Core": "[1.0.0, )",
@@ -482,7 +482,7 @@
         "dependencies": {
           "DryIoc.dll": "[5.4.3, )",
           "IPAddressRange": "[6.3.0, )",
-          "Microsoft.SourceLink.GitHub": "[8.0.0, )",
+          "Microsoft.SourceLink.GitHub": "[10.0.102, )",
           "NLog": "[6.0.6, )",
           "NLog.Extensions.Logging": "[6.1.0, )",
           "Newtonsoft.Json": "[13.0.4, )",
@@ -503,7 +503,7 @@
           "LazyCache": "[2.4.0, )",
           "MailKit": "[4.8.0, )",
           "Microsoft.Data.SqlClient": "[2.1.7, )",
-          "Microsoft.SourceLink.GitHub": "[8.0.0, )",
+          "Microsoft.SourceLink.GitHub": "[10.0.102, )",
           "MonoTorrent": "[2.0.7, )",
           "NLog": "[6.0.6, )",
           "NLog.Targets.Syslog": "[7.0.0, )",
@@ -526,7 +526,7 @@
         "dependencies": {
           "FluentValidation": "[12.1.0, )",
           "ImpromptuInterface": "[7.0.1, )",
-          "Microsoft.SourceLink.GitHub": "[8.0.0, )",
+          "Microsoft.SourceLink.GitHub": "[10.0.102, )",
           "NLog": "[6.0.6, )",
           "Readarr.Core": "[1.0.0, )",
           "Readarr.SignalR": "[1.0.0, )"
@@ -535,7 +535,7 @@
       "readarr.signalr": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.SourceLink.GitHub": "[8.0.0, )",
+          "Microsoft.SourceLink.GitHub": "[10.0.102, )",
           "Readarr.Core": "[1.0.0, )"
         }
       },
@@ -544,7 +544,7 @@
         "dependencies": {
           "FluentAssertions": "[8.8.0, )",
           "FluentValidation": "[12.1.0, )",
-          "Microsoft.SourceLink.GitHub": "[8.0.0, )",
+          "Microsoft.SourceLink.GitHub": "[10.0.102, )",
           "Moq": "[4.17.2, )",
           "NLog": "[6.0.6, )",
           "NUnit": "[3.14.0, )",
@@ -666,12 +666,12 @@
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "CentralTransitive",
-        "requested": "[8.0.0, )",
-        "resolved": "8.0.0",
-        "contentHash": "G5q7OqtwIyGTkeIOAc3u2ZuV/kicQaec5EaRnc0pIeSnh9LUjj+PYQrJYBURvDt7twGl2PKA7nSN0kz1Zw5bnQ==",
+        "requested": "[10.0.102, )",
+        "resolved": "10.0.102",
+        "contentHash": "Oxq3RCIJSdtpIU4hLqO7XaDe/Ra3HS9Wi8rJl838SAg6Zu1iQjerA0+xXWBgUFYbgknUGCLOU0T+lzMLkvY9Qg==",
         "dependencies": {
-          "Microsoft.Build.Tasks.Git": "8.0.0",
-          "Microsoft.SourceLink.Common": "8.0.0"
+          "Microsoft.Build.Tasks.Git": "10.0.102",
+          "Microsoft.SourceLink.Common": "10.0.102"
         }
       },
       "MonoTorrent": {
