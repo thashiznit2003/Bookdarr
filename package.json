@@ -115,7 +115,7 @@
     "fork-ts-checker-webpack-plugin": "8.0.0",
     "html-webpack-plugin": "5.6.6",
     "loader-utils": "^3.2.1",
-    "mini-css-extract-plugin": "2.9.1",
+    "mini-css-extract-plugin": "2.10.0",
     "postcss": "8.4.48",
     "postcss-loader": "7.3.0",
     "postcss-mixins": "9.0.4",
